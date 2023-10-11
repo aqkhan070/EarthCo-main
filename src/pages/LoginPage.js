@@ -33,8 +33,10 @@ const LoginPage = () => {
         // Login failed, display an error message
         setError('Invalid email or password. Please try again.');
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
+    }
+     catch (error) 
+     {
+      console.log('Error logging in:', error);
       setError('An error occurred while logging in. Please try again later.');
     }
   };
