@@ -38,9 +38,7 @@ import AddStaff from '../components/Staff/AddStaff';
 
 const DashboardPage = () => {
   return (
-    <div>
-      <h1>DashBoard</h1>
-    </div>
+    <div></div>
     // <>
     //   {/* <HeaderExp /> */}
     //   <SideBar />
