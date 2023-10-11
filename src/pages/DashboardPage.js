@@ -38,16 +38,9 @@ import AddStaff from '../components/Staff/AddStaff';
 
 const DashboardPage = () => {
   return (
-<<<<<<< HEAD
     <>
       <HeaderExp />
       <SideBar />
-=======
-    <div></div>
-    // <>
-    //   {/* <HeaderExp /> */}
-    //   <SideBar />
->>>>>>> parent of 091317c (dashboard fix)
 
       <div className="content-body" id='contentBody'>
         <Routes>
