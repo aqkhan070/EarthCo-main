@@ -38,56 +38,55 @@ import AddStaff from '../components/Staff/AddStaff';
 
 const DashboardPage = () => {
   return (
-    <div></div>
-    // <>
-    //   {/* <HeaderExp /> */}
-    //   <SideBar />
+    <>
+      <HeaderExp />
+      <SideBar />
 
-    //   <div className="content-body" id='contentBody'>
-    //     <Routes>
-    //       <Route path='' element={<DashBoard />} />
-    //       <Route path='/Customers/*' element={<CustomerIndex />} >
-    //         <Route path='' element={<CustomersTable />} />
-    //         <Route path='Add-Customer' element={<AddCutomer />} />
-    //       </Route>
-    //       <Route path='Staff/*' element={<StaffIndex />} >
-    //         <Route path='' element={<StaffList />} />
-    //         <Route path='Add-Staff' element={<AddStaff />} />
-    //       </Route>
-    //       <Route path='Map' element={<MapIndex />} />
-    //       <Route path='Estimates' element={<EstimateIndex />} >
-    //         <Route path='' element={<EstimateList />} />
-    //         <Route path='Add-Estimate' element={<AddEstimate />} />
-    //         <Route path=':estimateId' element={<EstimateIDopen />} />
-    //       </Route>
-    //       <Route path='Service-Requests' element={<ServiceIndex />} >
-    //         <Route path='' element={<SRlist />} />
-    //         <Route path='Add' element={<AddSRform />} />
-    //         <Route path=':serviceRequestId' element={<ServiceRequest />} />
-    //       </Route>
-    //       <Route path='Irrigation' element={<IrrigationIndex />} >
-    //         <Route path='' element={<Irrigationlist />} />
-    //         <Route path='Add-Irrigation' element={<IrrigationForm />} />
-    //       </Route>
-    //       <Route path='Irrigation/Audit-Report' element={<Audit />} />
-    //       <Route path='Punchlist' element={<PunchListIndex />} />
-    //       <Route path='Irrigation/PunchlistPreview' element={<PunchlistPreview />} />
-    //       <Route path='SummaryReport' element={<SummaryReport />} />
-    //       <Route path='ProposalSummary' element={<ProposalSummary />} />
-    //       <Route path='Weekly-Reports' element={<WeeklyReportIndex />}>
-    //         <Route path='' element={<WeeklyReportlist />} />
-    //         <Route path='WeeklyReport' element={<WeeklyReport />} />
-    //         <Route path='Add-Weekly-Report' element={<AddWRform />} />
-    //       </Route>
-    //       <Route path='Landscape' element={<LandscapeIndex />}>
-    //         <Route path='' element={<Landscapelist />} />
-    //         <Route path='Add-Landscape' element={<LandscapeForm />} />
-    //       </Route>
-    //       <Route path='Landscape/PunchList-Report' element={<Landscape />} />
-    //     </Routes>
-    //   </div>
-    //   <Footer />
-    // </>
+      <div className="content-body" id='contentBody'>
+        <Routes>
+          <Route path='' element={<DashBoard />} />
+          <Route path='/Customers/*' element={<CustomerIndex />} >
+            <Route path='' element={<CustomersTable />} />
+            <Route path='Add-Customer' element={<AddCutomer />} />
+          </Route>
+          <Route path='Staff/*' element={<StaffIndex />} >
+            <Route path='' element={<StaffList />} />
+            <Route path='Add-Staff' element={<AddStaff />} />
+          </Route>
+          <Route path='Map' element={<MapIndex />} />
+          <Route path='Estimates' element={<EstimateIndex />} >
+            <Route path='' element={<EstimateList />} />
+            <Route path='Add-Estimate' element={<AddEstimate />} />
+            <Route path=':estimateId' element={<EstimateIDopen />} />
+          </Route>
+          <Route path='Service-Requests' element={<ServiceIndex />} >
+            <Route path='' element={<SRlist />} />
+            <Route path='Add' element={<AddSRform />} />
+            <Route path=':serviceRequestId' element={<ServiceRequest />} />
+          </Route>
+          <Route path='Irrigation' element={<IrrigationIndex />} >
+            <Route path='' element={<Irrigationlist />} />
+            <Route path='Add-Irrigation' element={<IrrigationForm />} />
+          </Route>
+          <Route path='Irrigation/Audit-Report' element={<Audit />} />
+          <Route path='Punchlist' element={<PunchListIndex />} />
+          <Route path='Irrigation/PunchlistPreview' element={<PunchlistPreview />} />
+          <Route path='SummaryReport' element={<SummaryReport />} />
+          <Route path='ProposalSummary' element={<ProposalSummary />} />
+          <Route path='Weekly-Reports' element={<WeeklyReportIndex />}>
+            <Route path='' element={<WeeklyReportlist />} />
+            <Route path='WeeklyReport' element={<WeeklyReport />} />
+            <Route path='Add-Weekly-Report' element={<AddWRform />} />
+          </Route>
+          <Route path='Landscape' element={<LandscapeIndex />}>
+            <Route path='' element={<Landscapelist />} />
+            <Route path='Add-Landscape' element={<LandscapeForm />} />
+          </Route>
+          <Route path='Landscape/PunchList-Report' element={<Landscape />} />
+        </Routes>
+      </div>
+      <Footer />
+    </>
   );
 }
 
