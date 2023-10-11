@@ -23,7 +23,7 @@ const LoginPage = () => {
           },
         }
       );
-
+        console.log(response)
       if (response.status === 200) {
         // Login successful, you can redirect the user or perform other actions
         setError('');
