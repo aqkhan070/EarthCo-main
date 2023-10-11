@@ -1,0 +1,45 @@
+.add-item {
+    margin: 20px;
+}
+
+.itemtitleBar {
+    background-color: #dedada;
+    border-radius: 5px 5px 0 0;
+    padding: 10px 20px;
+}
+
+.itemtitleBar h4 {
+    margin: 0;
+}
+
+.estNotesBox h4 {
+    margin-bottom: 5px;
+}
+
+.estNotesBox .row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dataBox {
+    padding: 1rem 3rem;
+}
+
+.dataRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dataRow h5 {
+    text-align: right;
+}
+
+.tabSwitch button {
+    margin-right: 1px;
+}
+
+.activeBtn {
+    background: #fff;
+    color: black !important;
+}
