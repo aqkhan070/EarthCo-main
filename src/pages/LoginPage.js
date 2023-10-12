@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo1 from '../assets/images/background/earthco_logo.png';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ const LoginPage = () => {
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
-
+    const nevigate = useNavigate();
 
     // const apiUrl = 'https://earthcoapi.yehtohoga.com/api/Usermanagement/Users';
 
@@ -83,10 +84,9 @@ const LoginPage = () => {
     //         console.error('Error:', error.message);
     //       }
     //     });
-      
-    try{
-    const response = await axios.post(
-      'https://earthcoapi.yehtohoga.com/api/Account/Login',
+    try {
+      const response = await axios.post(
+        'https://earthcoapi.yehtohoga.com/api/Account/Login',
         {
           Email: email,
           Password: password,
@@ -97,20 +97,21 @@ const LoginPage = () => {
           },
         }
       );
-        console.log(response)
+  
       if (response.status === 200) {
-        // Login successful, you can redirect the user or perform other actions
+        // Login successful, you can redirect the user to the dashboard
         setError('');
+  
+        // Add navigation to the dashboard here
+        navigate('/Dashboard'); // Make sure to import 'navigate' from 'react-router-dom'
+  
         console.log('Login successful');
-        // Redirect the user to the dashboard or other pages as needed.
       } else {
         // Login failed, display an error message
         setError('Invalid email or password. Please try again.');
       }
-    }
-     catch (error) 
-     {
-      console.log('Error logging in3:', error);
+    } catch (error) {
+      console.log('Error logging in:', error);
       setError('An error occurred while logging in. Please try again later.');
     }
   };
