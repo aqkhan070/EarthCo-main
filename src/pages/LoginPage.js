@@ -10,35 +10,109 @@ const LoginPage = () => {
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post(
-        'https://earthcoapi.yehtohoga.com/api/Account/Login',
-        {
-          Email: email,
-          Password: password,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-        console.log(response)
-      if (response.status === 200) {
-        // Login successful, you can redirect the user or perform other actions
-        setError('');
-        console.log('Login successful');
-        // Redirect the user to the dashboard or other pages as needed.
-      } else {
-        // Login failed, display an error message
-        setError('Invalid email or password. Please try again.');
-      }
+
+    // const apiUrl = 'https://earthcoapi.yehtohoga.com/api/Usermanagement/Users';
+
+    // // Replace 'YOUR_BEARER_TOKEN' with the actual Bearer token you want to use for authorization.
+    // const bearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5OTVmM2QwYS1hZTAyLTRmZjQtOTZmYy03ZTRkMDk1NTExNmEiLCJ1c2VyaWQiOiJ1c2VySWQiLCJleHAiOjE2OTcxODYxNjksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3QvIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdC8ifQ.rutnsl__zmbcxniuV0QnUCdGYLE5-_DpZrWpd9iZ0vE';
+    
+    // // Define your request headers with the Authorization Bearer token.
+    // const headers = {
+    //   'Authorization': `Bearer ${bearerToken}`,
+    // };
+    
+    // // Make the GET request using Axios with the specified headers.
+    // axios.get(apiUrl, { headers })
+    //   .then(response => {
+    //     // Handle the API response here
+    //     console.log(response.data);
+    //   })
+    //   .catch(error => {
+    //     // Handle any errors here
+    //     console.error('Error:', error);
+    //   });
+
+
+    // fetch('https://jsonplaceholder.typicode.com/todos/1')
+    // .then(response => response.json())
+    // .then(json => console.log(json))
+
+    // axios.get('https://jsonplaceholder.typicode.com/todos/1',{
+    //     headers: {
+    //         'Content-Type': 'application/json ; charset=utf-64',
+    //         'Accept': 'application/json',
+    //     },
+    //     crossorigin: false,
+    // }).then(res => {
+    //     console.log(res)
+        
+    // })
+    // .catch(e => {
+    //     alert(e.message)
+    // })
+
+   
+
+      let params = {
+        Email: email,
+        Password: password,
     }
-     catch (error) 
-     {
-      console.log('Error logging in:', error);
-      setError('An error occurred while logging in. Please try again later.');
-    }
+    // params = JSON.stringify({
+    //     Body: params,
+    // })
+    console.log(params)
+      axios.post('https://earthcoapi.yehtohoga.com/api/Account/Login', params,
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            console.log(res)
+            
+        })
+       .catch(error => {
+          // Handle errors here
+          if (error.response) {
+            // The request was made, but the server responded with an error status code
+            console.error('Response Error:', error.response.data);
+          } else if (error.request) {
+            // The request was made, but no response was received
+            console.error('No Response:', error.request);
+          } else {
+            // Something else went wrong
+            console.error('Error:', error.message);
+          }
+        });
+      
+
+    //   const response = await axios.post(
+    //     'https://earthcoapi.yehtohoga.com/api/Account/Login',
+    //     {
+    //       Email: email,
+    //       Password: password,
+    //     },
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //     }
+    //   );
+    //     console.log(response)
+    //   if (response.status === 200) {
+    //     // Login successful, you can redirect the user or perform other actions
+    //     setError('');
+    //     console.log('Login successful');
+    //     // Redirect the user to the dashboard or other pages as needed.
+    //   } else {
+    //     // Login failed, display an error message
+    //     // setError('Invalid email or password. Please try again.');
+    //   }
+    // }
+    //  catch (error) 
+    //  {
+    //   // console.log('Error logging in3:', error);
+    //   // setError('An error occurred while logging in. Please try again later.');
+    // }
   };
 
   return (
