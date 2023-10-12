@@ -11,26 +11,26 @@ const LoginPage = () => {
     e.preventDefault();
 
 
-    // const apiUrl = 'https://earthcoapi.yehtohoga.com/api/Usermanagement/Users';
+    const apiUrl = 'https://earthcoapi.yehtohoga.com/api/Usermanagement/Users';
 
-    // // Replace 'YOUR_BEARER_TOKEN' with the actual Bearer token you want to use for authorization.
-    // const bearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5OTVmM2QwYS1hZTAyLTRmZjQtOTZmYy03ZTRkMDk1NTExNmEiLCJ1c2VyaWQiOiJ1c2VySWQiLCJleHAiOjE2OTcxODYxNjksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3QvIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdC8ifQ.rutnsl__zmbcxniuV0QnUCdGYLE5-_DpZrWpd9iZ0vE';
+    // Replace 'YOUR_BEARER_TOKEN' with the actual Bearer token you want to use for authorization.
+    const bearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5OTVmM2QwYS1hZTAyLTRmZjQtOTZmYy03ZTRkMDk1NTExNmEiLCJ1c2VyaWQiOiJ1c2VySWQiLCJleHAiOjE2OTcxODYxNjksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3QvIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdC8ifQ.rutnsl__zmbcxniuV0QnUCdGYLE5-_DpZrWpd9iZ0vE';
     
-    // // Define your request headers with the Authorization Bearer token.
-    // const headers = {
-    //   'Authorization': `Bearer ${bearerToken}`,
-    // };
+    // Define your request headers with the Authorization Bearer token.
+    const headers = {
+      'Authorization': `Bearer ${bearerToken}`,
+    };
     
-    // // Make the GET request using Axios with the specified headers.
-    // axios.get(apiUrl, { headers })
-    //   .then(response => {
-    //     // Handle the API response here
-    //     console.log(response.data);
-    //   })
-    //   .catch(error => {
-    //     // Handle any errors here
-    //     console.error('Error:', error);
-    //   });
+    // Make the GET request using Axios with the specified headers.
+    axios.get(apiUrl, { headers })
+      .then(response => {
+        // Handle the API response here
+        console.log(response.data);
+      })
+      .catch(error => {
+        // Handle any errors here
+        console.error('Error:', error);
+      });
 
 
     // fetch('https://jsonplaceholder.typicode.com/todos/1')
