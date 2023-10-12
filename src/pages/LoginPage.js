@@ -10,13 +10,16 @@ const LoginPage = () => {
 
   const [resetEmail, setResetEmail] = useState("");
 
-const [fName, setFName] = useState('');
-const [userName, setUserName] = useState('');
-const [emailSIn, setEmailSI] = useState('');
-const [passSignIn, setPassSignIn] = useState('');
+  const [fName, setFName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [emailSIn, setEmailSI] = useState("");
+  const [passSignIn, setPassSignIn] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
 
-const [reTypePass, setReTypePass] = useState('');
-const [signError, setSignError] = useState('');
+  const [reTypePass, setReTypePass] = useState("");
+  const [signError, setSignError] = useState("");
 
   const navigate = useNavigate();
 
@@ -82,52 +85,57 @@ const [signError, setSignError] = useState('');
 
   const handleSubmitSignUp = async (e) => {
     e.preventDefault();
-  
+
     if (passSignIn !== reTypePass) {
-      setSignError('Passwords do not match.');
+      setSignError("Passwords do not match.");
       return;
     }
-  
+
     try {
       const response = await axios.post(
-        'https://earthcoapi.yehtohoga.com/api/Account/Register',
+        "https://earthcoapi.yehtohoga.com/api/Account/Register",
         {
-          FullName: fName,
-          UserName: userName,
+          username: fName,
+          FirstName: userName,
+          LastName: lastName,
           Email: emailSIn,
           Password: passSignIn,
+          Address: address,
+          Phone: phone,
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         }
       );
-  
+
       if (response.status === 200) {
         // Registration successful, you can redirect the user to the dashboard or perform other actions
-        setSignError('');
-        console.log('Registration successful');
+        setSignError("");
+        console.log("Registration successful");
         // Redirect the user to the dashboard or other pages as needed.
       } else {
         // Registration failed, display an error message
-        setSignError('Registration failed. Please try again.');
+        setSignError("Registration failed. Please try again.");
       }
     } catch (error) {
-      console.log('Error during registration:', error);
-      setSignError('An error occurred during registration. Please try again later.');
+      console.log("Error during registration:", error);
+      setSignError(
+        "An error occurred during registration. Please try again later."
+      );
     }
   };
 
   const handleChangePass2 = (e) => {
     const newPassword = e.target.value;
     setReTypePass(newPassword);
-  
+
     // Check if the new password matches the previously entered password (passSignIn)
     if (newPassword !== passSignIn) {
-      setSignError('Passwords do not match.');
+      setSignError("Passwords do not match.");
     } else {
-      setSignError(''); // Clear the error message if passwords match
+      setSignError(""); // Clear the error message if passwords match
     }
   };
   const clearInputs = () => {
@@ -139,7 +147,6 @@ const [signError, setSignError] = useState('');
     setPassSignIn("");
     setReTypePass("");
   };
-  
 
   return (
     <div className="page-wraper">
@@ -330,10 +337,10 @@ const [signError, setSignError] = useState('');
                       role="tabpanel"
                       aria-labelledby="nav-sign-tab"
                     >
-
                       {/* signup form */}
                       <form
-                        className="dz-form py-2" onSubmit={handleSubmitSignUp}
+                        className="dz-form py-2"
+                        onSubmit={handleSubmitSignUp}
                       >
                         <h3 className="form-title">Sign Up</h3>
                         <div className="dz-separator-outer m-b5">
@@ -362,6 +369,17 @@ const [signError, setSignError] = useState('');
                             }}
                             className="form-control"
                             placeholder="User Name"
+                            type="text"
+                          />
+                        </div>
+                        <div className="form-group mt-3">
+                          <input
+                            name="lastName"
+                            required=""
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            className="form-control"
+                            placeholder="Last Name"
                             type="text"
                           />
                         </div>
@@ -404,6 +422,31 @@ const [signError, setSignError] = useState('');
                             type="password"
                           />
                         </div>
+
+                        
+                        <div className="form-group mt-3">
+                          <input
+                            name="address"
+                            required=""
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="form-control"
+                            placeholder="Address"
+                            type="text"
+                          />
+                        </div>
+                        <div className="form-group mt-3">
+                          <input
+                            name="phone"
+                            required=""
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="form-control"
+                            placeholder="Phone"
+                            type="text"
+                          />
+                        </div>
+
                         <h4 className="authError mb-1">{signError}</h4>
                         <div className="mb-3">
                           <span className="form-check float-start me-2 ">
