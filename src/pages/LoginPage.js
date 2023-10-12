@@ -9,11 +9,12 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const [resetEmail, setResetEmail] = useState("");
-  const [fName, setFName] = useState('');
 
+const [fName, setFName] = useState('');
 const [userName, setUserName] = useState('');
 const [emailSIn, setEmailSI] = useState('');
 const [passSignIn, setPassSignIn] = useState('');
+
 const [reTypePass, setReTypePass] = useState('');
 const [signError, setSignError] = useState('');
 
@@ -113,7 +114,7 @@ const [signError, setSignError] = useState('');
         setSignError('Registration failed. Please try again.');
       }
     } catch (error) {
-      console.error('Error during registration:', error);
+      console.log('Error during registration:', error);
       setSignError('An error occurred during registration. Please try again later.');
     }
   };
