@@ -43,7 +43,7 @@ const LoginPage = () => {
       if (response.status === 200) {
         setError("");
 
-        navigate("/Dashboard"); // Now you can use navigate
+        navigate("/Dashboard"); // Navigation
         console.log("Login successful");
       } else {
         setError("Invalid email or password. Please try again.");
