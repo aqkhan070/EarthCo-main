@@ -13,25 +13,24 @@ const CustomersTable = () => {
     const { selectedCustomer } = useContext(CustomerContext);
     const {customers, setCustomers} = useContext(DataContext)
 
-    console.log(selectedCustomer);
 
     // const [customers, setCustomers] = useState([]);
 
-    // const fetchCustomers = async () => {
-    //     const response = await axios.get('http://localhost:8001/Customers');
-    //     setCustomers(response.data)
-    // }
+    const fetchCustomers = async () => {
+        const response = await axios.get('https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList');
+        console.log(response.data);
+    }
 
     useEffect(() => {
-        // fetchCustomers();
+        fetchCustomers();
         // $('#customerTbl').DataTable();
     }, [])
 
-    useEffect(() => {
-        if (customers[0] !== undefined) {
-            $('#customerTbl').DataTable();
-        }
-    }, [customers]);
+    // useEffect(() => {
+    //     if (customers[0] !== undefined) {
+    //         $('#customerTbl').DataTable();
+    //     }
+    // }, [customers]);
 
 
     const renderedCustomers = customers.map((customer, index) => {
