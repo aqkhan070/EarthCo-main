@@ -39,6 +39,8 @@ import StaffIndex from "./components/Staff/StaffIndex";
 import StaffList from "./components/Staff/StaffList";
 import AddStaff from "./components/Staff/AddStaff";
 import ErrorPage from "./pages/ErrorPage";
+import ResetPassword from "./pages/ResetPassword";
+
 
 function App() {
   
@@ -49,6 +51,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+
           <Route path="/Dashboard/*" element={<DashboardPage />}>
             <Route path="" element={<DashBoard />} />
             <Route path="Customers" element={<CustomerIndex />}>
