@@ -368,8 +368,8 @@ const HeaderExp = () => {
                                                         <img src={profilePic} alt="" />
                                                     </div>
                                                     <div className="header-info">
-                                                        <h6>{loggedUser.userName}</h6>
-                                                        <p>{loggedUser.email}</p>
+                                                        <h6>Admin</h6>
+                                                        <p>admin@gmail.com</p>
                                                     </div>
 
                                                 </div>
@@ -380,7 +380,7 @@ const HeaderExp = () => {
                                                         <div className="products">
                                                             <img src={profilePic} className="avatar avatar-md" alt="" />
                                                             <div>
-                                                                <h6>{loggedUser.userName}</h6>
+                                                                <h6>Admin</h6>
                                                                 <span>Web Designer</span>
                                                             </div>
                                                         </div>

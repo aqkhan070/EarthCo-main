@@ -10,13 +10,11 @@ const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const emailParam = queryParams.get("Email");
+
   useEffect(() => {
-
-    const queryParams = new URLSearchParams(window.location.search);
-    const emailParam = queryParams.get("Email");
-
     if (emailParam) {
-   
       axios
         .post("https://earthcoapi.yehtohoga.com/api/Account/DecrypteEmail", {
           Email: emailParam,
@@ -31,7 +29,7 @@ const ResetPassword = () => {
     }
   }, []);
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -39,11 +37,28 @@ const ResetPassword = () => {
       return;
     }
 
-    // Clear the error message
     setError("");
 
-    
-    // navigate("/passwordResetSuccess");
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Account/ChangeForgetPassword",
+        {
+          NewPassword: password,
+          ConfirmPassword: confirmPassword,
+          Email: emailParam,
+        }
+      );
+
+      if (response.data) {
+        console.log("Password changed successfule");
+        // navigate("/");
+      } else {
+        setError("Password reset failed. Please try again.");
+      }
+    } catch (error) {
+      console.log("Error resetting password:", error);
+      setError("An error occurred while resetting your password.");
+    }
   };
 
   return (
@@ -115,9 +130,7 @@ const ResetPassword = () => {
                             className="form-control"
                             required
                             value={confirmPassword}
-                            onChange={(e) =>
-                              setConfirmPassword(e.target.value)
-                            }
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                           />
                         </div>
                         {/* Display the error message if passwords don't match */}
