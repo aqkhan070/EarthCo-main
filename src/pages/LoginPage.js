@@ -40,11 +40,11 @@ const LoginPage = () => {
         }
       );
 
-      if (response) {
+      if (response.data.status === "success") {
         setError("");
 
+        console.log(response);
         navigate("/Dashboard"); // Navigation
-        console.log(response.data.status == "success");
       } else {
         setError("Invalid email or password. Please try again.");
       }
@@ -110,7 +110,7 @@ const LoginPage = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.data.status === "success") {
         // Registration successful, you can redirect the user to the dashboard or perform other actions
         setSignError("");
         console.log("Registration successful");
