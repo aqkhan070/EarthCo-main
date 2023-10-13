@@ -219,7 +219,7 @@ const LoginPage = () => {
                             className="form-control"
                             required
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {setPassword(e.target.value); setError("")}}
                           />
                         </div>
                         <h5 className="authError mb-2">{error}</h5>
