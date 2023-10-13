@@ -35,7 +35,7 @@ const Estimates = () => {
     }
 
     useEffect(() => {
-        getUsers();
+        // getUsers();
         $('#estimateTbl2').DataTable();
     }, [])
 

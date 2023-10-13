@@ -11,27 +11,32 @@ import { DataContext } from '../../context/AppData';
 const CustomersTable = () => {
 
     const { selectedCustomer } = useContext(CustomerContext);
+    const {customers, setCustomers} = useContext(DataContext)
 
-    const { customers, setCustomers } = useContext(DataContext);
+    console.log(selectedCustomer);
 
-    const fetchCustomers = async () => {
-        const response = await axios.get('http://localhost:8001/Customers');
-        setCustomers(response.data);
-    }
+    // const [customers, setCustomers] = useState([]);
+
+    // const fetchCustomers = async () => {
+    //     const response = await axios.get('http://localhost:8001/Customers');
+    //     setCustomers(response.data)
+    // }
 
     useEffect(() => {
-        fetchCustomers();
+        // fetchCustomers();
+        // $('#customerTbl').DataTable();
     }, [])
 
-    let showIt = <td colSpan={6} className='text-center'>No Records Found</td>
     useEffect(() => {
         if (customers[0] !== undefined) {
             $('#customerTbl').DataTable();
         }
     }, [customers]);
 
-    console.log(customers);
 
+    const renderedCustomers = customers.map((customer, index) => {
+        return <CustomerTR key={customer._id} index={index} customer={customer} contact={customer.contacts[0]} />
+    })
     return (
         <div className="container-fluid">
             <div className="row">
@@ -61,9 +66,7 @@ const CustomersTable = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {customers && customers.map((customer, index) => {
-                                            return <CustomerTR key={customer._id} index={index} customer={customer} contact={customer.contacts[0]} />
-                                        })}
+                                        {renderedCustomers}
                                     </tbody>
                                 </table>
                             </div>

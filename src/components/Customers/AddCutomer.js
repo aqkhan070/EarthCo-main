@@ -89,24 +89,24 @@ const AddCutomer = () => {
 
 
     const postCustomer = async () => {
-        const response = await axios.post('http://localhost:8001/AddCustomer', {
-            ...customerInfo,
-            userLogin: loginData,
-            contacts,
-            customerAdress,
-            serviceLocation: serviceLocArr
-        })
-        if (response.status === 200) {
+        // const response = await axios.post('http://localhost:8001/AddCustomer', {
+        //     ...customerInfo,
+        //     userLogin: loginData,
+        //     contacts,
+        //     customerAdress,
+        //     serviceLocation: serviceLocArr
+        // })
+        // if (response.status === 200) {
             navigate('/Dashboard/Customers')
-        }
+        // }
     }
 
     const addUser = async () => {
-        await axios.post('http://localhost:8001/AddUser', {
-            fullName: customerInfo.customerName,
-            userName: loginData.email,
-            ...loginData
-        })
+        // await axios.post('http://localhost:8001/AddUser', {
+        //     fullName: customerInfo.customerName,
+        //     userName: loginData.email,
+        //     ...loginData
+        // })
     }
 
     const handleSubmit = () => {

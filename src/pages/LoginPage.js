@@ -40,14 +40,14 @@ const LoginPage = () => {
         }
       );
 
-      if (response.data.status === 'success') {
+      if (response) {
         setError("");
 
-         navigate("/Dashboard"); // Navigation
+        navigate("/Dashboard"); // Navigation
+        console.log(response.data.status == "success");
       } else {
         setError("Invalid email or password. Please try again.");
       }
-      console.log(response);
     } catch (error) {
       console.log("Error logging in:", error);
       setError("An error occurred while logging in. Please try again later.");
