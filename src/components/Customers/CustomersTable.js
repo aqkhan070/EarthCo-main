@@ -18,7 +18,8 @@ const CustomersTable = () => {
 
     const fetchCustomers = async () => {
         const response = await axios.get('https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList');
-        console.log(response.data);
+        setCustomers(response.data)
+        // console.log(response.data);
     }
 
     useEffect(() => {
@@ -34,7 +35,9 @@ const CustomersTable = () => {
 
 
     const renderedCustomers = customers.map((customer, index) => {
-        return <CustomerTR key={customer._id} index={index} customer={customer} contact={customer.contacts[0]} />
+        return <CustomerTR key={customer.CustomerId} index={index} customer={customer} 
+        // contact={customer.contacts[0]} 
+        />
     })
     return (
         <div className="container-fluid">
