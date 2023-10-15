@@ -47,7 +47,7 @@ const CustomersTable = () => {
                         <div className="card-body">
                             <div className="table-responsive active-projects style-1">
                                 <div className="tbl-caption mb-3">
-                                    <h4 className="heading mb-0">Customers</h4>
+                                    <h4 className="heading mb-0 customer-heading">Customers</h4>
                                     <div>
                                         <Link to='/Dashboard/Customers/Add-Customer'>
                                             <button className="btn btn-primary btn-sm" role="button">+ Add Customer</button>

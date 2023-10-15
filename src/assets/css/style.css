@@ -53479,3 +53479,10 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     position: absolute;
     box-shadow: 0 5px 16px 3px rgba(0, 0, 0, 0.5);
 }
+
+.admin-header{
+    color: #d9d9d9 !important;
+}
+.customer-heading{
+    font-size: 1.3rem;
+}
