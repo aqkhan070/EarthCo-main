@@ -40,10 +40,11 @@ const LoginPage = () => {
         }
       );
 
-      if (response.data.status === "success") {
+      // if (response.data.status === "success") {
+        if (response.status === 200){
         setError("");
 
-        console.log(response);
+        // console.log(response);
         navigate("/Dashboard"); // Navigation
       } else {
         setError("Invalid email or password. Please try again.");
