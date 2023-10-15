@@ -23,14 +23,14 @@ const CustomersTable = () => {
 
     useEffect(() => {
         fetchCustomers();
-        // $('#customerTbl').DataTable();
+        $('#customerTbl').DataTable();
     }, [])
 
-    // useEffect(() => {
-    //     if (customers[0] !== undefined) {
-    //         $('#customerTbl').DataTable();
-    //     }
-    // }, [customers]);
+    useEffect(() => {
+        if (customers[0] !== undefined) {
+            $('#customerTbl').DataTable();
+        }
+    }, [customers]);
 
 
     const renderedCustomers = customers.map((customer, index) => {
