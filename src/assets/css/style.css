@@ -53497,4 +53497,5 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 }
 .badgebox-size{
     height: 24px !important;
+    width: 26px;
 }

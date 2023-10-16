@@ -6,7 +6,7 @@ import $ from "jquery";
 import "datatables.net";
 import CustomerModal from "../Modals/CustomerModal";
 import { CustomerContext } from "../../context/CustomerData";
-import { DataContext } from "../../context/AppData";
+// import { DataContext } from "../../context/AppData";
 
 const CustomersTable = () => {
   const { selectedCustomer } = useContext(CustomerContext);
@@ -19,7 +19,7 @@ const CustomersTable = () => {
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
     );
     setCustomers(response.data);
-    // console.log(customers);
+    console.log(customers);
   };
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -63,10 +63,10 @@ const CustomersTable = () => {
             </div>
           </div>
         </td>
-        <td>{/* <span>{contact.contactName}</span> */}</td>
-        <td>{/* <span>{customer.companyName}</span> */}</td>
+        <td><span>{customer.ContactName}</span></td>
+        <td><span>{customer.ContactCompany}</span></td>
         <td>
-          {/* <span className="text-primary">{customer.tblContants[0].FirstName}</span> */}
+          <span className="text-primary">{customer.ContactEmail}</span>
         </td>
         <td>
           <div className="badgeBox ">
