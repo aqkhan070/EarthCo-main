@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-// import CustomerTR from "./CustomerTR";
+import CustomerTR from "./CustomerTR";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import $ from "jquery";
@@ -17,32 +17,34 @@ const CustomersTable = () => {
   const fetchCustomers = async () => {
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    setCustomers(response.data);
-    console.log(customers);
-  };
-  const handleSearch = (e) => {
-    const query = e.target.value;
-    setSearchTerm(query);
+    );try {
+      setCustomers(response.data);
+      // console.log("Custommers main",customers);
 
-    // You might want to get all customers data from the original source or store
-    // them in another state variable, then filter them based on the query.
-    // For the sake of this example, let's assume you have allCustomers which always contains
-    // all customers data and `customers` which gets updated based on the search term.
-    const filteredCustomers = customers.filter(
-      (customer) =>
-        customer.CustomerName.toLowerCase().includes(query.toLowerCase()) // Assuming the customer has a name property
-      // Add more conditions if needed, for example:
-      // || customer.email.toLowerCase().includes(query.toLowerCase())
-    );
+    }catch(error){
+      console.error("API Call Error:", error);
 
-    setCustomers(filteredCustomers);
+    }
   };
+  // const handleSearch = (e) => {
+  //   const query = e.target.value;
+  //   setSearchTerm(query);
+
+    
+  //   const filteredCustomers = customers.filter(
+  //     (customer) =>
+  //       customer.CustomerName.toLowerCase().includes(query.toLowerCase()) // Assuming the customer has a name property
+   
+  //   );
+
+  //   setCustomers(filteredCustomers);
+  // };
 
   // tanstack table
 
   useEffect(() => {
     fetchCustomers();
+   
     // $('#customerTbl').DataTable();
   }, []);
 
@@ -52,43 +54,43 @@ const CustomersTable = () => {
     }
   }, [customers]);
 
-  const renderedCustomers = customers.map((customer, index) => {
-    return (
-      <tr>
-        <td>{index + 1}</td>
-        <td>
-          <div className="products">
-            <div>
-              <h6>{customer.CustomerName}</h6>
-            </div>
-          </div>
-        </td>
-        <td><span>{customer.ContactName}</span></td>
-        <td><span>{customer.ContactCompany}</span></td>
-        <td>
-          <span className="text-primary">{customer.ContactEmail}</span>
-        </td>
-        <td>
-          <div className="badgeBox ">
-            {/* <button
-              type="button"
-              onClick={(e) => setSelectedCustomer(customer)}
-              className="dispContents"
-              data-toggle="modal"
-              data-target="#customerShow"
-            >
-              <span className="actionBadge badge-success light border-0">
-                <span className="material-symbols-outlined">visibility</span>
-              </span>
-            </button> */}
-            <span className="actionBadge badge-danger light border-0 badgebox-size">
-              <span className="material-symbols-outlined badgebox-size ">delete</span>
-            </span>
-          </div>
-        </td>
-      </tr>
-    );
-  });
+  // const renderedCustomers = customers.map((customer, index) => {
+  //   return (
+  //     <tr>
+  //       <td>{index + 1}</td>
+  //       <td>
+  //         <div className="products">
+  //           <div>
+  //             <h6>{customer.CustomerName}</h6>
+  //           </div>
+  //         </div>
+  //       </td>
+  //       <td><span>{customer.ContactName}</span></td>
+  //       <td><span>{customer.ContactCompany}</span></td>
+  //       <td>
+  //         <span className="text-primary">{customer.ContactEmail}</span>
+  //       </td>
+  //       <td>
+  //         <div className="badgeBox ">
+  //           {/* <button
+  //             type="button"
+  //             onClick={(e) => setSelectedCustomer(customer)}
+  //             className="dispContents"
+  //             data-toggle="modal"
+  //             data-target="#customerShow"
+  //           >
+  //             <span className="actionBadge badge-success light border-0">
+  //               <span className="material-symbols-outlined">visibility</span>
+  //             </span>
+  //           </button> */}
+  //           <span className="actionBadge badge-danger light border-0 badgebox-size">
+  //             <span className="material-symbols-outlined badgebox-size ">delete</span>
+  //           </span>
+  //         </div>
+  //       </td>
+  //     </tr>
+  //   );
+  // });
   
   return (
     <div className="container-fluid">
@@ -96,7 +98,7 @@ const CustomersTable = () => {
         <div className="card">
           <div className="card-header">
             
-            <div className="form-group row ">
+            {/* <div className="form-group row ">
               <label htmlFor="searchInput" className="col-sm-4 col-form-label search-Lable">
                 Search:
               </label>
@@ -110,7 +112,7 @@ const CustomersTable = () => {
                   placeholder="Enter customer name..."
                 />
               </div>
-            </div>
+            </div> */}
             
             <div>
               <Link to="/Dashboard/Customers/Add-Customer">
@@ -121,7 +123,7 @@ const CustomersTable = () => {
             </div>
           </div>
           <div className="card-body">
-            <table id="customerTbl" className="table">
+            {/* <table id="customerTbl" className="table">
               <thead>
                 <tr>
                   <th>#</th>
@@ -133,7 +135,9 @@ const CustomersTable = () => {
                 </tr>
               </thead>
               <tbody>{renderedCustomers}</tbody>
-            </table>
+            </table> */}
+
+            <CustomerTR customers={customers}/>
           </div>
         </div>
       </div>
