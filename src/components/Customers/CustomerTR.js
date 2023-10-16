@@ -3,7 +3,7 @@ import { CustomerContext } from "../../context/CustomerData";
 
 const CustomerTR = ({ customer, contact, index }) => {
   const { setSelectedCustomer } = useContext(CustomerContext);
-  console.log("customer", customer);
+//   console.log("customer", customer.tblContants[0].Email );
 
   return (
     <>
@@ -23,7 +23,7 @@ const CustomerTR = ({ customer, contact, index }) => {
           {/* <span>{customer.companyName}</span> */}
         </td>
         <td>
-          {/* <span className="text-primary">{customer.tblContants[0].FirstName}</span> */}
+          {/* <span className="text-primary">{customer.email}</span> */}
         </td>
         <td>
           <div className="badgeBox">
