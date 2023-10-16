@@ -24,7 +24,7 @@ const CustomersTable = () => {
   const handleSearch = (e) => {
     const query = e.target.value;
     setSearchTerm(query);
-    
+
     // You might want to get all customers data from the original source or store
     // them in another state variable, then filter them based on the query.
     // For the sake of this example, let's assume you have allCustomers which always contains
@@ -32,18 +32,14 @@ const CustomersTable = () => {
     const filteredCustomers = customers.filter(
       (customer) =>
         customer.CustomerName.toLowerCase().includes(query.toLowerCase()) // Assuming the customer has a name property
-        // Add more conditions if needed, for example:
-        // || customer.email.toLowerCase().includes(query.toLowerCase())
-        );
-        
+      // Add more conditions if needed, for example:
+      // || customer.email.toLowerCase().includes(query.toLowerCase())
+    );
 
     setCustomers(filteredCustomers);
   };
 
-// tanstack table
-
-
-
+  // tanstack table
 
   useEffect(() => {
     fetchCustomers();
@@ -73,7 +69,7 @@ const CustomersTable = () => {
           {/* <span className="text-primary">{customer.tblContants[0].FirstName}</span> */}
         </td>
         <td>
-          <div className="badgeBox">
+          <div className="badgeBox ">
             {/* <button
               type="button"
               onClick={(e) => setSelectedCustomer(customer)}
@@ -85,52 +81,59 @@ const CustomersTable = () => {
                 <span className="material-symbols-outlined">visibility</span>
               </span>
             </button> */}
-            <span className="actionBadge badge-danger light border-0">
-              <span className="material-symbols-outlined">delete</span>
+            <span className="actionBadge badge-danger light border-0 badgebox-size">
+              <span className="material-symbols-outlined badgebox-size ">delete</span>
             </span>
           </div>
         </td>
       </tr>
     );
   });
+  
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-xl-12">
-          <div className="card">
-            <div className="card-body">
-              <div className="table-responsive active-projects style-1">
-                <div className="tbl-caption mb-3">
-                  <h4 className="heading mb-0 customer-heading">Customers</h4>
-                  <div>
-                    <Link to="/Dashboard/Customers/Add-Customer">
-                      <button className="btn btn-primary btn-sm" role="button">
-                        + Add Customer
-                      </button>
-                    </Link>
-                  </div>
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={handleSearch}
-                    placeholder="Search for a customer..."
-                  />
-                </div>
-                <table id="customerTbl" className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Customer Name </th>
-                      <th>Contact Name</th>
-                      <th>Contact Company </th>
-                      <th>Contact E-mail</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>{renderedCustomers}</tbody>
-                </table>
+        <div className="card">
+          <div className="card-header">
+            
+            <div className="form-group row ">
+              <label htmlFor="searchInput" className="col-sm-4 col-form-label search-Lable">
+                Search:
+              </label>
+              <div className="col-sm-6">
+                <input
+                  type="text"
+                  id="searchInput"
+                  className="form-control customer-search-input"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  placeholder="Enter customer name..."
+                />
               </div>
             </div>
+            
+            <div>
+              <Link to="/Dashboard/Customers/Add-Customer">
+                <button className="btn btn-primary btn-sm" role="button">
+                  + Add Customer
+                </button>
+              </Link>
+            </div>
+          </div>
+          <div className="card-body">
+            <table id="customerTbl" className="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Customer Name </th>
+                  <th>Contact Name</th>
+                  <th>Contact Company </th>
+                  <th>Contact E-mail</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>{renderedCustomers}</tbody>
+            </table>
           </div>
         </div>
       </div>

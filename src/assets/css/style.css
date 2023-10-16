@@ -53486,3 +53486,15 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .customer-heading{
     font-size: 1.3rem;
 }
+.customer-search-input{
+    width: 13rem;
+    margin-left: -25px !important;
+}
+.search-Lable{
+    padding-top: 1em;
+    width: 6rem;
+
+}
+.badgebox-size{
+    height: 24px !important;
+}
