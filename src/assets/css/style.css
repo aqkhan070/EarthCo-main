@@ -53521,3 +53521,14 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .search-wrap{
     margin-bottom: 2em;
 }
+.page-btn{
+    height: 2em !important;
+     padding: 4px;
+    /* padding-bottom: 2px !important; */
+    /* padding-top: 2px !important; */ 
+    
+}
+
+.table-header{
+    background-color:#F0F4F9 ;
+}

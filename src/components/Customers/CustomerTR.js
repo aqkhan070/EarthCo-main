@@ -120,7 +120,7 @@ const CustomerTR = ({ customers }) => {
         </div>
 
         <table className="table">
-          <thead>
+          <thead className="table-header">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -158,35 +158,43 @@ const CustomerTR = ({ customers }) => {
               </tr>
             ))}
           </tbody>
-          
         </table>
-        <div className="d-flex justify-content-between mt-3">
-          <button
-            className="btn btn-primary"
-            onClick={() => table.setPageIndex(0)}
-          >
-            First page
-          </button>
-          <button
-            className="btn btn-secondary"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
-          >
-            Previous page
-          </button>
-          <button
-            className="btn btn-secondary"
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}
-          >
-            Next page
-          </button>
-          <button
-            className="btn btn-primary"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          >
-            Last page
-          </button>
+
+        <div class="d-flex flex-row-reverse">
+          <div className="p-2">
+            <button
+              className="btn btn-primary page-btn"
+              onClick={() => table.setPageIndex(0)}
+            >
+              First
+            </button>
+          </div>
+          <div className="p-2">
+            <button
+              className="btn btn-secondary page-btn"
+              disabled={!table.getCanPreviousPage()}
+              onClick={() => table.previousPage()}
+            >
+              Previous
+            </button>
+          </div>
+          <div className="p-2">
+            <button
+              className="btn btn-secondary page-btn"
+              disabled={!table.getCanNextPage()}
+              onClick={() => table.nextPage()}
+            >
+              Next
+            </button>
+          </div>
+          <div className="p-2">
+            <button
+              className="btn btn-primary page-btn"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            >
+              Last
+            </button>
+          </div>
         </div>
       </div>
     </>
