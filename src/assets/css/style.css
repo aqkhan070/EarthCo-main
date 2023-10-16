@@ -53488,14 +53488,36 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 }
 .customer-search-input{
     width: 13rem;
-    margin-left: -25px !important;
+    height:2em ;
+    /* padding-bottom: 2em; */
+    margin-right: 12em !important;
 }
 .search-Lable{
-    padding-top: 1em;
+    /* padding-top: 3px; */
+    margin-left: 2.5em;
     width: 6rem;
 
 }
+@media (max-width: 1000px) {
+    .search-Lable {
+      margin-left: -2em; /* Adjust margin-left to zero for small and medium screens */
+    }
+  }
+  
+  
+  
 .badgebox-size{
     height: 24px !important;
     width: 26px;
+}
+.search-container{
+    /* margin-top: -10px !important; */
+    padding-left: 0px !important;
+    padding-top: 0px !important;
+}
+.add-customer-btn{
+    padding-top: 20px;
+}
+.search-wrap{
+    margin-bottom: 2em;
 }

@@ -1,5 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import { CustomerContext } from "../../context/CustomerData";
+import { Link } from "react-router-dom";
 import {
   flexRender,
   getCoreRowModel,
@@ -11,40 +12,13 @@ import {
 
 import { useState } from "react";
 
-const CustomerTR = ({customers  }) => {
+const CustomerTR = ({ customers }) => {
   const { setSelectedCustomer } = useContext(CustomerContext);
 
   const [sorting, setSorting] = useState([]);
   const [filtering, setFiltering] = useState("");
 
-  const dummyCustomers =[
-    {
-      "CustomerId": 1,
-      "CustomerName": "Asad Bilal Arif",
-      "ContactId": 0,
-      "ContactName": null,
-      "ContactCompany": null,
-      "ContactEmail": null
-    },
-    {
-      "CustomerId": 2,
-      "CustomerName": "Asad Bilal",
-      "ContactId": 0,
-      "ContactName": null,
-      "ContactCompany": null,
-      "ContactEmail": null
-    },
-    {
-      "CustomerId": 5,
-      "CustomerName": "Hanan",
-      "ContactId": 4,
-      "ContactName": "Contact1 Contact1",
-      "ContactCompany": "CompanyName1",
-      "ContactEmail": "Email1"
-    }
-  ];
   const data = useMemo(() => customers, [customers]);
-  // console.log("customers",customers);
   /** @type import('@tanstack/react-table').ColumnDef<any> */
   const columns = [
     {
@@ -54,8 +28,6 @@ const CustomerTR = ({customers  }) => {
     {
       header: "Customer Name",
       accessorKey: "CustomerName",
-      
-       
     },
     {
       header: "Contact Name",
@@ -68,10 +40,12 @@ const CustomerTR = ({customers  }) => {
     {
       header: "Contact E-Mail	",
       accessorKey: "ContactEmail",
-    },{
+    },
+    {
       header: "Actions",
-      cell : <div className="badgeBox ">
-      {/* <button
+      cell: (
+        <div className="badgeBox justify-content-center ">
+          {/* <button
         type="button"
         onClick={(e) => setSelectedCustomer(customer)}
         className="dispContents"
@@ -82,11 +56,13 @@ const CustomerTR = ({customers  }) => {
           <span className="material-symbols-outlined">visibility</span>
         </span>
       </button> */}
-      <span className="actionBadge badge-danger light border-0 badgebox-size">
-        <span className="material-symbols-outlined badgebox-size ">delete</span>
-      </span>
-    </div>
-      
+          <span className="actionBadge badge-danger light border-0 badgebox-size">
+            <span className="material-symbols-outlined badgebox-size ">
+              delete
+            </span>
+          </span>
+        </div>
+      ),
     },
   ];
 
@@ -107,13 +83,42 @@ const CustomerTR = ({customers  }) => {
 
   return (
     <>
-      <div className="w3-container">
-        <input
-          type="text"
-          className="form-control"
-          value={filtering}
-          onChange={(e) => setFiltering(e.target.value)}
-        />
+      <div className="container">
+        <div className="container text-center">
+          <div className="row justify-content-between">
+            <div className="col-6 search-container">
+              <div className="container text-center search-wrap">
+                <div className="row justify-content-start ">
+                  <div className="col-3">
+                    <label
+                      htmlFor="searchInput"
+                      className="col-sm-4 col-form-label search-Lable"
+                    >
+                      Search:
+                    </label>
+                  </div>
+                  <div class="col-4">
+                    <input
+                      type="text"
+                      className="form-control customer-search-input"
+                      value={filtering}
+                      placeholder="Search Customer..."
+                      onChange={(e) => setFiltering(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-3 add-customer-btn">
+              <Link to="/Dashboard/Customers/Add-Customer">
+                <button className="btn btn-primary btn-sm" role="button">
+                  + Add Customer
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
         <table className="table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -130,7 +135,7 @@ const CustomerTR = ({customers  }) => {
                           header.getContext()
                         )}
                         {
-                          { asc: "🔼", desc: "🔽" }[
+                          { asc: "▲", desc: "▼ " }[
                             header.column.getIsSorted() ?? null
                           ]
                         }
@@ -143,32 +148,17 @@ const CustomerTR = ({customers  }) => {
           </thead>
 
           <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-         {/* <tfoot>
-          {table.getFooterGroups().map(footerGroup => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot> */}
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          
         </table>
         <div className="d-flex justify-content-between mt-3">
           <button
