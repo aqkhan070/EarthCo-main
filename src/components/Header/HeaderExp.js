@@ -8,7 +8,7 @@ import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 
 const HeaderExp = () => {
-  const { loggedUser } = useContext(DataContext);
+  const  [loggedUser, setLoggenUser ]  = useState(sessionStorage.getItem("userEmail"));
   const { mainControl, setMainControl, setShowSM, eliminate } =
     useContext(StyleContext);
 
@@ -515,7 +515,7 @@ const HeaderExp = () => {
                           </div>
                           <div className="header-info">
                             <h6 className="admin-header">Admin</h6>
-                            <p className="admin-header">admin@gmail.com</p>
+                            <p className="admin-header">{loggedUser}</p>
                           </div>
                         </div>
                       </NavLink>
@@ -529,7 +529,7 @@ const HeaderExp = () => {
                                 alt=""
                               />
                               <div>
-                                <h6>{loggedUser.userName}</h6>
+                                <h6> admin</h6>
                                 <span>Web Designer</span>
                               </div>
                             </div>

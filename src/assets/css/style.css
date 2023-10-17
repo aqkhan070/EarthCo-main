@@ -53522,8 +53522,10 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     margin-bottom: 2em;
 }
 .page-btn{
-    height: 2em !important;
+    /* height: 2em !important; */
      padding: 4px;
+     /* background-color: transparent;
+     color: black; */
     /* padding-bottom: 2px !important; */
     /* padding-top: 2px !important; */ 
     

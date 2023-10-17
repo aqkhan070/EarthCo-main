@@ -175,7 +175,7 @@ const CustomerTR = ({ customers }) => {
               disabled={!table.getCanPreviousPage()}
               onClick={() => table.previousPage()}
             >
-              Previous
+              Prev
             </button>
           </div>
           <div className="p-2">
