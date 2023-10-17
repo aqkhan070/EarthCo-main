@@ -16,6 +16,9 @@ const [customerName, setCustomerName] = useState()
   const [contactCompanyName, setContactCompanyName] = useState("");
   const [contactAddress, setContactAddress] = useState("");
 
+  const [customerData, setCustomerData] = useState({});
+  const [customerKeys, setCustomerKeys] = useState([]);
+
   
 
   const [serviceLocations, setServiceLocations] = useState([]);
@@ -32,7 +35,34 @@ const [customerName, setCustomerName] = useState()
     ContactData: [],
   });
 
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=5"
+      );
 
+      // Extract keys from the response data
+      const keys = Object.keys(response.data.CustomerData);
+
+      // Create a state containing those keys with empty values
+      const initialData = {};
+      keys.forEach((key) => {
+        initialData[key] = "";
+      });
+
+      setCustomerData(initialData);
+      setCustomerKeys(customerKeys);
+      console.log(customerKeys);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchCustomers();
+   
+  }, []);
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
@@ -54,15 +84,24 @@ const [customerName, setCustomerName] = useState()
           headers: {
             "Content-Type": "application/json",
           },
-        }
-      );
+        }).then((response) => {
+        // Assuming the response.data is your JSON object
+        const jsonObject = response.data;
+    
+        // Get all the keys (property names) of the JSON object
+        const keys = Object.keys(jsonObject[0]);
+    
+        // Log the keys to the console
+        console.log('Keys of the JSON object:', keys);
+    
+        // Now you can use the keys as needed
+      })
+      
+      ;
 
       // Handle the response here (e.g., show a success message)
       console.log("API response:", response.data);
-      if (response.data) {
-        const keys = Object.keys(response.data);
-        console.log("Keys in API response:", keys);
-      }
+      
 
       // Clear the form or perform other actions as needed
       setFormData({
