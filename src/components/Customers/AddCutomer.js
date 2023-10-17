@@ -43,7 +43,7 @@ const [customerName, setCustomerName] = useState()
       );
       // Extract keys from the response data
       const keys = Object.keys(response.data);
-      const keys = Object.keys(response.data);
+    //   const contactkeys = Object.keys(response.data);
       console.log(keys);
 
     //   Create a state containing those keys with empty values
