@@ -1,32 +1,94 @@
 import React, { useEffect, useState } from "react";
-import AdressModal from "../Modals/AdressModal";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const AddCutomer = () => {
+const AddCustomer = () => {
   const navigate = useNavigate();
 
-  const [customerAdress, setCustomerAdress] = useState({});
-  // const [SLadress, setSLadress] = useState({})
+  const initialState = {
+    customerName: "",
+    contactFirstname: "",
+    contactLastName: "",
+    contactEmail: "",
+    contactPhone: "",
+    contactCompanyName: "",
+    contactAddress: "",
+    primary: false,
+  };
+
+  const [formData, setFormData] = useState(initialState);
 
   const [contacts, setContacts] = useState([]);
   const [contact, setContact] = useState({});
+ 
+
+  
 
   const [serviceLocations, setServiceLocations] = useState([]);
-  const [customerInfo, setCustomerInfo] = useState([]);
-  const [SRlocation, setSRlocation] = useState([]);
-  const [serviceLocArr, setServiceLocArr] = useState([]);
+  const [customerInfo, setCustomerInfo] = useState({});
 
-  const [adress1, setAdress1] = useState("");
-  const [adress2, setAdress2] = useState("");
-
-  const [showPop1, setShowPop1] = useState(true);
-  const [showPop2, setShowPop2] = useState(true);
-
-  const [SLadress, setSLadress] = useState({});
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
-  const [loginData, setLoginData] = useState({});
+  const [primary, setprimary] = useState(false);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
+        {
+          CustomerData: {
+            CustomerName: formData.customerName,
+          },
+          ContactData: contacts.map((contact) => ({
+            FirstName: contact.contactFirstname,
+            LastName: contact.contactLastName,
+            Email: contact.contactEmail,
+            CompanyName: contact.contactCompanyName,
+            Address: contact.contactAddress,
+            isPrimary: formData.primary,
+          })),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      
+    // Handle the response here (e.g., show a success message)
+    console.log("API response:", response.data);
+
+    // Extract keys from the response data
+    const responseKeys = Object.keys(response.data);
+
+    // Update initialState object with responseKeys
+    const updatedInitialState = { ...initialState };
+    responseKeys.forEach((key) => {
+      updatedInitialState[key] = "";
+    });
+
+    // Update the form data with the updated initialState
+    setFormData(updatedInitialState);
+
+    // Clear the contacts array
+    setContacts([]);
+
+    // Redirect to another page or perform other actions after successful submission
+    navigate("/Dashboard/Customers");
+  } catch (error) {
+    // Handle any errors here (e.g., show an error message)
+    console.error("Error submitting data:", error);
+  }
+};
+
+  const handleChange = (event) => {
+    const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? checked : value;
+    setFormData({
+      ...formData,
+      [name]: newValue,
+    });
+  };
 
   const handleCustomerInfo = (event) => {
     const value = event.target.value;
@@ -37,14 +99,6 @@ const AddCutomer = () => {
   };
 
   // contacts
-
-  const handleContacts = (event) => {
-    const value = event.target.value;
-    setContact({
-      ...contact,
-      [event.target.name]: value,
-    });
-  };
 
   const addContact = (e) => {
     e.preventDefault();
@@ -58,78 +112,10 @@ const AddCutomer = () => {
     }
   };
 
-  // service Locations
+  
+  
 
-  const handleServiceLocation = (event) => {
-    const value = event.target.value;
-    setSRlocation({
-      ...SRlocation,
-      adress: adress2,
-      [event.target.name]: value,
-    });
-  };
 
-  const addServiceLocation = (e) => {
-    e.preventDefault();
-    setServiceLocations([
-      ...serviceLocations,
-      { ...SRlocation, id: Math.round(Math.random() * 9999) },
-    ]);
-    setServiceLocArr([...serviceLocArr, { ...SRlocation, adress: SLadress }]);
-    for (let n = 1; n <= 4; n++) {
-      document.getElementById(`SRinput${n}`).value = "";
-    }
-    setAdress2("");
-    setSLadress({});
-  };
-
-  const postCustomer = async () => {
-    // const response = await axios.post('http://localhost:8001/AddCustomer', {
-    //     ...customerInfo,
-    //     userLogin: loginData,
-    //     contacts,
-    //     customerAdress,
-    //     serviceLocation: serviceLocArr
-    // })
-    // if (response.status === 200) {
-    navigate("/Dashboard/Customers");
-    // }
-  };
-
-  const addUser = async () => {
-    // await axios.post('http://localhost:8001/AddUser', {
-    //     fullName: customerInfo.customerName,
-    //     userName: loginData.email,
-    //     ...loginData
-    // })
-  };
-
-  const handleSubmit = () => {
-    if (contacts[0] !== undefined && serviceLocArr[0] !== undefined) {
-      postCustomer();
-    }
-    if (loginData.email !== undefined) {
-      addUser();
-    }
-  };
-
-  const deleteContact = (id) => {
-    const updatedArr = contacts.filter((item) => {
-      return item.id !== id;
-    });
-    setContacts(updatedArr);
-  };
-
-  const deleteLocation = (id) => {
-    const updatedArr = serviceLocations.filter((item) => {
-      return item.id !== id;
-    });
-    setServiceLocations(updatedArr);
-  };
-
-  const changeLogin = (event) => {
-    setLoginState(event.target.value);
-  };
 
   useEffect(() => {
     if (loginState === "allow") {
@@ -139,13 +125,9 @@ const AddCutomer = () => {
     }
   }, [loginState]);
 
-  const handleLoginData = (event) => {
-    const value = event.target.value;
-    setLoginData({
-      ...loginData,
-      [event.target.name]: value,
-    });
-  };
+  useEffect(() => {
+    // to render primary state
+  }, [primary]);
 
   return (
     <div className="container-fluid">
@@ -193,10 +175,11 @@ const AddCutomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={handleContacts}
-                      name="FirstName"
+                      onChange={handleChange}
+                      name="contactFirstname"
+                      value={formData.contactFirstname}
                       className="form-control"
-                      placeholder="Firs tName"
+                      placeholder="First Name"
                       required
                     />
                   </div>
@@ -207,66 +190,44 @@ const AddCutomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={handleContacts}
-                      name="LastName"
+                      onChange={handleChange}
+                      name="contactLastName"
+                      value={formData.contactLastName}
                       className="form-control"
                       placeholder="Last Name"
                       required
                     />
                   </div>
 
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Email<span className="text-danger">*</span>
+                  {/* Rest of your input fields */}
+                  {/* ... */}
+
+                  <div className="row">
+                    <label className=" col-form-label col-form-label-lg">
+                      Set as Primary
                     </label>
-                    <input
-                      type="email"
-                      id="contactInp2"
-                      className="form-control"
-                      onChange={handleContacts}
-                      name="email"
-                      placeholder="Email"
-                      required
-                    />
+                    <div className="mb-3 mb-0">
+                      <form>
+                        <div className="form-check custom-checkbox form-check-inline">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="customCheckbox"
+                            name="primary"
+                            checked={formData.primary}
+                            onChange={handleChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="customCheckbox"
+                          >
+                            Primary
+                          </label>
+                        </div>
+                      </form>
+                    </div>
                   </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Phone<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      id="contactInp3"
-                      onChange={handleContacts}
-                      name="phone"
-                      className="form-control"
-                      placeholder="Phone"
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Company Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      id="contactInp4"
-                      onChange={handleContacts}
-                      name="Company Name"
-                      className="form-control"
-                      placeholder="Company Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Address<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      onChange={handleContacts}
-                      name="Address"
-                      className="form-control"
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
+
                   <div
                     className="col-xl-4 mb-3"
                     style={{
@@ -280,60 +241,7 @@ const AddCutomer = () => {
                 </div>
               </div>
             </div>
-            <div className="col-xl-12">
-              <div className="card">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
-                    <div className="itemtitleBar">
-                      <h4>Contacts</h4>
-                    </div>
-                    <div className="table-responsive active-projects style-1">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Contact Name</th>
-                            <th>E-mail</th>
-                            <th>Phone</th>
-                            <th>Mobile</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {contacts.map((contact, index) => {
-                            return (
-                              <>
-                                <tr>
-                                  <td>{index + 1}</td>
-                                  <td>{contact.contactName}</td>
-                                  <td>{contact.email}</td>
-                                  <td>{contact.phone}</td>
-                                  <td>{contact.mobile}</td>
-                                  <td>
-                                    <div className="badgeBox">
-                                      <span
-                                        className="actionBadge badge-danger light border-0"
-                                        onClick={() =>
-                                          deleteContact(contact.id)
-                                        }
-                                      >
-                                        <span className="material-symbols-outlined">
-                                          delete
-                                        </span>
-                                      </span>
-                                    </div>
-                                  </td>
-                                </tr>
-                              </>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* ... */}
           </div>
         </div>
       </form>
@@ -351,4 +259,4 @@ const AddCutomer = () => {
   );
 };
 
-export default AddCutomer;
+export default AddCustomer;
