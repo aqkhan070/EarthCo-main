@@ -36,25 +36,27 @@ const [customerName, setCustomerName] = useState()
   });
 
   const fetchCustomers = async () => {
-    try {
+    
+      try {
       const response = await axios.get(
         "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=5"
       );
-
       // Extract keys from the response data
-      const keys = Object.keys(response.data.CustomerData);
+      const keys = Object.keys(response.data);
+      const keys = Object.keys(response.data);
+      console.log(keys);
 
-      // Create a state containing those keys with empty values
-      const initialData = {};
-      keys.forEach((key) => {
-        initialData[key] = "";
-      });
+    //   Create a state containing those keys with empty values
+    //   const initialData = {};
+    //   keys.forEach((key) => {
+    //     initialData[key] = "";
+    //   });
 
-      setCustomerData(initialData);
-      setCustomerKeys(customerKeys);
-      console.log(customerKeys);
+    //   setCustomerData(initialData);
+    //   setCustomerKeys(customerKeys);
+    //   console.log(customerKeys);
     } catch (error) {
-      console.error("API Call Error:", error);
+      console.log("API Call Error:", error);
     }
   };
 
