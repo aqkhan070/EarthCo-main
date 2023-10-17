@@ -5,22 +5,16 @@ import axios from "axios";
 const AddCustomer = () => {
   const navigate = useNavigate();
 
-  const initialState = {
-    customerName: "",
-    contactFirstname: "",
-    contactLastName: "",
-    contactEmail: "",
-    contactPhone: "",
-    contactCompanyName: "",
-    contactAddress: "",
-    primary: false,
-  };
-
-  const [formData, setFormData] = useState(initialState);
-
+ 
+const [customerName, setCustomerName] = useState()
   const [contacts, setContacts] = useState([]);
   const [contact, setContact] = useState({});
- 
+  const [contactFirstname, setContactFirstname] = useState("");
+  const [contactLastName, setContactLastName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactCompanyName, setContactCompanyName] = useState("");
+  const [contactAddress, setContactAddress] = useState("");
 
   
 
@@ -29,7 +23,15 @@ const AddCustomer = () => {
 
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
-  const [primary, setprimary] = useState(false);
+  const [primary, setprimary] = useState(true);
+
+  const [formData, setFormData] = useState({
+    CustomerData: {
+      CustomerName: "",
+    },
+    ContactData: [],
+  });
+
 
   const handleSubmit = async () => {
     try {
@@ -37,15 +39,15 @@ const AddCustomer = () => {
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
         {
           CustomerData: {
-            CustomerName: formData.customerName,
+            CustomerName: formData.CustomerData.CustomerName,
           },
-          ContactData: contacts.map((contact) => ({
-            FirstName: contact.contactFirstname,
-            LastName: contact.contactLastName,
-            Email: contact.contactEmail,
-            CompanyName: contact.contactCompanyName,
-            Address: contact.contactAddress,
-            isPrimary: formData.primary,
+          ContactData: formData.ContactData.map((contact) => ({
+            FirstName: contact.FirstName,
+            LastName: contact.LastName,
+            Email: contact.Email,
+            CompanyName: contact.CompanyName,
+            Address: contact.Address,
+            isPrimary: contact.isPrimary,
           })),
         },
         {
@@ -54,40 +56,28 @@ const AddCustomer = () => {
           },
         }
       );
-      
-    // Handle the response here (e.g., show a success message)
-    console.log("API response:", response.data);
 
-    // Extract keys from the response data
-    const responseKeys = Object.keys(response.data);
+      // Handle the response here (e.g., show a success message)
+      console.log("API response:", response.data);
+      if (response.data) {
+        const keys = Object.keys(response.data);
+        console.log("Keys in API response:", keys);
+      }
 
-    // Update initialState object with responseKeys
-    const updatedInitialState = { ...initialState };
-    responseKeys.forEach((key) => {
-      updatedInitialState[key] = "";
-    });
+      // Clear the form or perform other actions as needed
+      setFormData({
+        CustomerData: {
+          CustomerName: "",
+        },
+        ContactData: [],
+      });
 
-    // Update the form data with the updated initialState
-    setFormData(updatedInitialState);
-
-    // Clear the contacts array
-    setContacts([]);
-
-    // Redirect to another page or perform other actions after successful submission
-    navigate("/Dashboard/Customers");
-  } catch (error) {
-    // Handle any errors here (e.g., show an error message)
-    console.error("Error submitting data:", error);
-  }
-};
-
-  const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const newValue = type === "checkbox" ? checked : value;
-    setFormData({
-      ...formData,
-      [name]: newValue,
-    });
+      // Redirect to another page or perform other actions after successful submission
+      navigate("/Dashboard/Customers");
+    } catch (error) {
+      // Handle any errors here (e.g., show an error message)
+      console.error("Error submitting data:", error);
+    }
   };
 
   const handleCustomerInfo = (event) => {
@@ -115,7 +105,25 @@ const AddCustomer = () => {
   
   
 
+  const deleteContact = (id) => {
+    const updatedArr = contacts.filter((item) => {
+      return item.id !== id;
+    });
+    setContacts(updatedArr);
+  };
 
+  const deleteLocation = (id) => {
+    const updatedArr = serviceLocations.filter((item) => {
+      return item.id !== id;
+    });
+    setServiceLocations(updatedArr);
+  };
+
+  const changePrimary = (event) => {
+    const value = event.target.value;
+    setprimary(value === "dontallow");
+    console.log("primary", primary);
+  };
 
   useEffect(() => {
     if (loginState === "allow") {
@@ -175,9 +183,10 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={handleChange}
-                      name="contactFirstname"
-                      value={formData.contactFirstname}
+                      onChange={(e) => {
+                        setContactFirstname(e.target.value);
+                      }}
+                      name="FirstName"
                       className="form-control"
                       placeholder="First Name"
                       required
@@ -190,43 +199,104 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={handleChange}
-                      name="contactLastName"
-                      value={formData.contactLastName}
+                      onChange={(e) => {
+                        setContactLastName(e.target.value);
+                      }}
+                      name="LastName"
                       className="form-control"
                       placeholder="Last Name"
                       required
                     />
                   </div>
 
-                  {/* Rest of your input fields */}
-                  {/* ... */}
-
-                  <div className="row">
-                    <label className=" col-form-label col-form-label-lg">
-                      Set as Primary
+                  <div className="col-xl-4 mb-3">
+                    <label className="form-label">
+                      Email<span className="text-danger">*</span>
                     </label>
-                    <div className="mb-3 mb-0">
-                      <form>
-                        <div className="form-check custom-checkbox form-check-inline">
-                          <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="customCheckbox"
-                            name="primary"
-                            checked={formData.primary}
-                            onChange={handleChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="customCheckbox"
-                          >
-                            Primary
-                          </label>
-                        </div>
-                      </form>
-                    </div>
+                    <input
+                      type="email"
+                      id="contactInp2"
+                      className="form-control"
+                      onChange={(e) => {
+                        setContactEmail(e.target.value);
+                      }}
+                      name="email"
+                      placeholder="Email"
+                      required
+                    />
                   </div>
+                  <div className="col-xl-4 mb-3">
+                    <label className="form-label">
+                      Phone<span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id="contactInp3"
+                      onChange={(e) => {
+                        setContactPhone(e.target.value);
+                      }}
+                      name="phone"
+                      className="form-control"
+                      placeholder="Phone"
+                    />
+                  </div>
+                  <div className="col-xl-4 mb-3">
+                    <label className="form-label">
+                      Company Name<span className="text-danger">*</span>
+                    </label>
+                    <input
+                      id="contactInp4"
+                      onChange={(e) => {
+                        setContactCompanyName(e.target.value);
+                      }}
+                      name="Company Name"
+                      className="form-control"
+                      placeholder="Company Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-xl-4 mb-3">
+                    <label className="form-label">
+                      Address<span className="text-danger">*</span>
+                    </label>
+                    <input
+                      onChange={(e) => {
+                        setContactAddress(e.target.value);
+                      }}
+                      name="Address"
+                      className="form-control"
+                      placeholder="Address"
+                      required
+                    />
+                  </div>
+                  <div className="row">
+  <label className="col-form-label col-form-label-lg">
+    Set as Primary
+  </label>
+  <div className="mb-3 mb-0">
+    <form>
+      <div className="form-check custom-checkbox form-check-inline">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="customCheckBox"
+          checked={primary}
+          onChange={(e) => {
+            setprimary(e.target.checked);
+            setprimary(!primary);
+            
+          }}
+        />
+        <label
+          className="form-check-label"
+          htmlFor="customCheckBox"
+        >
+          Set as Primary
+        </label>
+      </div>
+    </form>
+  </div>
+</div>
 
                   <div
                     className="col-xl-4 mb-3"
@@ -241,7 +311,56 @@ const AddCustomer = () => {
                 </div>
               </div>
             </div>
-            {/* ... */}
+            <div className="col-xl-12">
+              <div className="card">
+                <div className="card-body p-0">
+                  <div className="estDataBox">
+                    <div className="itemtitleBar">
+                      <h4>Contacts</h4>
+                    </div>
+                    <div className="table-responsive active-projects style-1">
+                      <table id="empoloyees-tblwrapper" className="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Contact Name</th>
+                            <th>E-mail</th>
+                            <th>Phone</th>
+                            <th>Mobile</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {contacts.map((contact, index) => {
+                            return (
+                              <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{`${contactFirstname} ${contactLastName}`}</td>
+                                <td>{contactEmail}</td>
+                                <td>{contactPhone}</td>
+                                <td>{contact.mobile}</td>
+                                <td>
+                                  <div className="badgeBox">
+                                    <span
+                                      className="actionBadge badge-danger light border-0"
+                                      onClick={() => deleteContact(contact.id)}
+                                    >
+                                      <span className="material-symbols-outlined">
+                                        delete
+                                      </span>
+                                    </span>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </form>
