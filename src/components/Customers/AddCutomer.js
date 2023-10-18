@@ -74,7 +74,18 @@ const AddCustomer = () => {
       console.error("Error submitting data:", error);
     }
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
+    // Update the formData state with the changed value
+    setFormData({
+      ...formData,
+      ContactData: {
+        ...formData.ContactData,
+        [name]: value,
+      },
+    });
+  };
   const addContact = (e) => {
     e.preventDefault();
 
@@ -83,7 +94,7 @@ const AddCustomer = () => {
       LastName: formData.ContactData.LastName,
       Email: formData.ContactData.email,
       Phone: formData.ContactData.phone,
-      CompanyName: formData.ContactData["Company Name"],
+      CompanyName: formData.ContactData.CompanyName,
       Address: formData.ContactData.Address,
       isPrimary: primary,
     };
@@ -91,17 +102,17 @@ const AddCustomer = () => {
     setContacts([...contacts, newContact]);
 
     // Clear the form fields
-    setFormData({
-      ...formData,
+    setFormData(prevState => ({
+      ...prevState,
       ContactData: {
         FirstName: "",
         LastName: "",
-        email: "",
-        phone: "",
+        Email: "",
+        Phone: "",
         CompanyName: "",
         Address: "",
       },
-    });
+    }));
 
     setPrimary(true);
   };
@@ -169,7 +180,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="FirstName"
                       className="form-control"
                       placeholder="First Name"
@@ -183,7 +194,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="LastName"
                       className="form-control"
                       placeholder="Last Name"
@@ -199,7 +210,7 @@ const AddCustomer = () => {
                       type="email"
                       id="contactInp2"
                       className="form-control"
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="email"
                       placeholder="Email"
                       required
@@ -212,7 +223,7 @@ const AddCustomer = () => {
                     <input
                       type="number"
                       id="contactInp3"
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="phone"
                       className="form-control"
                       placeholder="Phone"
@@ -224,7 +235,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       id="contactInp4"
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="CompanyName"
                       className="form-control"
                       placeholder="Company Name"
@@ -236,7 +247,7 @@ const AddCustomer = () => {
                       Address<span className="text-danger">*</span>
                     </label>
                     <input
-                      onChange={(e) => {}}
+                      onChange={handleChange}
                       name="Address"
                       className="form-control"
                       placeholder="Address"
@@ -255,10 +266,7 @@ const AddCustomer = () => {
                             className="form-check-input"
                             id="customCheckBox"
                             checked={primary}
-                            onChange={(e) => {
-                              setPrimary(e.target.checked);
-                              // console.log(e.target.value);
-                            }}
+                            onChange={() => setPrimary(!primary)}
                           />
 
                           <label
@@ -286,61 +294,66 @@ const AddCustomer = () => {
               </div>
             </div>
             <div className="col-xl-12">
-        <div className="card">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Contacts</h4>
-              </div>
-              <div className="table-responsive active-projects style-1">
-                <table id="empoloyees-tblwrapper" className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      <th>Company Name</th>
-                      <th>Address</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {contacts.map((contact, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{contact.FirstName}</td>
-                        <td>{contact.LastName}</td>
-                        <td>{contact.Email}</td>
-                        <td>{contact.Phone}</td>
-                        <td>{contact.CompanyName}</td>
-                        <td>{contact.Address}</td>
-                        <td>
-                          <div className="badgeBox">
-                            <span
-                              className="actionBadge badge-danger light border-0"
-                              onClick={() => deleteContact(index)}
-                            >
-                              <span className="material-symbols-outlined">delete</span>
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="card">
+                <div className="card-body p-0">
+                  <div className="estDataBox">
+                    <div className="itemtitleBar">
+                      <h4>Contacts</h4>
+                    </div>
+                    <div className="table-responsive active-projects style-1">
+                      <table id="empoloyees-tblwrapper" className="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Company Name</th>
+                            <th>Address</th>
+                            <th>Primary</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {contacts.map((contact, index) => (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{contact.FirstName}</td>
+                              <td>{contact.LastName}</td>
+                              <td>{contact.Email}</td>
+                              <td>{contact.Phone}</td>
+                              <td>{contact.CompanyName}</td>{" "}
+                              {/* Corrected this line */}
+                              <td>{contact.Address}</td>
+                              <td>{contact.isPrimary ? "Yes" : "No"}</td>{" "}
+                              {/* Corrected this line */}
+                              <td>
+                                <div className="badgeBox">
+                                  <span
+                                    className="actionBadge badge-danger light border-0"
+                                    onClick={() => deleteContact(index)}
+                                  >
+                                    <span className="material-symbols-outlined">
+                                      delete
+                                    </span>
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </form>
 
       {/* Contacts Table */}
-      
 
       <div className="text-end">
         <button className="btn btn-primary me-1" onClick={handleSubmit}>
