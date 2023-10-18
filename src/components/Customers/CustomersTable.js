@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import CustomerTR from "./CustomerTR";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import $ from "jquery";
 import "datatables.net";
 import CustomerModal from "../Modals/CustomerModal";
 import { CustomerContext } from "../../context/CustomerData";
@@ -10,7 +9,6 @@ import { CustomerContext } from "../../context/CustomerData";
 const CustomersTable = () => {
   const { selectedCustomer } = useContext(CustomerContext);
   const [customers, setCustomers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchCustomers = async () => {
     const response = await axios.get(
