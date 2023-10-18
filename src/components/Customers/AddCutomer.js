@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef  } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -16,6 +16,23 @@ const AddCustomer = () => {
     },
     ContactData: [],
   });
+
+  const inputReffname = useRef(null);
+  const inputReflname = useRef(null);
+  const inputRefemail = useRef(null);
+  const inputRefphone = useRef(null);
+  const inputRefCname = useRef(null);
+  const inputRefaddress = useRef(null);
+
+  const clearInput = () => {
+    // Step 3: Access the current property and set it to an empty string
+    inputReffname.current.value = '';
+    inputReflname.current.value = '';
+    inputRefemail.current.value = '';
+    inputRefphone.current.value = '';
+    inputRefCname.current.value = '';
+    inputRefaddress.current.value = '';
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -115,6 +132,7 @@ const AddCustomer = () => {
     }));
 
     setPrimary(true);
+    clearInput();
   };
 
   const deleteContact = (index) => {
@@ -180,6 +198,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
+                      ref={inputReffname}
                       onChange={handleChange}
                       name="FirstName"
                       className="form-control"
@@ -194,6 +213,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="text"
+                      ref={inputReflname}
                       onChange={handleChange}
                       name="LastName"
                       className="form-control"
@@ -209,6 +229,7 @@ const AddCustomer = () => {
                     <input
                       type="email"
                       id="contactInp2"
+                      ref={inputRefemail}
                       className="form-control"
                       onChange={handleChange}
                       name="email"
@@ -222,6 +243,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       type="number"
+                      ref={inputRefphone}
                       id="contactInp3"
                       onChange={handleChange}
                       name="phone"
@@ -235,6 +257,7 @@ const AddCustomer = () => {
                     </label>
                     <input
                       id="contactInp4"
+                      ref={inputRefCname}
                       onChange={handleChange}
                       name="CompanyName"
                       className="form-control"
@@ -247,6 +270,7 @@ const AddCustomer = () => {
                       Address<span className="text-danger">*</span>
                     </label>
                     <input
+                      ref={inputRefaddress}
                       onChange={handleChange}
                       name="Address"
                       className="form-control"
@@ -265,7 +289,8 @@ const AddCustomer = () => {
                             type="checkbox"
                             className="form-check-input"
                             id="customCheckBox"
-                            checked={primary}
+                      
+                      checked={primary}
                             onChange={() => setPrimary(!primary)}
                           />
 
