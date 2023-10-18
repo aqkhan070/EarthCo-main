@@ -17,12 +17,12 @@ const AddCustomer = () => {
     ContactData: [],
   });
 
-  const inputReffname = useRef(null);
-  const inputReflname = useRef(null);
-  const inputRefemail = useRef(null);
-  const inputRefphone = useRef(null);
-  const inputRefCname = useRef(null);
-  const inputRefaddress = useRef(null);
+  const inputReffname = useRef();
+  const inputReflname = useRef();
+  const inputRefemail = useRef();
+  const inputRefphone = useRef();
+  const inputRefCname = useRef();
+  const inputRefaddress = useRef();
 
   const clearInput = () => {
     // Step 3: Access the current property and set it to an empty string
