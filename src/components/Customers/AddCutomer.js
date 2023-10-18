@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef  } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,11 +10,9 @@ const AddCustomer = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [primary, setPrimary] = useState(false);
 
-  const [apiKeys, setapiKeys] = useState([])
-  const [inputNames, setinputNames] = useState([])
-  const [mainObj, setmainObj] = useState({})
-
-  
+  const [apiKeys, setapiKeys] = useState([]);
+  const [inputNames, setinputNames] = useState([]);
+  const [mainObj, setmainObj] = useState({});
 
   const [formData, setFormData] = useState({
     CustomerData: {
@@ -23,7 +21,6 @@ const AddCustomer = () => {
     ContactData: [],
   });
 
-  
   const inputReffname = useRef();
   const inputReflname = useRef();
   const inputRefemail = useRef();
@@ -32,24 +29,23 @@ const AddCustomer = () => {
   const inputRefaddress = useRef();
   const clearInput = () => {
     // Step 3: Access the current property and set it to an empty string
-    inputReffname.current.value = '';
-    inputReflname.current.value = '';
-    inputRefemail.current.value = '';
-    inputRefphone.current.value = '';
-    inputRefCname.current.value = '';
-    inputRefaddress.current.value = '';
+    inputReffname.current.value = "";
+    inputReflname.current.value = "";
+    inputRefemail.current.value = "";
+    inputRefphone.current.value = "";
+    inputRefCname.current.value = "";
+    inputRefaddress.current.value = "";
   };
 
   useEffect(() => {
     const dataObject = {};
-    inputNames.forEach(name => {
-      dataObject[name] = '';
+    inputNames.forEach((name) => {
+      dataObject[name] = "";
     });
 
     setmainObj(dataObject);
     // console.log("object is ,,,", mainObj);
-  
-  },[])
+  }, []);
 
   const fetchCustomers = async () => {
     try {
@@ -60,85 +56,98 @@ const AddCustomer = () => {
       // console.log("API Call Error:", error.response.data);
       const keys = Object.keys(error.response.data.ContactData[0]);
       setapiKeys(keys);
-
     }
   };
-  
-  const extractInputNames = () => {
-    const inputElements = document.querySelectorAll('form input');
-    
-    setinputNames( Array.from(inputElements).map(input => input.getAttribute('name')))
-    console.log("Input array is", inputNames);
 
+  const extractInputNames = () => {
+    const inputElements = document.querySelectorAll("form input");
+
+    setinputNames(
+      Array.from(inputElements).map((input) => input.getAttribute("name"))
+    );
+    console.log("Input array is", inputNames);
   };
   useEffect(() => {
     fetchCustomers();
-    
-     extractInputNames()
+
+    extractInputNames();
   }, []);
 
   const setMainObjValues = () => {
-    let updatedObj = { ...mainObj }; 
-    inputNames.forEach(name => {
+    let updatedObj = { ...mainObj };
+    inputNames.forEach((name) => {
       const inputValue = document.querySelector(`input[name="${name}"]`).value;
-      // updatedObj[name] = inputValue;
-      console.log(updatedObj[name]);
+      updatedObj[name] = inputValue;
+      // console.log(updatedObj[name]);
     });
     setmainObj(updatedObj);
     console.log(mainObj);
   };
+
   const handleSubmit = async () => {
     setMainObjValues();
-  
-    const filteredMainObj = Object.keys(mainObj)
-      .filter(key => apiKeys.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = mainObj[key];
-        return obj;
-      }, {});
-  
-    const filteredContacts = contacts.map(contact => {
-      return Object.keys(contact)
-        .filter(key => apiKeys.includes(key))
-        .reduce((obj, key) => {
-          obj[key] = contact[key];
-          return obj;
-        }, {});
+
+    // Prepare the CustomerData and ContactData payload
+    const customerPayload = {
+      CustomerName: formData.CustomerData.CustomerName,
+      CreatedBy: 1, // Set this as per your need
+      EditBy: 1, // Set this as per your need
+      isActive: true,
+    };
+
+    // This function filters out the mainObj based on the apiKeys and returns the valid payload object.
+    const preparePayload = (obj) => {
+      let payload = {};
+      apiKeys.forEach((key) => {
+        if (obj[key]) {
+          payload[key] = obj[key];
+        }
+      });
+      return payload;
+    };
+
+    const contactPayload = contacts.map((contact) => {
+      return {
+        ...preparePayload(contact),
+        isPrimary: contact.isPrimary || false,
+        isActive: true,
+        CreatedBy: "2", // Set this as per your need
+      };
     });
-  
+
+    // POST request payload
+    const postData = {
+      CustomerData: customerPayload,
+      ContactData: contacts,
+    };
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
-        {
-          CustomerData: {
-            CustomerName: filteredMainObj.CustomerName ? filteredMainObj.CustomerName : formData.CustomerData.CustomerName,
-          },
-          ContactData: filteredContacts,
-        },
+        postData,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-  
-      console.log("API response:", response.data);
-  
+
+      console.log("postData,,,,,,,,,:", postData);
+
       setFormData({
         CustomerData: {
           CustomerName: "",
         },
         ContactData: [],
       });
-  
+
       setContacts([]); // Clear the contacts array
-  
       navigate("/Dashboard/Customers");
     } catch (error) {
       console.error("Error submitting data:", error);
     }
   };
-  
+
   // const handleSubmit = async () => {
   //   setMainObjValues();
   //   try {
@@ -185,15 +194,25 @@ const AddCustomer = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Update the formData state with the changed value
-    setFormData({
-      ...formData,
-      ContactData: {
-        ...formData.ContactData,
-        [name]: value,
-      },
-    });
-  };
+    if (name === "CustomerName") {
+        setFormData(prevState => ({
+            ...prevState,
+            CustomerData: {
+                CustomerName: value,
+            }
+        }));
+    } else {
+        setFormData({
+            ...formData,
+            ContactData: {
+                ...formData.ContactData,
+                [name]: value,
+            },
+        });
+    }
+    console.log(formData);
+};
+
   const addContact = (e) => {
     e.preventDefault();
 
@@ -204,13 +223,13 @@ const AddCustomer = () => {
       Phone: formData.ContactData.Phone,
       CompanyName: formData.ContactData.CompanyName,
       Address: formData.ContactData.Address,
-      isPrimary: primary,
+      isPrimary: primary
     };
 
     setContacts([...contacts, newContact]);
 
     // Clear the form fields
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
       ContactData: {
         FirstName: "",
@@ -240,11 +259,8 @@ const AddCustomer = () => {
     }
   }, [loginState]);
 
-
-
   return (
     <div className="container-fluid">
-
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="card">
           <div className="card-header">
@@ -265,9 +281,8 @@ const AddCustomer = () => {
                   type="text"
                   className="form-control"
                   name="CustomerName"
-                  id="exampleFormControlInput1"
-                  
                   placeholder="Customer Name"
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -385,8 +400,7 @@ const AddCustomer = () => {
                             name="isPrimary"
                             className="form-check-input"
                             id="customCheckBox"
-                      
-                      checked={primary}
+                            checked={primary}
                             onChange={() => setPrimary(!primary)}
                           />
 

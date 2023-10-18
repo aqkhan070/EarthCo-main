@@ -161,12 +161,22 @@ const CustomerTR = ({ customers }) => {
         </table>
 
         <div class="d-flex flex-row-reverse">
-          <div className="p-2">
+        <div className="p-2">
             <button
               className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(0)}
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             >
-              First
+              Last
+            </button>
+          </div>
+          
+          <div className="p-2">
+            <button
+              className="btn btn-secondary page-btn"
+              disabled={!table.getCanNextPage()}
+              onClick={() => table.nextPage()}
+            >
+              Next
             </button>
           </div>
           <div className="p-2">
@@ -180,21 +190,13 @@ const CustomerTR = ({ customers }) => {
           </div>
           <div className="p-2">
             <button
-              className="btn btn-secondary page-btn"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-            >
-              Next
-            </button>
-          </div>
-          <div className="p-2">
-            <button
               className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              onClick={() => table.setPageIndex(0)}
             >
-              Last
+              First
             </button>
           </div>
+          
         </div>
       </div>
     </>
