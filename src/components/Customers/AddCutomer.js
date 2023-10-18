@@ -8,7 +8,7 @@ const AddCustomer = () => {
   const [contacts, setContacts] = useState([]);
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
-  const [primary, setPrimary] = useState(true);
+  const [primary, setPrimary] = useState(false);
 
   const [apiKeys, setapiKeys] = useState([])
   const [inputNames, setinputNames] = useState([])
@@ -40,6 +40,17 @@ const AddCustomer = () => {
     inputRefaddress.current.value = '';
   };
 
+  useEffect(() => {
+    const dataObject = {};
+    inputNames.forEach(name => {
+      dataObject[name] = '';
+    });
+
+    setmainObj(dataObject);
+    // console.log("object is ,,,", mainObj);
+  
+  },[])
+
   const fetchCustomers = async () => {
     try {
       const responses = await axios.get(
@@ -66,23 +77,43 @@ const AddCustomer = () => {
      extractInputNames()
   }, []);
 
+  const setMainObjValues = () => {
+    let updatedObj = { ...mainObj }; 
+    inputNames.forEach(name => {
+      const inputValue = document.querySelector(`input[name="${name}"]`).value;
+      // updatedObj[name] = inputValue;
+      console.log(updatedObj[name]);
+    });
+    setmainObj(updatedObj);
+    console.log(mainObj);
+  };
   const handleSubmit = async () => {
+    setMainObjValues();
+  
+    const filteredMainObj = Object.keys(mainObj)
+      .filter(key => apiKeys.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = mainObj[key];
+        return obj;
+      }, {});
+  
+    const filteredContacts = contacts.map(contact => {
+      return Object.keys(contact)
+        .filter(key => apiKeys.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = contact[key];
+          return obj;
+        }, {});
+    });
+  
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
         {
           CustomerData: {
-            CustomerName: formData.CustomerData.CustomerName,
+            CustomerName: filteredMainObj.CustomerName ? filteredMainObj.CustomerName : formData.CustomerData.CustomerName,
           },
-          ContactData: contacts.map((contact) => ({
-            FirstName: contact.FirstName,
-            LastName: contact.LastName,
-            Email: contact.Email,
-            Phone: contact.Phone,
-            CompanyName: contact.CompanyName,
-            Address: contact.Address,
-            isPrimary: contact.isPrimary,
-          })),
+          ContactData: filteredContacts,
         },
         {
           headers: {
@@ -90,23 +121,67 @@ const AddCustomer = () => {
           },
         }
       );
-
+  
       console.log("API response:", response.data);
-
+  
       setFormData({
         CustomerData: {
           CustomerName: "",
         },
         ContactData: [],
       });
-
+  
       setContacts([]); // Clear the contacts array
-
+  
       navigate("/Dashboard/Customers");
     } catch (error) {
       console.error("Error submitting data:", error);
     }
   };
+  
+  // const handleSubmit = async () => {
+  //   setMainObjValues();
+  //   try {
+  //     const response = await axios.post(
+  //       "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
+  //       {
+  //         CustomerData: {
+  //           CustomerName: formData.CustomerData.CustomerName,
+  //         },
+  //         ContactData: contacts.map((contact) => ({
+  //           FirstName: contact.FirstName,
+  //           LastName: contact.LastName,
+  //           Email: contact.Email,
+  //           Phone: contact.Phone,
+  //           CompanyName: contact.CompanyName,
+  //           Address: contact.Address,
+  //           isPrimary: contact.isPrimary,
+  //         })),
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     console.log("API response:", response.data);
+
+  //     setFormData({
+  //       CustomerData: {
+  //         CustomerName: "",
+  //       },
+  //       ContactData: [],
+  //     });
+
+  //     setContacts([]); // Clear the contacts array
+
+  //     navigate("/Dashboard/Customers");
+  //   } catch (error) {
+  //     console.error("Error submitting data:", error);
+  //   }
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -125,8 +200,8 @@ const AddCustomer = () => {
     const newContact = {
       FirstName: formData.ContactData.FirstName,
       LastName: formData.ContactData.LastName,
-      Email: formData.ContactData.email,
-      Phone: formData.ContactData.phone,
+      Email: formData.ContactData.Email,
+      Phone: formData.ContactData.Phone,
       CompanyName: formData.ContactData.CompanyName,
       Address: formData.ContactData.Address,
       isPrimary: primary,
