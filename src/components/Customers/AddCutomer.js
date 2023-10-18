@@ -10,6 +10,12 @@ const AddCustomer = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [primary, setPrimary] = useState(true);
 
+  const [apiKeys, setapiKeys] = useState([])
+  const [inputNames, setinputNames] = useState([])
+  const [mainObj, setmainObj] = useState({})
+
+  
+
   const [formData, setFormData] = useState({
     CustomerData: {
       CustomerName: "",
@@ -17,13 +23,13 @@ const AddCustomer = () => {
     ContactData: [],
   });
 
+  
   const inputReffname = useRef();
   const inputReflname = useRef();
   const inputRefemail = useRef();
   const inputRefphone = useRef();
   const inputRefCname = useRef();
   const inputRefaddress = useRef();
-
   const clearInput = () => {
     // Step 3: Access the current property and set it to an empty string
     inputReffname.current.value = '';
@@ -36,18 +42,28 @@ const AddCustomer = () => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=5"
+      const responses = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=0"
       );
-      const keys = Object.keys(response.data);
-      console.log(keys);
     } catch (error) {
-      console.log("API Call Error:", error);
+      // console.log("API Call Error:", error.response.data);
+      const keys = Object.keys(error.response.data.ContactData[0]);
+      setapiKeys(keys);
+
     }
   };
+  
+  const extractInputNames = () => {
+    const inputElements = document.querySelectorAll('form input');
+    
+    setinputNames( Array.from(inputElements).map(input => input.getAttribute('name')))
+    console.log("Input array is", inputNames);
 
+  };
   useEffect(() => {
     fetchCustomers();
+    
+     extractInputNames()
   }, []);
 
   const handleSubmit = async () => {
@@ -149,8 +165,11 @@ const AddCustomer = () => {
     }
   }, [loginState]);
 
+
+
   return (
     <div className="container-fluid">
+
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="card">
           <div className="card-header">
@@ -170,8 +189,9 @@ const AddCustomer = () => {
                 <input
                   type="text"
                   className="form-control"
-                  name="customerName"
+                  name="CustomerName"
                   id="exampleFormControlInput1"
+                  
                   placeholder="Customer Name"
                   required
                 />
@@ -232,7 +252,7 @@ const AddCustomer = () => {
                       ref={inputRefemail}
                       className="form-control"
                       onChange={handleChange}
-                      name="email"
+                      name="Email"
                       placeholder="Email"
                       required
                     />
@@ -246,7 +266,7 @@ const AddCustomer = () => {
                       ref={inputRefphone}
                       id="contactInp3"
                       onChange={handleChange}
-                      name="phone"
+                      name="Phone"
                       className="form-control"
                       placeholder="Phone"
                     />
@@ -287,6 +307,7 @@ const AddCustomer = () => {
                         <div className="form-check custom-checkbox form-check-inline">
                           <input
                             type="checkbox"
+                            name="isPrimary"
                             className="form-check-input"
                             id="customCheckBox"
                       
