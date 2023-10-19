@@ -1,5 +1,4 @@
-import React, { useContext, useMemo } from "react";
-import { CustomerContext } from "../../context/CustomerData";
+import React, {  useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   flexRender,
@@ -13,7 +12,6 @@ import {
 import { useState } from "react";
 
 const CustomerTR = ({ customers }) => {
-  const { setSelectedCustomer } = useContext(CustomerContext);
 
   const [sorting, setSorting] = useState([]);
   const [filtering, setFiltering] = useState("");
