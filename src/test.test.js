@@ -22,9 +22,24 @@ const AddEstimateForm = () => {
     });
     
     const inputFile = useRef(null);
-  const [files, setFiles] = useState()
+    const [files, setFiles] = useState([]);
+
 
   const [customers, setCustomers] = useState([]);
+
+  const [formData, setFormData] = useState({
+    customer: '',
+    serviceLocation: '',
+    email: '',
+    estimateNo: '',
+    issuedDate: '2023-09-10',
+    estimateNotes: '',
+    serviceLocationNotes: '',
+    privateNotes: '',
+    orderId: '',
+    items: [''],
+    files: [''],
+  });
 
 
 
@@ -44,7 +59,19 @@ const AddEstimateForm = () => {
     fetchCustomers();
   }, []);
 
- 
+  
+  const addItem = (e) => {
+    e.preventDefault();
+
+    const newItem = {
+      id: itemForm.items.length + 1,
+      name: itemForm.itemName,
+      quantity: itemForm.itemQty,
+      description: itemForm.itemDesc,
+      rate: itemForm.rate,
+      amount: Number(itemForm.itemQty) * Number(itemForm.rate),
+      approved: false
+    };
 
     setItemForm(prevState => ({
       ...prevState,
@@ -56,84 +83,54 @@ const AddEstimateForm = () => {
     }));
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setItemForm(prevState => ({ ...prevState, [name]: value }));
+  };
+
   
- 
+
+  const deleteItem = (id) => {
+    const updatedArr = itemObj.filter((object) => {
+      return object.id !== id;
+    });
+    setItemObj(updatedArr);
+  };
 
   const addFile = () => {
     inputFile.current.click();
+    console.log("filesss are", files);
   };
 
   const trackFile = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       const newFile = {
+        actualFile: uploadedFile, 
         name: uploadedFile.name,
-        caption: uploadedFile.name,  // Assuming caption is the file name for simplicity
-        date: new Date().toLocaleDateString() // Get current date
+        caption: uploadedFile.name,
+        date: new Date().toLocaleDateString() 
       };
       setFiles(prevFiles => [...prevFiles, newFile]);
     }
+};
+
+const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
-  
+  const handleSubmit = () => {
+    setFormData(...formData, itemForm) // this line is sending error
+    console.log(formData);
+    // Send formData to backend or do other operations
+  };
 
 
 
   return (
     <div class="card">
-      <div className="card-body">
-        
-                
-          
-
-       
-                        {/* Files */}
-                        <div className="card">
-      <div className="card-body p-0">
-        <div className="estDataBox">
-          <div className="itemtitleBar">
-            <h4>Files</h4>
-          </div>
-          <button
-            className="btn btn-primary btn-sm"
-            style={{ margin: "12px 20px" }}
-            onClick={addFile}
-          >
-            + Add File
-          </button>
-          <input
-            type="file"
-            ref={inputFile}
-            onChange={trackFile}
-            style={{ display: "none" }}
-          />
-          <div className="table-responsive active-projects style-1">
-            <table id="empoloyees-tblwrapper" className="table">
-              <thead>
-                <tr>
-                  <th>File Name</th>
-                  <th>Caption</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{file.caption}</td>
-                    <td>{file.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-      
-        
-      </div>
+      {/* all working fine */}
     </div>
   );
 };

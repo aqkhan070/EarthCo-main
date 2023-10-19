@@ -27,6 +27,20 @@ const AddEstimateForm = () => {
 
   const [customers, setCustomers] = useState([]);
 
+  const [formData, setFormData] = useState({
+    customer: '',
+    serviceLocation: '',
+    email: '',
+    estimateNo: '',
+    issuedDate: '2023-09-10',
+    estimateNotes: '',
+    serviceLocationNotes: '',
+    privateNotes: '',
+    orderId: '',
+    items: [],
+    files: [],
+  });
+
 
 
   const fetchCustomers = async () => {
@@ -74,6 +88,8 @@ const AddEstimateForm = () => {
     setItemForm(prevState => ({ ...prevState, [name]: value }));
   };
 
+  
+
   const deleteItem = (id) => {
     const updatedArr = itemObj.filter((object) => {
       return object.id !== id;
@@ -99,6 +115,23 @@ const AddEstimateForm = () => {
     }
 };
 
+const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({ ...prevData, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    const updatedFormData = {
+        ...formData,
+        items: [...formData.items, ...itemForm.items],
+        files: [...formData.files, ...files]
+    };
+    console.log("Updated formData within handleSubmit:", updatedFormData);
+    setFormData(updatedFormData);
+};
+useEffect(() => {
+    console.log("Updated formData is:", formData);
+}, [formData]);
 
 
 
@@ -118,6 +151,9 @@ const AddEstimateForm = () => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
+                  value={formData.customer}
+                  name="customer"
+                  onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
@@ -144,6 +180,9 @@ const AddEstimateForm = () => {
                   <div className="mb-4 col-md-9">
                  
                   <input
+                    value={formData.serviceLocation}
+                    name="serviceLocation"
+                    onChange={handleInputChange}
                     type="text"
                     className="form-control"
                     placeholder="Service Location"
@@ -162,6 +201,9 @@ const AddEstimateForm = () => {
                 <div className="mb-4 col-md-9">
                   
                   <input
+                    value={formData.email}
+                    name="email"
+                    onChange={handleInputChange}
                     type="text"
                     className="form-control"
                     placeholder="Example@gmail.com."
@@ -180,20 +222,23 @@ const AddEstimateForm = () => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Estimate No.</label>
                   <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Estimate No."
+                     value={formData.estimateNo}
+                     name="estimateNo"
+                     onChange={handleInputChange}
+                     type="text"
+                     className="form-control"
+                     placeholder="Estimate No."
                   />
                 </div>
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Issued Date</label>
                   <input
+                    value={formData.issuedDate}
+                    name="issuedDate"
+                    onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
                     placeholder="Issued Date"
-                    onChange={(e) => setDate(e.target.value)}
                     type="date"
-                    name="daterange"
-                    value={date}
                   />
                 </div>
               </div>
@@ -406,9 +451,11 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
+                          value={formData.estimateNotes}
+                          name="estimateNotes"
+                          onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
-                          id="comment"
                         ></textarea>
                       </div>
                     </form>
@@ -420,9 +467,11 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
+                          value={formData.serviceLocationNotes}
+                          name="serviceLocationNotes"
+                          onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
-                          id="comment"
                         ></textarea>
                       </div>
                     </form>
@@ -434,9 +483,11 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
+                          value={formData.privateNotes}
+                          name="privateNotes"
+                          onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
-                          id="comment"
                         ></textarea>
                       </div>
                     </form>
@@ -451,6 +502,9 @@ const AddEstimateForm = () => {
                     <div className="basic-form">
                       <form>
                         <Form.Select
+                         value={formData.orderId}
+                         name="orderId"
+                         onChange={handleInputChange}
                           aria-label="Default select example"
                           id="inputState"
                           className="bg-white"
@@ -485,7 +539,7 @@ const AddEstimateForm = () => {
 
         <div class="mb-2 row text-end">
           <div className="flex-right">
-            <button type="button" class="btn btn-primary me-1">
+            <button type="button" class="btn btn-primary me-1" onClick={handleSubmit}>
               Submit
             </button>
             <NavLink to="/Dashboard/Estimates">
