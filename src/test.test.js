@@ -12,36 +12,51 @@ const AddEstimateForm = () => {
 
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
-  const [itemName, setItemName] = useState();
-  const [itemQty, setItemQty] = useState();
-  const [itemDesc, setItemDesc] = useState();
-  const [rate, setRate] = useState();
-  const [files, setFiles] = useState([]);
+  const [itemName, setItemName] = useState('');
+  const [itemQty, setItemQty] = useState('');
+  const [itemDesc, setItemDesc] = useState('');
+  const [rate, setRate] = useState('');
+  const [items, setItems] = useState([]);
 
-  const [Customers, setCustomers] = useState([])
+  const [files, setFiles] = useState()
+
+  const [customers, setCustomers] = useState([]);
+
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+      console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
 
   useEffect(() => {
-    
-  }, [])
+    fetchCustomers();
+  }, []);
 
-  const addItem = (event) => {
-    event.preventDefault();
-    const updatedArr = [
-      ...itemObj,
-      {
-        id: `item${Math.round(Math.random() * 999)}`,
-        name: itemName,
-        qty: itemQty,
-        description: itemDesc,
-        rate: rate,
-      },
-    ];
-    setItemObj(updatedArr);
-    setItemName("");
-    setItemQty("");
-    setItemDesc("");
-    setRate("");
-    document.getElementById("closer").click();
+  
+  const addItem = (e) => {
+    e.preventDefault();
+
+    const newItem = {
+      id: items.length + 1,
+      name: itemName,
+      quantity: itemQty,
+      description: itemDesc,
+      rate: rate,
+      amount: Number(itemQty) * Number(rate),  // assuming rate * quantity gives the amount
+      approved: false  // assuming not approved by default
+    };
+
+    setItems([...items, newItem]);
+    setItemName('');
+    setItemQty('');
+    setItemDesc('');
+    setRate('');
   };
 
   const deleteItem = (id) => {
@@ -120,29 +135,41 @@ const AddEstimateForm = () => {
             </div>
             <form>
               <div className="row">
-                <div className="mb-3 col-md-9">
+                <div className="mb-2 col-md-9">
                   <Form.Select
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
                   >
                     <option selected>Customer</option>
-                    <option>Option 1</option>
-                    <option>Option 2</option>
-                    <option>Option 3</option>
+                    {customers.map((customer) => (
+                      <option
+                        key={customer.CustomerID}
+                        value={customer.CustomerName}
+                      >
+                        {customer.CustomerName}
+                      </option>
+                    ))}
                   </Form.Select>
-                 
                 </div>
-                <div className="mb-3 col-md-9">
-                  <Form.Select
+                
+                  {/* <Form.Select
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
                   >
                     <option value="Customer">Service Location</option>
-                  </Form.Select>
+                  </Form.Select> */}
+                  <div className="mb-4 col-md-9">
+                 
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Service Location"
+                  />
+                
                 </div>
-                <div className="mb-3 col-md-9">
+                {/* <div className="mb-3 col-md-9">
                   <Form.Select
                     aria-label="Default select example"
                     id="inputState"
@@ -150,6 +177,15 @@ const AddEstimateForm = () => {
                   >
                     <option value="Service Location">Contact</option>
                   </Form.Select>
+                </div> */}
+                <div className="mb-4 col-md-9">
+                  
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Example@gmail.com."
+                  />
+                
                 </div>
               </div>
             </form>
@@ -183,9 +219,7 @@ const AddEstimateForm = () => {
             </form>
           </div>
         </div>
-
-       
-
+                {/* add item modal */}
         <div className="modal fade" id="basicModal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
@@ -285,41 +319,56 @@ const AddEstimateForm = () => {
             </div>
           </div>
         </div>
-
-        <div className="card">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Items</h4>
-              </div>
-              <button
-                className="btn btn-primary btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#basicModal"
-                style={{ margin: "12px 20px" }}
-              >
-                + Add Items
-              </button>
-              <div className="table-responsive active-projects style-1">
-                <table id="empoloyees-tblwrapper" className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Qty / Duration</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Rate</th>
-                      <th>Amount</th>
-                      <th>Approved</th>
-                      <th>Action</th>
+                {/* item table */}
+                <div className="card">
+        <div className="card-body p-0">
+          <div className="estDataBox">
+            <div className="itemtitleBar">
+              <h4>Items</h4>
+            </div>
+            <button
+              className="btn btn-primary btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#basicModal"
+              style={{ margin: "12px 20px" }}
+            >
+              + Add Items
+            </button>
+            <div className="table-responsive active-projects style-1">
+              <table id="empoloyees-tblwrapper" className="table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Qty / Duration</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th>Approved</th>
+                    {/* <th>Action</th> */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map(item => (
+                    <tr key={item.id}>
+                      <td>{item.id}</td>
+                      <td>{item.quantity}</td>
+                      <td>{item.name}</td>
+                      <td>{item.description}</td>
+                      <td>{item.rate}</td>
+                      <td>{item.amount}</td>
+                      <td>{item.approved ? 'Yes' : 'No'}</td>
+                      {/* <td>
+                        You can add actions like edit or delete here
+                      </td> */}
                     </tr>
-                  </thead>
-                  <tbody>{renderItems}</tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
+      </div>
 
         <div className="card">
           <div className="card-body p-0">
