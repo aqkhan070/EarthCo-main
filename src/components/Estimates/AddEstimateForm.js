@@ -8,40 +8,35 @@ import axios from "axios";
 const AddEstimateForm = () => {
   const { estimateItems } = useContext(DataContext);
 
-  
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
-  
-  
-  const [itemForm, setItemForm] = useState({
-      itemName: '',
-      itemQty: '',
-      itemDesc: '',
-      rate: '',
-      items: []
-    });
-    
-    const inputFile = useRef(null);
-    const [files, setFiles] = useState([]);
 
+  const [itemForm, setItemForm] = useState({
+    Name: "",
+    Qty: "",
+    Description: "",
+    Rate: "",
+    tblEstimateItems: [],
+  });
+
+  const inputFile = useRef(null);
+  const [Files, setFiles] = useState([]);
 
   const [customers, setCustomers] = useState([]);
 
   const [formData, setFormData] = useState({
-    customer: '',
-    serviceLocation: '',
-    email: '',
-    estimateNo: '',
-    issuedDate: '2023-09-10',
-    estimateNotes: '',
-    serviceLocationNotes: '',
-    privateNotes: '',
-    orderId: '',
-    items: [],
-    files: [],
+    CustomerId: "",
+    ServiceLocation: "",
+    Email: "",
+    EstimateNumber: "",
+    IssueDate: "2023-09-10",
+    EstimateNotes: "",
+    ServiceLocationNotes: "",
+    PrivateNotes: "",
+    QBStatus: "",
+    tblEstimateItems: [],
+    // Files: [],
   });
-
-
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -49,7 +44,24 @@ const AddEstimateForm = () => {
     );
     try {
       setCustomers(response.data);
-      console.log("Custommer list is", customers[1].CustomerName);
+      //   console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const submitData = async () => {
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
+        formData
+      );
+  
+      if (response.status === 200) {
+        console.log("Data submitted successfully:", response.data);
+      } else {
+        console.log("Error submitting data:", response.statusText);
+      }
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -59,36 +71,34 @@ const AddEstimateForm = () => {
     fetchCustomers();
   }, []);
 
-  
   const addItem = (e) => {
     e.preventDefault();
 
     const newItem = {
-      id: itemForm.items.length + 1,
-      name: itemForm.itemName,
-      quantity: itemForm.itemQty,
-      description: itemForm.itemDesc,
-      rate: itemForm.rate,
-      amount: Number(itemForm.itemQty) * Number(itemForm.rate),
-      approved: false
+      id: itemForm.tblEstimateItems.length + 1,
+      name: itemForm.Name,
+      quantity: itemForm.Qty,
+      description: itemForm.Description,
+      Rate: itemForm.Rate,
+      amount: Number(itemForm.Qty),
+      //   amount: Number(itemForm.Qty) * Number(itemForm.Rate),
+      approved: false,
     };
 
-    setItemForm(prevState => ({
+    setItemForm((prevState) => ({
       ...prevState,
-      items: [...prevState.items, newItem],
-      itemName: '',
-      itemQty: '',
-      itemDesc: '',
-      rate: ''
+      tblEstimateItems: [...prevState.tblEstimateItems, newItem],
+      Name: "",
+      Qty: "",
+      Description: "",
+      Rate: "",
     }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setItemForm(prevState => ({ ...prevState, [name]: value }));
+    setItemForm((prevState) => ({ ...prevState, [name]: value }));
   };
-
-  
 
   const deleteItem = (id) => {
     const updatedArr = itemObj.filter((object) => {
@@ -99,41 +109,40 @@ const AddEstimateForm = () => {
 
   const addFile = () => {
     inputFile.current.click();
-    console.log("filesss are", files);
+    console.log("Filesss are", Files);
   };
 
   const trackFile = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       const newFile = {
-        actualFile: uploadedFile, 
+        actualFile: uploadedFile,
         name: uploadedFile.name,
         caption: uploadedFile.name,
-        date: new Date().toLocaleDateString() 
+        date: new Date().toLocaleDateString(),
       };
-      setFiles(prevFiles => [...prevFiles, newFile]);
+      setFiles((prevFiles) => [...prevFiles, newFile]);
     }
-};
+  };
 
-const handleInputChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = () => {
     const updatedFormData = {
-        ...formData,
-        items: [...formData.items, ...itemForm.items],
-        files: [...formData.files, ...files]
+      ...formData,
+      tblEstimateItems: [...formData.tblEstimateItems, ...itemForm.tblEstimateItems],
+    //   Files: [...formData.Files, ...Files],
     };
     console.log("Updated formData within handleSubmit:", updatedFormData);
     setFormData(updatedFormData);
-};
-useEffect(() => {
+    submitData()
+  };
+  useEffect(() => {
     console.log("Updated formData is:", formData);
-}, [formData]);
-
-
+  }, [formData]);
 
   return (
     <div class="card">
@@ -151,43 +160,42 @@ useEffect(() => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
-                  value={formData.customer}
-                  name="customer"
-                  onChange={handleInputChange}
+                    value={formData.CustomerId}
+                    name="CustomerId" // This was changed
+                    onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
                   >
-                    <option selected>Customer</option>
+                    <option value="">Customer</option>{" "}
+                    {/* Set value attribute to an empty string for default option */}
                     {customers.map((customer) => (
                       <option
-                        key={customer.CustomerID}
-                        value={customer.CustomerName}
+                        key={customer.CustomerId}
+                        value={customer.CustomerId}
                       >
-                        {customer.CustomerName}
+                        {customer.CustomerId + " " + customer.CustomerName}
                       </option>
                     ))}
                   </Form.Select>
                 </div>
-                
-                  {/* <Form.Select
+
+                {/* <Form.Select
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
                   >
                     <option value="Customer">Service Location</option>
                   </Form.Select> */}
-                  <div className="mb-4 col-md-9">
-                 
+                <div className="mb-4 col-md-9">
                   <input
-                    value={formData.serviceLocation}
-                    name="serviceLocation"
+                    value={formData.ServiceLocation}
+                    name="ServiceLocation"
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
                     placeholder="Service Location"
                   />
-                
                 </div>
                 {/* <div className="mb-3 col-md-9">
                   <Form.Select
@@ -199,16 +207,14 @@ useEffect(() => {
                   </Form.Select>
                 </div> */}
                 <div className="mb-4 col-md-9">
-                  
                   <input
-                    value={formData.email}
-                    name="email"
+                    value={formData.Email}
+                    name="Email"
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
                     placeholder="Example@gmail.com."
                   />
-                
                 </div>
               </div>
             </form>
@@ -222,19 +228,19 @@ useEffect(() => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Estimate No.</label>
                   <input
-                     value={formData.estimateNo}
-                     name="estimateNo"
-                     onChange={handleInputChange}
-                     type="text"
-                     className="form-control"
-                     placeholder="Estimate No."
+                    value={formData.EstimateNumber}
+                    name="EstimateNumber"
+                    onChange={handleInputChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Estimate No."
                   />
                 </div>
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Issued Date</label>
                   <input
-                    value={formData.issuedDate}
-                    name="issuedDate"
+                    value={formData.IssueDate}
+                    name="IssueDate"
                     onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
                     placeholder="Issued Date"
@@ -245,9 +251,9 @@ useEffect(() => {
             </form>
           </div>
         </div>
-                
-                {/* add item modal */}
-                <div className="modal fade" id="basicModal">
+
+        {/* add item modal */}
+        <div className="modal fade" id="basicModal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <form onSubmit={addItem}>
@@ -266,9 +272,9 @@ useEffect(() => {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          value={itemForm.itemName}
+                          value={itemForm.Name}
                           onChange={handleChange}
-                          name="itemName"
+                          name="Name"
                           className="form-control"
                           placeholder="Name"
                           required
@@ -282,9 +288,9 @@ useEffect(() => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={itemForm.itemQty}
+                          value={itemForm.Qty}
                           onChange={handleChange}
-                          name="itemQty"
+                          name="Qty"
                           className="form-control"
                           placeholder="Quantity"
                           required
@@ -298,9 +304,9 @@ useEffect(() => {
                       <div className="col-sm-9">
                         <textarea
                           className="form-txtarea form-control"
-                          value={itemForm.itemDesc}
+                          value={itemForm.Description}
                           onChange={handleChange}
-                          name="itemDesc"
+                          name="Description"
                           rows="3"
                           id="comment"
                         ></textarea>
@@ -311,9 +317,9 @@ useEffect(() => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={itemForm.rate}
+                          value={itemForm.Rate}
                           onChange={handleChange}
-                          name="rate"
+                          name="Rate"
                           className="form-control"
                           placeholder="Rate"
                           required
@@ -328,7 +334,8 @@ useEffect(() => {
                         className="col-sm-9"
                         style={{ display: "flex", alignItems: "center" }}
                       >
-                        <h5 style={{ margin: "0" }}>$100.00</h5> {/* This value should probably be calculated based on rate and quantity */}
+                        <h5 style={{ margin: "0" }}>$100.00</h5>{" "}
+                        {/* This value should probably be calculated based on Rate and quantity */}
                       </div>
                     </div>
                   </div>
@@ -380,15 +387,15 @@ useEffect(() => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemForm.items.map(item => (
+                    {itemForm.tblEstimateItems.map((item) => (
                       <tr key={item.id}>
                         <td>{item.id}</td>
                         <td>{item.quantity}</td>
                         <td>{item.name}</td>
                         <td>{item.description}</td>
-                        <td>{item.rate}</td>
+                        <td>{item.Rate}</td>
                         <td>{item.amount}</td>
-                        <td>{item.approved ? 'Yes' : 'No'}</td>
+                        <td>{item.approved ? "Yes" : "No"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -397,49 +404,49 @@ useEffect(() => {
             </div>
           </div>
         </div>
-                        {/* Files */}
-                        <div className="card">
-      <div className="card-body p-0">
-        <div className="estDataBox">
-          <div className="itemtitleBar">
-            <h4>Files</h4>
-          </div>
-          <button
-            className="btn btn-primary btn-sm"
-            style={{ margin: "12px 20px" }}
-            onClick={addFile}
-          >
-            + Add File
-          </button>
-          <input
-            type="file"
-            ref={inputFile}
-            onChange={trackFile}
-            style={{ display: "none" }}
-          />
-          <div className="table-responsive active-projects style-1">
-            <table id="empoloyees-tblwrapper" className="table">
-              <thead>
-                <tr>
-                  <th>File Name</th>
-                  <th>Caption</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{file.caption}</td>
-                    <td>{file.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Files */}
+        <div className="card">
+          <div className="card-body p-0">
+            <div className="estDataBox">
+              <div className="itemtitleBar">
+                <h4>Files</h4>
+              </div>
+              <button
+                className="btn btn-primary btn-sm"
+                style={{ margin: "12px 20px" }}
+                onClick={addFile}
+              >
+                + Add File
+              </button>
+              <input
+                type="file"
+                ref={inputFile}
+                onChange={trackFile}
+                style={{ display: "none" }}
+              />
+              <div className="table-responsive active-projects style-1">
+                <table id="empoloyees-tblwrapper" className="table">
+                  <thead>
+                    <tr>
+                      <th>File Name</th>
+                      <th>Caption</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Files.map((file, index) => (
+                      <tr key={index}>
+                        <td>{file.name}</td>
+                        <td>{file.caption}</td>
+                        <td>{file.date}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
         <div className="estNotesBox">
           <div className="row">
@@ -451,8 +458,8 @@ useEffect(() => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.estimateNotes}
-                          name="estimateNotes"
+                          value={formData.EstimateNotes}
+                          name="EstimateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
@@ -467,8 +474,8 @@ useEffect(() => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.serviceLocationNotes}
-                          name="serviceLocationNotes"
+                          value={formData.ServiceLocationNotes}
+                          name="ServiceLocationNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
@@ -483,8 +490,8 @@ useEffect(() => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.privateNotes}
-                          name="privateNotes"
+                          value={formData.PrivateNotes}
+                          name="PrivateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
                           rows="2"
@@ -502,9 +509,9 @@ useEffect(() => {
                     <div className="basic-form">
                       <form>
                         <Form.Select
-                         value={formData.orderId}
-                         name="orderId"
-                         onChange={handleInputChange}
+                          value={formData.QBStatus}
+                          name="QBStatus"
+                          onChange={handleInputChange}
                           aria-label="Default select example"
                           id="inputState"
                           className="bg-white"
@@ -539,7 +546,11 @@ useEffect(() => {
 
         <div class="mb-2 row text-end">
           <div className="flex-right">
-            <button type="button" class="btn btn-primary me-1" onClick={handleSubmit}>
+            <button
+              type="button"
+              class="btn btn-primary me-1"
+              onClick={handleSubmit}
+            >
               Submit
             </button>
             <NavLink to="/Dashboard/Estimates">
