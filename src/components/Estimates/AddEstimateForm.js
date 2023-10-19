@@ -7,6 +7,7 @@ import axios from "axios";
 
 const AddEstimateForm = () => {
   const { estimateItems } = useContext(DataContext);
+  
 
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
@@ -25,19 +26,21 @@ const AddEstimateForm = () => {
   const [customers, setCustomers] = useState([]);
 
   const [formData, setFormData] = useState({
-    CustomerId: "",
-    ServiceLocation: "",
-    Email: "",
-    EstimateNumber: "",
-    IssueDate: "2023-09-10",
-    EstimateNotes: "",
-    ServiceLocationNotes: "",
-    PrivateNotes: "",
-    QBStatus: "",
-    tblEstimateItems: [],
-    // Files: [],
-  });
-
+    EstimateData: {
+        CustomerId: "",
+        ServiceLocation: "",
+        Email: "",
+        EstimateNumber: "",
+        IssueDate: "2023-09-10",
+        EstimateNotes: "",
+        ServiceLocationNotes: "",
+        PrivateNotes: "",
+        QBStatus: "",
+        tblEstimateItems: [],
+        // Other fields...
+    },
+    Files: [],
+});
   const fetchCustomers = async () => {
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
@@ -51,10 +54,17 @@ const AddEstimateForm = () => {
   };
 
   const submitData = async () => {
+    const postData = {
+        EstimateData: {
+            ...formData.EstimateData,
+            tblEstimateItems: [...formData.EstimateData.tblEstimateItems, ...itemForm.tblEstimateItems],
+        },
+        Files: [...formData.Files, ...Files],
+    };
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
-        formData
+        postData
       );
   
       if (response.status === 200) {
@@ -65,7 +75,9 @@ const AddEstimateForm = () => {
     } catch (error) {
       console.error("API Call Error:", error);
     }
-  };
+};
+
+
 
   useEffect(() => {
     fetchCustomers();
@@ -76,13 +88,14 @@ const AddEstimateForm = () => {
 
     const newItem = {
       id: itemForm.tblEstimateItems.length + 1,
-      name: itemForm.Name,
-      quantity: itemForm.Qty,
-      description: itemForm.Description,
-      Rate: itemForm.Rate,
-      amount: Number(itemForm.Qty),
-      //   amount: Number(itemForm.Qty) * Number(itemForm.Rate),
-      approved: false,
+      Name: itemForm.Name,
+      Description: itemForm.Description,
+      Qty: Number(itemForm.Qty),
+      Rate: Number(itemForm.Rate),
+      Address: "", // Add a mechanism to capture this if needed
+      CreatedBy: 2,
+      EditBy: 2,
+      isActive: true,
     };
 
     setItemForm((prevState) => ({
@@ -93,7 +106,8 @@ const AddEstimateForm = () => {
       Description: "",
       Rate: "",
     }));
-  };
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -132,14 +146,19 @@ const AddEstimateForm = () => {
 
   const handleSubmit = () => {
     const updatedFormData = {
-      ...formData,
-      tblEstimateItems: [...formData.tblEstimateItems, ...itemForm.tblEstimateItems],
-    //   Files: [...formData.Files, ...Files],
+      EstimateData: {
+          ...formData.EstimateData,
+          tblEstimateItems: [...formData.EstimateData.tblEstimateItems, ...itemForm.tblEstimateItems],
+      },
+      Files: [...formData.Files, ...Files],
     };
     console.log("Updated formData within handleSubmit:", updatedFormData);
     setFormData(updatedFormData);
     submitData()
-  };
+};
+
+
+
   useEffect(() => {
     console.log("Updated formData is:", formData);
   }, [formData]);
