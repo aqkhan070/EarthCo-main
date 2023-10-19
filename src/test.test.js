@@ -1,225 +1,47 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import StatusActions from "../StatusActions";
-import { Form } from "react-bootstrap";
-import { DataContext } from "../../context/AppData";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from "react";
 
 const AddEstimateForm = () => {
-  const { estimateItems } = useContext(DataContext);
+  const [itemForm, setItemForm] = useState({
+    itemName: '',
+    itemQty: '',
+    itemDesc: '',
+    rate: '',
+    items: []
+  });
 
-  const inputFile = useRef(null);
-
-  const [itemObj, setItemObj] = useState(estimateItems);
-  const [date, setDate] = useState("2023-09-10");
-  const [itemName, setItemName] = useState('');
-  const [itemQty, setItemQty] = useState('');
-  const [itemDesc, setItemDesc] = useState('');
-  const [rate, setRate] = useState('');
-  const [items, setItems] = useState([]);
-
-  const [files, setFiles] = useState()
-
-  const [customers, setCustomers] = useState([]);
-
-  const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    try {
-      setCustomers(response.data);
-      console.log("Custommer list is", customers[1].CustomerName);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCustomers();
-  }, []);
-
-  
   const addItem = (e) => {
     e.preventDefault();
 
     const newItem = {
-      id: items.length + 1,
-      name: itemName,
-      quantity: itemQty,
-      description: itemDesc,
-      rate: rate,
-      amount: Number(itemQty) * Number(rate),  // assuming rate * quantity gives the amount
-      approved: false  // assuming not approved by default
+      id: itemForm.items.length + 1,
+      name: itemForm.itemName,
+      quantity: itemForm.itemQty,
+      description: itemForm.itemDesc,
+      rate: itemForm.rate,
+      amount: Number(itemForm.itemQty) * Number(itemForm.rate),
+      approved: false
     };
 
-    setItems([...items, newItem]);
-    setItemName('');
-    setItemQty('');
-    setItemDesc('');
-    setRate('');
+    setItemForm(prevState => ({
+      ...prevState,
+      items: [...prevState.items, newItem],
+      itemName: '',
+      itemQty: '',
+      itemDesc: '',
+      rate: ''
+    }));
   };
 
-  const deleteItem = (id) => {
-    const updatedArr = itemObj.filter((object) => {
-      return object.id !== id;
-    });
-    setItemObj(updatedArr);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setItemForm(prevState => ({ ...prevState, [name]: value }));
   };
-
-  const addFile = () => {
-    inputFile.current.click();
-  };
-
-  const trackFile = (event) => {
-    const file = event.target.files[0];
-    setFiles([...files, file]);
-  };
-
-  const deleteFile = (id) => {
-    const updatedArr = files.filter((file) => {
-      return file.name !== id;
-    });
-    setFiles(updatedArr);
-  };
-
-  console.log(files);
-
-  const renderItems = itemObj.map((item, index) => {
-    return (
-      <tr key={index}>
-        <td>{index + 1}</td>
-        <td className="text-center">
-          <span>{item.qty}</span>
-        </td>
-        <td>
-          <div className="products">
-            <div>
-              <h6>{item.name}</h6>
-            </div>
-          </div>
-        </td>
-        <td>
-          <span>{item.description}</span>
-        </td>
-        <td>
-          <span className="text-primary">${item.rate}</span>
-        </td>
-        <td>
-          <span>${item.rate}</span>
-        </td>
-        <td className="text-center">
-          <input type="checkbox" checked readOnly />
-        </td>
-        <td>
-          <div className="badgeBox" onClick={() => deleteItem(item.id)}>
-            <span className="actionBadge badge-danger light border-0">
-              <span className="material-symbols-outlined">delete</span>
-            </span>
-          </div>
-        </td>
-      </tr>
-    );
-  });
 
   return (
-    <div class="card">
+    <div className="card">
       <div className="card-body">
-        <div className="row">
-          <div className="basic-form col-md-6">
-            <div className="row">
-              <div className="col-md-8 mb-3">
-                <div className="row statusRow">
-                  <StatusActions />
-                </div>
-              </div>
-            </div>
-            <form>
-              <div className="row">
-                <div className="mb-2 col-md-9">
-                  <Form.Select
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    <option selected>Customer</option>
-                    {customers.map((customer) => (
-                      <option
-                        key={customer.CustomerID}
-                        value={customer.CustomerName}
-                      >
-                        {customer.CustomerName}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </div>
-                
-                  {/* <Form.Select
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    <option value="Customer">Service Location</option>
-                  </Form.Select> */}
-                  <div className="mb-4 col-md-9">
-                 
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Service Location"
-                  />
-                
-                </div>
-                {/* <div className="mb-3 col-md-9">
-                  <Form.Select
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    <option value="Service Location">Contact</option>
-                  </Form.Select>
-                </div> */}
-                <div className="mb-4 col-md-9">
-                  
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Example@gmail.com."
-                  />
-                
-                </div>
-              </div>
-            </form>
-          </div>
-          <div className="basic-form col-md-6">
-            <form>
-              <div
-                className="row"
-                style={{ display: "flex", justifyContent: "end" }}
-              >
-                <div className="mb-3 col-md-9">
-                  <label className="form-label">Estimate No.</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Estimate No."
-                  />
-                </div>
-                <div className="mb-3 col-md-9">
-                  <label className="form-label">Issued Date</label>
-                  <input
-                    className="form-control input-limit-datepicker"
-                    placeholder="Issued Date"
-                    onChange={(e) => setDate(e.target.value)}
-                    type="date"
-                    name="daterange"
-                    value={date}
-                  />
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-                {/* add item modal */}
+
+        {/* add item modal */}
         <div className="modal fade" id="basicModal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
@@ -239,8 +61,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          value={itemName}
-                          onChange={(e) => setItemName(e.target.value)}
+                          value={itemForm.itemName}
+                          onChange={handleChange}
+                          name="itemName"
                           className="form-control"
                           placeholder="Name"
                           required
@@ -254,8 +77,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={itemQty}
-                          onChange={(e) => setItemQty(e.target.value)}
+                          value={itemForm.itemQty}
+                          onChange={handleChange}
+                          name="itemQty"
                           className="form-control"
                           placeholder="Quantity"
                           required
@@ -269,8 +93,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <textarea
                           className="form-txtarea form-control"
-                          value={itemDesc}
-                          onChange={(e) => setItemDesc(e.target.value)}
+                          value={itemForm.itemDesc}
+                          onChange={handleChange}
+                          name="itemDesc"
                           rows="3"
                           id="comment"
                         ></textarea>
@@ -281,8 +106,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={rate}
-                          onChange={(e) => setRate(e.target.value)}
+                          value={itemForm.rate}
+                          onChange={handleChange}
+                          name="rate"
                           className="form-control"
                           placeholder="Rate"
                           required
@@ -297,7 +123,7 @@ const AddEstimateForm = () => {
                         className="col-sm-9"
                         style={{ display: "flex", alignItems: "center" }}
                       >
-                        <h5 style={{ margin: "0" }}>$100.00</h5>
+                        <h5 style={{ margin: "0" }}>$100.00</h5> {/* This value should probably be calculated based on rate and quantity */}
                       </div>
                     </div>
                   </div>
@@ -319,229 +145,51 @@ const AddEstimateForm = () => {
             </div>
           </div>
         </div>
-                {/* item table */}
-                <div className="card">
-        <div className="card-body p-0">
-          <div className="estDataBox">
-            <div className="itemtitleBar">
-              <h4>Items</h4>
-            </div>
-            <button
-              className="btn btn-primary btn-sm"
-              data-bs-toggle="modal"
-              data-bs-target="#basicModal"
-              style={{ margin: "12px 20px" }}
-            >
-              + Add Items
-            </button>
-            <div className="table-responsive active-projects style-1">
-              <table id="empoloyees-tblwrapper" className="table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Qty / Duration</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                    <th>Approved</th>
-                    {/* <th>Action</th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.name}</td>
-                      <td>{item.description}</td>
-                      <td>{item.rate}</td>
-                      <td>{item.amount}</td>
-                      <td>{item.approved ? 'Yes' : 'No'}</td>
-                      {/* <td>
-                        You can add actions like edit or delete here
-                      </td> */}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
 
+        {/* item table */}
         <div className="card">
           <div className="card-body p-0">
             <div className="estDataBox">
               <div className="itemtitleBar">
-                <h4>Files</h4>
+                <h4>Items</h4>
               </div>
               <button
                 className="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#basicModal"
                 style={{ margin: "12px 20px" }}
-                onClick={addFile}
               >
-                + Add
+                + Add Items
               </button>
-              <input
-                type="file"
-                ref={inputFile}
-                onChange={trackFile}
-                style={{ display: "none" }}
-              />
               <div className="table-responsive active-projects style-1">
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>File Name</th>
-                      <th>Last Modified Date</th>
-                      <th>Type</th>
-                      <th>Size</th>
-                      <th>Actions</th>
+                      <th>Qty / Duration</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                      <th>Approved</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {files &&
-                      files.map((file, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <h5>{file.name}</h5>
-                            </td>
-                            <td>
-                              <span>
-                                {file.lastModifiedDate.toLocaleDateString()}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="products">
-                                <div>{file.type}</div>
-                              </div>
-                            </td>
-                            <td>
-                              <span className="text-primary">
-                                {(file.size / 1024).toFixed(2)} kb
-                              </span>
-                            </td>
-                            <td>
-                              <div
-                                className="badgeBox"
-                                onClick={() => deleteFile(file.name)}
-                              >
-                                <span className="actionBadge badge-danger light border-0">
-                                  <span className="material-symbols-outlined">
-                                    delete
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                    {itemForm.items.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.name}</td>
+                        <td>{item.description}</td>
+                        <td>{item.rate}</td>
+                        <td>{item.amount}</td>
+                        <td>{item.approved ? 'Yes' : 'No'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="estNotesBox">
-          <div className="row">
-            <div className="col-lg-5">
-              <div className="row">
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Estimate Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          className="form-txtarea form-control"
-                          rows="2"
-                          id="comment"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Service Location Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          className="form-txtarea form-control"
-                          rows="2"
-                          id="comment"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Private Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          className="form-txtarea form-control"
-                          rows="2"
-                          id="comment"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-5">
-              <div className="card" style={{ marginTop: "15px" }}>
-                <div className="card-body">
-                  <div className="sutotalBox">
-                    <div className="basic-form">
-                      <form>
-                        <Form.Select
-                          aria-label="Default select example"
-                          id="inputState"
-                          className="bg-white"
-                        >
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                        </Form.Select>
-                      </form>
-                    </div>
-                    <div className="dataBox">
-                      <div className="dataRow">
-                        <h5>Subtotal:</h5>
-                        <p>10.00$</p>
-                      </div>
-                      <div className="dataRow">
-                        <h5>Tax:</h5>
-                        <p>0.00$</p>
-                      </div>
-                      <div className="dataRow">
-                        <h5>Total:</h5>
-                        <p>10.00$</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mb-2 row text-end">
-          <div className="flex-right">
-            <button type="button" class="btn btn-primary me-1">
-              Submit
-            </button>
-            <NavLink to="/Dashboard/Estimates">
-              <button class="btn btn-danger light ms-1">Cancel</button>
-            </NavLink>
           </div>
         </div>
       </div>

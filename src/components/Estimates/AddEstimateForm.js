@@ -12,15 +12,21 @@ const AddEstimateForm = () => {
 
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
-  const [itemName, setItemName] = useState('');
-  const [itemQty, setItemQty] = useState('');
-  const [itemDesc, setItemDesc] = useState('');
-  const [rate, setRate] = useState('');
-  const [items, setItems] = useState([]);
+  
+
+  const [itemForm, setItemForm] = useState({
+    itemName: '',
+    itemQty: '',
+    itemDesc: '',
+    rate: '',
+    items: []
+  });
 
   const [files, setFiles] = useState()
 
   const [customers, setCustomers] = useState([]);
+
+
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -43,20 +49,28 @@ const AddEstimateForm = () => {
     e.preventDefault();
 
     const newItem = {
-      id: items.length + 1,
-      name: itemName,
-      quantity: itemQty,
-      description: itemDesc,
-      rate: rate,
-      amount: Number(itemQty) * Number(rate),  // assuming rate * quantity gives the amount
-      approved: false  // assuming not approved by default
+      id: itemForm.items.length + 1,
+      name: itemForm.itemName,
+      quantity: itemForm.itemQty,
+      description: itemForm.itemDesc,
+      rate: itemForm.rate,
+      amount: Number(itemForm.itemQty) * Number(itemForm.rate),
+      approved: false
     };
 
-    setItems([...items, newItem]);
-    setItemName('');
-    setItemQty('');
-    setItemDesc('');
-    setRate('');
+    setItemForm(prevState => ({
+      ...prevState,
+      items: [...prevState.items, newItem],
+      itemName: '',
+      itemQty: '',
+      itemDesc: '',
+      rate: ''
+    }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setItemForm(prevState => ({ ...prevState, [name]: value }));
   };
 
   const deleteItem = (id) => {
@@ -219,8 +233,9 @@ const AddEstimateForm = () => {
             </form>
           </div>
         </div>
+                
                 {/* add item modal */}
-        <div className="modal fade" id="basicModal">
+                <div className="modal fade" id="basicModal">
           <div className="modal-dialog" role="document">
             <div className="modal-content">
               <form onSubmit={addItem}>
@@ -239,8 +254,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="text"
-                          value={itemName}
-                          onChange={(e) => setItemName(e.target.value)}
+                          value={itemForm.itemName}
+                          onChange={handleChange}
+                          name="itemName"
                           className="form-control"
                           placeholder="Name"
                           required
@@ -254,8 +270,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={itemQty}
-                          onChange={(e) => setItemQty(e.target.value)}
+                          value={itemForm.itemQty}
+                          onChange={handleChange}
+                          name="itemQty"
                           className="form-control"
                           placeholder="Quantity"
                           required
@@ -269,8 +286,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <textarea
                           className="form-txtarea form-control"
-                          value={itemDesc}
-                          onChange={(e) => setItemDesc(e.target.value)}
+                          value={itemForm.itemDesc}
+                          onChange={handleChange}
+                          name="itemDesc"
                           rows="3"
                           id="comment"
                         ></textarea>
@@ -281,8 +299,9 @@ const AddEstimateForm = () => {
                       <div className="col-sm-9">
                         <input
                           type="number"
-                          value={rate}
-                          onChange={(e) => setRate(e.target.value)}
+                          value={itemForm.rate}
+                          onChange={handleChange}
+                          name="rate"
                           className="form-control"
                           placeholder="Rate"
                           required
@@ -297,7 +316,7 @@ const AddEstimateForm = () => {
                         className="col-sm-9"
                         style={{ display: "flex", alignItems: "center" }}
                       >
-                        <h5 style={{ margin: "0" }}>$100.00</h5>
+                        <h5 style={{ margin: "0" }}>$100.00</h5> {/* This value should probably be calculated based on rate and quantity */}
                       </div>
                     </div>
                   </div>
@@ -319,56 +338,53 @@ const AddEstimateForm = () => {
             </div>
           </div>
         </div>
-                {/* item table */}
-                <div className="card">
-        <div className="card-body p-0">
-          <div className="estDataBox">
-            <div className="itemtitleBar">
-              <h4>Items</h4>
-            </div>
-            <button
-              className="btn btn-primary btn-sm"
-              data-bs-toggle="modal"
-              data-bs-target="#basicModal"
-              style={{ margin: "12px 20px" }}
-            >
-              + Add Items
-            </button>
-            <div className="table-responsive active-projects style-1">
-              <table id="empoloyees-tblwrapper" className="table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Qty / Duration</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                    <th>Approved</th>
-                    {/* <th>Action</th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(item => (
-                    <tr key={item.id}>
-                      <td>{item.id}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.name}</td>
-                      <td>{item.description}</td>
-                      <td>{item.rate}</td>
-                      <td>{item.amount}</td>
-                      <td>{item.approved ? 'Yes' : 'No'}</td>
-                      {/* <td>
-                        You can add actions like edit or delete here
-                      </td> */}
+
+        {/* item table */}
+        <div className="card">
+          <div className="card-body p-0">
+            <div className="estDataBox">
+              <div className="itemtitleBar">
+                <h4>Items</h4>
+              </div>
+              <button
+                className="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#basicModal"
+                style={{ margin: "12px 20px" }}
+              >
+                + Add Items
+              </button>
+              <div className="table-responsive active-projects style-1">
+                <table id="empoloyees-tblwrapper" className="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Qty / Duration</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                      <th>Approved</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {itemForm.items.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.name}</td>
+                        <td>{item.description}</td>
+                        <td>{item.rate}</td>
+                        <td>{item.amount}</td>
+                        <td>{item.approved ? 'Yes' : 'No'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
         <div className="card">
           <div className="card-body p-0">
