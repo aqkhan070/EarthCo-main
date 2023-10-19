@@ -83,26 +83,22 @@ const AddEstimateForm = () => {
 
   const addFile = () => {
     inputFile.current.click();
+    console.log("filesss are", files);
   };
 
   const trackFile = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       const newFile = {
+        actualFile: uploadedFile, 
         name: uploadedFile.name,
-        caption: uploadedFile.name,  // Assuming caption is the file name for simplicity
-        date: new Date().toLocaleDateString() // Get current date
+        caption: uploadedFile.name,
+        date: new Date().toLocaleDateString() 
       };
       setFiles(prevFiles => [...prevFiles, newFile]);
     }
-  };
+};
 
-  const deleteFile = (id) => {
-    const updatedArr = files.filter((file) => {
-      return file.name !== id;
-    });
-    setFiles(updatedArr);
-  };
 
 
 
