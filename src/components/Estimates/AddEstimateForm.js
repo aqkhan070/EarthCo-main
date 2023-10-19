@@ -8,21 +8,22 @@ import axios from "axios";
 const AddEstimateForm = () => {
   const { estimateItems } = useContext(DataContext);
 
-  const inputFile = useRef(null);
-
+  
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
   
-
+  
   const [itemForm, setItemForm] = useState({
-    itemName: '',
-    itemQty: '',
-    itemDesc: '',
-    rate: '',
-    items: []
-  });
+      itemName: '',
+      itemQty: '',
+      itemDesc: '',
+      rate: '',
+      items: []
+    });
+    
+    const inputFile = useRef(null);
+    const [files, setFiles] = useState([]);
 
-  const [files, setFiles] = useState()
 
   const [customers, setCustomers] = useState([]);
 
@@ -84,9 +85,16 @@ const AddEstimateForm = () => {
     inputFile.current.click();
   };
 
-  const trackFile = (event) => {
-    const file = event.target.files[0];
-    setFiles([...files, file]);
+  const trackFile = (e) => {
+    const uploadedFile = e.target.files[0];
+    if (uploadedFile) {
+      const newFile = {
+        name: uploadedFile.name,
+        caption: uploadedFile.name,  // Assuming caption is the file name for simplicity
+        date: new Date().toLocaleDateString() // Get current date
+      };
+      setFiles(prevFiles => [...prevFiles, newFile]);
+    }
   };
 
   const deleteFile = (id) => {
@@ -96,44 +104,7 @@ const AddEstimateForm = () => {
     setFiles(updatedArr);
   };
 
-  console.log(files);
 
-  const renderItems = itemObj.map((item, index) => {
-    return (
-      <tr key={index}>
-        <td>{index + 1}</td>
-        <td className="text-center">
-          <span>{item.qty}</span>
-        </td>
-        <td>
-          <div className="products">
-            <div>
-              <h6>{item.name}</h6>
-            </div>
-          </div>
-        </td>
-        <td>
-          <span>{item.description}</span>
-        </td>
-        <td>
-          <span className="text-primary">${item.rate}</span>
-        </td>
-        <td>
-          <span>${item.rate}</span>
-        </td>
-        <td className="text-center">
-          <input type="checkbox" checked readOnly />
-        </td>
-        <td>
-          <div className="badgeBox" onClick={() => deleteItem(item.id)}>
-            <span className="actionBadge badge-danger light border-0">
-              <span className="material-symbols-outlined">delete</span>
-            </span>
-          </div>
-        </td>
-      </tr>
-    );
-  });
 
   return (
     <div class="card">
@@ -385,83 +356,49 @@ const AddEstimateForm = () => {
             </div>
           </div>
         </div>
-
-        <div className="card">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Files</h4>
-              </div>
-              <button
-                className="btn btn-primary btn-sm"
-                style={{ margin: "12px 20px" }}
-                onClick={addFile}
-              >
-                + Add
-              </button>
-              <input
-                type="file"
-                ref={inputFile}
-                onChange={trackFile}
-                style={{ display: "none" }}
-              />
-              <div className="table-responsive active-projects style-1">
-                <table id="empoloyees-tblwrapper" className="table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>File Name</th>
-                      <th>Last Modified Date</th>
-                      <th>Type</th>
-                      <th>Size</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {files &&
-                      files.map((file, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <h5>{file.name}</h5>
-                            </td>
-                            <td>
-                              <span>
-                                {file.lastModifiedDate.toLocaleDateString()}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="products">
-                                <div>{file.type}</div>
-                              </div>
-                            </td>
-                            <td>
-                              <span className="text-primary">
-                                {(file.size / 1024).toFixed(2)} kb
-                              </span>
-                            </td>
-                            <td>
-                              <div
-                                className="badgeBox"
-                                onClick={() => deleteFile(file.name)}
-                              >
-                                <span className="actionBadge badge-danger light border-0">
-                                  <span className="material-symbols-outlined">
-                                    delete
-                                  </span>
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        {/* Files */}
+                        <div className="card">
+      <div className="card-body p-0">
+        <div className="estDataBox">
+          <div className="itemtitleBar">
+            <h4>Files</h4>
+          </div>
+          <button
+            className="btn btn-primary btn-sm"
+            style={{ margin: "12px 20px" }}
+            onClick={addFile}
+          >
+            + Add File
+          </button>
+          <input
+            type="file"
+            ref={inputFile}
+            onChange={trackFile}
+            style={{ display: "none" }}
+          />
+          <div className="table-responsive active-projects style-1">
+            <table id="empoloyees-tblwrapper" className="table">
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Caption</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {files.map((file, index) => (
+                  <tr key={index}>
+                    <td>{file.name}</td>
+                    <td>{file.caption}</td>
+                    <td>{file.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
+      </div>
+    </div>
 
         <div className="estNotesBox">
           <div className="row">
