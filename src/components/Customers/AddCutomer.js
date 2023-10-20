@@ -466,10 +466,10 @@ const AddCustomer = () => {
                               <td>
                                 <div className="badgeBox">
                                   <span
-                                    className="actionBadge badge-danger light border-0"
+                                    className="actionBadge badge-danger light border-0 badgebox-size"
                                     onClick={() => deleteContact(index)}
                                   >
-                                    <span className="material-symbols-outlined">
+                                    <span className="material-symbols-outlined badgebox-size">
                                       delete
                                     </span>
                                   </span>
