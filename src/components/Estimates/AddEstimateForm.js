@@ -12,6 +12,22 @@ const AddEstimateForm = () => {
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState();
 
+  const [formData, setFormData] = useState({
+    EstimateData: {
+        CustomerId: "",
+        ServiceLocation: "",
+        Email: "",
+        EstimateNumber: "",
+        IssueDate: "",
+        EstimateNotes: "",
+        ServiceLocationNotes: "",
+        PrivateNotes: "",
+        QBStatus: "",
+        EstimateStatusId:"",
+        tblEstimateItems: [],
+    },
+    Files: [],
+});
   const [itemForm, setItemForm] = useState({
     Name: "",
     Qty: "",
@@ -25,21 +41,6 @@ const AddEstimateForm = () => {
 
   const [customers, setCustomers] = useState([]);
 
-  const [formData, setFormData] = useState({
-    EstimateData: {
-        CustomerId: "",
-        ServiceLocation: "",
-        Email: "",
-        EstimateNumber: "",
-        IssueDate: "",
-        EstimateNotes: "",
-        ServiceLocationNotes: "",
-        PrivateNotes: "",
-        QBStatus: "",
-        tblEstimateItems: [],
-    },
-    Files: [],
-});
 
 
 
@@ -128,6 +129,16 @@ const AddEstimateForm = () => {
   };
 
         
+  const handleStatusChange = (e) => {
+    const { value } = e.target;
+    setFormData(prevData => ({
+        ...prevData,
+        EstimateData: {
+            ...prevData.EstimateData,
+            EstimateStatusId: value
+        }
+    }));
+}
 
 
   const handleChange = (e) => {
@@ -191,7 +202,19 @@ const AddEstimateForm = () => {
             <div className="row">
               <div className="col-md-8 mb-3">
                 <div className="row statusRow">
-                  <StatusActions />
+                <div className="col-lg-4 col-md-12 mb-2" style={{ minWidth: '150px' }}>
+                <Form.Select aria-label="Default select example" value={formData.EstimateData.EstimateStatusId} onChange={handleStatusChange}    size="md" id="inlineFormCustomSelect">
+                    <option value={1}>Open</option>
+                    <option value={2}>Approved</option>
+                    <option value={3}>Closed Billed</option>
+                </Form.Select>
+                
+            </div>
+            <div className="col-lg-8 col-md-12 actionBtns">
+                <button type="button" className="btn btn-sm btn-outline-primary">Email</button>
+                <button type="button" className="btn btn-sm btn-outline-primary ">Print</button>
+                <button type="button" className="btn btn-sm btn-outline-primary" style={{ minWidth: '120px' }}>Download</button>
+            </div>
                 </div>
               </div>
             </div>

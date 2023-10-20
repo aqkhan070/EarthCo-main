@@ -165,10 +165,10 @@ const Estimates = () => {
                       + Add Estimates
                     </button>
                   </div>
-                  <div className="col-md-7">
-                    {/* <div>
+                   {/*<div className="col-md-7">
+                    <div>
                                             <input className="from-control form-control-sm" style={{ width: '100%' }} type="text" placeholder="Default input" />
-                                        </div> */}
+                                        </div> 
                   </div>
                   <div
                     className="col-md-2"
@@ -188,33 +188,12 @@ const Estimates = () => {
                         <option value="2">Previous Month</option>
                       </Form.Select>
                     </div>
-                  </div>
+                  </div>*/}
                 </div>
               </div>
               <div className="table-responsive active-projects style-1">
                 <EstimateTR estimates={"    "} />
-                {/* <table id="estimateTbl2" className="table">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                #
-                                            </th>
-                                            <th>Customer Name</th>
-                                            <th>Assign to</th>
-                                            <th>Estimate Number</th>
-                                            <th>Estimate Amount</th>
-                                            <th>Estimate Noets</th>
-                                            <th>Description of Work </th>
-                                            <th>Date Created</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {renderedRecords}
-                                    </tbody>
-
-                                </table> */}
+                
               </div>
             </div>
           </div>
