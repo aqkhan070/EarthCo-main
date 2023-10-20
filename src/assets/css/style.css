@@ -53534,3 +53534,19 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .table-header{
     background-color:#F0F4F9 ;
 }
+
+.create-button {
+  margin-right: 0 !important; 
+  padding-right: 0 !important;
+}
+
+.delete-button {
+  background-color: #ff0000;
+  margin-left: 0 !important;  
+  padding-left: 0 !important;
+
+}
+.tblsearch-input{
+    height: 4rem;
+
+}

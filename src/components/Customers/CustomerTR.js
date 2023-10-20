@@ -1,215 +1,156 @@
-import React, {  useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Link } from "react-router-dom";
 import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  TextField,
+  Button,
+  TablePagination,
+  Checkbox,
+} from "@mui/material";
+import { Create, Delete } from "@mui/icons-material";
 
-import { useState } from "react";
-import { colors } from "@mui/material";
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#7c9c3d',
+    },
+  },
+});
 
 const CustomerTR = ({ customers }) => {
-  const [selectedItem, setSelectedItem] = useState("3")
-
-  const [sorting, setSorting] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [sorting, setSorting] = useState({ field: "", order: "" });
   const [filtering, setFiltering] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const data = useMemo(() => customers, [customers]);
-  /** @type import('@tanstack/react-table').ColumnDef<any> */
-  const columns = [
-    {
-      header: "#",
-      accessorKey: "CustomerId",
-    },
-    {
-      header: "Customer Name",
-      accessorKey: "CustomerName",
-    },
-    {
-      header: "Contact Name",
-      accessorKey: "ContactName",
-    },
-    {
-      header: "Contact Company",
-      accessorKey: "ContactCompany",
-    },
-    {
-      header: "Contact E-Mail	",
-      accessorKey: "ContactEmail",
-    },
-    {
-      header: "Actions",
-      cell: (
-        <div className="badgeBox justify-content-center ">
-          <button
-        type="button"
-        onClick={(e) => {
-          setSelectedItem(e.target.values);
-          console.log("selected item is ", selectedItem);
-        }}
-        className="dispContents"       
-        
-      >
-        <span className="actionBadge badge-success light border-0 badgebox-size">
-          <span className="material-symbols-outlined badgebox-size">create</span>
-        </span>
-      </button>
-          <span className="actionBadge badge-danger light border-0 badgebox-size">
-            <span className="material-symbols-outlined badgebox-size ">
-              delete
-            </span>
-          </span>
-        </div>
-      ),
-    },
-  ];
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting: sorting,
-      globalFilter: filtering,
-      rowSelection: selectedItem,
-    },
-    onRowSelectionChange: setSelectedItem,
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setFiltering,
-    enableRowSelection: true,
+  // Sorting logic here...
+  const sortedCustomers = [...customers].sort((a, b) => {
+    if (sorting.order === "asc") {
+      return a[sorting.field] > b[sorting.field] ? 1 : -1;
+    } else if (sorting.order === "desc") {
+      return a[sorting.field] < b[sorting.field] ? 1 : -1;
+    }
+    return 0;
   });
-  useEffect(() => {
-    // console.log(selectedItem);
-  }, [selectedItem]);
+
+  // Filtering logic here...
+  const filteredCustomers = sortedCustomers.filter((customer) =>
+    customer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+  );
 
   return (
-    <>
-      <div className="container">
-        <div className="container text-center">
-          <div className="row justify-content-between">
-            <div className="col-6 search-container">
-              <div className="container text-center search-wrap">
-                <div className="row justify-content-start ">
-                  <div className="col-3">
-                    <label
-                      htmlFor="searchInput"
-                      className="col-sm-4 col-form-label search-Lable"
-                    >
-                      Search:
-                    </label>
-                  </div>
-                  <div class="col-4">
-                    <input
-                      type="text"
-                      className="form-control customer-search-input"
-                      value={filtering}
-                      placeholder="Search Customer..."
-                      onChange={(e) => setFiltering(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-3 add-customer-btn">
-              <Link to="/Dashboard/Customers/Add-Customer">
-                <button className="btn btn-primary btn-sm" role="button">
-                  + Add Customer
-                </button>
-              </Link>
-            </div>
-          </div>
+    <ThemeProvider theme={theme}><div className="container">
+    <div className="container text-center">
+      <div className="row justify-content-between">
+        <div className="col-3 search-container tblsearch-input">
+          <TextField
+          className="tblsearch-input"
+            label="Search"
+            value={filtering}
+            onChange={(e) => setFiltering(e.target.value)}
+            fullWidth
+          />
         </div>
-
-        <table className="table">
-          <thead className="table-header">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {
-                          { asc: "▲", desc: "▼ " }[
-                            header.column.getIsSorted() ?? null
-                          ]
-                        }
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div class="d-flex flex-row-reverse">
-        <div className="p-2">
-            <button
-              className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            >
-              Last
-            </button>
-          </div>
-          
-          <div className="p-2">
-            <button
-              className="btn btn-secondary page-btn"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-            >
-              Next
-            </button>
-           
-          </div>
-          <div className="p-2">
-            <button
-              className="btn btn-secondary page-btn"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-            >
-              Prev
-            </button>
-          </div>
-
-          <div className="p-2">
-            <button
-              className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(0)}
-            >
-              First
-            </button>
-          </div>
-          
+        <div className="col-3 add-customer-btn">
+          <Link to="/Dashboard/Customers/Add-Customer">
+            <Button variant="contained" color="primary">
+              + Add Customer
+            </Button>
+          </Link>
         </div>
       </div>
-    </>
+
+      <Table>
+        <TableHead>
+          <TableRow className="table-header">
+            {/* Map through columns here */}
+            {[
+              
+              "Select",
+              "CustomerId",
+              "CustomerName",
+              "ContactName",
+              "ContactCompany",
+              "ContactEmail",
+              "Actions",
+            ].map((column, index) => (
+              <TableCell key={index}>
+                {index < 5 ? (
+                  <TableSortLabel
+                    active={sorting.field === column}
+                    direction={sorting.order}
+                    onClick={() =>
+                      setSorting({
+                        field: column,
+                        order:
+                          sorting.order === "asc" && sorting.field === column
+                            ? "desc"
+                            : "asc",
+                      })
+                    }
+                  >
+                    {column}
+                  </TableSortLabel>
+                ) : (
+                  column
+                )}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {filteredCustomers
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((customer, rowIndex) => (
+              <TableRow key={rowIndex} hover>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedItem === customer.CustomerId}
+                    onChange={() => setSelectedItem(customer.CustomerId)}
+                  />
+                </TableCell>
+                <TableCell>{customer.CustomerId}</TableCell>
+                <TableCell>{customer.CustomerName}</TableCell>
+                <TableCell>{customer.ContactName}</TableCell>
+                <TableCell>{customer.ContactCompany}</TableCell>
+                <TableCell>{customer.ContactEmail}</TableCell>
+                <TableCell>
+                  <Button
+                    className="delete-button"
+                    onClick={() => {setSelectedItem(customer.CustomerId); console.log(",,,,,,,,,,",selectedItem);}}
+                  >
+                    <Create />
+                  </Button>
+                  <Button color="error" className="delete-button" onClick={() => setSelectedItem(customer.CustomerId)} >
+                    <Delete />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+
+      <TablePagination
+        component="div"
+        count={filteredCustomers.length}
+        page={page}
+        onPageChange={(event, newPage) => setPage(newPage)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(event) => {
+          setRowsPerPage(parseInt(event.target.value, 10));
+          setPage(0);
+        }}
+      />
+    </div>
+  </div></ThemeProvider>
+    
   );
 };
 
