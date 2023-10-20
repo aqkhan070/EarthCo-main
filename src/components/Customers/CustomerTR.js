@@ -1,4 +1,4 @@
-import React, {  useMemo } from "react";
+import React, {  useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   flexRender,
@@ -10,8 +10,10 @@ import {
 } from "@tanstack/react-table";
 
 import { useState } from "react";
+import { colors } from "@mui/material";
 
 const CustomerTR = ({ customers }) => {
+  const [selectedItem, setSelectedItem] = useState("3")
 
   const [sorting, setSorting] = useState([]);
   const [filtering, setFiltering] = useState("");
@@ -45,13 +47,15 @@ const CustomerTR = ({ customers }) => {
         <div className="badgeBox justify-content-center ">
           <button
         type="button"
-        onClick={(e) => {}}
-        className="dispContents"
-        data-toggle="modal"
-        data-target="#customerShow"
+        onClick={(e) => {
+          setSelectedItem(e.target.values);
+          console.log("selected item is ", selectedItem);
+        }}
+        className="dispContents"       
+        
       >
-        <span className="actionBadge badge-success light border-0">
-          <span className="material-symbols-outlined">visibility</span>
+        <span className="actionBadge badge-success light border-0 badgebox-size">
+          <span className="material-symbols-outlined badgebox-size">create</span>
         </span>
       </button>
           <span className="actionBadge badge-danger light border-0 badgebox-size">
@@ -74,10 +78,16 @@ const CustomerTR = ({ customers }) => {
     state: {
       sorting: sorting,
       globalFilter: filtering,
+      rowSelection: selectedItem,
     },
+    onRowSelectionChange: setSelectedItem,
     onSortingChange: setSorting,
     onGlobalFilterChange: setFiltering,
+    enableRowSelection: true,
   });
+  useEffect(() => {
+    // console.log(selectedItem);
+  }, [selectedItem]);
 
   return (
     <>
@@ -176,6 +186,7 @@ const CustomerTR = ({ customers }) => {
             >
               Next
             </button>
+           
           </div>
           <div className="p-2">
             <button
@@ -186,6 +197,7 @@ const CustomerTR = ({ customers }) => {
               Prev
             </button>
           </div>
+
           <div className="p-2">
             <button
               className="btn btn-primary page-btn"
