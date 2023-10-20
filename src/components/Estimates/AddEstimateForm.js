@@ -10,7 +10,7 @@ const AddEstimateForm = () => {
   
 
   const [itemObj, setItemObj] = useState(estimateItems);
-  const [date, setDate] = useState("2023-09-10");
+  const [date, setDate] = useState();
 
   const [itemForm, setItemForm] = useState({
     Name: "",
@@ -31,16 +31,18 @@ const AddEstimateForm = () => {
         ServiceLocation: "",
         Email: "",
         EstimateNumber: "",
-        IssueDate: "2023-09-10",
+        IssueDate: "",
         EstimateNotes: "",
         ServiceLocationNotes: "",
         PrivateNotes: "",
         QBStatus: "",
         tblEstimateItems: [],
-        // Other fields...
     },
     Files: [],
 });
+
+
+
   const fetchCustomers = async () => {
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
@@ -53,6 +55,23 @@ const AddEstimateForm = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    if (Object.keys(formData.EstimateData).includes(name)) {
+      setFormData(prevData => ({
+        ...prevData,
+        EstimateData: {
+          ...prevData.EstimateData,
+          [name]: value
+        }
+      }));
+    } else {
+      setFormData(prevData => ({ ...prevData, [name]: value }));
+    }
+};
+
+
   const submitData = async () => {
     const postData = {
         EstimateData: {
@@ -61,6 +80,7 @@ const AddEstimateForm = () => {
         },
         Files: [...formData.Files, ...Files],
     };
+    console.log("object finalllll",postData)  ;
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
@@ -92,10 +112,9 @@ const AddEstimateForm = () => {
       Description: itemForm.Description,
       Qty: Number(itemForm.Qty),
       Rate: Number(itemForm.Rate),
-      Address: "", // Add a mechanism to capture this if needed
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
+      Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
+      Approved: false, 
+     
     };
 
     setItemForm((prevState) => ({
@@ -106,7 +125,9 @@ const AddEstimateForm = () => {
       Description: "",
       Rate: "",
     }));
-};
+  };
+
+        
 
 
   const handleChange = (e) => {
@@ -123,7 +144,7 @@ const AddEstimateForm = () => {
 
   const addFile = () => {
     inputFile.current.click();
-    console.log("Filesss are", Files);
+    // console.log("Filesss are", Files);
   };
 
   const trackFile = (e) => {
@@ -139,10 +160,7 @@ const AddEstimateForm = () => {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+  
 
   const handleSubmit = () => {
     const updatedFormData = {
@@ -157,12 +175,12 @@ const AddEstimateForm = () => {
       Files: [...formData.Files, ...Files],
     };
 
-    console.log("Updated formData within handleSubmit:", updatedFormData);
+    // console.log("Updated formData within handleSubmit:", updatedFormData);
     setFormData(updatedFormData);
     submitData()
   };
   useEffect(() => {
-    console.log("Updated formData is:", formData);
+    // console.log("Updated formData is:", formData);
   }, [formData]);
 
   return (
@@ -181,15 +199,14 @@ const AddEstimateForm = () => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
-                    value={formData.CustomerId}
-                    name="CustomerId" // This was changed
+                    value={formData.EstimateData.CustomerId}
+                    name="CustomerId" 
                     onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
                   >
                     <option value="">Customer</option>{" "}
-                    {/* Set value attribute to an empty string for default option */}
                     {customers.map((customer) => (
                       <option
                         key={customer.CustomerId}
@@ -201,16 +218,10 @@ const AddEstimateForm = () => {
                   </Form.Select>
                 </div>
 
-                {/* <Form.Select
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    <option value="Customer">Service Location</option>
-                  </Form.Select> */}
+               
                 <div className="mb-4 col-md-9">
                   <input
-                    value={formData.ServiceLocation}
+                    value={formData.EstimateData.ServiceLocation}
                     name="ServiceLocation"
                     onChange={handleInputChange}
                     type="text"
@@ -218,18 +229,10 @@ const AddEstimateForm = () => {
                     placeholder="Service Location"
                   />
                 </div>
-                {/* <div className="mb-3 col-md-9">
-                  <Form.Select
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    <option value="Service Location">Contact</option>
-                  </Form.Select>
-                </div> */}
+                
                 <div className="mb-4 col-md-9">
                   <input
-                    value={formData.Email}
+                    value={formData.EstimateData.Email}
                     name="Email"
                     onChange={handleInputChange}
                     type="text"
@@ -249,7 +252,7 @@ const AddEstimateForm = () => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Estimate No.</label>
                   <input
-                    value={formData.EstimateNumber}
+                    value={formData.EstimateData.EstimateNumber}
                     name="EstimateNumber"
                     onChange={handleInputChange}
                     type="text"
@@ -260,7 +263,7 @@ const AddEstimateForm = () => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Issued Date</label>
                   <input
-                    value={formData.IssueDate}
+                    value={formData.EstimateData.IssueDate}
                     name="IssueDate"
                     onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
@@ -356,7 +359,6 @@ const AddEstimateForm = () => {
                         style={{ display: "flex", alignItems: "center" }}
                       >
                         <h5 style={{ margin: "0" }}>$100.00</h5>{" "}
-                        {/* This value should probably be calculated based on Rate and quantity */}
                       </div>
                     </div>
                   </div>
@@ -408,18 +410,18 @@ const AddEstimateForm = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemForm.tblEstimateItems.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.quantity}</td>
-                        <td>{item.name}</td>
-                        <td>{item.description}</td>
-                        <td>{item.Rate}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.approved ? "Yes" : "No"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
+      {itemForm.tblEstimateItems.map((item) => (
+        <tr key={item.id}>
+          <td>{item.id}</td>
+          <td>{item.Qty}</td>
+          <td>{item.Name}</td>
+          <td>{item.Description}</td>
+          <td>{item.Rate}</td>
+          <td>{item.Amount}</td>
+          <td>{item.Approved ? "Yes" : "No"}</td>
+        </tr>
+      ))}
+    </tbody>
                 </table>
               </div>
             </div>
@@ -479,7 +481,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.EstimateNotes}
+                          value={formData.EstimateData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -495,7 +497,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.ServiceLocationNotes}
+                          value={formData.EstimateData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -511,7 +513,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.PrivateNotes}
+                          value={formData.EstimateData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -530,15 +532,15 @@ const AddEstimateForm = () => {
                     <div className="basic-form">
                       <form>
                         <Form.Select
-                          value={formData.QBStatus}
+                          value={formData.EstimateData.QBStatus}
                           name="QBStatus"
                           onChange={handleInputChange}
                           aria-label="Default select example"
                           id="inputState"
                           className="bg-white"
                         >
-                          <option>1</option>
-                          <option>2</option>
+                          <option >1</option>
+                          <option >2</option>
                           <option>3</option>
                           <option>4</option>
                         </Form.Select>
