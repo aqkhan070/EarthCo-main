@@ -25,7 +25,7 @@ const EstimateTR = ({ estimates }) => {
       },
       {
       header: "#",
-      accessorKey: "CustomerId",
+      accessorKey: "EstimateId",
     },
     {
       header: "Customer Name",
@@ -33,25 +33,25 @@ const EstimateTR = ({ estimates }) => {
     },
     {
       header: "Assign to",
-      accessorKey: "ContactName",
+      accessorKey: "CustomerName",
     },
     {
       header: "Estimate Number",
-      accessorKey: "ContactCompany",
+      accessorKey: "EstimateNumber",
     },
     {
       header: "Estimate Amount",
-      accessorKey: "ContactEmail",
+      accessorKey: "EstimateAmount",
     },{
         header: "Description Of Work",
-        accessorKey: "ContactEmail",
+        accessorKey: "DescriptionofWork",
       },{
         header: "Date Created",
-        accessorKey: "ContactEmail",
+        accessorKey: "DateCreated",
       },
       {
         header: "Status",
-        accessorKey: "ContactEmail",
+        accessorKey: "ContacStatustEmail",
       },
 
     // {

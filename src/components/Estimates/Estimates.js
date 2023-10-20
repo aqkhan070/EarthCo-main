@@ -14,13 +14,10 @@ import { Autocomplete, TextField } from "@mui/material";
 const Estimates = () => {
   const activeRef = useRef(null);
 
-  const { estimates, setSingleObj } = useContext(DataContext);
+  // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
 
-  const [customers, setCustomers] = useState([
-    { customerName: "Customer 1", quantity : "Quantity 1" },
-    { customerName: "Customer 2", quantity : "Quantity 2" },
-  ]);
+  const [estimates, setEstimates] = useState([]);
   const [selectedCustomer, setSelectCustomer] = useState({});
 
   const [customer, setCustomer] = useState("");
@@ -31,10 +28,7 @@ const Estimates = () => {
 
   const navigate = useNavigate();
 
-  // const getUsers = async () => {
-  //     const response = await axios.get('http://localhost:8001/Customers');
-  //     setCustomers(response.data)
-  // }
+ 
 
   useEffect(() => {
     const getEstimate = async () => {
@@ -43,6 +37,7 @@ const Estimates = () => {
           "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateList"
         );
         console.log("estimate response is", response.data);
+        setEstimates(response.data);
       } catch (error) {
         console.error("API Call Error:", error);
       }
@@ -64,7 +59,7 @@ const Estimates = () => {
     }
   }, [serviceLocation, customer]);
 
-  const popUpData = customers.map((object) => {
+  const popUpData = estimates.map((object) => {
     return {
       name: object.customerName,
       quantity: object.quantity,
@@ -79,13 +74,13 @@ const Estimates = () => {
       }
       return null;
     });
-    setSingleObj(updatedArr);
+    // setSingleObj(updatedArr);
   };
 
-  const customerOptions = customers.map((item) => {
+  const customerOptions = estimates.map((item) => {
     return item.customerName;
   });
-  const qtyOptions = customers.map((item) => {
+  const qtyOptions = estimates.map((item) => {
     return item.quantity;
   });
 
@@ -192,7 +187,7 @@ const Estimates = () => {
                 </div>
               </div>
               <div className="table-responsive active-projects style-1">
-                <EstimateTR estimates={"    "} />
+                <EstimateTR estimates={estimates} />
                 
               </div>
             </div>
