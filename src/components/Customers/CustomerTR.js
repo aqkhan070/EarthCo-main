@@ -43,9 +43,9 @@ const CustomerTR = ({ customers }) => {
       header: "Actions",
       cell: (
         <div className="badgeBox justify-content-center ">
-          {/* <button
+          <button
         type="button"
-        onClick={(e) => setSelectedCustomer(customer)}
+        onClick={(e) => {}}
         className="dispContents"
         data-toggle="modal"
         data-target="#customerShow"
@@ -53,7 +53,7 @@ const CustomerTR = ({ customers }) => {
         <span className="actionBadge badge-success light border-0">
           <span className="material-symbols-outlined">visibility</span>
         </span>
-      </button> */}
+      </button>
           <span className="actionBadge badge-danger light border-0 badgebox-size">
             <span className="material-symbols-outlined badgebox-size ">
               delete
