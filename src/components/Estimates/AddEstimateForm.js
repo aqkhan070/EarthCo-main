@@ -25,17 +25,22 @@ const AddEstimateForm = () => {
   const [customers, setCustomers] = useState([]);
 
   const [formData, setFormData] = useState({
-    CustomerId: "",
-    ServiceLocation: "",
-    Email: "",
-    EstimateNumber: "",
-    IssueDate: "2023-09-10",
-    EstimateNotes: "",
-    ServiceLocationNotes: "",
-    PrivateNotes: "",
-    QBStatus: "",
-    tblEstimateItems: [],
-    // Files: [],
+    EstimateData: {
+      CustomerId: "",
+      ServiceLocation: "",
+      Email: "",
+      EstimateNumber: "",
+      IssueDate: "2023-09-10",
+      EstimateNotes: "",
+      ServiceLocationNotes: "",
+      PrivateNotes: "",
+      QBStatus: "",
+      tblEstimateItems: [],
+      isActive: true, // Assuming default value is true
+      CreatedBy: 2, // Assuming default value is 2
+      EditBy: 2, // Assuming default value is 2
+    },
+    Files: [],
   });
 
   const fetchCustomers = async () => {
@@ -56,7 +61,7 @@ const AddEstimateForm = () => {
         "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
         formData
       );
-  
+
       if (response.status === 200) {
         console.log("Data submitted successfully:", response.data);
       } else {
@@ -133,13 +138,20 @@ const AddEstimateForm = () => {
   const handleSubmit = () => {
     const updatedFormData = {
       ...formData,
-      tblEstimateItems: [...formData.tblEstimateItems, ...itemForm.tblEstimateItems],
-    //   Files: [...formData.Files, ...Files],
+      EstimateData: {
+        ...formData.EstimateData,
+        tblEstimateItems: [
+          ...formData.EstimateData.tblEstimateItems,
+          ...itemForm.tblEstimateItems,
+        ],
+      },
+      Files: [...formData.Files, ...Files],
     };
+
     console.log("Updated formData within handleSubmit:", updatedFormData);
     setFormData(updatedFormData);
-    submitData()
   };
+
   useEffect(() => {
     console.log("Updated formData is:", formData);
   }, [formData]);
