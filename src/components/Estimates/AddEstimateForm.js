@@ -73,29 +73,48 @@ const AddEstimateForm = () => {
 };
 
 
-  const submitData = async () => {
-    const postData = {
-        EstimateData: {
-            ...formData.EstimateData,
-            tblEstimateItems: [...formData.EstimateData.tblEstimateItems, ...itemForm.tblEstimateItems],
-        },
-        Files: [...formData.Files, ...Files],
-    };
-    console.log("object finalllll",postData)  ;
-    try {
+const submitData = async () => {
+  const postData = new FormData();
+
+  // Append all form fields to postData
+  Object.keys(formData.EstimateData).forEach(key => {
+      postData.append(`EstimateData[${key}]`, formData.EstimateData[key]);
+  });
+
+  // Append the estimate items
+  formData.EstimateData.tblEstimateItems.concat(itemForm.tblEstimateItems).forEach((item, index) => {
+      Object.keys(item).forEach(key => {
+          postData.append(`EstimateData[tblEstimateItems][${index}][${key}]`, item[key]);
+      });
+  });
+
+
+  Files.forEach((fileObj, index) => {
+      postData.append(`Files[${index}]`, fileObj.actualFile);
+  });
+
+  try {
       const response = await axios.post(
-        "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
-        postData
+          "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
+          postData,
+          {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          }
       );
 
       if (response.status === 200) {
-        console.log("Data submitted successfully:", response.data);
+          console.log("Data submitted successfully:", response.data);
       } else {
-        console.log("Error submitting data:", response.statusText);
+          console.log("Error submitting data:", response.statusText);
       }
-    } catch (error) {
+  } catch (error) {
       console.error("API Call Error:", error);
-    }
+  }
+  for (let [key, value] of postData.entries()) {
+    console.log(key, value);
+}
 };
 
 
