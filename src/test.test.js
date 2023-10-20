@@ -7,6 +7,7 @@ import axios from "axios";
 
 const AddEstimateForm = () => {
   const { estimateItems } = useContext(DataContext);
+  
 
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState("2023-09-10");
@@ -35,7 +36,7 @@ const AddEstimateForm = () => {
     PrivateNotes: "",
     QBStatus: "",
     tblEstimateItems: [],
-    Files: [],
+    // Files: [],
   });
 
   const fetchCustomers = async () => {
@@ -45,6 +46,23 @@ const AddEstimateForm = () => {
     try {
       setCustomers(response.data);
       //   console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const submitData = async () => {
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
+        formData
+      );
+  
+      if (response.status === 200) {
+        console.log("Data submitted successfully:", response.data);
+      } else {
+        console.log("Error submitting data:", response.statusText);
+      }
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -121,6 +139,7 @@ const AddEstimateForm = () => {
     };
     console.log("Updated formData within handleSubmit:", updatedFormData);
     setFormData(updatedFormData);
+    submitData()
   };
   useEffect(() => {
     console.log("Updated formData is:", formData);
@@ -128,7 +147,7 @@ const AddEstimateForm = () => {
 
   return (
     <div class="card">
-      {/* all working fine */}
+       // this code is all set
     </div>
   );
 };
