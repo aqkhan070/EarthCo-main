@@ -45,7 +45,6 @@ const DashboardPage = () => {
     return (
         <>
             <HeaderExp />
-            
             <SideBar />
 
             <div className="content-body" id='contentBody'>
@@ -59,7 +58,7 @@ const DashboardPage = () => {
                         <Route path='' element={<CustomersTable />} />
                         <Route path='Add-Customer' element={<AddCutomer />} />
                     </Route>
-                    <Route path='Staff' element={<StaffIndex />} >
+                    <Route path='Staff/*' element={<StaffIndex />} >
                         <Route path='' element={<StaffList />} />
                         <Route path='Add-Staff' element={<AddStaff />} />
                     </Route>
