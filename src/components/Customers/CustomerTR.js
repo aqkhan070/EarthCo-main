@@ -65,7 +65,7 @@ const CustomerTR = ({ customers }) => {
             </Button>
           </Link>
         </div>
-      </div>
+      </div> <br/>
 
       <Table>
         <TableHead>
