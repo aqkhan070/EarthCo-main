@@ -1,20 +1,39 @@
-<div className="badgeBox justify-content-center ">
-<button
-type="button"
-onClick={(e) => {
-setSelectedItem(e.target.values);
-console.log("selected item is ", selectedItem);
-}}
-className="dispContents"       
+import React, { useEffect, useState, useRef } from "react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
->
-<span className="actionBadge badge-success light border-0 badgebox-size">
-<span className="material-symbols-outlined badgebox-size">create</span>
-</span>
-</button>
-<span className="actionBadge badge-danger light border-0 badgebox-size">
-  <span className="material-symbols-outlined badgebox-size ">
-    delete
-  </span>
-</span>
-</div>
+const UpdateCustomer = () => {
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const customerId = location.state?.customerId;
+
+
+
+
+
+
+
+  return (
+    <div className="container-fluid">
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className="card">
+          <div className="card-header">
+            <h4 className="modal-title" id="#gridSystemModal">
+              Customer Info {customerId}
+            </h4>
+          </div>
+          
+        </div>
+      </form>
+
+      
+
+      {/* Contacts Table */}
+
+      
+    </div>
+  );
+};
+
+export default UpdateCustomer;

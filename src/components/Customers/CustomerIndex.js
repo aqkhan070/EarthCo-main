@@ -3,6 +3,7 @@ import CustomersTable from './CustomersTable'
 import TitleBar from '../TitleBar'
 import { Route, Routes } from 'react-router-dom'
 import AddCutomer from './AddCutomer'
+import UpdateCustomer from './UpdateCustomer'
 
 const CustomerIndex = () => {
 
@@ -17,6 +18,7 @@ const CustomerIndex = () => {
             <Routes>
                 <Route path='' element={<CustomersTable />} />
                 <Route path='Add-Customer' element={<AddCutomer />} />
+                <Route path='Update-Customer' element={<UpdateCustomer />} />
             </Routes>
         </>
     )

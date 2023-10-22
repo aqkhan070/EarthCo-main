@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import {
   Table,
@@ -13,18 +13,19 @@ import {
   TablePagination,
   Checkbox,
 } from "@mui/material";
-import { Create, Delete } from "@mui/icons-material";
+import { Create, Delete, Update } from "@mui/icons-material";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#7c9c3d',
+      main: "#7c9c3d",
     },
   },
 });
 
 const CustomerTR = ({ customers }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
+  // const [selectedItem, setSelectedItem] = useState(null);
+
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
@@ -46,111 +47,125 @@ const CustomerTR = ({ customers }) => {
   );
 
   return (
-    <ThemeProvider theme={theme}><div className="container">
-    <div className="container text-center">
-      <div className="row justify-content-between">
-        <div className="col-3 search-container tblsearch-input">
-          <TextField
-          className="tblsearch-input"
-            label="Search"
-            value={filtering}
-            onChange={(e) => setFiltering(e.target.value)}
-            fullWidth
-          />
-        </div>
-        <div className="col-3 add-customer-btn">
-          <Link to="/Dashboard/Customers/Add-Customer">
-            <Button variant="contained" color="primary">
-              + Add Customer
-            </Button>
-          </Link>
-        </div>
-      </div> <br/>
-
-      <Table>
-        <TableHead>
-          <TableRow className="table-header">
-            {/* Map through columns here */}
-            {[
-              
-              "Select",
-              "CustomerId",
-              "CustomerName",
-              "ContactName",
-              "ContactCompany",
-              "ContactEmail",
-              "Actions",
-            ].map((column, index) => (
-              <TableCell key={index}>
-                {index < 5 ? (
-                  <TableSortLabel
-                    active={sorting.field === column}
-                    direction={sorting.order}
-                    onClick={() =>
-                      setSorting({
-                        field: column,
-                        order:
-                          sorting.order === "asc" && sorting.field === column
-                            ? "desc"
-                            : "asc",
-                      })
-                    }
-                  >
-                    {column}
-                  </TableSortLabel>
-                ) : (
-                  column
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredCustomers
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((customer, rowIndex) => (
-              <TableRow key={rowIndex} hover>
-                <TableCell>
+    <ThemeProvider theme={theme}>
+      <div className="container">
+        <div className="container text-center">
+          <div className="row justify-content-between">
+            <div className="col-3 search-container tblsearch-input">
+              <TextField
+                className="tblsearch-input"
+                label="Search"
+                value={filtering}
+                onChange={(e) => setFiltering(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <div className="col-3 add-customer-btn">
+              <Link to="/Dashboard/Customers/Add-Customer">
+                <Button variant="contained" color="primary">
+                  + Add Customer
+                </Button>
+              </Link>
+            </div>
+          </div>{" "}
+          <br />
+          <Table>
+            <TableHead>
+              <TableRow className="table-header">
+                {/* Map through columns here */}
+                {[
+                  // "Select",
+                  "CustomerId",
+                  "CustomerName",
+                  "ContactName",
+                  "ContactCompany",
+                  "ContactEmail",
+                  "Actions",
+                ].map((column, index) => (
+                  <TableCell key={index}>
+                    {index < 5 ? (
+                      <TableSortLabel
+                        active={sorting.field === column}
+                        direction={sorting.order}
+                        onClick={() =>
+                          setSorting({
+                            field: column,
+                            order:
+                              sorting.order === "asc" &&
+                              sorting.field === column
+                                ? "desc"
+                                : "asc",
+                          })
+                        }
+                      >
+                        {column}
+                      </TableSortLabel>
+                    ) : (
+                      column
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredCustomers
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((customer, rowIndex) => (
+                  <TableRow key={rowIndex} hover>
+                    {/* <TableCell>
                   <Checkbox
                     checked={selectedItem === customer.CustomerId}
                     onChange={() => setSelectedItem(customer.CustomerId)}
-                  />
-                </TableCell>
-                <TableCell>{customer.CustomerId}</TableCell>
-                <TableCell>{customer.CustomerName}</TableCell>
-                <TableCell>{customer.ContactName}</TableCell>
-                <TableCell>{customer.ContactCompany}</TableCell>
-                <TableCell>{customer.ContactEmail}</TableCell>
-                <TableCell>
-                  <Button
-                    className="delete-button"
-                    onClick={() => {setSelectedItem(customer.CustomerId); console.log(",,,,,,,,,,",selectedItem);}}
-                  >
-                    <Create />
-                  </Button>
-                  <Button color="error" className="delete-button" onClick={() => setSelectedItem(customer.CustomerId)} >
-                    <Delete />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-
-      <TablePagination
-        component="div"
-        count={filteredCustomers.length}
-        page={page}
-        onPageChange={(event, newPage) => setPage(newPage)}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(event) => {
-          setRowsPerPage(parseInt(event.target.value, 10));
-          setPage(0);
-        }}
-      />
-    </div>
-  </div></ThemeProvider>
-    
+                  /> 
+                </TableCell>*/}
+                    <TableCell>{customer.CustomerId}</TableCell>
+                    <TableCell>{customer.CustomerName}</TableCell>
+                    <TableCell>{customer.ContactName}</TableCell>
+                    <TableCell>{customer.ContactCompany}</TableCell>
+                    <TableCell>{customer.ContactEmail}</TableCell>
+                    <TableCell>
+                      <Link
+                        to={{
+                          pathname: "/Dashboard/Customers/Update-Customer",
+                          state: { customerId: selectedItem },
+                        }}
+                      >
+                        <Button
+                          className="delete-button"
+                          onClick={() => {
+                            setSelectedItem(customer.CustomerId);
+                            console.log(",,,,,,,,,,", selectedItem);
+                          }}
+                        >
+                          <Create />
+                        </Button>
+                      </Link>
+                      <Button
+                        color="error"
+                        className="delete-button"
+                        onClick={() => setSelectedItem(customer.CustomerId)}
+                      >
+                        <Delete />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            component="div"
+            count={filteredCustomers.length}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+          />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 };
 

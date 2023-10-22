@@ -9,6 +9,7 @@ import CustomerIndex from "./components/Customers/CustomerIndex";
 import EstimateIndex from "./components/Estimates/EstimateIndex";
 import CustomersTable from "./components/Customers/CustomersTable";
 import AddCutomer from "./components/Customers/AddCutomer";
+import UpdateCustomer from "./components/Customers/UpdateCustomer";
 import ServiceIndex from "./components/ServiceRequest/ServiceIndex";
 import IrrigationIndex from "./components/Irrigation/IrrigationIndex";
 import IrrigationForm from "./components/Irrigation/IrrigationForm";
@@ -58,6 +59,7 @@ function App() {
             <Route path="Customers" element={<CustomerIndex />}>
               <Route path="" element={<CustomersTable />} />
               <Route path="Add-Customer" element={<AddCutomer />} />
+              <Route path="Update-Customer" element={<UpdateCustomer />} />
             </Route>
             <Route path="Staff/*" element={<StaffIndex />}>
               <Route path="" element={<StaffList />} />
