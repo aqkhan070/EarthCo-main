@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const UpdateCustomer = () => {
+const UpdateCustomer = ({setShowContent}) => {
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -151,49 +151,6 @@ const UpdateCustomer = () => {
     }
   };
 
-  // const handleSubmit = async () => {
-  //   setMainObjValues();
-  //   try {
-  //     const response = await axios.post(
-  //       "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
-  //       {
-  //         CustomerData: {
-  //           CustomerName: formData.CustomerData.CustomerName,
-  //         },
-  //         ContactData: contacts.map((contact) => ({
-  //           FirstName: contact.FirstName,
-  //           LastName: contact.LastName,
-  //           Email: contact.Email,
-  //           Phone: contact.Phone,
-  //           CompanyName: contact.CompanyName,
-  //           Address: contact.Address,
-  //           isPrimary: contact.isPrimary,
-  //         })),
-  //       },
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     console.log("API response:", response.data);
-
-  //     setFormData({
-  //       CustomerData: {
-  //         CustomerName: "",
-  //       },
-  //       ContactData: [],
-  //     });
-
-  //     setContacts([]); // Clear the contacts array
-
-  //     navigate("/Dashboard/Customers");
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-  //   }
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -268,7 +225,7 @@ const UpdateCustomer = () => {
         <div className="card">
           <div className="card-header">
             <h4 className="modal-title" id="#gridSystemModal">
-              Customer Info0 {customerId}
+              Customer Info0 
             </h4>
           </div>
           <div className="card-body">
@@ -498,7 +455,7 @@ const UpdateCustomer = () => {
           Submit
         </button>
         <NavLink to="/Dashboard/Customers">
-          <button className="btn btn-danger light ms-1">Cancel</button>
+          <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
         </NavLink>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import UpdateCustomer from "./UpdateCustomer";
 import { Link } from "react-router-dom";
 import {
   Table,
@@ -24,8 +25,10 @@ const theme = createTheme({
 });
 
 const CustomerTR = ({ customers }) => {
-  // const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showContent, setShowContent] = useState(true);
 
+  
   const [sorting, setSorting] = useState({ field: "", order: "" });
   const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
@@ -46,9 +49,44 @@ const CustomerTR = ({ customers }) => {
     customer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
   );
 
+  const deleteCustomer = async (id) => {
+    try {
+        const response = await fetch(`https://earthcoapi.yehtohoga.com/api/Customer/DeleteCustomer?id=${id}`, {
+            method: 'GET', 
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to delete customer');
+        }
+
+        const data = await response.json();
+
+        // Handle the response. For example, you can reload the customers or show a success message
+        console.log("Customer deleted successfully:", data);
+        window.location.reload();
+
+    } catch (error) {
+        console.error("There was an error deleting the customer:", error);
+    }
+}
+
+const handleDelete = (id) => {
+ 
+  if (window.confirm("Are you sure you want to delete this customer?")) {
+      deleteCustomer(id);
+  }
+}
+
+
+
+
+
   return (
     <ThemeProvider theme={theme}>
-      <div className="container">
+      {showContent? <div className="container">
         <div className="container text-center">
           <div className="row justify-content-between">
             <div className="col-3 search-container tblsearch-input">
@@ -125,16 +163,14 @@ const CustomerTR = ({ customers }) => {
                     <TableCell>{customer.ContactEmail}</TableCell>
                     <TableCell>
                       <Link
-                        to={{
-                          pathname: "/Dashboard/Customers/Update-Customer",
-                          state: { customerId: selectedItem },
-                        }}
+                        // to={"/Dashboard/Customers/Update-Customer"}
                       >
                         <Button
                           className="delete-button"
                           onClick={() => {
                             setSelectedItem(customer.CustomerId);
                             console.log(",,,,,,,,,,", selectedItem);
+                            setShowContent(false);
                           }}
                         >
                           <Create />
@@ -143,7 +179,7 @@ const CustomerTR = ({ customers }) => {
                       <Button
                         color="error"
                         className="delete-button"
-                        onClick={() => setSelectedItem(customer.CustomerId)}
+                        onClick={() => handleDelete(customer.CustomerId)}
                       >
                         <Delete />
                       </Button>
@@ -164,7 +200,8 @@ const CustomerTR = ({ customers }) => {
             }}
           />
         </div>
-      </div>
+      </div> : <UpdateCustomer setShowContent = {setShowContent} />}
+      
     </ThemeProvider>
   );
 };
