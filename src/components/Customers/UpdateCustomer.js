@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const UpdateCustomer = ({setShowContent}) => {
+const UpdateCustomer = ({selectedItem, setShowContent}) => {
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -92,6 +92,7 @@ const UpdateCustomer = ({setShowContent}) => {
 
     // Prepare the CustomerData and ContactData payload
     const customerPayload = {
+      CustomerId: selectedItem,
       CustomerName: formData.CustomerData.CustomerName,
       CreatedBy: 1, // Set this as per your need
       EditBy: 1, // Set this as per your need

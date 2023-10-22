@@ -200,7 +200,7 @@ const handleDelete = (id) => {
             }}
           />
         </div>
-      </div> : <UpdateCustomer setShowContent = {setShowContent} />}
+      </div> : <UpdateCustomer selectedItem = {selectedItem} setShowContent = {setShowContent} />}
       
     </ThemeProvider>
   );
