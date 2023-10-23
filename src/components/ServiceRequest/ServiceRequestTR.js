@@ -10,7 +10,9 @@ import {
   TableSortLabel,
   Button,
   TablePagination,
+  TableContainer,
   Checkbox,
+  Paper,
 } from "@mui/material";
 import { Create, Delete } from "@mui/icons-material";
 
@@ -36,13 +38,33 @@ const ServiceRequestTR = ({ serviceRequest }) => {
     return 0;
   });
 
-  const deleteCustomer = async (id) => {
-    // ... (This part remains unchanged)
+  const deleteServiceRequest = async (id) =>{
+    try {
+        const response = await fetch(`https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`, {
+            method: 'GET', 
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+  
+        if (!response.ok) {
+            throw new Error('Failed to delete ServiceRequest');
+        }
+  
+        const data = await response.json();
+  
+        // Handle the response. For example, you can reload the customers or show a success message
+        console.log("ServiceRequest deleted successfully:", data);
+        window.location.reload();
+  
+    } catch (error) {
+        console.error("There was an error deleting the customer:", error);
+    }
   }
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this customer?")) {
-      deleteCustomer(id);
+      deleteServiceRequest(id);
     }
   }
 
@@ -60,6 +82,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
             </div>
           </div>
           <br />
+          <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow className="table-header">
@@ -125,7 +148,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                       <Button
                         color="error"
                         className="delete-button"
-                        onClick={() => handleDelete(customer.CustomerId)}
+                        onClick={() => handleDelete(customer.ServiceRequestId)}
                       >
                         <Delete />
                       </Button>
@@ -134,6 +157,9 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                 ))}
             </TableBody>
           </Table>
+          </TableContainer>
+            
+          
           <TablePagination
             component="div"
             count={sortedCustomers.length}
