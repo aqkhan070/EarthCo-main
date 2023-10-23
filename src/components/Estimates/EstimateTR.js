@@ -1,212 +1,213 @@
-import React, {  useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
 import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  TableSortLabel, Paper, TextField, TablePagination, Checkbox, Button
+} from '@mui/material';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
-import { useState } from "react";
+
+import { Delete, Create } from '@mui/icons-material';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#7c9c3d",
+    },
+  },
+});
 
 const EstimateTR = ({ estimates }) => {
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('EstimateId');
+  const [filtering, setFiltering] = useState('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  
 
-  const [sorting, setSorting] = useState([]);
-  const [filtering, setFiltering] = useState("");
+  const handleSort = (property) => {
+    let actualProperty;
+    switch (property) {
+        case '#':
+            actualProperty = 'EstimateId';
+            break;
+        case 'Customer Name':
+            actualProperty = 'CustomerName';
+            break;
+        case 'Estimate Number':
+            actualProperty = 'EstimateNumber';
+            break;
+        case 'Estimate Amount':
+            actualProperty = 'EstimateAmount';
+            break;
+        case 'Description Of Work':
+            actualProperty = 'DescriptionofWork';
+            break;
+        case 'Date Created':
+            actualProperty = 'DateCreated';
+            break;
+        case 'Status':
+            actualProperty = 'ContactStatusEmail'; // seems like a typo. Should this be 'Status'?
+            break;
+        default:
+            actualProperty = property;
+    }
 
-  const data = useMemo(() => estimates, [estimates]);
-  /** @type import('@tanstack/react-table').ColumnDef<any> */
-  const columns = [
-    {
-        header: "check",
-        accessorKey: "CustomerId",
-      },
-      {
-      header: "#",
-      accessorKey: "EstimateId",
-    },
-    {
-      header: "Customer Name",
-      accessorKey: "CustomerName",
-    },
-    {
-      header: "Assign to",
-      accessorKey: "CustomerName",
-    },
-    {
-      header: "Estimate Number",
-      accessorKey: "EstimateNumber",
-    },
-    {
-      header: "Estimate Amount",
-      accessorKey: "EstimateAmount",
-    },{
-        header: "Description Of Work",
-        accessorKey: "DescriptionofWork",
-      },{
-        header: "Date Created",
-        accessorKey: "DateCreated",
-      },
-      {
-        header: "Status",
-        accessorKey: "ContacStatustEmail",
-      },
+    const isAsc = orderBy === actualProperty && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(actualProperty);
+};
 
-    {
-      header: "Actions",
-      cell: (
-        <div className="badgeBox justify-content-center ">
-          {/* <button
-        type="button"
-        onClick={(e) => setSelectedCustomer(customer)}
-        className="dispContents"
-        data-toggle="modal"
-        data-target="#customerShow"
-      >
-        <span className="actionBadge badge-success light border-0">
-          <span className="material-symbols-outlined">visibility</span>
-        </span>
-      </button> */}
-          <span className="actionBadge badge-danger light border-0 badgebox-size">
-            <span className="material-symbols-outlined badgebox-size ">
-              delete
-            </span>
-          </span>
-        </div>
-      ),
-    },
-  ];
+  const filteredEstimates = estimates.filter(e => 
+    e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+  );
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting: sorting,
-      globalFilter: filtering,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setFiltering,
-  });
+  // ... Pagination, Sorting logic ...
+  function desc(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+        return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+        return 1;
+    }
+    return 0;
+}
+
+function stableSort(array, cmp) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+        const order = cmp(a[0], b[0]);
+        if (order !== 0) return order;
+        return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+}
+
+function getSorting(order, orderBy) {
+    return order === 'desc'
+        ? (a, b) => desc(a, b, orderBy)
+        : (a, b) => -desc(a, b, orderBy);
+}
+
+const deleteEstimate = async (id) => {
+  try {
+      const response = await fetch(`https://earthcoapi.yehtohoga.com/api/Estimate/DeleteEstimate?id=${id}`, {
+          method: 'GET', 
+          headers: {
+              'Content-Type': 'application/json',
+          }
+      });
+
+      if (!response.ok) {
+          throw new Error('Failed to delete customer');
+      }
+
+      const data = await response.json();
+
+      // Handle the response. For example, you can reload the customers or show a success message
+      console.log("Customer deleted successfully:", data);
+      window.location.reload();
+
+  } catch (error) {
+      console.error("There was an error deleting the customer:", error);
+  }
+}
+
+const handleDelete = (id) => {
+ 
+  if (window.confirm("Are you sure you want to delete this customer?")) {
+    deleteEstimate(id);
+  }
+}
+
 
   return (
-    <>
-      <div className="container">
-        <div className="container text-center">
-          <div className="row justify-content-between">
-            <div className="col-6 search-container">
-              <div className="container text-center search-wrap">
-                <div className="row justify-content-start ">
-                  <div className="col-3">
-                    <label
-                      htmlFor="searchInput"
-                      className="col-sm-4 col-form-label search-Lable"
-                    >
-                      Search:
-                    </label>
-                  </div>
-                  <div class="col-4">
-                    <input
-                      type="text"
-                      className="form-control customer-search-input"
-                      value={filtering}
-                      placeholder="Search Customer..."
-                      onChange={(e) => setFiltering(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-           
-          </div>
-        </div>
-
-        <table className="table">
-          <thead className="table-header">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {
-                          { asc: "▲", desc: "▼ " }[
-                            header.column.getIsSorted() ?? null
-                          ]
-                        }
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <div class="d-flex flex-row-reverse">
-        <div className="p-2">
-            <button
-              className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            >
-              Last
-            </button>
-          </div>
-          
-          <div className="p-2">
-            <button
-              className="btn btn-secondary page-btn"
-              disabled={!table.getCanNextPage()}
-              onClick={() => table.nextPage()}
-            >
-              Next
-            </button>
-          </div>
-          <div className="p-2">
-            <button
-              className="btn btn-secondary page-btn"
-              disabled={!table.getCanPreviousPage()}
-              onClick={() => table.previousPage()}
-            >
-              Prev
-            </button>
-          </div>
-          <div className="p-2">
-            <button
-              className="btn btn-primary page-btn"
-              onClick={() => table.setPageIndex(0)}
-            >
-              First
-            </button>
-          </div>
-          
-        </div>
+    <Paper>
+      <div className="container text-center">
+        <TextField 
+          label="Search" 
+          variant="outlined" 
+          value={filtering} 
+          onChange={(e) => setFiltering(e.target.value)} 
+        />
       </div>
-    </>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox />
+              </TableCell>
+              {["#", "Customer Name", "Assign to", "Estimate Number", "Estimate Amount", "Description Of Work", "Date Created", "Status", "Actions"].map((headCell) => (
+                <TableCell
+                  key={headCell}
+                  sortDirection={orderBy === headCell ? order : false}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell}
+                    direction={orderBy === headCell ? order : 'asc'}
+                    onClick={() => handleSort(headCell)}
+                  >
+                    {headCell}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredEstimates.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((estimate, index) => (
+              <TableRow key={estimate.EstimateId}>
+                <TableCell padding="checkbox">
+                  <Checkbox />
+                </TableCell>
+                <TableCell>{estimate.EstimateId}</TableCell>
+                <TableCell>{estimate.CustomerName}</TableCell>
+                <TableCell>{estimate.CustomerName}</TableCell>
+                <TableCell>{estimate.EstimateNumber}</TableCell>
+                <TableCell>{estimate.EstimateAmount}</TableCell>
+                <TableCell>{estimate.DescriptionofWork}</TableCell>
+                <TableCell>{estimate.DateCreated}</TableCell>
+                <TableCell>{estimate.ContactStatustEmail}</TableCell>
+                <TableCell>
+                <Link
+                        // to={"/Dashboard/Customers/Update-Customer"}
+                      >
+                        <Button
+                          className="delete-button"
+                          // onClick={() => {
+                          //   setSelectedItem(customer.CustomerId);
+                          //   console.log(",,,,,,,,,,", selectedItem);
+                          //   setShowContent(false);
+                          // }}
+                        >
+                          <Create />
+                        </Button>
+                      </Link>
+                </TableCell>
+                <TableCell>
+                  <Button>
+
+                  <Delete color="error" onClick={() => handleDelete(estimate.EstimateId)} />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredEstimates.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={(event, newPage) => setPage(newPage)}
+        onRowsPerPageChange={(event) => {
+          setRowsPerPage(parseInt(event.target.value, 10));
+          setPage(0);
+        }}
+      />
+    </Paper>
   );
 };
 
