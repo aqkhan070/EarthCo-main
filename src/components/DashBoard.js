@@ -30,40 +30,41 @@ const DashBoard = () => {
     });
     setSingleObj(updatedArr);
   };
-  const handleCatClick2 = (type, id) => {
-    setSRroute(type);
-    const updatedArr = serviceRequests.filter((object) => {
-      if (id === object.ID) {
-        return object;
-      }
-      return object;
-    });
-    setSingleSR(updatedArr[0]);
-  };
+  
+  // const handleCatClick2 = (type, id) => {
+  //   setSRroute(type);
+  //   const updatedArr = serviceRequests.filter((object) => {
+  //     if (id === object.ID) {
+  //       return object;
+  //     }
+  //     return object;
+  //   });
+  //   setSingleSR(updatedArr[0]);
+  // };
 
-  const renderedRows = serviceRequests.map((item, index) => {
-    return (
-      <ServiceRequestTR
-        key={item.ID}
-        index={index}
-        record={item}
-        onClick={() => handleCatClick2(`service-request${item.ID}`, item.ID)}
-      />
-    );
-  });
+  // const renderedRows = serviceRequests.map((item, index) => {
+  //   return (
+  //     <ServiceRequestTR
+  //       key={item.ID}
+  //       index={index}
+  //       record={item}
+  //       onClick={() => handleCatClick2(`service-request${item.ID}`, item.ID)}
+  //     />
+  //   );
+  // });
 
-//   const renderedEstimates = estimates.map((object, index) => {
-//     return (
-//       <EstimateTR
-//         key={object.estimateID}
-//         index={index}
-//         onClick={() =>
-//           handleCatClick(`Estimate${object.estimateID}`, object.estimateID)
-//         }
-//         estimate={object}
-//       />
-//     );
-//   });
+  //   const renderedEstimates = estimates.map((object, index) => {
+  //     return (
+  //       <EstimateTR
+  //         key={object.estimateID}
+  //         index={index}
+  //         onClick={() =>
+  //           handleCatClick(`Estimate${object.estimateID}`, object.estimateID)
+  //         }
+  //         estimate={object}
+  //       />
+  //     );
+  //   });
 
   const icon = (
     <svg
@@ -666,7 +667,7 @@ const DashBoard = () => {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>{renderedRows}</tbody>
+                    {/* <tbody>{renderedRows}</tbody> */}
                   </table>
                 </div>
               </div>
