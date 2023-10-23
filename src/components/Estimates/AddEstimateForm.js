@@ -72,27 +72,33 @@ const AddEstimateForm = () => {
     }
 };
 
-
-const submitData = async () => {
+const handleSubmit = () => {
   const postData = new FormData();
 
-  // Append all form fields to postData
-  Object.keys(formData.EstimateData).forEach(key => {
-      postData.append(`EstimateData[${key}]`, formData.EstimateData[key]);
+  // Merge the current items with the new items for EstimateData
+  const mergedEstimateData = {
+      ...formData.EstimateData,
+      tblEstimateItems: [
+          ...formData.EstimateData.tblEstimateItems,
+          ...itemForm.tblEstimateItems,
+      ]
+  };
+
+ 
+  postData.append('EstimateData', JSON.stringify(mergedEstimateData));
+
+  appendFilesToFormData(postData);
+
+  submitData(postData);
+};
+
+const appendFilesToFormData = (formData) => {
+  Files.forEach((fileObj) => {
+      formData.append('Files', fileObj.actualFile);
   });
+};
 
-  // Append the estimate items
-  formData.EstimateData.tblEstimateItems.concat(itemForm.tblEstimateItems).forEach((item, index) => {
-      Object.keys(item).forEach(key => {
-          postData.append(`EstimateData[tblEstimateItems][${index}][${key}]`, item[key]);
-      });
-  });
-
-
-  Files.forEach((fileObj, index) => {
-      postData.append(`Files[${index}]`, fileObj.actualFile);
-  });
-
+const submitData = async (postData) => {
   try {
       const response = await axios.post(
           "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
@@ -112,10 +118,13 @@ const submitData = async () => {
   } catch (error) {
       console.error("API Call Error:", error);
   }
+
+  // Logging FormData contents (for debugging purposes)
   for (let [key, value] of postData.entries()) {
-    console.log(key, value);
-}
+      console.log(key, value);
+  }
 };
+
 
 
 
@@ -192,23 +201,7 @@ const submitData = async () => {
 
   
 
-  const handleSubmit = () => {
-    const updatedFormData = {
-      ...formData,
-      EstimateData: {
-        ...formData.EstimateData,
-        tblEstimateItems: [
-          ...formData.EstimateData.tblEstimateItems,
-          ...itemForm.tblEstimateItems,
-        ],
-      },
-      Files: [...formData.Files, ...Files],
-    };
-
-    // console.log("Updated formData within handleSubmit:", updatedFormData);
-    setFormData(updatedFormData);
-    submitData()
-  };
+  
   useEffect(() => {
     // console.log("Updated formData is:", formData);
   }, [formData]);
@@ -255,7 +248,7 @@ const submitData = async () => {
                         key={customer.CustomerId}
                         value={customer.CustomerId}
                       >
-                        {customer.CustomerId + " " + customer.CustomerName}
+                        { customer.CustomerName}
                       </option>
                     ))}
                   </Form.Select>
@@ -401,7 +394,7 @@ const submitData = async () => {
                         className="col-sm-9"
                         style={{ display: "flex", alignItems: "center" }}
                       >
-                        <h5 style={{ margin: "0" }}>$100.00</h5>{" "}
+                        <h5 style={{ margin: "0" }}>{itemForm.Rate * itemForm.Qty}</h5>{" "}
                       </div>
                     </div>
                   </div>
