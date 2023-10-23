@@ -26,7 +26,7 @@ const AddEstimateForm = () => {
         EstimateStatusId:"",
         tblEstimateItems: [],
     },
-    Files: [],
+    // Files: [],
 });
   const [itemForm, setItemForm] = useState({
     Name: "",
@@ -84,12 +84,12 @@ const handleSubmit = () => {
       ]
   };
 
- 
   postData.append('EstimateData', JSON.stringify(mergedEstimateData));
 
+  // Commented out the logic related to appending files
   // appendFilesToFormData(postData);
   // console.log("Filessszzzz", Files);
-  postData.append('Files', Files );
+  // postData.append('Files', Files );
   // console.log("post object ",postData );
 
   submitData(postData);

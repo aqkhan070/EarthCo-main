@@ -1,493 +1,220 @@
-import React, { useEffect, useState, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import StatusActions from "../StatusActions";
+import { Form } from "react-bootstrap";
+import { DataContext } from "../../context/AppData";
+import { NavLink } from "react-router-dom";
 import axios from "axios";
 
-const UpdateCustomer = ({selectedItem, setShowContent}) => {
-  const navigate = useNavigate();
-
+const AddEstimateForm = () => {
+  const { estimateItems } = useContext(DataContext);
   
 
-  const [contacts, setContacts] = useState([]);
-  const [loginState, setLoginState] = useState("dontallow");
-  const [showLogin, setShowLogin] = useState(false);
-  const [primary, setPrimary] = useState(false);
-
-  const [apiKeys, setapiKeys] = useState([]);
-  const [inputNames, setinputNames] = useState([]);
-  const [mainObj, setmainObj] = useState({});
-
-  const [customerData, setCustomerData] = useState({});
+  const [itemObj, setItemObj] = useState(estimateItems);
+  const [date, setDate] = useState();
 
   const [formData, setFormData] = useState({
-    CustomerData: {
-      CustomerName: "",
+    EstimateData: {
+        CustomerId: "",
+        ServiceLocation: "",
+        Email: "",
+        EstimateNumber: "",
+        IssueDate: "",
+        EstimateNotes: "",
+        ServiceLocationNotes: "",
+        PrivateNotes: "",
+        QBStatus: "",
+        EstimateStatusId:"",
+        tblEstimateItems: [],
     },
-    ContactData: [],
+    Files: [],
+});
+  const [itemForm, setItemForm] = useState({
+    Name: "",
+    Qty: "",
+    Description: "",
+    Rate: "",
+    tblEstimateItems: [],
   });
 
-  const inputReffname = useRef();
-  const inputReflname = useRef();
-  const inputRefemail = useRef();
-  const inputRefphone = useRef();
-  const inputRefCname = useRef();
-  const inputRefaddress = useRef();
-  const clearInput = () => {
-    // Step 3: Access the current property and set it to an empty string
-    inputReffname.current.value = "";
-    inputReflname.current.value = "";
-    inputRefemail.current.value = "";
-    inputRefphone.current.value = "";
-    inputRefCname.current.value = "";
-    inputRefaddress.current.value = "";
+  const inputFile = useRef(null);
+  const [Files, setFiles] = useState([]);
+
+  const [customers, setCustomers] = useState([]);
+
+
+
+
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+      //   console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
   };
 
-  useEffect(() => {
-    const dataObject = {};
-    inputNames.forEach((name) => {
-      dataObject[name] = "";
-    });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-    setmainObj(dataObject);
-    // console.log("object is ,,,", mainObj);
-  }, []);
-
-
-  const getCustomerData = async () => {
-    try {
-        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Axios automatically throws an error for non-2xx responses, so you don't need to check response.ok
-
-        setCustomerData(response.data) ;
-
-        // Handle the response. For example, you can reload the customers or show a success message
-        console.log("Customer deleted successfully:", customerData);
-       
-
-    } catch (error) {
-        console.error("There was an error deleting the customer:", error);
+    if (Object.keys(formData.EstimateData).includes(name)) {
+      setFormData(prevData => ({
+        ...prevData,
+        EstimateData: {
+          ...prevData.EstimateData,
+          [name]: value
+        }
+      }));
+    } else {
+      setFormData(prevData => ({ ...prevData, [name]: value }));
     }
 };
 
-  const fetchCustomers = async () => {
-    try {
-      const responses = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=0"
+const handleSubmit = () => {
+  const postData = new FormData();
+
+  // Merge the current items with the new items for EstimateData
+  const mergedEstimateData = {
+      ...formData.EstimateData,
+      tblEstimateItems: [
+          ...formData.EstimateData.tblEstimateItems,
+          ...itemForm.tblEstimateItems,
+      ]
+  };
+
+ 
+  postData.append('EstimateData', JSON.stringify(mergedEstimateData));
+
+  // appendFilesToFormData(postData);
+  // console.log("Filessszzzz", Files);
+  postData.append('Files', Files );
+  // console.log("post object ",postData );
+
+  submitData(postData);
+};
+
+const appendFilesToFormData = (formData) => {
+  Files.forEach((fileObj) => {
+      formData.append('Files', fileObj.actualFile);
+  });
+};
+
+const submitData = async (postData) => {
+  try {
+      const response = await axios.post(
+          "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
+          postData,
+          {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          }
       );
-    } catch (error) {
-      // console.log("API Call Error:", error.response.data);
-      const keys = Object.keys(error.response.data.ContactData[0]);
-      setapiKeys(keys);
-    }
-  };
 
-  const extractInputNames = () => {
-    const inputElements = document.querySelectorAll("form input");
+      if (response.status === 200) {
+          console.log("Data submitted successfully:", response.data);
+      } else {
+          console.log("Error submitting data:", response.statusText);
+      }
+  } catch (error) {
+      console.error("API Call Error:", error);
+  }
 
-    setinputNames(
-      Array.from(inputElements).map((input) => input.getAttribute("name"))
-    );
-    console.log("Input array is", inputNames);
-  };
+  // Logging FormData contents (for debugging purposes)
+  for (let [key, value] of postData.entries()) {
+      console.log("filessss",key, value);
+  }
+  // console.log("post data izzz",postData);
+};
+
+
+
+
   useEffect(() => {
     fetchCustomers();
-    getCustomerData();
-
-    extractInputNames();
   }, []);
 
-  const setMainObjValues = () => {
-    let updatedObj = { ...mainObj };
-    inputNames.forEach((name) => {
-      const inputValue = document.querySelector(`input[name="${name}"]`).value;
-      updatedObj[name] = inputValue;
-      // console.log(updatedObj[name]);
-    });
-    setmainObj(updatedObj);
-    console.log(mainObj);
+  const addItem = (e) => {
+    e.preventDefault();
+
+    const newItem = {
+      id: itemForm.tblEstimateItems.length + 1,
+      Name: itemForm.Name,
+      Description: itemForm.Description,
+      Qty: Number(itemForm.Qty),
+      Rate: Number(itemForm.Rate),
+      Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
+      Approved: false, 
+     
+    };
+
+    setItemForm((prevState) => ({
+      ...prevState,
+      tblEstimateItems: [...prevState.tblEstimateItems, newItem],
+      Name: "",
+      Qty: "",
+      Description: "",
+      Rate: "",
+    }));
   };
 
-  const handleSubmit = async () => {
-    setMainObjValues();
-
-    // Prepare the CustomerData and ContactData payload
-    const customerPayload = {
-      CustomerId: selectedItem,
-      CustomerName: formData.CustomerData.CustomerName,
-      CreatedBy: 1, // Set this as per your need
-      EditBy: 1, // Set this as per your need
-      isActive: true,
-    };
-
-    // This function filters out the mainObj based on the apiKeys and returns the valid payload object.
-    const preparePayload = (obj) => {
-      let payload = {};
-      apiKeys.forEach((key) => {
-        if (obj[key]) {
-          payload[key] = obj[key];
+        
+  const handleStatusChange = (e) => {
+    const { value } = e.target;
+    setFormData(prevData => ({
+        ...prevData,
+        EstimateData: {
+            ...prevData.EstimateData,
+            EstimateStatusId: value
         }
-      });
-      return payload;
-    };
+    }));
+}
 
-    const contactPayload = contacts.map((contact) => {
-      return {
-        ...preparePayload(contact),
-        isPrimary: contact.isPrimary || false,
-        isActive: true,
-        CreatedBy: "2", // Set this as per your need
-      };
-    });
-
-    // POST request payload
-    const postData = {
-      CustomerData: customerPayload,
-      ContactData: contacts,
-    };
-
-    try {
-      const response = await axios.post(
-        "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
-        postData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("postData,,,,,,,,,:", postData);
-
-      setFormData({
-        CustomerData: {
-          CustomerName: "",
-        },
-        ContactData: [],
-      });
-
-      setContacts([]); // Clear the contacts array
-      navigate("/Dashboard/Customers");
-      setShowContent(true);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error submitting data:", error);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setItemForm((prevState) => ({ ...prevState, [name]: value }));
+  };
 
-    if (name === "CustomerName") {
-        setFormData(prevState => ({
-            ...prevState,
-            CustomerData: {
-                CustomerName: value,
-            }
-        }));
-    } else {
-        setFormData({
-            ...formData,
-            ContactData: {
-                ...formData.ContactData,
-                [name]: value,
-            },
-        });
+  const deleteItem = (id) => {
+    const updatedArr = itemObj.filter((object) => {
+      return object.id !== id;
+    });
+    setItemObj(updatedArr);
+  };
+
+  const addFile = () => {
+    inputFile.current.click();
+    // console.log("Filesss are", Files);
+  };
+
+  const trackFile = (e) => {
+    const uploadedFile = e.target.files[0];
+    if (uploadedFile) {
+      // const newFile = {
+        // actualFile: uploadedFile,
+        // name: uploadedFile.name,
+        // caption: uploadedFile.name,
+        // date: new Date().toLocaleDateString(),
+      // };
+      setFiles((prevFiles) => [...prevFiles, uploadedFile]);
     }
-    console.log(formData);
-};
-
-  const addContact = (e) => {
-    e.preventDefault();
-
-    const newContact = {
-      FirstName: formData.ContactData.FirstName,
-      LastName: formData.ContactData.LastName,
-      Email: formData.ContactData.Email,
-      Phone: formData.ContactData.Phone,
-      CompanyName: formData.ContactData.CompanyName,
-      Address: formData.ContactData.Address,
-      isPrimary: primary
-    };
-
-    setContacts([...contacts, newContact]);
-
-    // Clear the form fields
-    setFormData((prevState) => ({
-      ...prevState,
-      ContactData: {
-        FirstName: "",
-        LastName: "",
-        Email: "",
-        Phone: "",
-        CompanyName: "",
-        Address: "",
-      },
-    }));
-
-    setPrimary(true);
-    clearInput();
   };
 
-  const deleteContact = (index) => {
-    const updatedContacts = [...contacts];
-    updatedContacts.splice(index, 1);
-    setContacts(updatedContacts);
-  };
+  
 
+  
   useEffect(() => {
-    if (loginState === "allow") {
-      setShowLogin(true);
-    } else {
-      setShowLogin(false);
-    }
-  }, [loginState]);
+    // console.log("Updated formData is:", formData);
+  }, [formData]);
 
   return (
-    <div className="container-fluid">
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className="card">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
-              Customer Info
-            </h4>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-xl-4 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label"
-                >
-                  Customer Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="CustomerName"
-                  placeholder={ customerData.CustomerName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
-      <form onSubmit={addContact}>
-        <div className="card">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
-              Contact
-            </h4>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="row">
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      First Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      ref={inputReffname}
-                      
-                      onChange={handleChange}
-                      name="FirstName"
-                      className="form-control"
-                      placeholder="First Name"
-                      required
-                    />
-                  </div>
-
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Last Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      ref={inputReflname}
-                      onChange={handleChange}
-                      name="LastName"
-                      className="form-control"
-                      placeholder="Last Name"
-                      required
-                    />
-                  </div>
-
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Email<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="contactInp2"
-                      ref={inputRefemail}
-                      className="form-control"
-                      onChange={handleChange}
-                      name="Email"
-                      placeholder="Email"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Phone<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      ref={inputRefphone}
-                      id="contactInp3"
-                      onChange={handleChange}
-                      name="Phone"
-                      className="form-control"
-                      placeholder="Phone"
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Company Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      id="contactInp4"
-                      ref={inputRefCname}
-                      onChange={handleChange}
-                      name="CompanyName"
-                      className="form-control"
-                      placeholder="Company Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Address<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      ref={inputRefaddress}
-                      onChange={handleChange}
-                      name="Address"
-                      className="form-control"
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
-                  <div className="row">
-                    <label className="col-form-label col-form-label-lg">
-                      Set as Primary
-                    </label>
-                    <div className="mb-3 mb-0">
-                      <form>
-                        <div className="form-check custom-checkbox form-check-inline">
-                          <input
-                            type="checkbox"
-                            name="isPrimary"
-                            className="form-check-input"
-                            id="customCheckBox"
-                            checked={primary}
-                            onChange={() => setPrimary(!primary)}
-                          />
-
-                          <label
-                            className="form-check-label"
-                            htmlFor="customCheckBox"
-                          >
-                            Set as Primary
-                          </label>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-
-                  <div
-                    className="col-xl-4 mb-3"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingTop: "26px",
-                    }}
-                  >
-                    <button className="btn btn-primary">Add</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-12">
-              <div className="card">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
-                    <div className="itemtitleBar">
-                      <h4>Contacts</h4>
-                    </div>
-                    <div className="table-responsive active-projects style-1">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Company Name</th>
-                            <th>Address</th>
-                            <th>Primary</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {contacts.map((contact, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{contact.FirstName}</td>
-                              <td>{contact.LastName}</td>
-                              <td>{contact.Email}</td>
-                              <td>{contact.Phone}</td>
-                              <td>{contact.CompanyName}</td>{" "}
-                              {/* Corrected this line */}
-                              <td>{contact.Address}</td>
-                              <td>{contact.isPrimary ? "Yes" : "No"}</td>{" "}
-                              {/* Corrected this line */}
-                              <td>
-                                <div className="badgeBox">
-                                  <span
-                                    className="actionBadge badge-danger light border-0 badgebox-size"
-                                    onClick={() => deleteContact(index)}
-                                  >
-                                    <span className="material-symbols-outlined badgebox-size">
-                                      delete
-                                    </span>
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-
-      {/* Contacts Table */}
-
-      <div className="text-end">
-        <button className="btn btn-primary me-1" onClick={handleSubmit}>
-          Submit
-        </button>
-        <NavLink to="/Dashboard/Customers">
-          <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
-        </NavLink>
-      </div>
+    <div class="card">
+      all working fine
     </div>
   );
 };
 
-export default UpdateCustomer;
+export default AddEstimateForm;
