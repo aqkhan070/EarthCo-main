@@ -269,6 +269,7 @@ const [customerData, setCustomerData] = useState({});
                   type="text"
                   className="form-control"
                   name="CustomerName"
+                  // value={customerData.CustomerName}
                   placeholder={ customerData.CustomerName}
                   onChange={handleChange}
                   required
