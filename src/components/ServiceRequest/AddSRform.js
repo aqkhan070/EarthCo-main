@@ -114,7 +114,7 @@ const AddSRform = () => {
                                     <div className="row">
                                         <div className="mb-3 col-md-4">
                                             <label className="form-label">Customer</label>
-                                            <input type="text" className="form-control" placeholder="Service Location" />
+                                            <input type="text" className="form-control" placeholder="Customer" />
                                         </div>
                                         <div className="mb-3 col-md-4">
                                             <label className="form-label">Service Location</label>
@@ -122,7 +122,7 @@ const AddSRform = () => {
                                         </div>
                                         <div className="mb-3 col-md-4">
                                             <label>Contact</label>
-                                            <input type="text" className="form-control" placeholder="aspyn@marandassociates.com" />
+                                            <input type="text" className="form-control" placeholder="Example@Example.com" />
                                         </div>
                                     </div>
                                     <div className="row  mt-2 mb-2">
@@ -296,79 +296,7 @@ const AddSRform = () => {
                             </div>
                         </div>
 
-                        <div className="card">
-                            <div className="card-body p-0">
-                                <div className="estDataBox">
-                                    <div className="itemtitleBar">
-                                        <h4>Sites</h4>
-                                    </div>
-                                    <NavLink className="btn btn-primary btn-sm" style={{ margin: '12px 20px' }}>+ Add</NavLink>
-                                    <div className="table-responsive active-projects style-1">
-                                        <table id="empoloyees-tblwrapper" className="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Barcode ID</th>
-                                                    <th>Name</th>
-                                                    <th>Description</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td><span>1001</span></td>
-                                                    <td>
-                                                        <div className="products">
-                                                            <div>
-                                                                <h6>Liam Antony</h6>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span>Computer Science</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><span>1001</span></td>
-                                                    <td>
-                                                        <div className="products">
-                                                            <div>
-                                                                <h6>Noah Oliver</h6>
-
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span>Computer Science</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><span>1001</span></td>
-                                                    <td>
-                                                        <div className="products">
-                                                            <div>
-                                                                <h6>Elijah James</h6>
-
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span>Computer Science</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td><span>1001</span></td>
-                                                    <td>
-                                                        <div className="products">
-                                                            <div>
-                                                                <h6>Liam Antony</h6>
-
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td><span>Computer Science</span></td>
-                                                </tr>
-
-
-                                            </tbody>
-
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                      
                     </div>
                 </div>
             </div >

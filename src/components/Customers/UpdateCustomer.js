@@ -6,7 +6,7 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
   const navigate = useNavigate();
 
   
-
+const [customerData, setCustomerData] = useState({});
   const [contacts, setContacts] = useState([]);
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
@@ -15,6 +15,8 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
   const [apiKeys, setapiKeys] = useState([]);
   const [inputNames, setinputNames] = useState([]);
   const [mainObj, setmainObj] = useState({});
+
+  
 
   const [formData, setFormData] = useState({
     CustomerData: {
@@ -49,6 +51,29 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
     // console.log("object is ,,,", mainObj);
   }, []);
 
+
+  const getCustomerData = async () => {
+    try {
+        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // Axios automatically throws an error for non-2xx responses, so you don't need to check response.ok
+
+        setCustomerData(response.data) ;
+
+        // Handle the response. For example, you can reload the customers or show a success message
+        console.log("Customer zzzzzzzz:", customerData.tblContacts);
+        setContacts(response.data.tblContacts);
+       
+
+    } catch (error) {
+        console.error("There was an error deleting the customer:", error);
+    }
+};
+
   const fetchCustomers = async () => {
     try {
       const responses = await axios.get(
@@ -71,6 +96,7 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
   };
   useEffect(() => {
     fetchCustomers();
+    getCustomerData();
 
     extractInputNames();
   }, []);
@@ -243,7 +269,7 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
                   type="text"
                   className="form-control"
                   name="CustomerName"
-                  placeholder="Customer Name"
+                  placeholder={ customerData.CustomerName}
                   onChange={handleChange}
                   required
                 />
@@ -271,6 +297,7 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
                     <input
                       type="text"
                       ref={inputReffname}
+                      
                       onChange={handleChange}
                       name="FirstName"
                       className="form-control"

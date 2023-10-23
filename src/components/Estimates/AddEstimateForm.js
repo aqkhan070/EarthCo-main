@@ -87,7 +87,10 @@ const handleSubmit = () => {
  
   postData.append('EstimateData', JSON.stringify(mergedEstimateData));
 
-  appendFilesToFormData(postData);
+  // appendFilesToFormData(postData);
+  // console.log("Filessszzzz", Files);
+  postData.append('Files', Files );
+  // console.log("post object ",postData );
 
   submitData(postData);
 };
@@ -121,8 +124,9 @@ const submitData = async (postData) => {
 
   // Logging FormData contents (for debugging purposes)
   for (let [key, value] of postData.entries()) {
-      console.log(key, value);
+      console.log("filessss",key, value);
   }
+  // console.log("post data izzz",postData);
 };
 
 
@@ -189,13 +193,13 @@ const submitData = async (postData) => {
   const trackFile = (e) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
-      const newFile = {
-        actualFile: uploadedFile,
-        name: uploadedFile.name,
-        caption: uploadedFile.name,
-        date: new Date().toLocaleDateString(),
-      };
-      setFiles((prevFiles) => [...prevFiles, newFile]);
+      // const newFile = {
+        // actualFile: uploadedFile,
+        // name: uploadedFile.name,
+        // caption: uploadedFile.name,
+        // date: new Date().toLocaleDateString(),
+      // };
+      setFiles((prevFiles) => [...prevFiles, uploadedFile]);
     }
   };
 
