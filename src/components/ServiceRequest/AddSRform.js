@@ -1,8 +1,9 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { DataContext } from "../../context/AppData";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const AddSRform = () => {
@@ -16,6 +17,26 @@ const AddSRform = () => {
   const [itemDesc, setItemDesc] = useState();
   const [rate, setRate] = useState();
   const [files, setFiles] = useState([]);
+
+  const [customers, setCustomers] = useState([]);
+
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+      // console.log(response.data);
+      console.log(customers);
+      //   console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   const addItem = () => {
     const updatedArr = [
@@ -164,16 +185,27 @@ const AddSRform = () => {
               <div className="card-body p-0">
                 <div className="itemtitleBar">
                   <h4>Service Request Details</h4>
-                </div>
+                </div> <br/>
                 <div className="basic-form">
                   <div className="row">
-                    <div className="mb-3 col-md-4">
-                      <label className="form-label">Customer</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Customer"
-                      />
+                    <div className="mb-2 col-md-9 SrCustomerList">
+                    <label className="form-label">Customers</label>
+                      <Form.Select
+                        name="CustomerId"
+                        aria-label="Default select example"
+                        id="inputState"
+                        className="bg-white"
+                      >
+                        <option value="">Customer</option>{" "}
+                        {customers.map((customer) => (
+                          <option
+                            key={customer.CustomerId}
+                            value={customer.CustomerId}
+                          >
+                            {customer.CustomerName}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </div>
                     <div className="mb-3 col-md-4">
                       <label className="form-label">Service Location</label>

@@ -53550,3 +53550,11 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     height: 4rem;
 
 }
+.SrCustomerList{
+    width: 28em !important;
+}
+
+.basic-form{
+    padding-left: 2em;
+    padding-right: 2em;
+}
