@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const UpdateCustomer = ({selectedItem, setShowContent}) => {
   const navigate = useNavigate();
 
-  const location = useLocation();
-  const customerId = location.state?.customerId;
+  
 
   const [contacts, setContacts] = useState([]);
   const [loginState, setLoginState] = useState("dontallow");
@@ -147,6 +146,8 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
 
       setContacts([]); // Clear the contacts array
       navigate("/Dashboard/Customers");
+      setShowContent(true);
+      window.location.reload();
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -226,7 +227,7 @@ const UpdateCustomer = ({selectedItem, setShowContent}) => {
         <div className="card">
           <div className="card-header">
             <h4 className="modal-title" id="#gridSystemModal">
-              Customer Info0 
+              Customer Info
             </h4>
           </div>
           <div className="card-body">

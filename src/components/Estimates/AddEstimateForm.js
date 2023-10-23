@@ -223,6 +223,7 @@ const submitData = async () => {
                 <div className="row statusRow">
                 <div className="col-lg-4 col-md-12 mb-2" style={{ minWidth: '150px' }}>
                 <Form.Select aria-label="Default select example" value={formData.EstimateData.EstimateStatusId} onChange={handleStatusChange}    size="md" id="inlineFormCustomSelect">
+                <option value={null}>Select</option>                    
                     <option value={1}>Open</option>
                     <option value={2}>Approved</option>
                     <option value={3}>Closed Billed</option>
@@ -581,6 +582,7 @@ const submitData = async () => {
                           id="inputState"
                           className="bg-white"
                         >
+                          <option value={null} >select</option>
                           <option >1</option>
                           <option >2</option>
                           <option>3</option>
