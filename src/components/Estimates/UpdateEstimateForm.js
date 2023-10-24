@@ -5,59 +5,13 @@ import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 
-const data = {
-  EstimateNumber: "2134",
-  ServiceLocation: "12435",
-  Email: "3245ytr@gmail.com",
-  IssueDate: null,
-  CustomerId: 6,
-  EstimateStatusId: 3,
-  CreatedBy: 6,
-  EditBy: 6,
-  ServiceLocationNotes: "123456",
-  PrivateNotes: "1234567",
-  EstimateNotes: "1234567",
-  QBStatus: "2",
-  isActive: true,
-  tblEstimateItems: [
-    {
-      Name: "Name1",
-      Description: "Description1",
-      Qty: 2,
-      Rate: 234,
-      Address: "123456",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-    {
-      Name: "Name2",
-      Description: "Description2",
-      Qty: 2,
-      Rate: 2.5,
-      Address: "Address2",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-    {
-      Name: "Name3",
-      Description: "Description3",
-      Qty: 3,
-      Rate: 2.5,
-      Address: "Address3",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-  ],
-};
+
 
 
 const UpdateEstimateForm = ({setShowContent,estimateId}) => {
   
   const [formData, setFormData] = useState({
-      
+
       CustomerId: 0,
       ServiceLocation: "",
       Email: "",
@@ -85,6 +39,7 @@ const UpdateEstimateForm = ({setShowContent,estimateId}) => {
 
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
+  const [estimates, setEstimates] = useState({})
 
   const [customers, setCustomers] = useState([]);
 
@@ -95,6 +50,18 @@ const UpdateEstimateForm = ({setShowContent,estimateId}) => {
     try {
       setCustomers(response.data);
       //   console.log("Custommer list is", customers[1].CustomerName);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchEstimates = async () => {
+    const response = await axios.get(
+      `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estimateId}`
+    );
+    try {
+      setEstimates(response.data);
+        console.log("estimateeeeeee list is",estimates);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -122,6 +89,7 @@ const handleSubmit = () => {
   // Merge the current items with the new items for EstimateData
   const mergedEstimateData = {
       ...formData,
+      EstimateId: estimateId,
       CreatedBy: 2,
       EditBy: 2,
       isActive: true,
@@ -129,7 +97,7 @@ const handleSubmit = () => {
   };
 
   console.log("mergedEstimateData:", mergedEstimateData);
-  console.log("data:", data);
+  // console.log("data:", data);
 
   postData.append("EstimateData", JSON.stringify(mergedEstimateData));
   console.log(JSON.stringify(mergedEstimateData));
@@ -179,6 +147,7 @@ const handleSubmit = () => {
   };
 
   useEffect(() => {
+    fetchEstimates();
     fetchCustomers();
   }, []);
 
@@ -312,7 +281,7 @@ const handleSubmit = () => {
                     id="inputState"
                     className="bg-white"
                   >
-                    <option value="">Customer</option>{" "}
+                    <option value="">customer</option>{" "}
                     {customers.map((customer) => (
                       <option
                         key={customer.CustomerId}
@@ -332,7 +301,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder="Service Location"
+                    placeholder={estimates.ServiceLocation}
                   />
                 </div>
 
@@ -343,7 +312,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder="Example@gmail.com."
+                    placeholder={estimates.Email}
                   />
                 </div>
               </div>
@@ -363,7 +332,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder="Estimate No."
+                    placeholder={estimates.EstimateNumber}
                   />
                 </div>
                 <div className="mb-3 col-md-9">
@@ -373,7 +342,7 @@ const handleSubmit = () => {
                     name="IssueDate"
                     onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
-                    placeholder="Issued Date"
+                    placeholder={estimates.IssueDate}
                     type="date"
                   />
                 </div>
@@ -590,6 +559,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
+                        placeholder={estimates.EstimateNotes}
                           value={formData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
@@ -606,6 +576,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
+                          placeholder={estimates.ServiceLocationNotes}
                           value={formData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
@@ -622,6 +593,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
+                        placeholder={estimates.PrivateNotes}
                           value={formData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
