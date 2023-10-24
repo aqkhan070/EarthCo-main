@@ -487,6 +487,17 @@ const handleSubmit = () => {
                     </tr>
                   </thead>
                   <tbody>
+                  {estimates.tblEstimateItems.map((item) => (
+        <tr key={item.id}>
+            <td>{item.id}</td>
+            <td>{item.Qty}</td>
+            <td>{item.Name}</td>
+            <td>{item.Description}</td>
+            <td>{item.Rate}</td>
+            <td>{item.Amount}</td>
+            <td>{item.Approved ? "Yes" : "No"}</td>
+        </tr>
+    ))}
     {formData.tblEstimateItems.map((item) => (
         <tr key={item.id}>
             <td>{item.id}</td>
@@ -535,6 +546,13 @@ const handleSubmit = () => {
                     </tr>
                   </thead>
                   <tbody>
+                  {estimates.tblEstimateFiles.map((file, index) => (
+                      <tr key={index}>
+                        <td>{file.name}</td>
+                        <td>{file.caption}</td>
+                        <td>{file.date}</td>
+                      </tr>
+                    ))}
                     {Files.map((file, index) => (
                       <tr key={index}>
                         <td>{file.name}</td>
