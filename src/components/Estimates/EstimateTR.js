@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
+import UpdateEstimateForm from './UpdateEstimateForm';
 
 
 import { Delete, Create } from '@mui/icons-material';
@@ -23,6 +24,9 @@ const EstimateTR = ({ estimates }) => {
   const [filtering, setFiltering] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [selectedItem, setSelectedItem] = useState()
+  const [showContent, setShowContent] = useState(true)
   
 
   const handleSort = (property) => {
@@ -122,7 +126,8 @@ const handleDelete = (id) => {
 
 
   return (
-    <Paper>
+    <>
+    {showContent? <Paper>
       <div className="container text-center">
         <TextField 
           label="Search" 
@@ -168,21 +173,18 @@ const handleDelete = (id) => {
                 <TableCell>{estimate.DescriptionofWork}</TableCell>
                 <TableCell>{estimate.DateCreated}</TableCell>
                 <TableCell>{estimate.ContactStatustEmail}</TableCell>
-                <TableCell>
-                <Link
-                        // to={"/Dashboard/Customers/Update-Customer"}
-                      >
+                <TableCell>                
                         <Button
                           className="delete-button"
-                          // onClick={() => {
-                          //   setSelectedItem(customer.CustomerId);
-                          //   console.log(",,,,,,,,,,", selectedItem);
-                          //   setShowContent(false);
-                          // }}
+                          onClick={() => {
+                            setSelectedItem(estimate.EstimateId);
+                            console.log(",,,,,,,,,,", selectedItem);
+                            setShowContent(false);
+                          }}
                         >
                           <Create />
                         </Button>
-                      </Link>
+                      
                 </TableCell>
                 <TableCell>
                   <Button>
@@ -207,7 +209,12 @@ const handleDelete = (id) => {
           setPage(0);
         }}
       />
-    </Paper>
+    </Paper> : <UpdateEstimateForm setShowContent = {setShowContent} estimateId = {selectedItem}/>  }
+    
+
+    
+    </>
+
   );
 };
 

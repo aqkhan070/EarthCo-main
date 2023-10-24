@@ -269,7 +269,7 @@ const [customerData, setCustomerData] = useState({});
                   type="text"
                   className="form-control"
                   name="CustomerName"
-                  value={customerData.CustomerName}
+                  // value={customerData.CustomerName}
                   // onClick={(e) => {e.target.value = ""}}
                   placeholder={ customerData.CustomerName}
                   onChange={handleChange}
