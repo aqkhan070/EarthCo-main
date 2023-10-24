@@ -67,7 +67,7 @@ const AddEstimateForm = () => {
       ServiceLocationNotes: "",
       PrivateNotes: "",
       QBStatus: "",
-      EstimateStatusId: "",
+      EstimateStatusId: 0,
       tblEstimateItems: [],
     
   });
@@ -75,7 +75,12 @@ const AddEstimateForm = () => {
     Name: "",
     Qty: 0,
     Description: "",
+    Address:"12345",
     Rate: 0,
+    isActive: true,
+    CreatedBy: 2,
+    
+
   });
 
   const inputFile = useRef(null);
@@ -97,33 +102,45 @@ const AddEstimateForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
+    const adjustedValue = ["CustomerId", "Qty", "Rate", "EstimateStatusId"].includes(name) ? Number(value) : value;
+
+    setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
+};
+
+
+const handleSubmit = () => {
+  const postData = new FormData();
+
+  // Before merging, filter out the unnecessary fields from each item in tblEstimateItems
+  const filteredItems = formData.tblEstimateItems.map(item => {
+      const { id, Amount, Approved, ...rest } = item;
+      return rest;
+  });
+
+  // Merge the current items with the new items for EstimateData
+  const mergedEstimateData = {
+      ...formData,
+      CreatedBy: 2,
+      EditBy: 2,
+      isActive: true,
+      tblEstimateItems: [...filteredItems, itemForm],  // using the filteredItems here
   };
 
-  const handleSubmit = () => {
-    const postData = new FormData();
+  console.log("mergedEstimateData:", mergedEstimateData);
+  console.log("data:", data);
 
-    // Merge the current items with the new items for EstimateData
-    const mergedEstimateData = {
-  ...formData,
-  CreatedBy: 2,
-  EditBy: 2,
-  isActive: true,
-  tblEstimateItems: [...formData.tblEstimateItems, itemForm],
-
-};
-    console.log("mergedEstimateData:", mergedEstimateData);
-    console.log("data:", data);
-
-    postData.append("EstimateData", JSON.stringify(mergedEstimateData));
-    console.log(JSON.stringify(mergedEstimateData));
-    // Appending files to postData
-    Files.forEach((fileObj) => {
+  postData.append("EstimateData", JSON.stringify(mergedEstimateData));
+  console.log(JSON.stringify(mergedEstimateData));
+  // Appending files to postData
+  Files.forEach((fileObj) => {
       postData.append('Files', fileObj);
-    });
+  });
 
-    submitData(postData);
+  submitData(postData);
 };
+
 
 
   // const appendFilesToFormData = (formData) => {
@@ -183,18 +200,25 @@ const AddEstimateForm = () => {
   
 
   const handleStatusChange = (e) => {
-    const { value } = e.target;
+    const value = parseInt(e.target.value, 10); // This converts the string to an integer
+  
     setFormData((prevData) => ({
       ...prevData,
       EstimateStatusId: value,
     }));
-  };
+  }; 
+  
+  
   
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setItemForm((prevState) => ({ ...prevState, [name]: value }));
-  };
+
+    // Convert to number if the field is Qty or Rate
+    const adjustedValue = ["Qty", "Rate", "EstimateStatusId"].includes(name) ? Number(value) : value;
+
+    setItemForm((prevState) => ({ ...prevState, [name]: adjustedValue }));
+};
 
   const deleteItem = (id) => {
     const updatedArr = formData.tblEstimateItems.filter((object) => object.id !== id);
@@ -297,6 +321,7 @@ const AddEstimateForm = () => {
                       </option>
                     ))}
                   </Form.Select>
+                 
                 </div>
 
                 <div className="mb-4 col-md-9">
