@@ -206,9 +206,9 @@ const submitData = async (postData) => {
   
 
   
-  useEffect(() => {
+  // useEffect(() => {
     // console.log("Updated formData is:", formData);
-  }, [formData]);
+  // }, [formData]);
 
   return (
     <div class="card">
