@@ -7,27 +7,26 @@ import axios from "axios";
 
 const AddEstimateForm = () => {
   const { estimateItems } = useContext(DataContext);
-  
 
   const [itemObj, setItemObj] = useState(estimateItems);
   const [date, setDate] = useState();
 
   const [formData, setFormData] = useState({
     EstimateData: {
-        CustomerId: "",
-        ServiceLocation: "",
-        Email: "",
-        EstimateNumber: "",
-        IssueDate: "",
-        EstimateNotes: "",
-        ServiceLocationNotes: "",
-        PrivateNotes: "",
-        QBStatus: "",
-        EstimateStatusId:"",
-        tblEstimateItems: [],
+      CustomerId: "",
+      ServiceLocation: "",
+      Email: "",
+      EstimateNumber: "",
+      IssueDate: "",
+      EstimateNotes: "",
+      ServiceLocationNotes: "",
+      PrivateNotes: "",
+      QBStatus: "",
+      EstimateStatusId: "",
+      tblEstimateItems: [],
     },
     // Files: [],
-});
+  });
   const [itemForm, setItemForm] = useState({
     Name: "",
     Qty: "",
@@ -40,9 +39,6 @@ const AddEstimateForm = () => {
   const [Files, setFiles] = useState([]);
 
   const [customers, setCustomers] = useState([]);
-
-
-
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -60,77 +56,74 @@ const AddEstimateForm = () => {
     const { name, value } = e.target;
 
     if (Object.keys(formData.EstimateData).includes(name)) {
-      setFormData(prevData => ({
+      setFormData((prevData) => ({
         ...prevData,
         EstimateData: {
           ...prevData.EstimateData,
-          [name]: value
-        }
+          [name]: value,
+        },
       }));
     } else {
-      setFormData(prevData => ({ ...prevData, [name]: value }));
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
     }
-};
-
-const handleSubmit = () => {
-  const postData = new FormData();
-
-  // Merge the current items with the new items for EstimateData
-  const mergedEstimateData = {
-      ...formData.EstimateData,
-      tblEstimateItems: [
-          ...formData.EstimateData.tblEstimateItems,
-          ...itemForm.tblEstimateItems,
-      ]
   };
 
-  postData.append('EstimateData', JSON.stringify(mergedEstimateData));
+  const handleSubmit = () => {
+    const postData = new FormData();
 
-  // Commented out the logic related to appending files
-  // appendFilesToFormData(postData);
-  // console.log("Filessszzzz", Files);
-  // postData.append('Files', Files );
-  // console.log("post object ",postData );
+    // Merge the current items with the new items for EstimateData
+    const mergedEstimateData = {
+      ...formData.EstimateData,
+      tblEstimateItems: [
+        ...formData.EstimateData.tblEstimateItems,
+        ...itemForm.tblEstimateItems,
+      ],
+    };
 
-  submitData(postData);
-};
+    postData.append("EstimateData", JSON.stringify(mergedEstimateData));
 
-const appendFilesToFormData = (formData) => {
-  Files.forEach((fileObj) => {
-      formData.append('Files', fileObj.actualFile);
-  });
-};
+    // Commented out the logic related to appending files
+    // appendFilesToFormData(postData);
+    // console.log("Filessszzzz", Files);
+    // postData.append('Files', Files );
+    // console.log("post object ",postData );
 
-const submitData = async (postData) => {
-  try {
+    submitData(postData);
+  };
+
+  const appendFilesToFormData = (formData) => {
+    Files.forEach((fileObj) => {
+      formData.append("Files", fileObj.actualFile);
+    });
+  };
+
+  const submitData = async (postData) => {
+    try {
       const response = await axios.post(
-          "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
-          postData,
-          {
-              headers: {
-                  'Content-Type': 'multipart/form-data'
-              }
-          }
+        "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
+        postData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (response.status === 200) {
-          console.log("Data submitted successfully:", response.data);
+        console.log("Data submitted successfully:", response.data);
       } else {
-          console.log("Error submitting data:", response.statusText);
+        console.log("Error submitting data:", response.statusText);
       }
-  } catch (error) {
+    } catch (error) {
       console.error("API Call Error:", error);
-  }
+    }
 
-  // Logging FormData contents (for debugging purposes)
-  for (let [key, value] of postData.entries()) {
-      console.log("filessss",key, value);
-  }
-  // console.log("post data izzz",postData);
-};
-
-
-
+    // Logging FormData contents (for debugging purposes)
+    for (let [key, value] of postData.entries()) {
+      console.log("filessss", key, value);
+    }
+    // console.log("post data izzz",postData);
+  };
 
   useEffect(() => {
     fetchCustomers();
@@ -146,8 +139,7 @@ const submitData = async (postData) => {
       Qty: Number(itemForm.Qty),
       Rate: Number(itemForm.Rate),
       Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
-      Approved: false, 
-     
+      Approved: false,
     };
 
     setItemForm((prevState) => ({
@@ -160,18 +152,16 @@ const submitData = async (postData) => {
     }));
   };
 
-        
   const handleStatusChange = (e) => {
     const { value } = e.target;
-    setFormData(prevData => ({
-        ...prevData,
-        EstimateData: {
-            ...prevData.EstimateData,
-            EstimateStatusId: value
-        }
+    setFormData((prevData) => ({
+      ...prevData,
+      EstimateData: {
+        ...prevData.EstimateData,
+        EstimateStatusId: value,
+      },
     }));
-}
-
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -194,20 +184,17 @@ const submitData = async (postData) => {
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       // const newFile = {
-        // actualFile: uploadedFile,
-        // name: uploadedFile.name,
-        // caption: uploadedFile.name,
-        // date: new Date().toLocaleDateString(),
+      // actualFile: uploadedFile,
+      // name: uploadedFile.name,
+      // caption: uploadedFile.name,
+      // date: new Date().toLocaleDateString(),
       // };
       setFiles((prevFiles) => [...prevFiles, uploadedFile]);
     }
   };
 
-  
-
-  
   // useEffect(() => {
-    // console.log("Updated formData is:", formData);
+  // console.log("Updated formData is:", formData);
   // }, [formData]);
 
   return (
@@ -218,30 +205,54 @@ const submitData = async (postData) => {
             <div className="row">
               <div className="col-md-8 mb-3">
                 <div className="row statusRow">
-                <div className="col-lg-4 col-md-12 mb-2" style={{ minWidth: '150px' }}>
-                <Form.Select aria-label="Default select example" value={formData.EstimateData.EstimateStatusId} onChange={handleStatusChange}    size="md" id="inlineFormCustomSelect">
-                <option value={null}>Select</option>                    
-                    <option value={1}>Open</option>
-                    <option value={2}>Approved</option>
-                    <option value={3}>Closed Billed</option>
-                </Form.Select>
-                
-            </div>
-            <div className="col-lg-8 col-md-12 actionBtns">
-                <button type="button" className="btn btn-sm btn-outline-primary">Email</button>
-                <button type="button" className="btn btn-sm btn-outline-primary ">Print</button>
-                <button type="button" className="btn btn-sm btn-outline-primary" style={{ minWidth: '120px' }}>Download</button>
-            </div>
+                  <div
+                    className="col-lg-4 col-md-12 mb-2"
+                    style={{ minWidth: "150px" }}
+                  >
+                    <Form.Select
+                      aria-label="Default select example"
+                      value={formData.EstimateData.EstimateStatusId}
+                      onChange={handleStatusChange}
+                      name="Status"
+                      size="md"
+                      id="inlineFormCustomSelect"
+                    >
+                      <option value={null}>Select</option>
+                      <option value={1}>Open</option>
+                      <option value={2}>Approved</option>
+                      <option value={3}>Closed Billed</option>
+                    </Form.Select>
+                  </div>
+                  <div className="col-lg-8 col-md-12 actionBtns">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                    >
+                      Email
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary "
+                    >
+                      Print
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                      style={{ minWidth: "120px" }}
+                    >
+                      Download
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
             <form>
               <div className="row">
                 <div className="mb-2 col-md-9">
-                  
                   <Form.Select
                     value={formData.EstimateData.CustomerId}
-                    name="CustomerId" 
+                    name="CustomerId"
                     onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
@@ -253,13 +264,12 @@ const submitData = async (postData) => {
                         key={customer.CustomerId}
                         value={customer.CustomerId}
                       >
-                        { customer.CustomerName}
+                        {customer.CustomerName}
                       </option>
                     ))}
                   </Form.Select>
                 </div>
 
-               
                 <div className="mb-4 col-md-9">
                   <input
                     value={formData.EstimateData.ServiceLocation}
@@ -270,7 +280,7 @@ const submitData = async (postData) => {
                     placeholder="Service Location"
                   />
                 </div>
-                
+
                 <div className="mb-4 col-md-9">
                   <input
                     value={formData.EstimateData.Email}
@@ -399,7 +409,9 @@ const submitData = async (postData) => {
                         className="col-sm-9"
                         style={{ display: "flex", alignItems: "center" }}
                       >
-                        <h5 style={{ margin: "0" }}>{itemForm.Rate * itemForm.Qty}</h5>{" "}
+                        <h5 style={{ margin: "0" }}>
+                          {itemForm.Rate * itemForm.Qty}
+                        </h5>{" "}
                       </div>
                     </div>
                   </div>
@@ -451,18 +463,18 @@ const submitData = async (postData) => {
                     </tr>
                   </thead>
                   <tbody>
-      {itemForm.tblEstimateItems.map((item) => (
-        <tr key={item.id}>
-          <td>{item.id}</td>
-          <td>{item.Qty}</td>
-          <td>{item.Name}</td>
-          <td>{item.Description}</td>
-          <td>{item.Rate}</td>
-          <td>{item.Amount}</td>
-          <td>{item.Approved ? "Yes" : "No"}</td>
-        </tr>
-      ))}
-    </tbody>
+                    {itemForm.tblEstimateItems.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.Qty}</td>
+                        <td>{item.Name}</td>
+                        <td>{item.Description}</td>
+                        <td>{item.Rate}</td>
+                        <td>{item.Amount}</td>
+                        <td>{item.Approved ? "Yes" : "No"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -484,6 +496,7 @@ const submitData = async (postData) => {
               </button>
               <input
                 type="file"
+                name="Files"
                 ref={inputFile}
                 onChange={trackFile}
                 style={{ display: "none" }}
@@ -580,9 +593,9 @@ const submitData = async (postData) => {
                           id="inputState"
                           className="bg-white"
                         >
-                          <option value={null} >select</option>
-                          <option >1</option>
-                          <option >2</option>
+                          <option value={null}>select</option>
+                          <option>1</option>
+                          <option>2</option>
                           <option>3</option>
                           <option>4</option>
                         </Form.Select>
