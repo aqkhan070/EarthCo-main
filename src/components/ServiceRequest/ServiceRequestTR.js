@@ -74,8 +74,8 @@ const ServiceRequestTR = ({ serviceRequest }) => {
         <div className="container text-center">
           <div className="row justify-content-end">
             <div className="col-3 add-customer-btn">
-              <Link to="/Add">
-                <Button variant="contained" color="primary">
+              <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
+                <Button variant="contained" color="primary" >
                   + Add Service Request
                 </Button>
               </Link>

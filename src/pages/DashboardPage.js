@@ -72,7 +72,7 @@ const DashboardPage = () => {
                     </Route>
                     <Route path='Service-Requests' element={<ServiceIndex />} >
                         <Route path='' element={<SRlist />} />
-                        <Route path='Add' element={<AddSRform />} />
+                        <Route path='Add-SRform' element={<AddSRform />} />
                         <Route path={SRroute} element={<ServiceRequest />} />
                     </Route>
                     <Route path='Irrigation' element={<IrrigationIndex />} >
