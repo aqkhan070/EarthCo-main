@@ -47,7 +47,7 @@ const EstimateTR = ({ estimates }) => {
             actualProperty = 'DateCreated';
             break;
         case 'Status':
-            actualProperty = 'ContactStatusEmail'; // seems like a typo. Should this be 'Status'?
+            actualProperty = 'ContactStatusEmail'; 
             break;
         default:
             actualProperty = property;

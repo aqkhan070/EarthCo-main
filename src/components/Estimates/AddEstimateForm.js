@@ -5,15 +5,60 @@ import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 
+const data = {
+  EstimateNumber: "2134",
+  ServiceLocation: "12435",
+  Email: "3245ytr@gmail.com",
+  IssueDate: null,
+  CustomerId: 6,
+  EstimateStatusId: 3,
+  CreatedBy: 6,
+  EditBy: 6,
+  ServiceLocationNotes: "123456",
+  PrivateNotes: "1234567",
+  EstimateNotes: "1234567",
+  QBStatus: "2",
+  isActive: true,
+  tblEstimateItems: [
+    {
+      Name: "Name1",
+      Description: "Description1",
+      Qty: 2,
+      Rate: 234,
+      Address: "123456",
+      CreatedBy: 2,
+      EditBy: 2,
+      isActive: true,
+    },
+    {
+      Name: "Name2",
+      Description: "Description2",
+      Qty: 2,
+      Rate: 2.5,
+      Address: "Address2",
+      CreatedBy: 2,
+      EditBy: 2,
+      isActive: true,
+    },
+    {
+      Name: "Name3",
+      Description: "Description3",
+      Qty: 3,
+      Rate: 2.5,
+      Address: "Address3",
+      CreatedBy: 2,
+      EditBy: 2,
+      isActive: true,
+    },
+  ],
+};
+
+
 const AddEstimateForm = () => {
-  const { estimateItems } = useContext(DataContext);
-
-  const [itemObj, setItemObj] = useState(estimateItems);
-  const [date, setDate] = useState();
-
+  
   const [formData, setFormData] = useState({
-    EstimateData: {
-      CustomerId: "",
+   
+      CustomerId: 0,
       ServiceLocation: "",
       Email: "",
       EstimateNumber: "",
@@ -24,15 +69,13 @@ const AddEstimateForm = () => {
       QBStatus: "",
       EstimateStatusId: "",
       tblEstimateItems: [],
-    },
-    // Files: [],
+    
   });
   const [itemForm, setItemForm] = useState({
     Name: "",
-    Qty: "",
+    Qty: 0,
     Description: "",
-    Rate: "",
-    tblEstimateItems: [],
+    Rate: 0,
   });
 
   const inputFile = useRef(null);
@@ -54,18 +97,7 @@ const AddEstimateForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    if (Object.keys(formData.EstimateData).includes(name)) {
-      setFormData((prevData) => ({
-        ...prevData,
-        EstimateData: {
-          ...prevData.EstimateData,
-          [name]: value,
-        },
-      }));
-    } else {
-      setFormData((prevData) => ({ ...prevData, [name]: value }));
-    }
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = () => {
@@ -73,29 +105,32 @@ const AddEstimateForm = () => {
 
     // Merge the current items with the new items for EstimateData
     const mergedEstimateData = {
-      ...formData.EstimateData,
-      tblEstimateItems: [
-        ...formData.EstimateData.tblEstimateItems,
-        ...itemForm.tblEstimateItems,
-      ],
-    };
+  ...formData,
+  CreatedBy: 2,
+  EditBy: 2,
+  isActive: true,
+  tblEstimateItems: [...formData.tblEstimateItems, itemForm],
+
+};
+    console.log("mergedEstimateData:", mergedEstimateData);
+    console.log("data:", data);
 
     postData.append("EstimateData", JSON.stringify(mergedEstimateData));
-
-    // Commented out the logic related to appending files
-    // appendFilesToFormData(postData);
-    // console.log("Filessszzzz", Files);
-    // postData.append('Files', Files );
-    // console.log("post object ",postData );
+    console.log(JSON.stringify(mergedEstimateData));
+    // Appending files to postData
+    Files.forEach((fileObj) => {
+      postData.append('Files', fileObj);
+    });
 
     submitData(postData);
-  };
+};
 
-  const appendFilesToFormData = (formData) => {
-    Files.forEach((fileObj) => {
-      formData.append("Files", fileObj.actualFile);
-    });
-  };
+
+  // const appendFilesToFormData = (formData) => {
+  //   Files.forEach((fileObj) => {
+  //     formData.append("Files", fileObj.actualFile);
+  //   });
+  // };
 
   const submitData = async (postData) => {
     try {
@@ -131,37 +166,30 @@ const AddEstimateForm = () => {
 
   const addItem = (e) => {
     e.preventDefault();
-
     const newItem = {
-      id: itemForm.tblEstimateItems.length + 1,
-      Name: itemForm.Name,
-      Description: itemForm.Description,
-      Qty: Number(itemForm.Qty),
-      Rate: Number(itemForm.Rate),
+      id: formData.tblEstimateItems.length + 1,
+      ...itemForm,
       Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
       Approved: false,
     };
-
-    setItemForm((prevState) => ({
-      ...prevState,
-      tblEstimateItems: [...prevState.tblEstimateItems, newItem],
-      Name: "",
-      Qty: "",
-      Description: "",
-      Rate: "",
+  
+   
+    // Clear itemForm fields after adding the new item
+    setFormData(prevData => ({
+      ...prevData,
+      tblEstimateItems: [...prevData.tblEstimateItems, newItem],
     }));
   };
+  
 
   const handleStatusChange = (e) => {
     const { value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      EstimateData: {
-        ...prevData.EstimateData,
-        EstimateStatusId: value,
-      },
+      EstimateStatusId: value,
     }));
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -169,10 +197,11 @@ const AddEstimateForm = () => {
   };
 
   const deleteItem = (id) => {
-    const updatedArr = itemObj.filter((object) => {
-      return object.id !== id;
-    });
-    setItemObj(updatedArr);
+    const updatedArr = formData.tblEstimateItems.filter((object) => object.id !== id);
+    setFormData((prevData) => ({
+      ...prevData,
+      tblEstimateItems: updatedArr,
+    }));
   };
 
   const addFile = () => {
@@ -211,7 +240,7 @@ const AddEstimateForm = () => {
                   >
                     <Form.Select
                       aria-label="Default select example"
-                      value={formData.EstimateData.EstimateStatusId}
+                      value={formData.EstimateStatusId}
                       onChange={handleStatusChange}
                       name="Status"
                       size="md"
@@ -251,7 +280,7 @@ const AddEstimateForm = () => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
-                    value={formData.EstimateData.CustomerId}
+                    value={formData.CustomerId}
                     name="CustomerId"
                     onChange={handleInputChange}
                     aria-label="Default select example"
@@ -272,7 +301,7 @@ const AddEstimateForm = () => {
 
                 <div className="mb-4 col-md-9">
                   <input
-                    value={formData.EstimateData.ServiceLocation}
+                    value={formData.ServiceLocation}
                     name="ServiceLocation"
                     onChange={handleInputChange}
                     type="text"
@@ -283,7 +312,7 @@ const AddEstimateForm = () => {
 
                 <div className="mb-4 col-md-9">
                   <input
-                    value={formData.EstimateData.Email}
+                    value={formData.Email}
                     name="Email"
                     onChange={handleInputChange}
                     type="text"
@@ -303,7 +332,7 @@ const AddEstimateForm = () => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Estimate No.</label>
                   <input
-                    value={formData.EstimateData.EstimateNumber}
+                    value={formData.EstimateNumber}
                     name="EstimateNumber"
                     onChange={handleInputChange}
                     type="text"
@@ -314,7 +343,7 @@ const AddEstimateForm = () => {
                 <div className="mb-3 col-md-9">
                   <label className="form-label">Issued Date</label>
                   <input
-                    value={formData.EstimateData.IssueDate}
+                    value={formData.IssueDate}
                     name="IssueDate"
                     onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
@@ -463,18 +492,18 @@ const AddEstimateForm = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemForm.tblEstimateItems.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.Qty}</td>
-                        <td>{item.Name}</td>
-                        <td>{item.Description}</td>
-                        <td>{item.Rate}</td>
-                        <td>{item.Amount}</td>
-                        <td>{item.Approved ? "Yes" : "No"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
+    {formData.tblEstimateItems.map((item) => (
+        <tr key={item.id}>
+            <td>{item.id}</td>
+            <td>{item.Qty}</td>
+            <td>{item.Name}</td>
+            <td>{item.Description}</td>
+            <td>{item.Rate}</td>
+            <td>{item.Amount}</td>
+            <td>{item.Approved ? "Yes" : "No"}</td>
+        </tr>
+    ))}
+</tbody>
                 </table>
               </div>
             </div>
@@ -535,7 +564,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.EstimateData.EstimateNotes}
+                          value={formData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -551,7 +580,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.EstimateData.ServiceLocationNotes}
+                          value={formData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -567,7 +596,7 @@ const AddEstimateForm = () => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          value={formData.EstimateData.PrivateNotes}
+                          value={formData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
                           className="form-txtarea form-control"
@@ -586,7 +615,7 @@ const AddEstimateForm = () => {
                     <div className="basic-form">
                       <form>
                         <Form.Select
-                          value={formData.EstimateData.QBStatus}
+                          value={formData.QBStatus}
                           name="QBStatus"
                           onChange={handleInputChange}
                           aria-label="Default select example"
