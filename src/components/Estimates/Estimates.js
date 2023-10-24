@@ -36,7 +36,7 @@ const Estimates = () => {
         const response = await axios.get(
           "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateList"
         );
-        console.log("estimate response is", response.data);
+        // console.log("estimate response is", response.data);
         setEstimates(response.data);
       } catch (error) {
         console.error("API Call Error:", error);
