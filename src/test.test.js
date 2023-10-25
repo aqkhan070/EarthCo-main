@@ -36,18 +36,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
 
   const [customers, setCustomers] = useState([]);
 
-  const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    try {
-      setCustomers(response.data);
-      //   console.log("Custommer list is", customers[1].CustomerName);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
-
   const fetchEstimates = async () => {
     const response = await axios.get(
       `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estimateId}`
@@ -61,33 +49,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
       console.error("API Call Error:", error);
     }
   };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
-    const adjustedValue = [
-      "CustomerId",
-      "Qty",
-      "Rate",
-      "EstimateStatusId",
-    ].includes(name)
-      ? Number(value)
-      : value;
-
-    setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
-  };
-
-  const handleSubmit = () => {
-    const postData = new FormData();
-
-    // Before merging, filter out the unnecessary fields from each item in tblEstimateItems
-    const filteredItems = formData.tblEstimateItems.map((item) => {
-      const { id, Amount, Approved, ...rest } = item;
-      return rest;
-    });
-
-    // Merge the current items with the new items for EstimateData
+  useEffect(() => {fetchEstimates},[]) 
     const mergedEstimateData = {
       ...formData,
       EstimateId: estimateId,
@@ -107,14 +69,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
       postData.append("Files", fileObj);
     });
 
-    submitData(postData);
-  };
-
-  // const appendFilesToFormData = (formData) => {
-  //   Files.forEach((fileObj) => {
-  //     formData.append("Files", fileObj.actualFile);
-  //   });
-  // };
+    submitData(postData);  };
 
   const submitData = async (postData) => {
     try {
@@ -167,19 +122,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     }));
   };
 
-  const handleStatusChange = (e) => {
-    const value = parseInt(e.target.value, 10); // This converts the string to an integer
-
-    setFormData((prevData) => ({
-      ...prevData,
-      EstimateStatusId: value,
-    }));
-  };
+ 
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Convert to number if the field is Qty or Rate
     const adjustedValue = ["Qty", "Rate", "EstimateStatusId"].includes(name)
       ? Number(value)
       : value;
@@ -197,52 +142,180 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     }));
   };
 
-  const addFile = () => {
-    inputFile.current.click();
-    // console.log("Filesss are", Files);
-  };
-
-  const trackFile = (e) => {
-    const uploadedFile = e.target.files[0];
-    if (uploadedFile) {
-      // const newFile = {
-      // actualFile: uploadedFile,
-      // name: uploadedFile.name,
-      // caption: uploadedFile.name,
-      // date: new Date().toLocaleDateString(),
-      // };
-      setFiles((prevFiles) => [...prevFiles, uploadedFile]);
-    }
-  };
-
-  // useEffect(() => {
-  // console.log("Updated formData is:", formData);
-  // }, [formData]);
-
   return (
-    <div className="mb-2 col-md-9">
-                  <Form.Select
-                    value={estimates.CustomerId || 1}
-                    name="CustomerId"
-                    size="lg"
-                    onChange={handleInputChange}
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >                
-                     
-                   
-                    {customers.map((customer) => (
-                      <option
-                      
-                        key={customer.CustomerId}
-                        value={customer.CustomerId}
-                      >
-                        {customer.CustomerName}
-                      </option>
-                    ))}
-                  </Form.Select>
+    <div class="card">
+      <div className="card-body">
+        
+
+        {/* add item modal */}
+        <div className="modal fade" id="basicModal">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <form onSubmit={addItem}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Add Item</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                  ></button>
                 </div>
+                <div className="modal-body">
+                  <div className="basic-form">
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">Name</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="text"
+                          value={itemForm.Name}
+                          onChange={handleChange}
+                          name="Name"
+                          className="form-control"
+                          placeholder="Name"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">
+                        Quantity
+                      </label>
+                      <div className="col-sm-9">
+                        <input
+                          type="number"
+                          value={itemForm.Qty}
+                          onChange={handleChange}
+                          name="Qty"
+                          className="form-control"
+                          placeholder="Quantity"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">
+                        Description
+                      </label>
+                      <div className="col-sm-9">
+                        <textarea
+                          className="form-txtarea form-control"
+                          value={itemForm.Description}
+                          onChange={handleChange}
+                          name="Description"
+                          rows="3"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">Rate</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="number"
+                          value={itemForm.Rate}
+                          onChange={handleChange}
+                          name="Rate"
+                          className="form-control"
+                          placeholder="Rate"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <label className="col-sm-3 col-form-label">
+                        Item Total
+                      </label>
+                      <div
+                        className="col-sm-9"
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <h5 style={{ margin: "0" }}>
+                          {itemForm.Rate * itemForm.Qty}
+                        </h5>{" "}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    id="closer"
+                    className="btn btn-danger light"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* item table */}
+        <div className="card">
+          <div className="card-body p-0">
+            <div className="estDataBox">
+              <div className="itemtitleBar">
+                <h4>Items</h4>
+              </div>
+              <button
+                className="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#basicModal"
+                style={{ margin: "12px 20px" }}
+              >
+                + Add Items
+              </button>
+              <div className="table-responsive active-projects style-1">
+              <table id="empoloyees-tblwrapper" className="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Qty / Duration</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                      <th>Approved</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.tblEstimateItems.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.Qty}</td>
+                        <td>{item.Name}</td>
+                        <td>{item.Description}</td>
+                        <td>{item.Rate}</td>
+                        <td>{item.Amount}</td>
+                        <td>{item.Approved ? "Yes" : "No"}</td>
+                        <td>
+                                <div className="badgeBox">
+                                  <span
+                                    className="actionBadge badge-danger light border-0 badgebox-size"
+                                    onClick={deleteItem}
+                                  >
+                                    <span className="material-symbols-outlined badgebox-size">
+                                      delete
+                                    </span>
+                                  </span>
+                                </div>
+                              </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+    
+      </div>
+    </div>
+    </div>
   );
 };
 

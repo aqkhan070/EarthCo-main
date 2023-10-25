@@ -196,6 +196,15 @@ const handleSubmit = () => {
       ...prevData,
       tblEstimateItems: [...prevData.tblEstimateItems, newItem],
     }));
+    setItemForm({
+      Name: "",
+      Qty: 0,
+      Description: "",
+      Address: "12345",
+      Rate: 0,
+      isActive: true,
+      CreatedBy: 2,
+  });
   };
   
 
@@ -505,7 +514,7 @@ const handleSubmit = () => {
                 + Add Items
               </button>
               <div className="table-responsive active-projects style-1">
-                <table id="empoloyees-tblwrapper" className="table">
+              <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -515,21 +524,34 @@ const handleSubmit = () => {
                       <th>Rate</th>
                       <th>Amount</th>
                       <th>Approved</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-    {formData.tblEstimateItems.map((item) => (
-        <tr key={item.id}>
-            <td>{item.id}</td>
-            <td>{item.Qty}</td>
-            <td>{item.Name}</td>
-            <td>{item.Description}</td>
-            <td>{item.Rate}</td>
-            <td>{item.Amount}</td>
-            <td>{item.Approved ? "Yes" : "No"}</td>
-        </tr>
-    ))}
-</tbody>
+                    {formData.tblEstimateItems.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.Qty}</td>
+                        <td>{item.Name}</td>
+                        <td>{item.Description}</td>
+                        <td>{item.Rate}</td>
+                        <td>{item.Amount}</td>
+                        <td>{item.Approved ? "Yes" : "No"}</td>
+                        <td>
+                                <div className="badgeBox">
+                                  <span
+                                    className="actionBadge badge-danger light border-0 badgebox-size"
+                                    onClick={() => {deleteItem(item.id)}}
+                                  >
+                                    <span className="material-symbols-outlined badgebox-size">
+                                      delete
+                                    </span>
+                                  </span>
+                                </div>
+                              </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               </div>
             </div>

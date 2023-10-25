@@ -54,12 +54,21 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     );
     try {
       setEstimates(response.data);
-      setFormData(prev => ({
-        ...prev,
-        CustomerId: response.data.CustomerId
-      }));
 
-      // console.log("estimateeeeeee list is",estimates);
+      if (response.data.tblEstimateItems) {
+        setFormData((prevState) => ({
+          ...prevState,
+          CustomerId: response.data.CustomerId,
+          tblEstimateItems: response.data.tblEstimateItems,
+        }));
+      } else {
+        setFormData((prevState) => ({
+          ...prevState,
+          CustomerId: response.data.CustomerId,
+          tblEstimateItems: [],
+        }));
+      }
+
       console.log("estimateeeeeee list is", response.data);
     } catch (error) {
       console.error("API Call Error:", error);
@@ -169,6 +178,15 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
       ...prevData,
       tblEstimateItems: [...prevData.tblEstimateItems, newItem],
     }));
+    setItemForm({
+      Name: "",
+      Qty: 0,
+      Description: "",
+      Address: "12345",
+      Rate: 0,
+      isActive: true,
+      CreatedBy: 2,
+    });
   };
 
   const handleStatusChange = (e) => {
@@ -277,19 +295,16 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
-                   value={formData.CustomerId || 1}
+                    value={formData.CustomerId || 1}
                     name="CustomerId"
                     size="lg"
                     onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
                     className="bg-white"
-                  >                
-                     
-                   
+                  >
                     {customers.map((customer) => (
                       <option
-                      
                         key={customer.CustomerId}
                         value={customer.CustomerId}
                       >
@@ -489,20 +504,44 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       <th>Rate</th>
                       <th>Amount</th>
                       <th>Approved</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {formData.tblEstimateItems.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.Qty}</td>
-                        <td>{item.Name}</td>
-                        <td>{item.Description}</td>
-                        <td>{item.Rate}</td>
-                        <td>{item.Amount}</td>
-                        <td>{item.Approved ? "Yes" : "No"}</td>
-                      </tr>
-                    ))}
+                    {
+                      formData.tblEstimateItems &&
+                      formData.tblEstimateItems.length > 0 ? (
+                        formData.tblEstimateItems.map((item) => (
+                          <tr key={item.id}>
+                            <td>{item.id}</td>
+                            <td>{item.Qty}</td>
+                            <td>{item.Name}</td>
+                            <td>{item.Description}</td>
+                            <td>{item.Rate}</td>
+                            <td>{item.Amount}</td>
+                            <td>{item.Approved ? "Yes" : "No"}</td>
+                            <td>
+                              <div className="badgeBox">
+                                <span
+                                  className="actionBadge badge-danger light border-0 badgebox-size"
+                                  onClick={() => {
+                                    deleteItem(item.id);
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined badgebox-size">
+                                    delete
+                                  </span>
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="8">No items available</td>
+                        </tr>
+                      ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
+                    }
                   </tbody>
                 </table>
               </div>
