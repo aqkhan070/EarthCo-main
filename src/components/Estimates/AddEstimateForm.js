@@ -5,53 +5,7 @@ import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 
-const data = {
-  EstimateNumber: "2134",
-  ServiceLocation: "12435",
-  Email: "3245ytr@gmail.com",
-  IssueDate: null,
-  CustomerId: 6,
-  EstimateStatusId: 3,
-  CreatedBy: 6,
-  EditBy: 6,
-  ServiceLocationNotes: "123456",
-  PrivateNotes: "1234567",
-  EstimateNotes: "1234567",
-  QBStatus: "2",
-  isActive: true,
-  tblEstimateItems: [
-    {
-      Name: "Name1",
-      Description: "Description1",
-      Qty: 2,
-      Rate: 234,
-      Address: "123456",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-    {
-      Name: "Name2",
-      Description: "Description2",
-      Qty: 2,
-      Rate: 2.5,
-      Address: "Address2",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-    {
-      Name: "Name3",
-      Description: "Description3",
-      Qty: 3,
-      Rate: 2.5,
-      Address: "Address3",
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-    },
-  ],
-};
+
 
 
 const AddEstimateForm = () => {
@@ -129,7 +83,7 @@ const handleSubmit = () => {
   };
 
   console.log("mergedEstimateData:", mergedEstimateData);
-  console.log("data:", data);
+  // console.log("data:", data);
 
   postData.append("EstimateData", JSON.stringify(mergedEstimateData));
   console.log(JSON.stringify(mergedEstimateData));

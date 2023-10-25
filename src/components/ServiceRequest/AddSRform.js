@@ -10,6 +10,65 @@ const AddSRform = () => {
 
   const [customers, setCustomers] = useState([]);
 
+ 
+   
+  const [SRData, setSRData] = useState({
+    ServiceRequestData: {
+      CustomerId: 0,
+      ServiceLocation: '',
+      Contact: '',
+      JobName: '',
+      DueDate: '',
+      SRTypeId: 0,
+      SRStatusId: 0,
+      Assign: '',
+      WorkRequest: '',
+      ActionTaken: '',
+      CompletedDate: '',
+    }
+  });
+
+  const [itemInput, setItemInput] = useState({
+    Name: '',
+    Qty: 0,
+    Description: '',
+    Rate: 0
+  });
+  
+  const [tblSRItems, setTblSRItems] = useState([]);
+  
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setSRData(prevData => ({
+      ServiceRequestData: {
+        ...prevData.ServiceRequestData,
+        [name]: name === 'CustomerId' || name === 'SRTypeId' || name === 'SRStatusId' ? Number(value) : value,
+      }
+    }));
+  };
+  
+  const submitHandler = async () => {
+    const formData = new FormData();
+  
+    formData.append('ServiceRequestData', JSON.stringify(SRData.ServiceRequestData));
+  
+    try {
+      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/ServiceRequest/AddServiceRequest', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response.data);
+      // Handle successful submission
+    } catch (error) {
+      console.error('API Call Error:', error);
+    }
+    for (let [key, value] of formData.entries()) {
+      console.log("filessss", key, value);
+    }
+  };
+  
+
   const fetchCustomers = async () => {
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
@@ -76,14 +135,10 @@ const AddSRform = () => {
       <div className="container-fluid">
         <div className="card">
           <div className="card-body">
+            {/* Add service form */}
             <div className="row mb-3">
               <div className="col-lg-12 col-md-12 mb-2">
-                {/* <Form.Select aria-label="Default select example" className='bg-white' size="md">
-                                    <option value='Draft'>Draft</option>
-                                    <option value='Sent'>Sent</option>
-                                    <option value='Approved'>Approved</option>
-                                    <option value='Rejected'>Rejected</option>
-                                </Form.Select> */}
+                
                 <NavLink to="/Dashboard/Estimates">
                   {" "}
                   <button
@@ -130,6 +185,7 @@ const AddSRform = () => {
                       <Form.Select
                         size="lg"
                         name="CustomerId"
+                        onChange={handleInputChange}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
@@ -151,6 +207,7 @@ const AddSRform = () => {
                         type="text"
                         className="form-control"
                         name="ServiceLocation"
+                        onChange={handleInputChange}
                         placeholder="Service Location"
                       />
                     </div>
@@ -159,6 +216,7 @@ const AddSRform = () => {
                       <input
                         type="text"
                         name="Contact"
+                        onChange={handleInputChange}
                         className="form-control"
                         placeholder="Example@Example.com"
                       />
@@ -170,6 +228,7 @@ const AddSRform = () => {
                       <input
                         type="text"
                         name="JobName"
+                        onChange={handleInputChange}
                         className="form-control"
                         placeholder="Job Name"
                       />
@@ -180,14 +239,15 @@ const AddSRform = () => {
                       <input
                         type="date"
                         name="DueDate"
+                        onChange={handleInputChange}
                         className="form-control"
                         placeholder="Due Date"
                       />
                     </div>
                     <div className=" col-md-4">
                       <label className="form-label">Type:</label>
-                      <Form.Select name="SRTypeId" size="lg" className="bg-white">
-                        <option value="Inspect and Advise">
+                      <Form.Select name="SRTypeId" onChange={handleInputChange} size="lg" className="bg-white">
+                        <option value={null}>
                           Inspect and Advise
                         </option>
                         <option value="Irrigation">Irrigation</option>
@@ -199,9 +259,9 @@ const AddSRform = () => {
                     </div>
                     <div className="col-lg-2 col-md-2 mt-2">
                       <label className="form-label">Status:</label>
-                      <Form.Select name="SRStatusId" size="lg" className="bg-white">
-                        <option value="Open">Open</option>
-                        <option value="Closed">Closed</option>
+                      <Form.Select name="SRStatusId" onChange={handleInputChange} size="lg" className="bg-white">
+                        <option value={1}>Open</option>
+                        <option value={2}>Closed</option>
                       </Form.Select>
                     </div>
                   </div>
@@ -224,11 +284,11 @@ const AddSRform = () => {
                       <label className="form-label">
                         Assign / Appointment:
                       </label>
-                      <Form.Select size="lg" className="bg-white">
+                      <Form.Select name="Assign" size="lg" className="bg-white">
                         <option value={null}>Choose...</option>
-                        <option value={null}>option 1</option>
-                        <option value={null}>option 2</option>
-                        <option value={null}>option 3</option>
+                        <option value="option 1">option 1</option>
+                        <option value="option 2">option 2</option>
+                        <option value="option 3">option 3</option>
                       </Form.Select>
                     </div>
                     <div className="col-md-6 pt-4">
@@ -349,6 +409,7 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
+            {/* item table */}
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
@@ -383,6 +444,7 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
+            {/* files */}
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
@@ -422,6 +484,7 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
+            {/* Details */}
             <div className="card">
               <div className="card-body p-0 pb-4">
                 <div className="itemtitleBar">
@@ -438,6 +501,7 @@ const AddSRform = () => {
                       </label>
                       <textarea
                         name="WorkRequest"
+                        onChange={handleInputChange}
                         className="form-txtarea form-control"
                         rows="2"
                       ></textarea>
@@ -450,6 +514,7 @@ const AddSRform = () => {
                       {/* Adjust the column size as needed */}
                       <textarea
                         name="ActionTaken"
+                        onChange={handleInputChange}
                         className="form-txtarea form-control"
                         rows="2"
                       ></textarea>
@@ -460,6 +525,8 @@ const AddSRform = () => {
 
                       <input
                         type="date"
+                        name="CompletedDate"
+                        onChange={handleInputChange}
                         className="form-control"
                         placeholder="CompletedDate"
                       />
@@ -470,6 +537,21 @@ const AddSRform = () => {
             </div>
             ;
           </div>
+
+          <div class="mb-2 row text-end">
+          <div className="flex-right">
+            <button
+              type="button"
+              class="btn btn-primary me-1"
+              onClick={submitHandler}
+            >
+              Submit
+            </button>
+            <NavLink to="/Dashboard/Service-Requests">
+              <button class="btn btn-danger light ms-1">Cancel</button>
+            </NavLink>
+          </div>
+        </div>
         </div>
       </div>
     </>

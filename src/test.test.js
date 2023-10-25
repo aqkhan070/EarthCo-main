@@ -10,6 +10,7 @@
       "CustomerId": 2,--
       "SRTypeId": 2,--
       "SRStatusId": 2,--
+      "Assign": "str"--
       "EstimateStatusId":1,
       "CreatedBy": 2,
       "EditBy": 2,
