@@ -54,6 +54,10 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     );
     try {
       setEstimates(response.data);
+      setFormData(prev => ({
+        ...prev,
+        CustomerId: response.data.CustomerId
+      }));
 
       // console.log("estimateeeeeee list is",estimates);
       console.log("estimateeeeeee list is", response.data);
@@ -273,7 +277,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
               <div className="row">
                 <div className="mb-2 col-md-9">
                   <Form.Select
-                    value={estimates.CustomerId || 1}
+                   value={formData.CustomerId || 1}
                     name="CustomerId"
                     size="lg"
                     onChange={handleInputChange}
