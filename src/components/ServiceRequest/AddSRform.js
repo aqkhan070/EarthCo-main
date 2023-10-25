@@ -1,22 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
-import { DataContext } from "../../context/AppData";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const AddSRform = () => {
-  const { estimateItems } = useContext(DataContext);
-
-  const inputFile = useRef(null);
-
-  const [itemObj, setItemObj] = useState(estimateItems);
-  const [itemName, setItemName] = useState();
-  const [itemQty, setItemQty] = useState();
-  const [itemDesc, setItemDesc] = useState();
-  const [rate, setRate] = useState();
-  const [files, setFiles] = useState([]);
+ 
 
   const [customers, setCustomers] = useState([]);
 
@@ -38,52 +28,8 @@ const AddSRform = () => {
     fetchCustomers();
   }, []);
 
-  const addItem = () => {
-    const updatedArr = [
-      ...itemObj,
-      {
-        id: `item${Math.round(Math.random() * 999)}`,
-        name: itemName,
-        qty: itemQty,
-        description: itemDesc,
-        rate: rate,
-      },
-    ];
-    setItemObj(updatedArr);
-    setItemName("");
-    setItemQty("");
-    setItemDesc("");
-    setRate("");
-  };
 
-  const renderItems = itemObj.map((item) => {
-    return (
-      <tr>
-        <td>
-          <span>{item.qty}</span>
-        </td>
-        <td>
-          <div className="products">
-            <div>
-              <h6>{item.name}</h6>
-            </div>
-          </div>
-        </td>
-        <td>
-          <span>{item.description}</span>
-        </td>
-        <td>
-          <span className="text-primary">${item.rate}</span>
-        </td>
-        <td>
-          <span>${item.rate}</span>
-        </td>
-        <td>
-          <input type="checkbox" checked />
-        </td>
-      </tr>
-    );
-  });
+  
 
   const icon = (
     <svg
@@ -118,21 +64,11 @@ const AddSRform = () => {
   );
 
   // fileAdd
-  const addFile = () => {
-    inputFile.current.click();
-  };
+ 
 
-  const trackFile = (event) => {
-    const file = event.target.files[0];
-    setFiles([...files, file]);
-  };
+  
 
-  const deleteFile = (id) => {
-    const updatedArr = files.filter((file) => {
-      return file.name !== id;
-    });
-    setFiles(updatedArr);
-  };
+
 
   return (
     <>
@@ -214,6 +150,7 @@ const AddSRform = () => {
                       <input
                         type="text"
                         className="form-control"
+                        name="ServiceLocation"
                         placeholder="Service Location"
                       />
                     </div>
@@ -221,6 +158,7 @@ const AddSRform = () => {
                       <label>Contact</label>
                       <input
                         type="text"
+                        name="Contact"
                         className="form-control"
                         placeholder="Example@Example.com"
                       />
@@ -231,6 +169,7 @@ const AddSRform = () => {
                       <label className="form-label">Job Name:</label>
                       <input
                         type="text"
+                        name="JobName"
                         className="form-control"
                         placeholder="Job Name"
                       />
@@ -240,13 +179,14 @@ const AddSRform = () => {
 
                       <input
                         type="date"
+                        name="DueDate"
                         className="form-control"
                         placeholder="Due Date"
                       />
                     </div>
                     <div className=" col-md-4">
                       <label className="form-label">Type:</label>
-                      <Form.Select size="lg" className="bg-white">
+                      <Form.Select name="SRTypeId" size="lg" className="bg-white">
                         <option value="Inspect and Advise">
                           Inspect and Advise
                         </option>
@@ -259,7 +199,7 @@ const AddSRform = () => {
                     </div>
                     <div className="col-lg-2 col-md-2 mt-2">
                       <label className="form-label">Status:</label>
-                      <Form.Select size="lg" className="bg-white">
+                      <Form.Select name="SRStatusId" size="lg" className="bg-white">
                         <option value="Open">Open</option>
                         <option value="Closed">Closed</option>
                       </Form.Select>
@@ -268,6 +208,8 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
+
+            {/* Assign and scedule */}
             <div className="card">
               <div className="card-body p-0 pb-4">
                 <div className="itemtitleBar">
@@ -320,8 +262,9 @@ const AddSRform = () => {
                           <div className="col-sm-9">
                             <input
                               type="text"
-                              value={itemName}
-                              onChange={(e) => setItemName(e.target.value)}
+                              name="Name"
+                              // value={itemName}
+                              // onChange={(e) => setItemName(e.target.value)}
                               className="form-control"
                               placeholder="Name"
                             />
@@ -334,8 +277,9 @@ const AddSRform = () => {
                           <div className="col-sm-9">
                             <input
                               type="number"
-                              value={itemQty}
-                              onChange={(e) => setItemQty(e.target.value)}
+                              name="Qty"
+                              // value={itemQty}
+                              // onChange={(e) => setItemQty(e.target.value)}
                               className="form-control"
                               placeholder="Quantity"
                             />
@@ -347,9 +291,10 @@ const AddSRform = () => {
                           </label>
                           <div className="col-sm-9">
                             <textarea
+                            name="Description"
                               className="form-txtarea form-control"
-                              value={itemDesc}
-                              onChange={(e) => setItemDesc(e.target.value)}
+                              // value={itemDesc}
+                              // onChange={(e) => setItemDesc(e.target.value)}
                               rows="3"
                               id="comment"
                             ></textarea>
@@ -361,9 +306,10 @@ const AddSRform = () => {
                           </label>
                           <div className="col-sm-9">
                             <input
+                            name="Rate"
                               type="number"
-                              value={rate}
-                              onChange={(e) => setRate(e.target.value)}
+                              // value={rate}
+                              // onChange={(e) => setRate(e.target.value)}
                               className="form-control"
                               placeholder="Rate"
                             />
@@ -394,7 +340,7 @@ const AddSRform = () => {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={addItem}
+                      onClick={() => {}}
                       data-bs-dismiss="modal"
                     >
                       Save
@@ -429,7 +375,9 @@ const AddSRform = () => {
                           <th>Approved</th>
                         </tr>
                       </thead>
-                      <tbody>{renderItems}</tbody>
+                      <tbody>
+
+                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -444,14 +392,14 @@ const AddSRform = () => {
                   <button
                     className="btn btn-primary btn-sm"
                     style={{ margin: "12px 20px" }}
-                    onClick={addFile}
+                    // onClick={addFile}
                   >
                     + Add
                   </button>
                   <input
                     type="file"
-                    ref={inputFile}
-                    onChange={trackFile}
+                    // ref={inputFile}
+                    // onChange={trackFile}
                     style={{ display: "none" }}
                   />
                   <div className="table-responsive active-projects style-1">
@@ -467,44 +415,7 @@ const AddSRform = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {files &&
-                          files.map((file, index) => {
-                            return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  <h5>{file.name}</h5>
-                                </td>
-                                <td>
-                                  <span>
-                                    {file.lastModifiedDate.toLocaleDateString()}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div className="products">
-                                    <div>{file.type}</div>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span className="text-primary">
-                                    {(file.size / 1024).toFixed(2)} kb
-                                  </span>
-                                </td>
-                                <td>
-                                  <div
-                                    className="badgeBox"
-                                    onClick={() => deleteFile(file.name)}
-                                  >
-                                    <span className="actionBadge badge-danger light border-0">
-                                      <span className="material-symbols-outlined">
-                                        delete
-                                      </span>
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                        {/* files */}
                       </tbody>
                     </table>
                   </div>
@@ -526,7 +437,7 @@ const AddSRform = () => {
                       Work Requested:
                       </label>
                       <textarea
-                        name="WorkRequested"
+                        name="WorkRequest"
                         className="form-txtarea form-control"
                         rows="2"
                       ></textarea>
@@ -550,7 +461,7 @@ const AddSRform = () => {
                       <input
                         type="date"
                         className="form-control"
-                        placeholder="Date Completed"
+                        placeholder="CompletedDate"
                       />
                     </div>
                   </div>
