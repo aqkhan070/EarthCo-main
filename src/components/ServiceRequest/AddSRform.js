@@ -6,68 +6,82 @@ import axios from "axios";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const AddSRform = () => {
- 
-
   const [customers, setCustomers] = useState([]);
 
- 
-   
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       CustomerId: 0,
-      ServiceLocation: '',
-      Contact: '',
-      JobName: '',
-      DueDate: '',
+      ServiceLocation: "",
+      Contact: "",
+      JobName: "",
+      DueDate: "",
       SRTypeId: 0,
       SRStatusId: 0,
-      Assign: '',
-      WorkRequest: '',
-      ActionTaken: '',
-      CompletedDate: '',
-    }
+      Assign: "",
+      WorkRequest: "",
+      ActionTaken: "",
+      CompletedDate: "",
+    },
   });
 
   const [itemInput, setItemInput] = useState({
-    Name: '',
+    Name: "",
     Qty: 0,
-    Description: '',
-    Rate: 0
+    Description: "",
+    Rate: 0,
   });
-  
+
   const [tblSRItems, setTblSRItems] = useState([]);
-  
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setSRData(prevData => ({
+    setSRData((prevData) => ({
       ServiceRequestData: {
         ...prevData.ServiceRequestData,
-        [name]: name === 'CustomerId' || name === 'SRTypeId' || name === 'SRStatusId' ? Number(value) : value,
-      }
+        [name]:
+          name === "CustomerId" || name === "SRTypeId" || name === "SRStatusId"
+            ? Number(value)
+            : value,
+      },
     }));
   };
-  
+
   const submitHandler = async () => {
     const formData = new FormData();
-  
-    formData.append('ServiceRequestData', JSON.stringify(SRData.ServiceRequestData));
-  
+    SRData.ServiceRequestData.tblSRItems = tblSRItems;
+
+  formData.append('ServiceRequestData', JSON.stringify(SRData.ServiceRequestData));
+
+    // formData.append(
+    //   "ServiceRequestData",
+    //   JSON.stringify(SRData.ServiceRequestData)
+    // );
+
     try {
-      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/ServiceRequest/AddServiceRequest', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/ServiceRequest/AddServiceRequest",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log(response.data);
       // Handle successful submission
     } catch (error) {
-      console.error('API Call Error:', error);
+      console.error("API Call Error:", error);
     }
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
     }
   };
-  
+
+  const removeItem = (index) => {
+    const newItems = [...tblSRItems];
+    newItems.splice(index, 1);
+    setTblSRItems(newItems);
+  };
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -86,9 +100,6 @@ const AddSRform = () => {
   useEffect(() => {
     fetchCustomers();
   }, []);
-
-
-  
 
   const icon = (
     <svg
@@ -123,11 +134,6 @@ const AddSRform = () => {
   );
 
   // fileAdd
- 
-
-  
-
-
 
   return (
     <>
@@ -138,7 +144,6 @@ const AddSRform = () => {
             {/* Add service form */}
             <div className="row mb-3">
               <div className="col-lg-12 col-md-12 mb-2">
-                
                 <NavLink to="/Dashboard/Estimates">
                   {" "}
                   <button
@@ -246,10 +251,13 @@ const AddSRform = () => {
                     </div>
                     <div className=" col-md-4">
                       <label className="form-label">Type:</label>
-                      <Form.Select name="SRTypeId" onChange={handleInputChange} size="lg" className="bg-white">
-                        <option value={null}>
-                          Inspect and Advise
-                        </option>
+                      <Form.Select
+                        name="SRTypeId"
+                        onChange={handleInputChange}
+                        size="lg"
+                        className="bg-white"
+                      >
+                        <option value={null}>Inspect and Advise</option>
                         <option value="Irrigation">Irrigation</option>
                         <option value="Maintenance">Maintenance</option>
                         <option value="Other">Other</option>
@@ -259,7 +267,12 @@ const AddSRform = () => {
                     </div>
                     <div className="col-lg-2 col-md-2 mt-2">
                       <label className="form-label">Status:</label>
-                      <Form.Select name="SRStatusId" onChange={handleInputChange} size="lg" className="bg-white">
+                      <Form.Select
+                        name="SRStatusId"
+                        onChange={handleInputChange}
+                        size="lg"
+                        className="bg-white"
+                      >
                         <option value={1}>Open</option>
                         <option value={2}>Closed</option>
                       </Form.Select>
@@ -268,7 +281,6 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
-
             {/* Assign and scedule */}
             <div className="card">
               <div className="card-body p-0 pb-4">
@@ -323,8 +335,13 @@ const AddSRform = () => {
                             <input
                               type="text"
                               name="Name"
-                              // value={itemName}
-                              // onChange={(e) => setItemName(e.target.value)}
+                              value={itemInput.Name}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Name: e.target.value,
+                                })
+                              }
                               className="form-control"
                               placeholder="Name"
                             />
@@ -338,8 +355,13 @@ const AddSRform = () => {
                             <input
                               type="number"
                               name="Qty"
-                              // value={itemQty}
-                              // onChange={(e) => setItemQty(e.target.value)}
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
                               className="form-control"
                               placeholder="Quantity"
                             />
@@ -351,10 +373,15 @@ const AddSRform = () => {
                           </label>
                           <div className="col-sm-9">
                             <textarea
-                            name="Description"
+                              name="Description"
                               className="form-txtarea form-control"
-                              // value={itemDesc}
-                              // onChange={(e) => setItemDesc(e.target.value)}
+                              value={itemInput.Description}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Description: e.target.value,
+                                })
+                              }
                               rows="3"
                               id="comment"
                             ></textarea>
@@ -366,10 +393,15 @@ const AddSRform = () => {
                           </label>
                           <div className="col-sm-9">
                             <input
-                            name="Rate"
+                              name="Rate"
                               type="number"
-                              // value={rate}
-                              // onChange={(e) => setRate(e.target.value)}
+                              value={itemInput.Rate}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
                               className="form-control"
                               placeholder="Rate"
                             />
@@ -400,7 +432,10 @@ const AddSRform = () => {
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={() => {}}
+                      onClick={() => {
+                        setTblSRItems([...tblSRItems, itemInput]);
+                        setItemInput({ Name: '', Qty: 0, Description: '', Rate: 0 }); // Reset the modal input fields
+                      }}
                       data-bs-dismiss="modal"
                     >
                       Save
@@ -437,8 +472,20 @@ const AddSRform = () => {
                         </tr>
                       </thead>
                       <tbody>
+  {tblSRItems.map((item, index) => (
+    <tr key={index}>
+      <td>{item.Qty}</td>
+      <td>{item.Name}</td>
+      <td>{item.Description}</td>
+      <td>{item.Rate}</td>
+      <td>{item.Qty * item.Rate}</td>
+      <td>
+        <button onClick={() => removeItem(index)}>Delete</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
-                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -476,9 +523,7 @@ const AddSRform = () => {
                           <th>Actions</th>
                         </tr>
                       </thead>
-                      <tbody>
-                        {/* files */}
-                      </tbody>
+                      <tbody>{/* files */}</tbody>
                     </table>
                   </div>
                 </div>
@@ -496,9 +541,7 @@ const AddSRform = () => {
                     <div className="col-md-4">
                       {" "}
                       {/* Adjust the column size as needed */}
-                      <label className="form-label">
-                      Work Requested:
-                      </label>
+                      <label className="form-label">Work Requested:</label>
                       <textarea
                         name="WorkRequest"
                         onChange={handleInputChange}
@@ -508,9 +551,7 @@ const AddSRform = () => {
                     </div>
                     <div className="col-md-4 ">
                       {" "}
-                      <label className="form-label">
-                      Action Taken:
-                      </label>
+                      <label className="form-label">Action Taken:</label>
                       {/* Adjust the column size as needed */}
                       <textarea
                         name="ActionTaken"
@@ -539,19 +580,19 @@ const AddSRform = () => {
           </div>
 
           <div class="mb-2 row text-end">
-          <div className="flex-right">
-            <button
-              type="button"
-              class="btn btn-primary me-1"
-              onClick={submitHandler}
-            >
-              Submit
-            </button>
-            <NavLink to="/Dashboard/Service-Requests">
-              <button class="btn btn-danger light ms-1">Cancel</button>
-            </NavLink>
+            <div className="flex-right">
+              <button
+                type="button"
+                class="btn btn-primary me-1"
+                onClick={submitHandler}
+              >
+                Submit
+              </button>
+              <NavLink to="/Dashboard/Service-Requests">
+                <button class="btn btn-danger light ms-1">Cancel</button>
+              </NavLink>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </>
