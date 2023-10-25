@@ -153,13 +153,12 @@ const Estimates = () => {
                   <div className="col-md-3">
                     <button
                       className="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal"
-                      onClick={openModal}
+                      onClick={() => { navigate("/Dashboard/Estimates/Add-Estimate")}}
                     >
                       + Add Estimates
                     </button>
                   </div>
+
                    {/*<div className="col-md-7">
                     <div>
                                             <input className="from-control form-control-sm" style={{ width: '100%' }} type="text" placeholder="Default input" />

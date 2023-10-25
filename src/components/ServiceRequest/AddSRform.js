@@ -190,7 +190,7 @@ const AddSRform = () => {
                   <div className="row">
                     <div className="mb-2 col-md-9 SrCustomerList">
                     <label className="form-label">Customers</label>
-                      <Form.Select
+                      <Form.Select size="lg"
                         name="CustomerId"
                         aria-label="Default select example"
                         id="inputState"

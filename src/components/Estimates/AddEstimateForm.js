@@ -306,6 +306,7 @@ const handleSubmit = () => {
                   <Form.Select
                     value={formData.CustomerId}
                     name="CustomerId"
+                    size="lg"
                     onChange={handleInputChange}
                     aria-label="Default select example"
                     id="inputState"
