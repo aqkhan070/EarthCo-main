@@ -185,12 +185,14 @@ const AddSRform = () => {
               <div className="card-body p-0">
                 <div className="itemtitleBar">
                   <h4>Service Request Details</h4>
-                </div> <br/>
+                </div>{" "}
+                <br />
                 <div className="basic-form">
                   <div className="row">
                     <div className="mb-2 col-md-9 SrCustomerList">
-                    <label className="form-label">Customers</label>
-                      <Form.Select size="lg"
+                      <label className="form-label">Customers</label>
+                      <Form.Select
+                        size="lg"
                         name="CustomerId"
                         aria-label="Default select example"
                         id="inputState"
@@ -266,8 +268,37 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
-
-            {/* modal */}
+            <div className="card">
+              <div className="card-body p-0 pb-4">
+                <div className="itemtitleBar">
+                  <h4>Assign & Schedule</h4>
+                </div>
+                <br />
+                <div className="basic-form">
+                  <div className="row">
+                    <div className="col-md-4">
+                      {" "}
+                      {/* Adjust the column size as needed */}
+                      <label className="form-label">
+                        Assign / Appointment:
+                      </label>
+                      <Form.Select size="lg" className="bg-white">
+                        <option value={null}>Choose...</option>
+                        <option value={null}>option 1</option>
+                        <option value={null}>option 2</option>
+                        <option value={null}>option 3</option>
+                      </Form.Select>
+                    </div>
+                    <div className="col-md-6 pt-4">
+                      {" "}
+                      {/* Adjust the column size as needed */}
+                      <button className="btn schedule-btn">Schedule</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ;{/* modal */}
             <div className="modal fade" id="basicModal">
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
@@ -372,7 +403,6 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
-
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
@@ -405,7 +435,6 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
-
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
@@ -482,6 +511,53 @@ const AddSRform = () => {
                 </div>
               </div>
             </div>
+            <div className="card">
+              <div className="card-body p-0 pb-4">
+                <div className="itemtitleBar">
+                  <h4>Details</h4>
+                </div>
+                <br />
+                <div className="basic-form">
+                  <div className="row">
+                    <div className="col-md-4">
+                      {" "}
+                      {/* Adjust the column size as needed */}
+                      <label className="form-label">
+                      Work Requested:
+                      </label>
+                      <textarea
+                        name="WorkRequested"
+                        className="form-txtarea form-control"
+                        rows="2"
+                      ></textarea>
+                    </div>
+                    <div className="col-md-4 ">
+                      {" "}
+                      <label className="form-label">
+                      Action Taken:
+                      </label>
+                      {/* Adjust the column size as needed */}
+                      <textarea
+                        name="ActionTaken"
+                        className="form-txtarea form-control"
+                        rows="2"
+                      ></textarea>
+                    </div>
+
+                    <div className=" col-md-4">
+                      <label className="form-label">Date Completed:</label>
+
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Date Completed"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ;
           </div>
         </div>
       </div>

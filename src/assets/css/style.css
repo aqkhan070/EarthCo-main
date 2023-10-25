@@ -53558,3 +53558,12 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     padding-left: 2em;
     padding-right: 2em;
 }
+.schedule-btn{
+    border: #6e6e6e solid 1px;
+    color:#6e6e6e;
+   margin-top: 5px;
+}
+.schedule-btn:hover{
+    background-color: #6e6e6e;
+    color: white;
+}
