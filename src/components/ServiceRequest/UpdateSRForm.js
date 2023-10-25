@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 // import { Autocomplete, TextField } from '@mui/material';
 
-const UpdateSRForm = () => {
+const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   const [customers, setCustomers] = useState([]);
 
   const [SRData, setSRData] = useState({
@@ -647,9 +647,9 @@ const UpdateSRForm = () => {
               >
                 Submit
               </button>
-              <NavLink to="/Dashboard/Service-Requests">
-                <button class="btn btn-danger light ms-1">Cancel</button>
-              </NavLink>
+              
+                <button class="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
+              
             </div>
           </div>
         </div>

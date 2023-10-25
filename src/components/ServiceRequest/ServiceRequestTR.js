@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
+import UpdateSRForm from "./UpdateSRForm";
 import {
   Table,
   TableBody,
@@ -28,6 +29,10 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+
+  const [serviceRequestId, setServiceRequestId] = useState()
+  const [showContent, setShowContent] = useState(true)
+
 
   const sortedCustomers = [...serviceRequest].sort((a, b) => {
     if (sorting.order === "asc") {
@@ -71,7 +76,8 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
+   <>
+   {showContent?(<ThemeProvider theme={theme}>
       <div className="container">
         <div className="container text-center">
           <div className="row justify-content-end">
@@ -142,7 +148,10 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                           <Button
                             className="delete-button"
                             onClick={() => {
-                              // Update actions as required
+                              setServiceRequestId(customer.ServiceRequestId)
+                              setShowContent(false)
+                              console.log("////////",serviceRequestId);
+                              // console.log("////////",customer.ServiceRequestId);
                             }}
                           >
                             <Create />
@@ -163,6 +172,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                   ))}
               </TableBody>
             </Table>
+            
           </TableContainer>
 
           <TablePagination
@@ -178,7 +188,9 @@ const ServiceRequestTR = ({ serviceRequest }) => {
           />
         </div>
       </div>
-    </ThemeProvider>
+    </ThemeProvider>): <UpdateSRForm serviceRequestId = {serviceRequestId} setShowContent = {setShowContent} /> }
+   </>
+    
   );
 };
 
