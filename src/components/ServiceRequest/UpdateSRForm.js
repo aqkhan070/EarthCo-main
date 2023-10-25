@@ -8,8 +8,11 @@ import axios from "axios";
 const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   const [customers, setCustomers] = useState([]);
 
+  const [sRList, setSRList] = useState({})
+
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
+      ServiceRequestId: serviceRequestId,
       CustomerId: 0,
       ServiceLocation: "",
       Contact: "",
@@ -35,6 +38,22 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
   const [files, setFiles] = useState([]);
   const inputFile = useRef(null);
+
+
+  const fetchSR = async () => {
+    const response = await axios.get(
+      `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
+    );
+    try {     
+
+      setSRList(response.data)
+      console.log(" list is///////", sRList);
+
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -120,6 +139,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   };
 
   useEffect(() => {
+    fetchSR();
     fetchCustomers();
   }, []);
 
@@ -213,6 +233,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         size="lg"
                         name="CustomerId"
                         onChange={handleInputChange}
+                        value={SRData.CustomerId || 1}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
@@ -235,7 +256,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         className="form-control"
                         name="ServiceLocation"
                         onChange={handleInputChange}
-                        placeholder="Service Location"
+                        // placeholder={sRList.ServiceLocation || " "}
                       />
                     </div>
                     <div className="mb-3 col-md-4">

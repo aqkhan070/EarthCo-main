@@ -211,7 +211,9 @@ const EstimateTR = ({ estimates }) => {
                             <Button>
                               <Delete
                                 color="error"
-                                onClick={() => handleDelete(estimate.EstimateId)}
+                                onClick={() =>
+                                  handleDelete(estimate.EstimateId)
+                                }
                               />
                             </Button>
                           </div>
