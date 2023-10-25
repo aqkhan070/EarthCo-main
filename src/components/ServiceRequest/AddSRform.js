@@ -21,6 +21,7 @@ const AddSRform = () => {
       WorkRequest: "",
       ActionTaken: "",
       CompletedDate: "",
+      tblSRItems: [],
     },
   });
 
@@ -30,8 +31,10 @@ const AddSRform = () => {
     Description: "",
     Rate: 0,
   });
-
   const [tblSRItems, setTblSRItems] = useState([]);
+
+  const [files, setFiles] = useState([]);
+  const inputFile = useRef(null);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -50,12 +53,18 @@ const AddSRform = () => {
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
-  formData.append('ServiceRequestData', JSON.stringify(SRData.ServiceRequestData));
+    formData.append(
+      "ServiceRequestData",
+      JSON.stringify(SRData.ServiceRequestData)
+    );
 
     // formData.append(
     //   "ServiceRequestData",
     //   JSON.stringify(SRData.ServiceRequestData)
     // );
+    files.forEach((fileObj) => {
+      formData.append("Files", fileObj);
+    });
 
     try {
       const response = await axios.post(
@@ -81,6 +90,19 @@ const AddSRform = () => {
     const newItems = [...tblSRItems];
     newItems.splice(index, 1);
     setTblSRItems(newItems);
+  };
+
+  const trackFile = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  };
+  const addFile = () => {
+    inputFile.current.click();
+  };
+  const removeFile = (index) => {
+    const updatedFiles = [...files];
+    updatedFiles.splice(index, 1);
+    setFiles(updatedFiles);
   };
 
   const fetchCustomers = async () => {
@@ -434,7 +456,12 @@ const AddSRform = () => {
                       className="btn btn-primary"
                       onClick={() => {
                         setTblSRItems([...tblSRItems, itemInput]);
-                        setItemInput({ Name: '', Qty: 0, Description: '', Rate: 0 }); // Reset the modal input fields
+                        setItemInput({
+                          Name: "",
+                          Qty: 0,
+                          Description: "",
+                          Rate: 0,
+                        }); // Reset the modal input fields
                       }}
                       data-bs-dismiss="modal"
                     >
@@ -468,24 +495,32 @@ const AddSRform = () => {
                           <th>Description</th>
                           <th>Rate</th>
                           <th>Amount</th>
-                          <th>Approved</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-  {tblSRItems.map((item, index) => (
-    <tr key={index}>
-      <td>{item.Qty}</td>
-      <td>{item.Name}</td>
-      <td>{item.Description}</td>
-      <td>{item.Rate}</td>
-      <td>{item.Qty * item.Rate}</td>
-      <td>
-        <button onClick={() => removeItem(index)}>Delete</button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+                        {tblSRItems.map((item, index) => (
+                          <tr key={index}>
+                            <td>{item.Qty}</td>
+                            <td>{item.Name}</td>
+                            <td>{item.Description}</td>
+                            <td>{item.Rate}</td>
+                            <td>{item.Qty * item.Rate}</td>
+                            <td>
+                              <div className="badgeBox">
+                                <span
+                                  className="actionBadge badge-danger light border-0 badgebox-size"
+                                  onClick={() => removeItem(index)}
+                                >
+                                  <span className="material-symbols-outlined badgebox-size">
+                                    delete
+                                  </span>
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -501,14 +536,14 @@ const AddSRform = () => {
                   <button
                     className="btn btn-primary btn-sm"
                     style={{ margin: "12px 20px" }}
-                    // onClick={addFile}
+                    onClick={addFile}
                   >
                     + Add
                   </button>
                   <input
                     type="file"
-                    // ref={inputFile}
-                    // onChange={trackFile}
+                    ref={inputFile}
+                    onChange={trackFile}
                     style={{ display: "none" }}
                   />
                   <div className="table-responsive active-projects style-1">
@@ -523,7 +558,31 @@ const AddSRform = () => {
                           <th>Actions</th>
                         </tr>
                       </thead>
-                      <tbody>{/* files */}</tbody>
+                      <tbody>
+                        {files.map((file, index) => (
+                          <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{file.name}</td>
+                            <td>
+                              {file.lastModifiedDate.toLocaleDateString()}
+                            </td>
+                            <td>{file.type || "N/A"}</td>
+                            <td>{file.size} bytes</td>
+                            <td>
+                              <div className="badgeBox">
+                                <span
+                                  className="actionBadge badge-danger light border-0 badgebox-size"
+                                  onClick={() => removeFile(index)}
+                                >
+                                  <span className="material-symbols-outlined badgebox-size">
+                                    delete
+                                  </span>
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
                     </table>
                   </div>
                 </div>
