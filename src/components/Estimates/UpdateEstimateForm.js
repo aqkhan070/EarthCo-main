@@ -144,7 +144,8 @@ const handleSubmit = () => {
     for (let [key, value] of postData.entries()) {
       console.log("filessss", key, value);
     }
-    setShowContent(true)
+    window.location.reload();
+
     // console.log("post data izzz",postData);
   };
 
@@ -223,8 +224,7 @@ const handleSubmit = () => {
   // }, [formData]);
 
   return (
-    <div class="card">
-      <div>{estimateId}</div>
+    <div class="card">      
       <div className="card-body">
         <div className="row">
           <div className="basic-form col-md-6">
