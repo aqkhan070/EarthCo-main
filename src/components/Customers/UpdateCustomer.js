@@ -22,7 +22,7 @@ const [customerData, setCustomerData] = useState({});
     CustomerData: {
       CustomerName: "",
     },
-    ContactData: [],
+    ContactData: customerData.tblContacts,
   });
 
   const inputReffname = useRef();

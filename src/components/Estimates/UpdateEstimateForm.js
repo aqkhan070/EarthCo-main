@@ -9,6 +9,7 @@ import axios from "axios";
 
 
 const UpdateEstimateForm = ({setShowContent,estimateId}) => {
+  const [estimates, setEstimates] = useState({})
   
   const [formData, setFormData] = useState({
 
@@ -39,7 +40,6 @@ const UpdateEstimateForm = ({setShowContent,estimateId}) => {
 
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
-  const [estimates, setEstimates] = useState({})
 
   const [customers, setCustomers] = useState([]);
 
@@ -61,7 +61,9 @@ const UpdateEstimateForm = ({setShowContent,estimateId}) => {
     );
     try {
       setEstimates(response.data);
-        console.log("estimateeeeeee list is",estimates);
+      
+        // console.log("estimateeeeeee list is",estimates);
+        console.log("estimateeeeeee list is",response.data);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -222,6 +224,7 @@ const handleSubmit = () => {
 
   return (
     <div class="card">
+      <div>{estimateId}</div>
       <div className="card-body">
         <div className="row">
           <div className="basic-form col-md-6">
@@ -281,7 +284,7 @@ const handleSubmit = () => {
                     id="inputState"
                     className="bg-white"
                   >
-                    <option value="">customer</option>{" "}
+                    <option value=""></option>{" "}
                     {customers.map((customer) => (
                       <option
                         key={customer.CustomerId}
@@ -301,7 +304,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder={estimates.ServiceLocation}
+                    placeholder={estimates.ServiceLocation || ''}
                   />
                 </div>
 
@@ -312,7 +315,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder={estimates.Email}
+                    placeholder={estimates.Email || ''}
                   />
                 </div>
               </div>
@@ -332,7 +335,7 @@ const handleSubmit = () => {
                     onChange={handleInputChange}
                     type="text"
                     className="form-control"
-                    placeholder={estimates.EstimateNumber}
+                    placeholder={estimates.EstimateNumber|| ''}
                   />
                 </div>
                 <div className="mb-3 col-md-9">
@@ -342,7 +345,7 @@ const handleSubmit = () => {
                     name="IssueDate"
                     onChange={handleInputChange}
                     className="form-control input-limit-datepicker"
-                    placeholder={estimates.IssueDate}
+                    placeholder={estimates.IssueDate || ''}
                     type="date"
                   />
                 </div>
@@ -487,7 +490,7 @@ const handleSubmit = () => {
                     </tr>
                   </thead>
                   <tbody>
-                  {estimates.tblEstimateItems.map((item) => (
+                  {/* {estimates.tblEstimateItems.map((item) => (
         <tr key={item.id}>
             <td>{item.id}</td>
             <td>{item.Qty}</td>
@@ -497,7 +500,7 @@ const handleSubmit = () => {
             <td>{item.Amount}</td>
             <td>{item.Approved ? "Yes" : "No"}</td>
         </tr>
-    ))}
+    ))} */}
     {formData.tblEstimateItems.map((item) => (
         <tr key={item.id}>
             <td>{item.id}</td>
@@ -546,13 +549,13 @@ const handleSubmit = () => {
                     </tr>
                   </thead>
                   <tbody>
-                  {estimates.tblEstimateFiles.map((file, index) => (
+                  {/* {estimates.tblEstimateFiles.map((file, index) => (
                       <tr key={index}>
                         <td>{file.name}</td>
                         <td>{file.caption}</td>
                         <td>{file.date}</td>
                       </tr>
-                    ))}
+                    ))} */}
                     {Files.map((file, index) => (
                       <tr key={index}>
                         <td>{file.name}</td>
@@ -577,7 +580,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Estimate Notes</h4>
                       <div className="mb-3">
                         <textarea
-                        placeholder={estimates.EstimateNotes}
+                        placeholder={estimates.EstimateNotes || ''}
                           value={formData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
@@ -594,7 +597,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Service Location Notes</h4>
                       <div className="mb-3">
                         <textarea
-                          placeholder={estimates.ServiceLocationNotes}
+                          placeholder={estimates.ServiceLocationNotes || ''}
                           value={formData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
@@ -611,7 +614,7 @@ const handleSubmit = () => {
                       <h4 className="card-title">Private Notes</h4>
                       <div className="mb-3">
                         <textarea
-                        placeholder={estimates.PrivateNotes}
+                        placeholder={estimates.PrivateNotes || ''}
                           value={formData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
