@@ -53567,3 +53567,15 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     background-color: #6e6e6e;
     color: white;
 }
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  
+   .button-container > Button {
+    margin: 0 0px; /* Adjust the margin as needed */
+  }   
+  
+  
