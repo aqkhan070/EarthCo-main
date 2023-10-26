@@ -25,13 +25,13 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontSize: 14,  // Making font a bit larger
+    fontSize: 14, // Making font a bit larger
   },
   components: {
     MuiTableCell: {
       styleOverrides: {
         root: {
-          padding: '8px 16px',  // Adjust cell padding to reduce height
+          padding: "8px 16px", // Adjust cell padding to reduce height
         },
       },
     },
@@ -45,20 +45,19 @@ const ServiceRequestTR = ({ serviceRequest }) => {
 
   const [search, setSearch] = useState("");
 
-  const [serviceRequestId, setServiceRequestId] = useState()
-  const [showContent, setShowContent] = useState(true)
+  const [serviceRequestId, setServiceRequestId] = useState();
+  const [showContent, setShowContent] = useState(true);
 
   const columnFieldMapping = {
     "Service Request #": "ServiceRequestNumber",
     "Customer Name": "CustomerId",
     "Assigned to": "Assign",
-    "Status": "SRStatusId",
+    Status: "SRStatusId",
     "Work Requested": "WorkRequest",
-    "Date Created": "CreatedDate"
+    "Date Created": "CreatedDate",
   };
 
-
-  // 
+  //
 
   const deleteServiceRequest = async (id) => {
     try {
@@ -93,159 +92,173 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   };
 
   const handleSearch = (data) => {
-    return data.filter(item => {
+    return data.filter((item) => {
       const fieldsToSearch = [
-        item.CustomerId?.toString(), 
+        item.CustomerId?.toString(),
         item.ServiceRequestNumber?.toString(),
         item.Assign?.toString(),
         item.SRStatusId?.toString(),
         item.WorkRequest?.toString(),
-        item.CreatedDate?.toString()
+        item.CreatedDate?.toString(),
       ];
-      
-      return fieldsToSearch.some(field => 
+
+      return fieldsToSearch.some((field) =>
         field?.toLowerCase().includes(search.toLowerCase())
       );
     });
   };
-  
 
-  const sortedAndSearchedCustomers = handleSearch([...serviceRequest]).sort((a, b) => {
-    const { field, order } = sorting;
-  
-    if (field && order) {
-      if (order === 'asc') {
-        return a[field] > b[field] ? 1 : -1;
+  const sortedAndSearchedCustomers = handleSearch([...serviceRequest]).sort(
+    (a, b) => {
+      const { field, order } = sorting;
+
+      if (field && order) {
+        if (order === "asc") {
+          return a[field] > b[field] ? 1 : -1;
+        }
+        if (order === "desc") {
+          return a[field] < b[field] ? 1 : -1;
+        }
       }
-      if (order === 'desc') {
-        return a[field] < b[field] ? 1 : -1;
-      }
+      return 0;
     }
-    return 0;
-  });
-  
+  );
 
   return (
-   <>
-   {showContent?(<ThemeProvider theme={theme}>
-      <div className="container">
-        <div className="container text-center">
-          <div className="row justify-content-end">
-          <TextField
-          label="Search"
-          variant="outlined"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ marginBottom: '20px' }}
-        />
-            <div className="col-3 add-customer-btn">
-              <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
-                <Button variant="contained" color="primary">
-                  + Add Service Request
-                </Button>
-              </Link>
+    <>
+      {showContent ? (
+        <ThemeProvider theme={theme}>
+          <div className="container">
+            <div className="container text-center">
+              <div className="row justify-content-end">
+                <TextField
+                  label="Search"
+                  variant="outlined"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  style={{ marginBottom: "20px" }}
+                />
+                <div className="col-3 add-customer-btn">
+                  <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
+                    <Button variant="contained" color="primary">
+                      + Add Service Request
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <br />
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow className="table-header">
+                      {[
+                        "Select",
+                        "Service Request #",
+                        "Customer Name",
+                        "Assigned to",
+                        "Status",
+                        "Work Requested",
+                        "Date Created",
+                        "Actions",
+                      ].map((column, index) => (
+                        <TableCell key={index}>
+                          {index < 5 ? (
+                            <TableSortLabel
+                              active={
+                                sorting.field === columnFieldMapping[column]
+                              }
+                              direction={sorting.order}
+                              onClick={() =>
+                                setSorting({
+                                  field: columnFieldMapping[column],
+                                  order:
+                                    sorting.order === "asc" &&
+                                    sorting.field === columnFieldMapping[column]
+                                      ? "desc"
+                                      : "asc",
+                                })
+                              }
+                            >
+                              {column}
+                            </TableSortLabel>
+                          ) : (
+                            column
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedAndSearchedCustomers
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((customer, rowIndex) => (
+                        <TableRow key={rowIndex} hover>
+                          <TableCell>
+                            <Checkbox />
+                          </TableCell>
+                          <TableCell>{customer.ServiceRequestNumber}</TableCell>
+                          <TableCell>{customer.CustomerId}</TableCell>
+                          <TableCell>{customer.Assign}</TableCell>
+                          <TableCell>{customer.SRStatusId}</TableCell>
+                          <TableCell>{customer.WorkRequest}</TableCell>
+                          <TableCell>{customer.CreatedDate}</TableCell>
+                          <TableCell>
+                            <div className="button-container">
+                              <Button
+                                className="delete-button"
+                                onClick={() => {
+                                  setServiceRequestId(
+                                    customer.ServiceRequestId
+                                  );
+                                  setShowContent(false);
+                                  console.log("////////", serviceRequestId);
+                                  // console.log("////////",customer.ServiceRequestId);
+                                }}
+                              >
+                                <Create />
+                              </Button>
+
+                              <Button
+                                color="error"
+                                className="delete-button"
+                                onClick={() =>
+                                  handleDelete(customer.ServiceRequestId)
+                                }
+                              >
+                                <Delete />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              <TablePagination
+                component="div"
+                count={sortedAndSearchedCustomers.length}
+                page={page}
+                onPageChange={(event, newPage) => setPage(newPage)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(event) => {
+                  setRowsPerPage(parseInt(event.target.value, 10));
+                  setPage(0);
+                }}
+              />
             </div>
           </div>
-          <br />
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow className="table-header">
-                  {[
-                    "Select",
-                    "Service Request #",
-                    "Customer Name",
-                    "Assigned to",
-                    "Status",
-                    "Work Requested",
-                    "Date Created",
-                    "Actions",
-                  ].map((column, index) => (
-                    <TableCell key={index}>
-  {index < 5 ? (
-    <TableSortLabel
-      active={sorting.field === columnFieldMapping[column]}
-      direction={sorting.order}
-      onClick={() =>
-        setSorting({
-          field: columnFieldMapping[column],
-          order:
-            sorting.order === "asc" &&
-            sorting.field === columnFieldMapping[column]
-              ? "desc"
-              : "asc",
-        })
-      }
-    >
-                          {column}
-                        </TableSortLabel>
-                      ) : (
-                        column
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {sortedAndSearchedCustomers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((customer, rowIndex) => (
-                    <TableRow key={rowIndex} hover>
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                      <TableCell>{customer.CustomerId}</TableCell>
-                      <TableCell>{customer.Assign}</TableCell>
-                      <TableCell>{customer.SRStatusId}</TableCell>
-                      <TableCell>{customer.WorkRequest}</TableCell>
-                      <TableCell>{customer.CreatedDate}</TableCell>
-                      <TableCell>
-                        <div className="button-container">
-                          <Button
-                            className="delete-button"
-                            onClick={() => {
-                              setServiceRequestId(customer.ServiceRequestId)
-                              setShowContent(false)
-                              console.log("////////",serviceRequestId);
-                              // console.log("////////",customer.ServiceRequestId);
-                            }}
-                          >
-                            <Create />
-                          </Button>
-
-                          <Button
-                            color="error"
-                            className="delete-button"
-                            onClick={() =>
-                              handleDelete(customer.ServiceRequestId)
-                            }
-                          >
-                            <Delete />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-            
-          </TableContainer>
-
-          <TablePagination
-            component="div"
-            count={sortedAndSearchedCustomers.length}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
-        </div>
-      </div>
-    </ThemeProvider>): <UpdateSRForm serviceRequestId = {serviceRequestId} setShowContent = {setShowContent} /> }
-   </>
-    
+        </ThemeProvider>
+      ) : (
+        <UpdateSRForm
+          serviceRequestId={serviceRequestId}
+          setShowContent={setShowContent}
+        />
+      )}
+    </>
   );
 };
 
