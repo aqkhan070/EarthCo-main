@@ -3,10 +3,37 @@ import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import $ from "jquery";
-import "datatables.net";
+
 import punchList from "../../assets/images/1.jpg";
+import axios from "axios";
 
 const PunchListIndex = () => {
+
+   const [punchData, setPunchData] = useState([])
+
+    useEffect(() => {
+        const fetchPunchList = async () => {
+
+            try{
+            const response = await axios.get('https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList') ;
+                setPunchData(response.data)
+                // console.log("punch data izzzzzzzzzzzzzzz", punchData);
+            }catch(error){
+                console.log("api call error", error);
+            }
+    
+        };
+        fetchPunchList()
+
+    },[])
+
+    useEffect(() => {
+        console.log("punch data izzzzzzzzzzzzzzz", punchData);
+      }, [punchData]);
+
+    
+
+
   const icon = (
     <svg
       width="20"
@@ -49,10 +76,7 @@ const PunchListIndex = () => {
     }
   };
 
-  useEffect(() => {
-    $("#punchListTbl").DataTable();
-  }, []);
-
+ 
   const toggleRow = () => {
     document.getElementById("subRow").classList.toggle("dispNone");
   };
@@ -62,6 +86,7 @@ const PunchListIndex = () => {
       <TitleBar icon={icon} title="Punchlists" />
       <div className="container-fluid">
         <div className="row">
+            
           <div className="col-xl-3  col-lg-6 col-sm-6">
             <div className="widget-stat card">
               <div className="card-body p-4">
@@ -160,6 +185,7 @@ const PunchListIndex = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="table-responsive">
                   <table
                     id="punchListTbl"
@@ -262,10 +288,14 @@ const PunchListIndex = () => {
                     </tbody>
                   </table>
                 </div>
+
+                
               </div>
             </div>
           </div>
         </div>
+
+
         {/* modal */}
         <div className="modal fade" id="addPhotos">
           <div className="modal-dialog" role="document">
