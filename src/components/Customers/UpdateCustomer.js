@@ -60,9 +60,15 @@ const [customerData, setCustomerData] = useState({});
             },
         });
 
-        // Axios automatically throws an error for non-2xx responses, so you don't need to check response.ok
 
         setCustomerData(response.data) ;
+        setFormData((prevState) => ({
+          ...prevState,
+          CustomerData: {
+            CustomerName: response.data.CustomerName,
+          },
+        }));
+        
 
         // Handle the response. For example, you can reload the customers or show a success message
         console.log("Customer zzzzzzzz:", customerData.tblContacts);
@@ -269,7 +275,7 @@ const [customerData, setCustomerData] = useState({});
                   type="text"
                   className="form-control"
                   name="CustomerName"
-                  // value={customerData.CustomerName}
+                  value={formData.CustomerData.CustomerName}
                   // onClick={(e) => {e.target.value = ""}}
                   placeholder={ customerData.CustomerName}
                   onChange={handleChange}

@@ -1,244 +1,276 @@
+import React, { useEffect, useState, useRef } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 
+const UpdateCustomer = ({selectedItem, setShowContent}) => {
+  const navigate = useNavigate();
 
-const AddSRform = () => {
-  const [customers, setCustomers] = useState([]);
+  
+const [customerData, setCustomerData] = useState({});
+  const [contacts, setContacts] = useState([]);
+  const [loginState, setLoginState] = useState("dontallow");
+  const [showLogin, setShowLogin] = useState(false);
+  const [primary, setPrimary] = useState(false);
 
-  const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    try {
-      setCustomers(response.data);
-      // console.log(response.data);
-      console.log(customers);
-      //   console.log("Custommer list is", customers[1].CustomerName);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
+  const [apiKeys, setapiKeys] = useState([]);
+  const [inputNames, setinputNames] = useState([]);
+  const [mainObj, setmainObj] = useState({});
+
+  
+
+  const [formData, setFormData] = useState({
+    CustomerData: {
+      CustomerName: "",
+    },
+    ContactData: customerData.tblContacts,
+  });
+
+  const inputReffname = useRef();
+  const inputReflname = useRef();
+  const inputRefemail = useRef();
+  const inputRefphone = useRef();
+  const inputRefCname = useRef();
+  const inputRefaddress = useRef();
+  const clearInput = () => {
+    // Step 3: Access the current property and set it to an empty string
+    inputReffname.current.value = "";
+    inputReflname.current.value = "";
+    inputRefemail.current.value = "";
+    inputRefphone.current.value = "";
+    inputRefCname.current.value = "";
+    inputRefaddress.current.value = "";
   };
 
   useEffect(() => {
-    fetchCustomers();
+    const dataObject = {};
+    inputNames.forEach((name) => {
+      dataObject[name] = "";
+    });
+
+    setmainObj(dataObject);
+    // console.log("object is ,,,", mainObj);
   }, []);
 
+
+  const getCustomerData = async () => {
+    try {
+        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+
+        setCustomerData(response.data) ;
+        setFormData((prevState) => ({
+          ...prevState,
+          CustomerName: response.data.CustomerName,
+        }))
+        
+
+        // Handle the response. For example, you can reload the customers or show a success message
+        console.log("Customer zzzzzzzz:", customerData.tblContacts);
+        setContacts(response.data.tblContacts);
+       
+
+    } catch (error) {
+        console.error("There was an error deleting the customer:", error);
+    }
+};
+
+  const fetchCustomers = async () => {
+    try {
+      const responses = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=0"
+      );
+    } catch (error) {
+      // console.log("API Call Error:", error.response.data);
+      const keys = Object.keys(error.response.data.ContactData[0]);
+      setapiKeys(keys);
+    }
+  };
+
+  const extractInputNames = () => {
+    const inputElements = document.querySelectorAll("form input");
+
+    setinputNames(
+      Array.from(inputElements).map((input) => input.getAttribute("name"))
+    );
+    console.log("Input array is", inputNames);
+  };
+  useEffect(() => {
+    fetchCustomers();
+    getCustomerData();
+
+    extractInputNames();
+  }, []);
+
+  const setMainObjValues = () => {
+    let updatedObj = { ...mainObj };
+    inputNames.forEach((name) => {
+      const inputValue = document.querySelector(`input[name="${name}"]`).value;
+      updatedObj[name] = inputValue;
+      // console.log(updatedObj[name]);
+    });
+    setmainObj(updatedObj);
+    console.log(mainObj);
+  };
+
+  const handleSubmit = async () => {
+    setMainObjValues();
+
+    // Prepare the CustomerData and ContactData payload
+    const customerPayload = {
+      CustomerId: selectedItem,
+      CustomerName: formData.CustomerData.CustomerName,
+      CreatedBy: 1, // Set this as per your need
+      EditBy: 1, // Set this as per your need
+      isActive: true,
+    };
+
+    // This function filters out the mainObj based on the apiKeys and returns the valid payload object.
+    const preparePayload = (obj) => {
+      let payload = {};
+      apiKeys.forEach((key) => {
+        if (obj[key]) {
+          payload[key] = obj[key];
+        }
+      });
+      return payload;
+    };
+
+    const contactPayload = contacts.map((contact) => {
+      return {
+        ...preparePayload(contact),
+        isPrimary: contact.isPrimary || false,
+        isActive: true,
+        CreatedBy: "2", // Set this as per your need
+      };
+    });
+
+    // POST request payload
+    const postData = {
+      CustomerData: customerPayload,
+      ContactData: contacts,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
+        postData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("postData,,,,,,,,,:", postData);
+
+      setFormData({
+        CustomerData: {
+          CustomerName: "",
+        },
+        ContactData: [],
+      });
+
+      setContacts([]); // Clear the contacts array
+      navigate("/Dashboard/Customers");
+      setShowContent(true);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error submitting data:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "CustomerName") {
+        setFormData(prevState => ({
+            ...prevState,
+            CustomerData: {
+                CustomerName: value,
+            }
+        }));
+    } else {
+        setFormData({
+            ...formData,
+            ContactData: {
+                ...formData.ContactData,
+                [name]: value,
+            },
+        });
+    }
+    console.log(formData);
+};
+
+  const addContact = (e) => {
+    e.preventDefault();
+
+    const newContact = {
+      FirstName: formData.ContactData.FirstName,
+      LastName: formData.ContactData.LastName,
+      Email: formData.ContactData.Email,
+      Phone: formData.ContactData.Phone,
+      CompanyName: formData.ContactData.CompanyName,
+      Address: formData.ContactData.Address,
+      isPrimary: primary
+    };
+
+    setContacts([...contacts, newContact]);
+
+    // Clear the form fields
+    setFormData((prevState) => ({
+      ...prevState,
+      ContactData: {
+        FirstName: "",
+        LastName: "",
+        Email: "",
+        Phone: "",
+        CompanyName: "",
+        Address: "",
+      },
+    }));
+
+    setPrimary(true);
+    clearInput();
+  };
+
+  const deleteContact = (index) => {
+    const updatedContacts = [...contacts];
+    updatedContacts.splice(index, 1);
+    setContacts(updatedContacts);
+  };
+
+  useEffect(() => {
+    if (loginState === "allow") {
+      setShowLogin(true);
+    } else {
+      setShowLogin(false);
+    }
+  }, [loginState]);
+
   return (
-    <>
-      <TitleBar icon={icon} title=" Add Service Request" />
-      <div className="container-fluid">
-        <div className="card">
-          <div className="card-body">
-            <div className="row mb-3">
-              <div className="col-lg-12 col-md-12 mb-2">
-                
-                <NavLink to="/Dashboard/Estimates">
-                  {" "}
-                  <button
-                    type="button"
-                    className="col-md-2 btn btn-sm btn-primary"
-                  >
-                    {" "}
-                    + Add Estimate{" "}
-                  </button>
-                </NavLink>
-                <button type="button" className="btn btn-sm btn-secondary mx-2">
-                  + Add Invoice
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
+    <div className="col-xl-4 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
                 >
-                  Email
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary mx-2"
-                >
-                  Print
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary"
-                >
-                  Download
-                </button>
+                  Customer Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="CustomerName"
+                  value={formData.CustomerName}
+                  // onClick={(e) => {e.target.value = ""}}
+                  placeholder={ customerData.CustomerName}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            </div>
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="itemtitleBar">
-                  <h4>Service Request Details</h4>
-                </div>{" "}
-                <br />
-                <div className="basic-form">
-                  <div className="row">
-                    <div className="mb-2 col-md-9 SrCustomerList">
-                      <label className="form-label">Customers</label>
-                      <Form.Select
-                        size="lg"
-                        name="CustomerId"
-                        aria-label="Default select example"
-                        id="inputState"
-                        className="bg-white"
-                      >
-                        <option value="">Customer</option>{" "}
-                        {customers.map((customer) => (
-                          <option
-                            key={customer.CustomerId}
-                            value={customer.CustomerId}
-                          >
-                            {customer.CustomerName}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </div>
-                    <div className="mb-3 col-md-4">
-                      <label className="form-label">Service Location</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="ServiceLocation"
-                        placeholder="Service Location"
-                      />
-                    </div>
-                    <div className="mb-3 col-md-4">
-                      <label>Contact</label>
-                      <input
-                        type="text"
-                        name="Contact"
-                        className="form-control"
-                        placeholder="Example@Example.com"
-                      />
-                    </div>
-                  </div>
-                  <div className="row  mt-2 mb-2">
-                    <div className="col-md-4">
-                      <label className="form-label">Job Name:</label>
-                      <input
-                        type="text"
-                        name="JobName"
-                        className="form-control"
-                        placeholder="Job Name"
-                      />
-                    </div>
-                    <div className=" col-md-4">
-                      <label className="form-label">Due Date:</label>
-
-                      <input
-                        type="date"
-                        name="DueDate"
-                        className="form-control"
-                        placeholder="Due Date"
-                      />
-                    </div>
-                    <div className=" col-md-4">
-                      <label className="form-label">Type:</label>
-                      <Form.Select name="SRTypeId" size="lg" className="bg-white">
-                        <option value="Inspect and Advise">
-                          Inspect and Advise
-                        </option>
-                        <option value="Irrigation">Irrigation</option>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Other">Other</option>
-                        <option value="Proposal Needed">Proposal Needed</option>
-                        <option value="Tree Care">Tree Care</option>
-                      </Form.Select>
-                    </div>
-                    <div className="col-lg-2 col-md-2 mt-2">
-                      <label className="form-label">Status:</label>
-                      <Form.Select name="SRStatusId" size="lg" className="bg-white">
-                        <option value="Open">Open</option>
-                        <option value="Closed">Closed</option>
-                      </Form.Select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {/* Assign and scedule */}
-            <div className="card">
-              <div className="card-body p-0 pb-4">
-                <div className="itemtitleBar">
-                  <h4>Assign & Schedule</h4>
-                </div>
-                <br />
-                <div className="basic-form">
-                  <div className="row">
-                    <div className="col-md-4">
-                      {" "}
-                      {/* Adjust the column size as needed */}
-                      <label className="form-label">
-                        Assign / Appointment:
-                      </label>
-                      <Form.Select name="Assign" size="lg" className="bg-white">
-                        <option value={null}>Choose...</option>
-                        <option value="option 1">option 1</option>
-                        <option value="option 2">option 2</option>
-                        <option value="option 3">option 3</option>
-                      </Form.Select>
-                    </div>
-                    <div className="col-md-6 pt-4">
-                      {" "}
-                      {/* Adjust the column size as needed */}
-                      <button className="btn schedule-btn">Schedule</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-   
- 
-            <div className="card">
-              <div className="card-body p-0 pb-4">
-                <div className="itemtitleBar">
-                  <h4>Details</h4>
-                </div>
-                <br />
-                <div className="basic-form">
-                  <div className="row">
-                    <div className="col-md-4">
-                      {" "}
-                      {/* Adjust the column size as needed */}
-                      <label className="form-label">
-                      Work Requested:
-                      </label>
-                      <textarea
-                        name="WorkRequest"
-                        className="form-txtarea form-control"
-                        rows="2"
-                      ></textarea>
-                    </div>
-                    <div className="col-md-4 ">
-                      {" "}
-                      <label className="form-label">
-                      Action Taken:
-                      </label>
-                      {/* Adjust the column size as needed */}
-                      <textarea
-                        name="ActionTaken"
-                        className="form-txtarea form-control"
-                        rows="2"
-                      ></textarea>
-                    </div>
-
-                    <div className=" col-md-4">
-                      <label className="form-label">Date Completed:</label>
-
-                      <input
-                        type="date"
-                        className="form-control"
-                        placeholder="CompletedDate"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            ;
-          </div>
-        </div>
-      </div>
-    </>
   );
 };
 
-export default AddSRform;
+export default UpdateCustomer;
