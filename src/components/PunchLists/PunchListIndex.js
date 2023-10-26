@@ -288,7 +288,7 @@ const PunchListIndex = () => {
                   </table>
                 </div> */}
 
-                <PunchTR/>
+                <PunchTR punchData = {punchData}/>
 
 
 
