@@ -76,7 +76,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
         }));
       }
 
-      console.log("estimateeeeeee list is", response.data);
+      console.log("estimateeeeeee list is", response.data.tblEstimateItems);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -159,9 +159,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
 
     // Logging FormData contents (for debugging purposes)
     for (let [key, value] of postData.entries()) {
-      console.log("filessss", key, value);
+      console.log("fpayload....", key, value);
     }
-    window.location.reload();
+    // window.location.reload();
 
     // console.log("post data izzz",postData);
   };
