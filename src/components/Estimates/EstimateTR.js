@@ -15,6 +15,7 @@ import {
   Grid,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import UpdateEstimateForm from "./UpdateEstimateForm";
 
@@ -27,13 +28,13 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontSize: 14,  // Making font a bit larger
+    fontSize: 14, // Making font a bit larger
   },
   components: {
     MuiTableCell: {
       styleOverrides: {
         root: {
-          padding: '8px 16px',  // Adjust cell padding to reduce height
+          padding: "8px 16px", // Adjust cell padding to reduce height
         },
       },
     },
@@ -45,10 +46,12 @@ const EstimateTR = ({ estimates }) => {
   const [orderBy, setOrderBy] = useState("EstimateId");
   const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [selectedItem, setSelectedItem] = useState();
   const [showContent, setShowContent] = useState(true);
+
+  const navigate = useNavigate();
 
   const handleSort = (property) => {
     let actualProperty;
@@ -84,7 +87,9 @@ const EstimateTR = ({ estimates }) => {
   };
 
   const filteredEstimates = estimates
-    .filter((e) => e.CustomerName.toLowerCase().includes(filtering.toLowerCase()))
+    .filter((e) =>
+      e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+    )
     .sort(getSorting(order, orderBy));
 
   // ... Pagination, Sorting logic ...
@@ -151,14 +156,30 @@ const EstimateTR = ({ estimates }) => {
       {showContent ? (
         <ThemeProvider theme={theme}>
           <Paper>
-            <div className="container text-center">
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={filtering}
-                onChange={(e) => setFiltering(e.target.value)}
-              />
-            </div>
+          <div className="container text-center">
+      <div className="row">
+        <div className="col-md-12">
+          <div className="custom-search-container">
+            <TextField
+              label="Search"
+              variant="outlined"
+              value={filtering}
+              onChange={(e) => setFiltering(e.target.value)}
+            />
+          </div>
+          <div className="custom-button-container">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                navigate("/Dashboard/Estimates/Add-Estimate");
+              }}
+            >
+              + Add Estimates
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -236,7 +257,7 @@ const EstimateTR = ({ estimates }) => {
               </Table>
             </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
+              rowsPerPageOptions={[10, 25, 50]}
               component="div"
               count={filteredEstimates.length}
               rowsPerPage={rowsPerPage}

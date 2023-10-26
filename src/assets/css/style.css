@@ -53577,5 +53577,16 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
    .button-container > Button {
     margin: 0 0px; /* Adjust the margin as needed */
   }   
+  .custom-search-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: -3em !important;
+
+  }
   
+  .custom-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2em;
+  }
   

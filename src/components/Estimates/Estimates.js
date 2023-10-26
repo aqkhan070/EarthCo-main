@@ -150,14 +150,7 @@ const Estimates = () => {
             <div className="card-body">
               <div className="tbl-caption">
                 <div className="row mb-3">
-                  <div className="col-md-3">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => { navigate("/Dashboard/Estimates/Add-Estimate")}}
-                    >
-                      + Add Estimates
-                    </button>
-                  </div>
+                  
 
                    {/*<div className="col-md-7">
                     <div>
