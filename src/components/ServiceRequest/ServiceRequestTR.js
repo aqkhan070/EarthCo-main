@@ -7,6 +7,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TextField,
   TableRow,
   TableSortLabel,
   Button,
@@ -23,6 +24,18 @@ const theme = createTheme({
       main: "#7c9c3d",
     },
   },
+  typography: {
+    fontSize: 14,  // Making font a bit larger
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: '8px 16px',  // Adjust cell padding to reduce height
+        },
+      },
+    },
+  },
 });
 
 const ServiceRequestTR = ({ serviceRequest }) => {
@@ -30,18 +43,22 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
 
+  const [search, setSearch] = useState("");
+
   const [serviceRequestId, setServiceRequestId] = useState()
   const [showContent, setShowContent] = useState(true)
 
+  const columnFieldMapping = {
+    "Service Request #": "ServiceRequestNumber",
+    "Customer Name": "CustomerId",
+    "Assigned to": "Assign",
+    "Status": "SRStatusId",
+    "Work Requested": "WorkRequest",
+    "Date Created": "CreatedDate"
+  };
 
-  const sortedCustomers = [...serviceRequest].sort((a, b) => {
-    if (sorting.order === "asc") {
-      return a[sorting.field] > b[sorting.field] ? 1 : -1;
-    } else if (sorting.order === "desc") {
-      return a[sorting.field] < b[sorting.field] ? 1 : -1;
-    }
-    return 0;
-  });
+
+  // 
 
   const deleteServiceRequest = async (id) => {
     try {
@@ -75,12 +92,52 @@ const ServiceRequestTR = ({ serviceRequest }) => {
     }
   };
 
+  const handleSearch = (data) => {
+    return data.filter(item => {
+      const fieldsToSearch = [
+        item.CustomerId?.toString(), 
+        item.ServiceRequestNumber?.toString(),
+        item.Assign?.toString(),
+        item.SRStatusId?.toString(),
+        item.WorkRequest?.toString(),
+        item.CreatedDate?.toString()
+      ];
+      
+      return fieldsToSearch.some(field => 
+        field?.toLowerCase().includes(search.toLowerCase())
+      );
+    });
+  };
+  
+
+  const sortedAndSearchedCustomers = handleSearch([...serviceRequest]).sort((a, b) => {
+    const { field, order } = sorting;
+  
+    if (field && order) {
+      if (order === 'asc') {
+        return a[field] > b[field] ? 1 : -1;
+      }
+      if (order === 'desc') {
+        return a[field] < b[field] ? 1 : -1;
+      }
+    }
+    return 0;
+  });
+  
+
   return (
    <>
    {showContent?(<ThemeProvider theme={theme}>
       <div className="container">
         <div className="container text-center">
           <div className="row justify-content-end">
+          <TextField
+          label="Search"
+          variant="outlined"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ marginBottom: '20px' }}
+        />
             <div className="col-3 add-customer-btn">
               <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
                 <Button variant="contained" color="primary">
@@ -105,21 +162,21 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                     "Actions",
                   ].map((column, index) => (
                     <TableCell key={index}>
-                      {index < 5 ? (
-                        <TableSortLabel
-                          active={sorting.field === column}
-                          direction={sorting.order}
-                          onClick={() =>
-                            setSorting({
-                              field: column,
-                              order:
-                                sorting.order === "asc" &&
-                                sorting.field === column
-                                  ? "desc"
-                                  : "asc",
-                            })
-                          }
-                        >
+  {index < 5 ? (
+    <TableSortLabel
+      active={sorting.field === columnFieldMapping[column]}
+      direction={sorting.order}
+      onClick={() =>
+        setSorting({
+          field: columnFieldMapping[column],
+          order:
+            sorting.order === "asc" &&
+            sorting.field === columnFieldMapping[column]
+              ? "desc"
+              : "asc",
+        })
+      }
+    >
                           {column}
                         </TableSortLabel>
                       ) : (
@@ -130,9 +187,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedCustomers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((customer, rowIndex) => (
+                {sortedAndSearchedCustomers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((customer, rowIndex) => (
                     <TableRow key={rowIndex} hover>
                       <TableCell>
                         <Checkbox />
@@ -177,7 +232,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
 
           <TablePagination
             component="div"
-            count={sortedCustomers.length}
+            count={sortedAndSearchedCustomers.length}
             page={page}
             onPageChange={(event, newPage) => setPage(newPage)}
             rowsPerPage={rowsPerPage}

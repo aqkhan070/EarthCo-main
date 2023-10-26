@@ -86,12 +86,15 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
       );
       console.log(response.data);
       // Handle successful submission
+      window.location.reload();
     } catch (error) {
       console.error("API Call Error:", error);
     }
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
     }
+
+
   };
 
   const removeItem = (index) => {

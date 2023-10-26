@@ -22,6 +22,18 @@ const theme = createTheme({
       main: "#7c9c3d",
     },
   },
+  typography: {
+    fontSize: 14,  // Making font a bit larger
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: '8px 16px',  // Adjust cell padding to reduce height
+        },
+      },
+    },
+  },
 });
 
 const CustomerTR = ({ customers }) => {

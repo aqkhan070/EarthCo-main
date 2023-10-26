@@ -26,6 +26,18 @@ const theme = createTheme({
       main: "#7c9c3d",
     },
   },
+  typography: {
+    fontSize: 14,  // Making font a bit larger
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: '8px 16px',  // Adjust cell padding to reduce height
+        },
+      },
+    },
+  },
 });
 
 const EstimateTR = ({ estimates }) => {
@@ -71,9 +83,9 @@ const EstimateTR = ({ estimates }) => {
     setOrderBy(actualProperty);
   };
 
-  const filteredEstimates = estimates.filter((e) =>
-    e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-  );
+  const filteredEstimates = estimates
+    .filter((e) => e.CustomerName.toLowerCase().includes(filtering.toLowerCase()))
+    .sort(getSorting(order, orderBy));
 
   // ... Pagination, Sorting logic ...
   function desc(a, b, orderBy) {
