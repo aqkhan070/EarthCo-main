@@ -55,6 +55,13 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     try {
       setEstimates(response.data);
 
+      setFormData((prevState) => ({
+        ...prevState,
+        CustomerId: response.data.CustomerId,
+        ...response.data,
+
+      }))
+
       if (response.data.tblEstimateItems) {
         setFormData((prevState) => ({
           ...prevState,
