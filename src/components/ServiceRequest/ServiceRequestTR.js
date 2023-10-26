@@ -130,20 +130,25 @@ const ServiceRequestTR = ({ serviceRequest }) => {
         <ThemeProvider theme={theme}>
           <div className="container">
             <div className="container text-center">
-              <div className="row justify-content-end">
-                <TextField
-                  label="Search"
-                  variant="outlined"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  style={{ marginBottom: "20px" }}
-                />
-                <div className="col-3 add-customer-btn">
-                  <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
-                    <Button variant="contained" color="primary">
-                      + Add Service Request
-                    </Button>
-                  </Link>
+
+              <div className="row ">
+                <div className="col-md-12">
+                  <div className="col-3 custom-search-container">
+                    <TextField
+                      label="Search"
+                      variant="outlined"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                  
+                    />
+                  </div>
+                  <div className="custom-button-container">
+                    <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
+                      <Button variant="contained" color="primary">
+                        + Add Service Request
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
               <br />

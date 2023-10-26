@@ -65,3 +65,25 @@ const EstimateTR = ({ estimates }) => {
 };
 
 export default EstimateTR;
+
+
+
+<div className="row">
+                <div className="col-md-12">
+                  <div className="custom-search-container">
+                    <TextField
+                      label="Search"
+                      variant="outlined"
+                      value={filtering}
+                      onChange={(e) => setFiltering(e.target.value)}
+                    />
+                  </div>
+                  <div className="custom-button-container">
+                  <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
+                    <Button variant="contained" color="primary">
+                      + Add Service Request
+                    </Button>
+                  </Link>
+                  </div>
+                </div>
+              </div>
