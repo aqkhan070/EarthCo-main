@@ -123,7 +123,16 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
       try {     
   
          setSRList(response.data)
-         console.log(" list is///////", sRList);
+
+
+         setSRData(prevData => ({
+          ServiceRequestData: {
+            ...prevData.ServiceRequestData,
+            CustomerId: response.data.CustomerId,
+          }
+        }));
+
+         console.log(" list is///////", response.data.tblEstimates);
   
       } catch (error) {
         console.error("API Call Error:", error);
@@ -246,7 +255,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         size="lg"
                         name="CustomerId"
                         onChange={handleInputChange}
-                        value={SRData.CustomerId || 1}
+                        value={SRData.ServiceRequestData.CustomerId || ''}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
