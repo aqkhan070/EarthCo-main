@@ -13,6 +13,9 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       ServiceRequestId: serviceRequestId,
+      ServiceRequestId: serviceRequestId,
+     
+      ServiceRequestId: serviceRequestId,     
      
       CustomerId: 0,
       ServiceLocation: "",
@@ -62,8 +65,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
     formData.append(
-      "ServiceRequestData",
-      JSON.stringify(SRData.ServiceRequestData)
+      "ServiceRequestData", JSON.stringify(SRData.ServiceRequestData)
     );
 
     // formData.append(
@@ -132,6 +134,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
           ServiceRequestData: {
             ...prevData.ServiceRequestData,
             CustomerId: response.data.CustomerId,
+            ...response.data,
           }
         }));
 
@@ -279,6 +282,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <input
                         type="text"
                         className="form-control"
+                        value={SRData.ServiceRequestData.ServiceLocation || ''}
                         name="ServiceLocation"
                         onChange={handleInputChange}
                         placeholder={sRList.ServiceLocation || " "}
@@ -289,6 +293,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <input
                         type="text"
                         name="Contact"
+                        value={SRData.ServiceRequestData.Contact || ''}
                         onChange={handleInputChange}
                         className="form-control"
                         placeholder={sRList.Contact || " "}
@@ -301,6 +306,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <input
                         type="text"
                         name="JobName"
+                        value={SRData.ServiceRequestData.JobName || ''}
                         onChange={handleInputChange}
                         className="form-control"
                         placeholder={sRList.JobName || " "}
@@ -313,6 +319,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <input
                         type="date"
                         name="DueDate"
+                        value={SRData.ServiceRequestData.DueDate || ''}
                         onChange={handleInputChange}
                         className="form-control"
                         placeholder={sRList.DueDate || " "}
@@ -323,6 +330,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">Type:</label>
                       <Form.Select
                         name="SRTypeId"
+                        value={SRData.ServiceRequestData.SRTypeId || ''}
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
@@ -339,6 +347,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">Status:</label>
                       <Form.Select
                         name="SRStatusId"
+                        value={SRData.ServiceRequestData.SRStatusId || ''}
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
@@ -366,7 +375,10 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">
                         Assign / Appointment:
                       </label>
-                      <Form.Select name="Assign" size="lg" className="bg-white">
+                      <Form.Select name="Assign" size="lg" className="bg-white"
+                        value={SRData.ServiceRequestData.Assign || ''}
+                      
+                      >
                         <option value={null}>Choose...</option>
                         <option value="option 1">option 1</option>
                         <option value="option 2">option 2</option>
@@ -651,6 +663,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">Work Requested:</label>
                       <textarea
                         name="WorkRequest"
+                        value={SRData.ServiceRequestData.WorkRequest || ''}
                         onChange={handleInputChange}
                         className="form-txtarea form-control"
                         placeholder={sRList.WorkRequest || " "}
@@ -664,6 +677,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       {/* Adjust the column size as needed */}
                       <textarea
                         name="ActionTaken"
+                        value={SRData.ServiceRequestData.ActionTaken || ''}
                         onChange={handleInputChange}
                         className="form-txtarea form-control"
                         placeholder={sRList.ActionTaken || " "}
@@ -677,7 +691,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
                       <input
                         type="date"
-                        name="CompletedDate"
+                        name="CompletedDate"                        
+                        value={SRData.ServiceRequestData.CompletedDate || ''}
                         onChange={handleInputChange}
                         className="form-control"
                         placeholder={sRList.CompletedDate || " "}
