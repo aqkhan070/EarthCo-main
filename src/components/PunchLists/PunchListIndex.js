@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import { Form } from "react-bootstrap";
-import $ from "jquery";
-
+import PunchTR from "./PunchTR";
 import punchList from "../../assets/images/1.jpg";
 import axios from "axios";
 
@@ -186,7 +185,7 @@ const PunchListIndex = () => {
                   </div>
                 </div>
 
-                <div className="table-responsive">
+                {/* <div className="table-responsive">
                   <table
                     id="punchListTbl"
                     className="display table"
@@ -287,9 +286,13 @@ const PunchListIndex = () => {
                       </tr>
                     </tbody>
                   </table>
-                </div>
+                </div> */}
 
-                
+                <PunchTR/>
+
+
+
+            
               </div>
             </div>
           </div>
