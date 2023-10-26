@@ -12,10 +12,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
-      ServiceRequestId: serviceRequestId,
-      ServiceRequestId: serviceRequestId,
-     
-      ServiceRequestId: serviceRequestId,     
+      ServiceRequestId: serviceRequestId,        
      
       CustomerId: 0,
       ServiceLocation: "",
@@ -87,6 +84,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
         }
       );
       console.log(response.data);
+      console.log("payload izzzzzzz", formData);
       // Handle successful submission
       window.location.reload();
     } catch (error) {
@@ -122,47 +120,46 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   
   useEffect(() => {
     const fetchSR = async () => {
-      const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
-      );
-      try {     
-  
-         setSRList(response.data)
+        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`);
+        try {     
+            setSRList(response.data);
+            setSRData(prevData => ({
+                ServiceRequestData: {
+                    ...prevData.ServiceRequestData,
+                    CustomerId: response.data.CustomerId,
+                    ...response.data,
+                }
+            }));
+            // Set the tblSRItems state with the response.data.tblSRItems
+            setTblSRItems(response.data.tblSRItems);
+            // Set the itemInput state with the first item from the response.data.tblSRItems
+            if(response.data.tblSRItems && response.data.tblSRItems.length > 0) {
+                setItemInput(response.data.tblSRItems[0]);
+            }
 
-
-         setSRData(prevData => ({
-          ServiceRequestData: {
-            ...prevData.ServiceRequestData,
-            CustomerId: response.data.CustomerId,
-            ...response.data,
+            if(response.data.tblSRFiles) {
+              setFiles(prevFiles => [...prevFiles, ...response.data.tblSRFiles]);
           }
-        }));
+            console.log(" list is///////", response.data);
+        } catch (error) {
+            console.error("API Call Error:", error);
+        }
+    };
 
-         console.log(" list is///////", response.data.tblEstimates);
-  
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
-  
-    };
-  
     const fetchCustomers = async () => {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-      );
-      try {
-        setCustomers(response.data);
-        // console.log(response.data);
-        console.log(customers);
-        //   console.log("Custommer list is", customers[1].CustomerName);
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
+        const response = await axios.get("https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList");
+        try {
+            setCustomers(response.data);
+            console.log(customers);
+        } catch (error) {
+            console.error("API Call Error:", error);
+        }
     };
-  
+
     fetchSR();
     fetchCustomers();
-  }, [serviceRequestId]);
+}, [serviceRequestId]);
+
 
 
 
@@ -622,9 +619,9 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         {files.map((file, index) => (
                           <tr key={index}>
                             <td>{index + 1}</td>
-                            <td>{file.name}</td>
+                            <td>{file.FileName || file.name}</td>
                             <td>
-                              {file.lastModifiedDate.toLocaleDateString()}
+                              
                             </td>
                             <td>{file.type || "N/A"}</td>
                             <td>{file.size} bytes</td>
