@@ -13,6 +13,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       ServiceRequestId: serviceRequestId,
+     
       CustomerId: 0,
       ServiceLocation: "",
       Contact: "",
@@ -40,20 +41,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
   const inputFile = useRef(null);
 
 
-  const fetchSR = async () => {
-    const response = await axios.get(
-      `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
-    );
-    try {     
-
-      setSRList(response.data)
-      console.log(" list is///////", sRList);
-
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-
-  };
+ 
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -66,6 +54,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
             : value,
       },
     }));
+    // console.log("object,,,,,,", SRData);
   };
 
   const submitHandler = async () => {
@@ -124,24 +113,48 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
     setFiles(updatedFiles);
   };
 
-  const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    try {
-      setCustomers(response.data);
-      // console.log(response.data);
-      console.log(customers);
-      //   console.log("Custommer list is", customers[1].CustomerName);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
 
+  
   useEffect(() => {
+    const fetchSR = async () => {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
+      );
+      try {     
+  
+         setSRList(response.data)
+         console.log(" list is///////", sRList);
+  
+      } catch (error) {
+        console.error("API Call Error:", error);
+      }
+  
+    };
+  
+    const fetchCustomers = async () => {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+      );
+      try {
+        setCustomers(response.data);
+        // console.log(response.data);
+        console.log(customers);
+        //   console.log("Custommer list is", customers[1].CustomerName);
+      } catch (error) {
+        console.error("API Call Error:", error);
+      }
+    };
+  
     fetchSR();
     fetchCustomers();
-  }, []);
+  }, [serviceRequestId]);
+
+
+
+  // useEffect(() => {
+  //   fetchSR();
+  //   fetchCustomers();
+  // }, []);
 
   const icon = (
     <svg
@@ -256,7 +269,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         className="form-control"
                         name="ServiceLocation"
                         onChange={handleInputChange}
-                        // placeholder={sRList.ServiceLocation || " "}
+                        placeholder={sRList.ServiceLocation || " "}
                       />
                     </div>
                     <div className="mb-3 col-md-4">
@@ -266,7 +279,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="Contact"
                         onChange={handleInputChange}
                         className="form-control"
-                        placeholder="Example@Example.com"
+                        placeholder={sRList.Contact || " "}
                       />
                     </div>
                   </div>
@@ -278,7 +291,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="JobName"
                         onChange={handleInputChange}
                         className="form-control"
-                        placeholder="Job Name"
+                        placeholder={sRList.JobName || " "}
+
                       />
                     </div>
                     <div className=" col-md-4">
@@ -289,7 +303,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="DueDate"
                         onChange={handleInputChange}
                         className="form-control"
-                        placeholder="Due Date"
+                        placeholder={sRList.DueDate || " "}
+
                       />
                     </div>
                     <div className=" col-md-4">
@@ -626,6 +641,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="WorkRequest"
                         onChange={handleInputChange}
                         className="form-txtarea form-control"
+                        placeholder={sRList.WorkRequest || " "}
+
                         rows="2"
                       ></textarea>
                     </div>
@@ -637,6 +654,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="ActionTaken"
                         onChange={handleInputChange}
                         className="form-txtarea form-control"
+                        placeholder={sRList.ActionTaken || " "}
+
                         rows="2"
                       ></textarea>
                     </div>
@@ -649,7 +668,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="CompletedDate"
                         onChange={handleInputChange}
                         className="form-control"
-                        placeholder="CompletedDate"
+                        placeholder={sRList.CompletedDate || " "}
+
                       />
                     </div>
                   </div>
@@ -674,6 +694,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
             </div>
           </div>
         </div>
+        {/* <div>{sRList}</div> */}
       </div>
     </>
   );
