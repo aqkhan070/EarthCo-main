@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Form } from "react-bootstrap";
+import punchList from "../../assets/images/1.jpg";
+
 import { Link } from "react-router-dom";
 import {
   Table,
@@ -221,7 +224,7 @@ const PunchTR = ({ punchData }) => {
                         <TableRow>
                           <TableCell
                             style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={6}
+                            colSpan={8}
                           >
                             <Collapse
                               in={expandedRow === rowIndex}
@@ -234,32 +237,56 @@ const PunchTR = ({ punchData }) => {
                                   gutterBottom
                                   component="div"
                                 >
-                                  History
+                                  {/* collapssss */}
                                 </Typography>
                                 <Table size="small" aria-label="purchases">
-                                  <TableHead>
+                                  {/* <TableHead>
                                     <TableRow>
-                                      <TableCell>Date</TableCell>
-                                      <TableCell>Customer</TableCell>
-                                      <TableCell align="right">
-                                        Amount
-                                      </TableCell>
-                                      <TableCell align="right">
-                                        Total price ($)
-                                      </TableCell>
+                                      <TableCell></TableCell>
+                                      <TableCell></TableCell>
+                                      <TableCell></TableCell>
+                                      <TableCell align="right"></TableCell>
+                                      <TableCell align="left"></TableCell>
                                     </TableRow>
-                                  </TableHead>
+                                  </TableHead> */}
                                   <TableBody>
                                     <TableRow>
-                                      <TableCell component="th" scope="row">
-                                        esrdtfy
+                                      <TableCell></TableCell>
+                                      <TableCell rowSpan={2} component="th" scope="row">
+                                      <div className="products">
+                            <img
+                              src={punchList}
+                              className="avatar avatar-md"
+                              alt="lazy"
+                            />
+                            <div>
+                              <h6>Keep plants</h6>
+                              <span>Pool</span>
+                            </div>
+                            </div>
                                       </TableCell>
-                                      <TableCell>waertyu</TableCell>
-                                      <TableCell align="right">
-                                        qwerty
+                                      <TableCell>item-1</TableCell>
+                                      <TableCell></TableCell>
+                                      <TableCell rowSpan={2} align="right">
+                                      <Form.Select className="bg-white">
+                            <option value="complete">Complete</option>
+                            <option value="pending">Pending</option>
+                            <option value="Estimate">Estimate</option>
+                            <option value="Service Request">
+                              Service Request
+                            </option>
+                          </Form.Select>
+                                      <TableCell>
+
                                       </TableCell>
-                                      <TableCell align="right">
-                                        wertyui
+                                      </TableCell>
+                                      <TableCell align="left" >
+                                        <IconButton>
+                                          <Edit />
+                                        </IconButton>
+                                        <IconButton>
+                                          <Delete />
+                                        </IconButton>
                                       </TableCell>
                                     </TableRow>
                                   </TableBody>
