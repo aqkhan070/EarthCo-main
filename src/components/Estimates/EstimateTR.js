@@ -156,7 +156,7 @@ const EstimateTR = ({ estimates }) => {
       {showContent ? (
         <ThemeProvider theme={theme}>
           <Paper>
-          <div className="container text-center">
+          <div className=" text-center">
       <div className="row">
         <div className="col-md-12">
           <div className="custom-search-container">
@@ -241,7 +241,7 @@ const EstimateTR = ({ estimates }) => {
                             >
                               <Create />
                             </Button>
-                            <Button>
+                            <Button className="delete-button">
                               <Delete
                                 color="error"
                                 onClick={() =>

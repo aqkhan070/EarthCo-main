@@ -128,8 +128,8 @@ const ServiceRequestTR = ({ serviceRequest }) => {
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-          <div className="container">
-            <div className="container text-center">
+          <div className="">
+            <div className=" text-center">
 
               <div className="row ">
                 <div className="col-md-12">

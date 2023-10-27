@@ -53544,6 +53544,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   background-color: #ff0000;
   margin-left: 0 !important;  
   padding-left: 0 !important;
+  min-width: 0px !important;
 
 }
 .tblsearch-input{

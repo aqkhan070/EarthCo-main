@@ -88,7 +88,7 @@ const PunchListIndex = () => {
             
           <div className="col-xl-3  col-lg-6 col-sm-6">
             <div className="widget-stat card">
-              <div className="card-body p-4">
+              <div className=" p-4">
                 <div className="media ai-icon">
                   <span className="me-3 bgl-warning text-warning">
                     <svg
@@ -155,18 +155,9 @@ const PunchListIndex = () => {
           <div className="col-xl-12">
             <div className="card">
               <div className="card-body">
-                <div className="tbl-caption">
+                {/* <div className="tbl-caption">
                   <div className="row p-3 ">
-                    <div className="col-md-6">
-                      <a
-                        href="/"
-                        className="btn btn-primary btn-md"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editPunch"
-                      >
-                        + Add Punchlist
-                      </a>
-                    </div>
+                    
                     <div
                       className="col-md-6"
                       style={{ display: "flex", justifyContent: "flex-end" }}
@@ -183,7 +174,7 @@ const PunchListIndex = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* <div className="table-responsive">
                   <table

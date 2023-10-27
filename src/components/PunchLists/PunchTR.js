@@ -24,7 +24,6 @@ import {
 import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
 import { Add, Delete, Edit } from "@mui/icons-material";
 
 const theme = createTheme({
@@ -48,6 +47,7 @@ const theme = createTheme({
 });
 
 const PunchTR = ({ punchData }) => {
+    
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -107,8 +107,8 @@ const PunchTR = ({ punchData }) => {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <div className="container">
-          <div className="container text-center">
+        <div className="">
+          <div className=" text-center">
             <div className="row ">
               <div className="col-md-12">
                 <div className="col-3 custom-search-container">
@@ -120,11 +120,14 @@ const PunchTR = ({ punchData }) => {
                   />
                 </div>
                 <div className="custom-button-container">
-                  <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
-                    <Button variant="contained" color="primary">
-                      + Add Service Request
-                    </Button>
-                  </Link>
+                  <a href="/"
+                        className="btn btn-primary btn-md"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editPunch">
+                    
+                      + Add PunchList
+                    
+                  </a>
                 </div>
               </div>
             </div>
@@ -210,15 +213,23 @@ const PunchTR = ({ punchData }) => {
                           <TableCell>{item.Reports}</TableCell>
 
                           <TableCell>
-                            <IconButton>
+                            <Button  className="delete-button">
                               <Add />
-                            </IconButton>
-                            <IconButton>
+
+                            </Button>
+                              <Button className="delete-button">
                               <Edit />
-                            </IconButton>
-                            <IconButton>
+                                
+                            </Button >
+                            
+                            
+                              <Button color="error" className="delete-button">
                               <Delete />
-                            </IconButton>
+                                
+                            </Button>
+                            
+                            
+                            
                           </TableCell>
                         </TableRow>
                         <TableRow>
