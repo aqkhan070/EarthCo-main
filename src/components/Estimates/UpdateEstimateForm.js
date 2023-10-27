@@ -486,7 +486,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
         </div>
 
         {/* item table */}
-        <div className="card">
+        <div className="">
           <div className="card-body p-0">
             <div className="estDataBox">
               <div className="itemtitleBar">
@@ -556,7 +556,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
           </div>
         </div>
         {/* Files */}
-        <div className="card">
+        <div className="">
           <div className="card-body p-0">
             <div className="estDataBox">
               <div className="itemtitleBar">
