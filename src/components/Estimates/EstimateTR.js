@@ -179,7 +179,7 @@ const EstimateTR = ({ estimates }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div> <br/>
             <TableContainer>
               <Table>
                 <TableHead className="table-header">
@@ -217,7 +217,7 @@ const EstimateTR = ({ estimates }) => {
                   {filteredEstimates
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((estimate, index) => (
-                      <TableRow key={estimate.EstimateId}>
+                      <TableRow key={estimate.EstimateId} hover>
                         <TableCell padding="checkbox">
                           <Checkbox />
                         </TableCell>

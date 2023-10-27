@@ -588,6 +588,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
+                      <th>#</th>
                       <th>File Name</th>
                       <th>Caption</th>
                       <th>Date</th>
@@ -597,6 +598,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                   <tbody>
                     {Files.map((file, index) => (
                       <tr key={index}>
+                        <td>{index + 1}</td>
                         <td>{file.name}</td>
                         <td>{file.caption}</td>
                         <td>{file.date}</td>
