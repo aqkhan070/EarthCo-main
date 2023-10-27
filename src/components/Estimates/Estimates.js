@@ -131,9 +131,7 @@ const Estimates = () => {
 
   const saveAddEstPop = () => {};
 
-  // const renderedRecords = estimates.map((object, index) => {
-  //     return <EstimateTR key={object.estimateID} index={index} onClick={() => handleCatClick(`Estimate${object.estimateID}`, object.estimateID)} estimate={object} />
-  // });
+ 
 
   return (
     <div className="container-fluid">
@@ -152,36 +150,13 @@ const Estimates = () => {
                 <div className="row mb-3">
                   
 
-                   {/*<div className="col-md-7">
-                    <div>
-                                            <input className="from-control form-control-sm" style={{ width: '100%' }} type="text" placeholder="Default input" />
-                                        </div> 
-                  </div>
-                  <div
-                    className="col-md-2"
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div className="col-md-12">
-                      <Form.Select
-                        aria-label="Default select example"
-                        size="md"
-                      >
-                        <option>All</option>
-                        <option value="1">Current Month</option>
-                        <option value="2">Previous Month</option>
-                      </Form.Select>
-                    </div>
-                  </div>*/}
+                  
                 </div>
               </div>
-              <div className="table-responsive active-projects style-1">
+              
                 <EstimateTR estimates={estimates} />
                 
-              </div>
+              
             </div>
           </div>
         </div>
@@ -256,7 +231,7 @@ const Estimates = () => {
                 >
                   Close
                 </button>
-                {/* <NavLink to='/Dashboard/Estimates/Add-Estimate'> */}
+               
                 <button
                   type="button"
                   onClick={() => {navigate("/Dashboard/Estimates/Add-Estimate")}}
@@ -265,7 +240,7 @@ const Estimates = () => {
                 >
                   Save
                 </button>
-                {/* </NavLink> */}
+               
               </div>
             </form>
           </div>

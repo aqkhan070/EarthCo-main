@@ -47,7 +47,6 @@ const theme = createTheme({
 });
 
 const PunchTR = ({ punchData }) => {
-    
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -120,138 +119,129 @@ const PunchTR = ({ punchData }) => {
                   />
                 </div>
                 <div className="custom-button-container">
-                  <a href="/"
-                        className="btn btn-primary btn-md"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editPunch">
-                    
-                      + Add PunchList
-                    
+                  <a
+                    href="/"
+                    className="btn btn-primary btn-md"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editPunch"
+                  >
+                    + Add PunchList
                   </a>
                 </div>
               </div>
             </div>
             <br />
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow className="table-header">
-                    {[
-                      "#",
-                      "Customer Name",
-                      "Title",
-                      "Assigned to",
-                      "Date Created",
-                      "Status",
-                      "Report",
-                      "Actions",
-                    ].map((column, index) => (
-                      <TableCell key={index}>
-                        {index < 5 ? (
-                          <TableSortLabel
-                            active={
-                              sorting.field === columnFieldMapping[column]
-                            }
-                            direction={sorting.order}
-                            onClick={() =>
-                              setSorting({
-                                field: columnFieldMapping[column],
-                                order:
-                                  sorting.order === "asc" &&
-                                  sorting.field === columnFieldMapping[column]
-                                    ? "desc"
-                                    : "asc",
-                              })
-                            }
-                          >
-                            {column}
-                          </TableSortLabel>
-                        ) : (
-                          column
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedAndSearchedCustomers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((item, rowIndex) => (
-                      <>
-                        <TableRow
-                          key={rowIndex}
-                          hover
+
+            <Table>
+              <TableHead>
+                <TableRow className="table-header">
+                  {[
+                    "#",
+                    "Customer Name",
+                    "Title",
+                    "Assigned to",
+                    "Date Created",
+                    "Status",
+                    "Report",
+                    "Actions",
+                  ].map((column, index) => (
+                    <TableCell key={index}>
+                      {index < 5 ? (
+                        <TableSortLabel
+                          active={sorting.field === columnFieldMapping[column]}
+                          direction={sorting.order}
                           onClick={() =>
-                            setExpandedRow(
-                              rowIndex === expandedRow ? -1 : rowIndex
-                            )
+                            setSorting({
+                              field: columnFieldMapping[column],
+                              order:
+                                sorting.order === "asc" &&
+                                sorting.field === columnFieldMapping[column]
+                                  ? "desc"
+                                  : "asc",
+                            })
                           }
                         >
-                          <TableCell>
-                            <IconButton
-                              aria-label="expand row"
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation(); // This prevents the TableRow's onClick from being called
-                                setExpandedRow(
-                                  rowIndex === expandedRow ? -1 : rowIndex
-                                );
-                              }}
-                            >
-                              {expandedRow ? (
-                                <KeyboardArrowDownIcon />
-                              ) : (
-                                <KeyboardArrowUpIcon />
-                              )}
-                            </IconButton>
-                          </TableCell>
-                          <TableCell>{item.ContactName}</TableCell>
-                          <TableCell>{item.Title}</TableCell>
-                          <TableCell>{item.AssignedTo}</TableCell>
-                          <TableCell>{item.CreatedDate}</TableCell>
-                          <TableCell>{item.Status}</TableCell>
-                          <TableCell>{item.Reports}</TableCell>
-
-                          <TableCell>
-                            <Button  className="delete-button">
-                              <Add />
-
-                            </Button>
-                              <Button className="delete-button">
-                              <Edit />
-                                
-                            </Button >
-                            
-                            
-                              <Button color="error" className="delete-button">
-                              <Delete />
-                                
-                            </Button>
-                            
-                            
-                            
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell
-                            style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={8}
+                          {column}
+                        </TableSortLabel>
+                      ) : (
+                        column
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sortedAndSearchedCustomers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((item, rowIndex) => (
+                    <>
+                      <TableRow key={rowIndex} hover>
+                        <TableCell>
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation(); // This prevents the TableRow's onClick from being called
+                              setExpandedRow(
+                                rowIndex === expandedRow ? -1 : rowIndex
+                              );
+                            }}
                           >
-                            <Collapse
-                              in={expandedRow === rowIndex}
-                              timeout="auto"
-                              unmountOnExit
-                            >
-                              <Box sx={{ margin: 1 }}>
-                                <Typography
-                                  variant="h6"
-                                  gutterBottom
-                                  component="div"
-                                >
-                                  {/* collapssss */}
-                                </Typography>
-                                <Table size="small" aria-label="purchases">
-                                  {/* <TableHead>
+                            {expandedRow ? (
+                              <KeyboardArrowDownIcon />
+                            ) : (
+                              <KeyboardArrowUpIcon />
+                            )}
+                          </IconButton>
+                        </TableCell>
+                        <TableCell>{item.ContactName}</TableCell>
+                        <TableCell>{item.Title}</TableCell>
+                        <TableCell>{item.AssignedTo}</TableCell>
+                        <TableCell>{item.CreatedDate}</TableCell>
+                        <TableCell>{item.Status}</TableCell>
+                        <TableCell>{item.Reports}</TableCell>
+
+                        <TableCell>
+                          <Button
+                            className="delete-button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addPhotos"
+                          >
+                            <Add />
+                          </Button>
+                          <Button
+                            className="delete-button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editPunch"
+                          >
+                            <Edit />
+                          </Button>
+
+                          <Button color="error" className="delete-button">
+                            <Delete />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell
+                          style={{ paddingBottom: 0, paddingTop: 0 }}
+                          colSpan={8}
+                        >
+                          <Collapse
+                            in={expandedRow === rowIndex}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Box sx={{ margin: 1 }}>
+                              <Typography
+                                variant="h6"
+                                gutterBottom
+                                component="div"
+                              >
+                                {/* collapssss */}
+                              </Typography>
+                              <Table size="small" aria-label="purchases">
+                                {/* <TableHead>
                                     <TableRow>
                                       <TableCell></TableCell>
                                       <TableCell></TableCell>
@@ -260,57 +250,87 @@ const PunchTR = ({ punchData }) => {
                                       <TableCell align="left"></TableCell>
                                     </TableRow>
                                   </TableHead> */}
-                                  <TableBody>
-                                    <TableRow>
-                                      <TableCell></TableCell>
-                                      <TableCell rowSpan={2} component="th" scope="row">
+                                <TableBody>
+                                  <TableRow>
+                                    <TableCell></TableCell>
+                                    <TableCell
+                                      rowSpan={2}
+                                      component="th"
+                                      scope="row"
+                                    >
                                       <div className="products">
-                            <img
-                              src={punchList}
-                              className="avatar avatar-md"
-                              alt="lazy"
-                            />
-                            <div>
-                              <h6>Keep plants</h6>
-                              <span>Pool</span>
-                            </div>
-                            </div>
-                                      </TableCell>
-                                      <TableCell>item-1</TableCell>
+                                        <img
+                                          src={punchList}
+                                          className="avatar avatar-md"
+                                          alt="lazy"
+                                        />
+                                        <div>
+                                          <h6>Keep plants</h6>
+                                          <span>Pool</span>
+                                        </div>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      {" "}
+                                      <div>
+                                        <Checkbox />
+                                        <span>Label 1</span>
+                                      </div>
+                                      <div>
+                                        <Checkbox />
+                                        <span>Label 2</span>
+                                      </div>
+                                      <div>
+                                        <Checkbox />
+                                        <span>Label 3</span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell rowSpan={2} align="right">
+                                      <Form.Select
+                                        aria-label="Default select example"
+                                        id="inputState"
+                                        className="bg-white"
+                                      >
+                                        <option value="complete">
+                                          Complete
+                                        </option>
+                                        <option value="pending">Pending</option>
+                                        <option value="Estimate">
+                                          Estimate
+                                        </option>
+                                        <option value="Service Request">
+                                          Service Request
+                                        </option>
+                                      </Form.Select>
                                       <TableCell></TableCell>
-                                      <TableCell rowSpan={2} align="right">
-                                      <Form.Select className="bg-white">
-                            <option value="complete">Complete</option>
-                            <option value="pending">Pending</option>
-                            <option value="Estimate">Estimate</option>
-                            <option value="Service Request">
-                              Service Request
-                            </option>
-                          </Form.Select>
-                                      <TableCell>
-
-                                      </TableCell>
-                                      </TableCell>
-                                      <TableCell align="left" >
-                                        <IconButton>
-                                          <Edit />
-                                        </IconButton>
-                                        <IconButton>
-                                          <Delete />
-                                        </IconButton>
-                                      </TableCell>
-                                    </TableRow>
-                                  </TableBody>
-                                </Table>
-                              </Box>
-                            </Collapse>
-                          </TableCell>
-                        </TableRow>
-                      </>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                                    </TableCell>
+                                    <TableCell align="left">
+                                      <Button
+                                        className="delete-button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editPunch"
+                                      >
+                                        <Edit />
+                                      </Button>
+                                      <Button
+                                        color="error"
+                                        className="delete-button"
+                                      >
+                                        <Delete />
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ))}
+              </TableBody>
+            </Table>
 
             <TablePagination
               component="div"

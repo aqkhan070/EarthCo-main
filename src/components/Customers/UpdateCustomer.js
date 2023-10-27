@@ -456,10 +456,10 @@ const [customerData, setCustomerData] = useState({});
                               <td>{contact.Email}</td>
                               <td>{contact.Phone}</td>
                               <td>{contact.CompanyName}</td>{" "}
-                              {/* Corrected this line */}
+                            
                               <td>{contact.Address}</td>
                               <td>{contact.isPrimary ? "Yes" : "No"}</td>{" "}
-                              {/* Corrected this line */}
+                             
                               <td>
                                 <div className="badgeBox">
                                   <span

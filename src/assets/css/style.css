@@ -53589,6 +53589,14 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   .custom-button-container {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 2em;
+    /* margin-bottom: 2em; */
   }
-  
+  .css-4e7dzw-MuiTableCell-root{
+    padding: 7px !important;
+  }
+  .css-105zgzk-MuiButtonBase-root-MuiCheckbox-root{
+    padding: 3px !important;
+  }
+  .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
+    height: 1.05em !important;
+  }

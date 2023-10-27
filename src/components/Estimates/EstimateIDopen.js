@@ -30,32 +30,7 @@ const EstimateIDopen = () => {
     return (
         <>
             <TitleBar icon={icon} title={`Estimate #${OneEstimate.estimateID}`} />
-            {/* <div className="card-body">
-                <div className="basic-form">
-                    <form>
-                        <div className="row">
-                            <div className="mb-3 col-md-4">
-                                <label className="form-label">Customer</label>
-                                <Form.Select aria-label="Default select example" className='bg-white' onChange={customerChange} size="md">
-                                    <option value={OneEstimate.customerName}>{OneEstimate.customerName}</option>
-                                </Form.Select>
-                            </div>
-                            <div className="mb-3 col-md-4">
-                                <label className="form-label">Service Location</label>
-                                <Form.Select aria-label="Default select example" className='bg-white' size="md">
-                                    <option value='Service Location'>Service Location</option>
-                                </Form.Select>
-                            </div>
-                            <div className="mb-3 col-md-4">
-                                <label>Contact</label>
-                                <Form.Select aria-label="Default select example" className='bg-white' size="md">
-                                    <option value='Service Location'>{singleCustomer.email}</option>
-                                </Form.Select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div> */}
+            
             <div className="container-fluid">
                 <OpenedEstimate oneEstimate={OneEstimate} customer={singleCustomer} />
             </div>

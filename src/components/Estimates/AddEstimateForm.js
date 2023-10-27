@@ -57,7 +57,6 @@ const AddEstimateForm = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
     const adjustedValue = ["CustomerId", "Qty", "Rate", "EstimateStatusId"].includes(name) ? Number(value) : value;
 
     setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
@@ -67,19 +66,17 @@ const AddEstimateForm = () => {
 const handleSubmit = () => {
   const postData = new FormData();
 
-  // Before merging, filter out the unnecessary fields from each item in tblEstimateItems
   const filteredItems = formData.tblEstimateItems.map(item => {
       const { id, Amount, Approved, ...rest } = item;
       return rest;
   });
 
-  // Merge the current items with the new items for EstimateData
   const mergedEstimateData = {
       ...formData,
       CreatedBy: 2,
       EditBy: 2,
       isActive: true,
-      tblEstimateItems: [...filteredItems, itemForm],  // using the filteredItems here
+      tblEstimateItems: [...filteredItems, itemForm],  
   };
 
   console.log("mergedEstimateData:", mergedEstimateData);
@@ -96,12 +93,6 @@ const handleSubmit = () => {
 };
 
 
-
-  // const appendFilesToFormData = (formData) => {
-  //   Files.forEach((fileObj) => {
-  //     formData.append("Files", fileObj.actualFile);
-  //   });
-  // };
 
   const submitData = async (postData) => {
     try {
@@ -124,7 +115,6 @@ const handleSubmit = () => {
       console.error("API Call Error:", error);
     }
 
-    // Logging FormData contents (for debugging purposes)
     for (let [key, value] of postData.entries()) {
       console.log("filessss", key, value);
     }
@@ -145,7 +135,6 @@ const handleSubmit = () => {
     };
   
    
-    // Clear itemForm fields after adding the new item
     setFormData(prevData => ({
       ...prevData,
       tblEstimateItems: [...prevData.tblEstimateItems, newItem],
@@ -163,7 +152,7 @@ const handleSubmit = () => {
   
 
   const handleStatusChange = (e) => {
-    const value = parseInt(e.target.value, 10); // This converts the string to an integer
+    const value = parseInt(e.target.value, 10); 
   
     setFormData((prevData) => ({
       ...prevData,
@@ -177,7 +166,6 @@ const handleSubmit = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Convert to number if the field is Qty or Rate
     const adjustedValue = ["Qty", "Rate", "EstimateStatusId"].includes(name) ? Number(value) : value;
 
     setItemForm((prevState) => ({ ...prevState, [name]: adjustedValue }));
