@@ -52,7 +52,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
     "Service Request #": "ServiceRequestNumber",
     "Customer Name": "CustomerId",
     "Assigned to": "Assign",
-    Status: "SRStatusId",
+    "Status": "SRStatusId",
     "Work Requested": "WorkRequest",
     "Date Created": "CreatedDate",
   };
