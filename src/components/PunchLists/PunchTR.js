@@ -53,7 +53,10 @@ const PunchTR = ({ punchData }) => {
               <TableCell>#</TableCell>
               <TableCell>Customer Name</TableCell>
               <TableCell>Title</TableCell>
-              {/* ... other headers */}
+              <TableCell>Assigned To</TableCell>
+              <TableCell>Date Created</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Reports</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -67,7 +70,7 @@ const PunchTR = ({ punchData }) => {
                   <TableCell>{item.AssignedTo}</TableCell>
                   <TableCell>{item.CreatedDate}</TableCell>
                   <TableCell>{item.Status}</TableCell>
-                  <TableCell>{item.Report}</TableCell>
+                  <TableCell>{item.Reports}</TableCell>
                   
                   <TableCell>
                     <IconButton><Add /></IconButton>
