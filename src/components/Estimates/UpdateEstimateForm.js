@@ -226,6 +226,13 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     }));
   };
 
+  const handleDeleteFile = (index) => {
+    // Create a copy of the Files array without the file to be deleted
+    const updatedFiles = [...Files];
+    updatedFiles.splice(index, 1);
+    setFiles(updatedFiles);
+  };
+
   const addFile = () => {
     inputFile.current.click();
     // console.log("Filesss are", Files);
@@ -556,6 +563,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
           </div>
         </div>
         {/* Files */}
+
         <div className="">
           <div className="card-body p-0">
             <div className="estDataBox">
@@ -583,6 +591,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       <th>File Name</th>
                       <th>Caption</th>
                       <th>Date</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -591,6 +600,18 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                         <td>{file.name}</td>
                         <td>{file.caption}</td>
                         <td>{file.date}</td>
+                        <td><div className="badgeBox">
+                                <span
+                                  className="actionBadge badge-danger light border-0 badgebox-size"
+                                  onClick={() => {
+                                    handleDeleteFile(index);
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined badgebox-size">
+                                    delete
+                                  </span>
+                                </span>
+                              </div></td>
                       </tr>
                     ))}
                   </tbody>
