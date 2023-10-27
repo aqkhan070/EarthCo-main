@@ -212,7 +212,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                           <TableCell>{customer.WorkRequest}</TableCell>
                           <TableCell>{customer.CreatedDate}</TableCell>
                           <TableCell>
-                            <div className="button-container">
+                            
                               <Button
                                 className="delete-button"
                                 onClick={() => {
@@ -236,7 +236,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                               >
                                 <Delete />
                               </Button>
-                            </div>
+                           
                           </TableCell>
                         </TableRow>
                       ))}

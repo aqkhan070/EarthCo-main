@@ -6,6 +6,7 @@ import { Form } from "react-bootstrap";
 import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ServiceRequests = () => {
   const [serviceRequest, setserviceRequest] = useState();
@@ -30,6 +31,7 @@ const ServiceRequests = () => {
 
   return (
     <div className="container-fluid">
+       <CircularProgress color="success" />
       <div className="row">
         <StatusCards newData={1178} open={5142} closed={71858} total={78178} />
         <div className="col-xl-12">
@@ -65,7 +67,7 @@ const ServiceRequests = () => {
                   </div> */}
                 </div>
               </div>
-              <div className="table-responsive">
+              <div className="">
                 {serviceRequest && (
                   <ServiceRequestTR serviceRequest={serviceRequest} />
                 )}

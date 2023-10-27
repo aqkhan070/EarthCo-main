@@ -429,9 +429,7 @@ const [customerData, setCustomerData] = useState({});
               <div className="card">
                 <div className="card-body p-0">
                   <div className="estDataBox">
-                    <div className="itemtitleBar">
-                      <h4>Contacts</h4>
-                    </div>
+                    
                     <div className="table-responsive active-projects style-1">
                       <table id="empoloyees-tblwrapper" className="table">
                         <thead>
