@@ -13,9 +13,15 @@ import {
   TablePagination,
   IconButton,
   TableContainer,
+  Typography,
+  Box,
   Checkbox,
   Paper,
 } from "@mui/material";
+import Collapse from "@mui/material/Collapse";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+
 import { Add, Delete, Edit } from "@mui/icons-material";
 
 const theme = createTheme({
@@ -42,6 +48,9 @@ const PunchTR = ({ punchData }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [open, setOpen] = useState(false);
+
+  const [expandedRow, setExpandedRow] = useState(-1); // By default, no row is expanded.
 
   const [search, setSearch] = useState("");
 
@@ -122,8 +131,8 @@ const PunchTR = ({ punchData }) => {
                 <TableHead>
                   <TableRow className="table-header">
                     {[
-                    //   "#",
-                    "Customer Name",
+                      "#",
+                      "Customer Name",
                       "Title",
                       "Assigned to",
                       "Date Created",
@@ -162,27 +171,104 @@ const PunchTR = ({ punchData }) => {
                   {sortedAndSearchedCustomers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((item, rowIndex) => (
-                      <TableRow key={rowIndex} hover>
-                        {/* <TableCell>{item.PunchlistId}</TableCell> */}
-                        <TableCell>{item.ContactName}</TableCell>
-                        <TableCell>{item.Title}</TableCell>
-                        <TableCell>{item.AssignedTo}</TableCell>
-                        <TableCell>{item.CreatedDate}</TableCell>
-                        <TableCell>{item.Status}</TableCell>
-                        <TableCell>{item.Reports}</TableCell>
+                      <>
+                        <TableRow
+                          key={rowIndex}
+                          hover
+                          onClick={() =>
+                            setExpandedRow(
+                              rowIndex === expandedRow ? -1 : rowIndex
+                            )
+                          }
+                        >
+                          <TableCell>
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation(); // This prevents the TableRow's onClick from being called
+                                setExpandedRow(
+                                  rowIndex === expandedRow ? -1 : rowIndex
+                                );
+                              }}
+                            >
+                              {expandedRow ? (
+                                <KeyboardArrowDownIcon />
+                              ) : (
+                                <KeyboardArrowUpIcon />
+                              )}
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>{item.ContactName}</TableCell>
+                          <TableCell>{item.Title}</TableCell>
+                          <TableCell>{item.AssignedTo}</TableCell>
+                          <TableCell>{item.CreatedDate}</TableCell>
+                          <TableCell>{item.Status}</TableCell>
+                          <TableCell>{item.Reports}</TableCell>
 
-                        <TableCell>
-                          <IconButton>
-                            <Add />
-                          </IconButton>
-                          <IconButton>
-                            <Edit />
-                          </IconButton>
-                          <IconButton>
-                            <Delete />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+                          <TableCell>
+                            <IconButton>
+                              <Add />
+                            </IconButton>
+                            <IconButton>
+                              <Edit />
+                            </IconButton>
+                            <IconButton>
+                              <Delete />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell
+                            style={{ paddingBottom: 0, paddingTop: 0 }}
+                            colSpan={6}
+                          >
+                            <Collapse
+                              in={expandedRow === rowIndex}
+                              timeout="auto"
+                              unmountOnExit
+                            >
+                              <Box sx={{ margin: 1 }}>
+                                <Typography
+                                  variant="h6"
+                                  gutterBottom
+                                  component="div"
+                                >
+                                  History
+                                </Typography>
+                                <Table size="small" aria-label="purchases">
+                                  <TableHead>
+                                    <TableRow>
+                                      <TableCell>Date</TableCell>
+                                      <TableCell>Customer</TableCell>
+                                      <TableCell align="right">
+                                        Amount
+                                      </TableCell>
+                                      <TableCell align="right">
+                                        Total price ($)
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    <TableRow>
+                                      <TableCell component="th" scope="row">
+                                        esrdtfy
+                                      </TableCell>
+                                      <TableCell>waertyu</TableCell>
+                                      <TableCell align="right">
+                                        qwerty
+                                      </TableCell>
+                                      <TableCell align="right">
+                                        wertyui
+                                      </TableCell>
+                                    </TableRow>
+                                  </TableBody>
+                                </Table>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </>
                     ))}
                 </TableBody>
               </Table>

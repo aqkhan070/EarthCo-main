@@ -1,213 +1,72 @@
-import React, { useState } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TextField,
-  TableRow,
-  TableSortLabel,
-  Button,
-  TablePagination,
-  TableContainer,
-  Checkbox,
-  Paper,
-} from "@mui/material";
-import { Create, Delete } from "@mui/icons-material";
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import MuiAccordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#7c9c3d",
-    },
+const Accordion = styled((props) => (
+  <MuiAccordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+  border: `1px solid ${theme.palette.divider}`,
+  '&:not(:last-child)': {
+    borderBottom: 0,
   },
-  typography: {
-    fontSize: 14, // Making font a bit larger
+  '&:before': {
+    display: 'none',
   },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          padding: "8px 16px", // Adjust cell padding to reduce height
-        },
-      },
-    },
+}));
+
+const AccordionSummary = styled((props) => (
+  <MuiAccordionSummary
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    {...props}
+  />
+))(({ theme }) => ({
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(255, 255, 255, .05)'
+      : 'rgba(0, 0, 0, .03)',
+  flexDirection: 'row-reverse',
+  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+    transform: 'rotate(90deg)',
   },
-});
+  '& .MuiAccordionSummary-content': {
+    marginLeft: theme.spacing(1),
+  },
+}));
 
-const PunchTR = ({ punchData }) => {
+const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderTop: '1px solid rgba(0, 0, 0, .125)',
+}));
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [sorting, setSorting] = useState({ field: "", order: "" });
-
-  const [search, setSearch] = useState("");
-
-  const [serviceRequestId, setServiceRequestId] = useState();
-  const [showContent, setShowContent] = useState(true);
-
-  const columnFieldMapping = {
-    "#": "PunchlistId",
-    "Title": "Title",
-    "Assigned To": "AssignedTo",
-    "Date Created": "CreatedDate",
-    "Status": "Status",
-    "Reports": "Reports",
-  };
-
-  //
+export default function CustomizedAccordions() {
 
   
+  const [expanded, setExpanded] = React.useState('panel1');
 
- 
-
-  const handleSearch = (data) => {
-    return data.filter((item) => {
-      const fieldsToSearch = [
-        // item.PunchlistId?.toString(),
-        item.ContactName?.toString(),
-        // item.Title?.toString(),
-        // item.AssignedTo?.toString(),
-        // item.CreatedDate?.toString(),
-        // item.Reports?.toString(),
-      ];
-
-      return fieldsToSearch.some((field) =>
-        field?.toLowerCase().includes(search.toLowerCase())
-      );
-    });
+  const handleChange = (panel) => (event, newExpanded) => {
+    setExpanded(newExpanded ? panel : false);
   };
 
-  const sortedAndSearchedCustomers = handleSearch([...punchData]).sort(
-    (a, b) => {
-      const { field, order } = sorting;
-
-      if (field && order) {
-        if (order === "asc") {
-          return a[field] > b[field] ? 1 : -1;
-        }
-        if (order === "desc") {
-          return a[field] < b[field] ? 1 : -1;
-        }
-      }
-      return 0;
-    }
-  );
-
   return (
-    <>
-     
-        <ThemeProvider theme={theme}>
-          <div className="container">
-            <div className="container text-center">
-
-              <div className="row ">
-                <div className="col-md-12">
-                  <div className="col-3 custom-search-container">
-                    <TextField
-                      label="Search"
-                      variant="outlined"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                  
-                    />
-                  </div>
-                  <div className="custom-button-container">
-                    <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
-                      <Button variant="contained" color="primary">
-                        + Add Service Request
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              <br />
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow className="table-header">
-                      {[
-                        "Select",
-                        "Service Request #",
-                        "Customer Name",
-                        "Assigned to",
-                        "Status",
-                        "Work Requested",
-                        "Date Created",
-                        "Actions",
-                      ].map((column, index) => (
-                        <TableCell key={index}>
-                          {index < 5 ? (
-                            <TableSortLabel
-                              active={
-                                sorting.field === columnFieldMapping[column]
-                              }
-                              direction={sorting.order}
-                              onClick={() =>
-                                setSorting({
-                                  field: columnFieldMapping[column],
-                                  order:
-                                    sorting.order === "asc" &&
-                                    sorting.field === columnFieldMapping[column]
-                                      ? "desc"
-                                      : "asc",
-                                })
-                              }
-                            >
-                              {column}
-                            </TableSortLabel>
-                          ) : (
-                            column
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sortedAndSearchedCustomers
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((customer, rowIndex) => (
-                        <TableRow key={rowIndex} hover>
-                          <TableCell>{item.PunchlistId}</TableCell>
-                  <TableCell>{item.ContactName}</TableCell>
-                  <TableCell>{item.Title}</TableCell>
-                  <TableCell>{item.AssignedTo}</TableCell>
-                  <TableCell>{item.CreatedDate}</TableCell>
-                  <TableCell>{item.Status}</TableCell>
-                  <TableCell>{item.Reports}</TableCell>
-                  
-                  <TableCell>
-                    <IconButton><Add /></IconButton>
-                    <IconButton><Edit /></IconButton>
-                    <IconButton><Delete /></IconButton>
-                  </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <TablePagination
-                component="div"
-                count={sortedAndSearchedCustomers.length}
-                page={page}
-                onPageChange={(event, newPage) => setPage(newPage)}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={(event) => {
-                  setRowsPerPage(parseInt(event.target.value, 10));
-                  setPage(0);
-                }}
-              />
-            </div>
-          </div>
-        </ThemeProvider>
-    </>
+    <div>
+      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+          <Typography>Collapsible Group Item #1</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
+            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+            sit amet blandit leo lobortis eget.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+      
+    </div>
   );
-};
-
-export default PunchTR;
+}
