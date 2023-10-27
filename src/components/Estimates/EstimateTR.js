@@ -182,7 +182,7 @@ const EstimateTR = ({ estimates }) => {
     </div>
             <TableContainer>
               <Table>
-                <TableHead>
+                <TableHead className="table-header">
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox />
