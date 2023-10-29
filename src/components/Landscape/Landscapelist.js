@@ -1,14 +1,28 @@
 import React, { useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
-import $ from "jquery";
-import "datatables.net";
+import axios from "axios";
+
 
 const Landscapelist = () => {
-  useEffect(() => {
-    $("#landscapeTbl").DataTable();
-  });
 
+    
+  useEffect(() => {
+    const getEstimate = async () => {
+      try {
+        const response = await axios.get(
+          "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList"
+        );
+        console.log("........ response is", response.data);
+        
+      } catch (error) {
+        console.error("API Call Error:", error);
+      }
+    };
+
+    getEstimate();
+  }, []);
+ 
   return (
     <>
       <div className="container-fluid">
