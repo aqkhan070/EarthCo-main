@@ -104,10 +104,12 @@ const handleDelete = (id) => {
             <div className="col-3 search-container tblsearch-input">
               <TextField
                 className="tblsearch-input"
+                variant="standard"
+              size="small"
                 label="Search"
                 value={filtering}
                 onChange={(e) => setFiltering(e.target.value)}
-                fullWidth
+               
               />
             </div>
             <div className="col-3 add-customer-btn">

@@ -113,7 +113,8 @@ const PunchTR = ({ punchData }) => {
                 <div className="col-3 custom-search-container">
                   <TextField
                     label="Search"
-                    variant="outlined"
+                    variant="standard"
+              size="small"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />

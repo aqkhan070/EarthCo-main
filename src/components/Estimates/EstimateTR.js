@@ -162,7 +162,8 @@ const EstimateTR = ({ estimates }) => {
           <div className="custom-search-container">
             <TextField
               label="Search"
-              variant="outlined"
+              variant="standard"
+              size="small"
               value={filtering}
               onChange={(e) => setFiltering(e.target.value)}
             />
