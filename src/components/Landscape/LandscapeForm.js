@@ -1,7 +1,67 @@
 import React from "react";
 import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 const LandscapeForm = () => {
+  const [customers, setCustomers] = useState([]);
+  const [serviceLocations, setServiceLocations] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [contacts, setContacts] = useState([])
+
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+      //   console.log("shdwihduq",customers);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchServiceLocations = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList"
+    );
+    try {
+      setServiceLocations(response.data);
+      // console.log(".........",serviceLocations);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchContacts = async () => {
+    const response = await axios.get(
+      `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedCustomer}`
+    );
+    try {
+      setContacts(response.data.tblContacts);
+      console.log(".........",contacts);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchCustomers();
+    fetchServiceLocations();
+  }, []);
+
+  const handleCustomerChange = (event) => {
+    const selectedCustomerId = event.target.value; // Get the selected CustomerId
+    setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
+  };
+
+  useEffect(() => {
+    // console.log("'''''''''''object'''''''''''", selectedCustomer);
+    selectedCustomer && fetchContacts();
+  },[selectedCustomer])
+
   return (
     <>
       <div className="card-body container-fluid">
@@ -14,29 +74,46 @@ const LandscapeForm = () => {
                   className="bg-white"
                   aria-label="Default select example"
                   size="md"
+                  name="CustomerId"
                   id="inlineFormCustomSelect"
+                  onChange={handleCustomerChange} // Call the function on selection change
+                  value={selectedCustomer || ""} 
                 >
-                  <option>Select Custmer...</option>
-                  <option>Hillandale Ave</option>
-                  <option>Crest DeVille</option>
+                  <option value={null} selected>
+                    Select Customer
+                  </option>
+
+                  {customers.map((customer) => {
+                    return (
+                      <option
+                        value={customer.CustomerId}
+                        key={customer.CustomerId}
+                      >
+                        {customer.CustomerName}
+                      </option>
+                    );
+                  })}
                 </Form.Select>
-                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
-                                    <option>Select Custmer...</option>
-                                    <option>Hillandale Ave</option>
-                                    <option>Crest DeVille</option>
-                                </select> */}
               </div>
               <div className="mb-3 col-md-4">
                 <label className="form-label">Service Location</label>
                 <Form.Select
+                    name="ServiceLocation"
                   className="bg-white"
                   aria-label="Default select example"
                   size="md"
                   id="inlineFormCustomSelect"
                 >
-                  <option>Select Service Location...</option>
-                  <option>Hillandale Ave</option>
-                  <option>Crest DeVille</option>
+                  <option value={null} selected>
+                    Select Service Location
+                  </option>
+                  {serviceLocations.map((srLocation) => {
+                    return (
+                      <option key={srLocation.ServiceRequestId}>
+                        {srLocation.ServiceLocation}
+                      </option>
+                    );
+                  })}
                 </Form.Select>
               </div>
               <div className="mb-3 col-md-4">
@@ -45,11 +122,14 @@ const LandscapeForm = () => {
                   className="bg-white"
                   aria-label="Default select example"
                   size="md"
+                  name="ContactId"
                   id="inlineFormCustomSelect"
                 >
-                  <option>Select Contact...</option>
-                  <option>Hillandale Ave</option>
-                  <option>Crest DeVille</option>
+                    {contacts.map((contact) => {
+                        return(
+                            <option key={contact.ContactId}>{contact.FirstName}</option>
+                        )
+                    })}
                 </Form.Select>
               </div>
             </div>
@@ -79,6 +159,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="SupervisorVisitedthejobweekly"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -99,6 +180,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="CompletedLitterpickupofgroundareas"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -120,6 +202,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               class="form-check-input"
+                              name="Completedsweepingorblowingofwalkways"
                               id="customCheckBox2"
                             />
                           </div>
@@ -140,6 +223,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               class="form-check-input"
+                              name="HighpriorityareaswereVisitedweekly"
                               id="customCheckBox2"
                             />
                           </div>
@@ -159,6 +243,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="VDitcheswerecleanedandinspected"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -187,6 +272,7 @@ const LandscapeForm = () => {
                               <Form.Select
                                 aria-label="Default select example"
                                 size="md"
+                                name="WeepscreeninspectedandcleanedinrotationsectionId"
                                 id="inlineFormCustomSelect"
                               >
                                 <option>Select</option>
@@ -236,8 +322,9 @@ const LandscapeForm = () => {
                           </div>
                           <div className="col-md-7">
                             <input
-                              name="datepicker"
-                              class="datepicker-default form-control"
+                              name="Fertilizationoftrufoccoured"
+                              class="datepicker-default form-control form-control-sm"
+                            
                               id="datepicker"
                             />
                           </div>
@@ -256,7 +343,9 @@ const LandscapeForm = () => {
                           </div>
                           <div className="col-md-7">
                             <input
+
                               type="checkbox"
+                              name="Trufwasmovedandedgedweekly"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -296,6 +385,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               class="form-check-input"
+                              name="Shrubstrimmedaccordingtorotationschedule"
                               id="customCheckBox2"
                             />
                           </div>
@@ -317,7 +407,7 @@ const LandscapeForm = () => {
                           </div>
                           <div className="col-md-7">
                             <input
-                              name="datepicker"
+                              name="FertilizationofShrubsoccoured"
                               class="datepicker-default form-control"
                               id="datepicker"
                             />
@@ -356,6 +446,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="WateringofflowerbedsCompletedandchecked"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -392,6 +483,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="Headswereadjustedformaximumcoverage"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -414,6 +506,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="Repairsweremadetomaintainaneffectivesystem"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -434,6 +527,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="Controllerswereinspectedandadjusted"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -454,6 +548,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="Mainlinewasrepaired"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -474,6 +569,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
+                              name="Valvewasrepaired"
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -513,7 +609,8 @@ const LandscapeForm = () => {
                                 <div class="mb-3">
                                   <textarea
                                     class="form-txtarea form-control"
-                                    rows="3"
+                                    name="Thismonthexpectedrotationschedule"
+                                    rows="2"
                                     id="comment"
                                   ></textarea>
                                 </div>
@@ -555,7 +652,8 @@ const LandscapeForm = () => {
                                 <div class="mb-3">
                                   <textarea
                                     class="form-txtarea form-control"
-                                    rows="3"
+                                    rows="2"
+                                    name="Notes"
                                     id="comment"
                                   ></textarea>
                                 </div>
