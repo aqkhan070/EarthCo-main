@@ -76,8 +76,15 @@ const LandscapeForm = () => {
   }, []);
 
   const handleCustomerChange = (event) => {
-    const selectedCustomerId = event.target.value; // Get the selected CustomerId
+    const selectedCustomerId = parseInt(event.target.value, 10);
+    
     setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
+  
+    // Also update the monthlyLandscape
+    setMonthlyLandscape(prevState => ({
+      ...prevState,
+      CustomerId: selectedCustomerId
+    }));
   };
 
   useEffect(() => {
@@ -88,18 +95,36 @@ const LandscapeForm = () => {
 
   const handleInputChange = (event) => {
     const { name, type } = event.target;
-    const value = type === 'checkbox' ? event.target.checked : event.target.value;
-
+    let value = type === 'checkbox' ? event.target.checked : event.target.value;
+  
+    // Convert values to numbers for specific keys
+    if (["CustomerId", "ContactId", "WeepscreeninspectedandcleanedinrotationsectionId"].includes(name)) {
+      value = parseInt(value, 10);
+    }
+  
     setMonthlyLandscape(prevState => ({
-        ...prevState,
-        [name]: value
+      ...prevState,
+      [name]: value
     }));
-    // console.log(",,,,,,,,,", monthlyLandscape);
-};
+  };
+  
 
-const handleSubmit = (e) => {
+
+const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(",,,,,,,,,,",monthlyLandscape);
+    try {
+        const response = await axios.post(
+          "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/AddMonthlyLandsacpe",
+          monthlyLandscape
+        );
+    
+        // Log the response or handle success
+        console.log("Response:", response.data);
+    
+      } catch (error) {
+        // Handle the error
+        console.error("API Post Error:", error);
+      }
   }
 
   return (
@@ -111,14 +136,13 @@ const handleSubmit = (e) => {
               <div className="mb-3 col-md-4">
                 <label className="form-label">Customer</label>
                 <Form.Select
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  name="CustomerId"
-                  onChange={handleInputChange}
-                  id="inlineFormCustomSelect"
-                  value={selectedCustomer || ""} 
-                >
+  className="bg-white"
+  aria-label="Default select example"
+  size="md"
+  name="CustomerId"
+  onChange={handleCustomerChange}
+  value={selectedCustomer || ""}
+>
                   <option value={null} selected>
                     Select Customer
                   </option>
@@ -159,19 +183,28 @@ const handleSubmit = (e) => {
               <div className="mb-3 col-md-4">
                 <label>Contact</label>
                 <Form.Select
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  name="ContactId"
-                  onChange={handleInputChange}
-                  id="inlineFormCustomSelect"
-                >
-                    {contacts.map((contact) => {
-                        return(
-                            <option key={contact.ContactId}>{contact.FirstName}</option>
-                        )
-                    })}
-                </Form.Select>
+  className="bg-white"
+  aria-label="Default select example"
+  size="md"
+  name="ContactId"
+  onChange={handleInputChange}
+  id="inlineFormCustomSelect"
+>
+  <option value="">Select Contact</option>
+  {contacts.map((contact) => {
+    return (
+      <option key={contact.ContactId} value={contact.ContactId}>
+        {contact.FirstName}
+      </option>
+    );
+  })}
+</Form.Select>
+
+
+
+
+
+
               </div>
             </div>
           </form>
