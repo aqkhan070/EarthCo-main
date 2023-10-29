@@ -9,6 +9,29 @@ const LandscapeForm = () => {
   const [serviceLocations, setServiceLocations] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [contacts, setContacts] = useState([])
+  const [monthlyLandscape, setMonthlyLandscape] = useState({
+    CustomerId: null,
+    ContactId: null,
+    SupervisorVisitedthejobweekly: false,
+    CompletedLitterpickupofgroundareas: false,
+    Completedsweepingorblowingofwalkways: false,
+    HighpriorityareaswereVisitedweekly: false,
+    VDitcheswerecleanedandinspected: false,
+    Fertilizationoftrufoccoured: " ",
+    WeepscreeninspectedandcleanedinrotationsectionId: null,
+    Trufwasmovedandedgedweekly: false,
+    Shrubstrimmedaccordingtorotationschedule: false,
+    FertilizationofShrubsoccoured: " ",
+    WateringofflowerbedsCompletedandchecked: false,
+    Headswereadjustedformaximumcoverage: false,
+    Repairsweremadetomaintainaneffectivesystem: false,
+    Controllerswereinspectedandadjusted: false,
+    Mainlinewasrepaired: false,
+    Valvewasrepaired: false,
+    Thismonthexpectedrotationschedule: " ",
+    Notes: " ",
+    isActive: false
+  })
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -62,6 +85,23 @@ const LandscapeForm = () => {
     selectedCustomer && fetchContacts();
   },[selectedCustomer])
 
+
+  const handleInputChange = (event) => {
+    const { name, type } = event.target;
+    const value = type === 'checkbox' ? event.target.checked : event.target.value;
+
+    setMonthlyLandscape(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
+    // console.log(",,,,,,,,,", monthlyLandscape);
+};
+
+const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(",,,,,,,,,,",monthlyLandscape);
+  }
+
   return (
     <>
       <div className="card-body container-fluid">
@@ -75,8 +115,8 @@ const LandscapeForm = () => {
                   aria-label="Default select example"
                   size="md"
                   name="CustomerId"
+                  onChange={handleInputChange}
                   id="inlineFormCustomSelect"
-                  onChange={handleCustomerChange} // Call the function on selection change
                   value={selectedCustomer || ""} 
                 >
                   <option value={null} selected>
@@ -123,6 +163,7 @@ const LandscapeForm = () => {
                   aria-label="Default select example"
                   size="md"
                   name="ContactId"
+                  onChange={handleInputChange}
                   id="inlineFormCustomSelect"
                 >
                     {contacts.map((contact) => {
@@ -160,6 +201,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="SupervisorVisitedthejobweekly"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -181,6 +223,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="CompletedLitterpickupofgroundareas"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -203,6 +246,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               class="form-check-input"
                               name="Completedsweepingorblowingofwalkways"
+                              onChange={handleInputChange}
                               id="customCheckBox2"
                             />
                           </div>
@@ -224,6 +268,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               class="form-check-input"
                               name="HighpriorityareaswereVisitedweekly"
+                              onChange={handleInputChange}
                               id="customCheckBox2"
                             />
                           </div>
@@ -244,6 +289,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="VDitcheswerecleanedandinspected"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -273,6 +319,7 @@ const LandscapeForm = () => {
                                 aria-label="Default select example"
                                 size="md"
                                 name="WeepscreeninspectedandcleanedinrotationsectionId"
+                                onChange={handleInputChange}
                                 id="inlineFormCustomSelect"
                               >
                                 <option>Select</option>
@@ -323,6 +370,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               name="Fertilizationoftrufoccoured"
+                              onChange={handleInputChange}
                               class="datepicker-default form-control form-control-sm"
                             
                               id="datepicker"
@@ -346,6 +394,7 @@ const LandscapeForm = () => {
 
                               type="checkbox"
                               name="Trufwasmovedandedgedweekly"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -386,6 +435,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               class="form-check-input"
                               name="Shrubstrimmedaccordingtorotationschedule"
+                              onChange={handleInputChange}
                               id="customCheckBox2"
                             />
                           </div>
@@ -408,6 +458,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               name="FertilizationofShrubsoccoured"
+                              onChange={handleInputChange}
                               class="datepicker-default form-control"
                               id="datepicker"
                             />
@@ -447,6 +498,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="WateringofflowerbedsCompletedandchecked"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -484,6 +536,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="Headswereadjustedformaximumcoverage"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -507,6 +560,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="Repairsweremadetomaintainaneffectivesystem"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -528,6 +582,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="Controllerswereinspectedandadjusted"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -549,6 +604,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="Mainlinewasrepaired"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -570,6 +626,7 @@ const LandscapeForm = () => {
                             <input
                               type="checkbox"
                               name="Valvewasrepaired"
+                              onChange={handleInputChange}
                               class="form-check-input"
                               id="customCheckBox2"
                             />
@@ -610,6 +667,7 @@ const LandscapeForm = () => {
                                   <textarea
                                     class="form-txtarea form-control"
                                     name="Thismonthexpectedrotationschedule"
+                                    onChange={handleInputChange}
                                     rows="2"
                                     id="comment"
                                   ></textarea>
@@ -654,6 +712,7 @@ const LandscapeForm = () => {
                                     class="form-txtarea form-control"
                                     rows="2"
                                     name="Notes"
+                                    onChange={handleInputChange}
                                     id="comment"
                                   ></textarea>
                                 </div>
@@ -672,7 +731,7 @@ const LandscapeForm = () => {
         <div class="row text-end">
           <div>
             <NavLink to="/Dashboard/Landscape">
-              <button type="button" class="btn btn-primary me-1">
+              <button type="button" onClick={handleSubmit} class="btn btn-primary me-1">
                 Submit
               </button>
             </NavLink>

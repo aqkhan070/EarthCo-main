@@ -1,377 +1,323 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-import StatusActions from "../StatusActions";
+import React from "react";
 import { Form } from "react-bootstrap";
-import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
-const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
-  const [estimates, setEstimates] = useState({});
-
-  const [formData, setFormData] = useState({
-    CustomerId: 0,
-    ServiceLocation: "",
-    Email: "",
-    EstimateNumber: "",
-    IssueDate: "",
-    EstimateNotes: "",
-    ServiceLocationNotes: "",
-    PrivateNotes: "",
-    QBStatus: "",
-    EstimateStatusId: 0,
-    tblEstimateItems: [],
-  });
-  const [itemForm, setItemForm] = useState({
-    Name: "",
-    Qty: 0,
-    Description: "",
-    Address: "12345",
-    Rate: 0,
-    isActive: true,
-    CreatedBy: 2,
-  });
-
-  const inputFile = useRef(null);
-  const [Files, setFiles] = useState([]);
-
+const LandscapeForm = () => {
   const [customers, setCustomers] = useState([]);
-
-  const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );
-    try {
-      setCustomers(response.data);
-      //   console.log("Custommer list is", customers[1].CustomerName);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
-
-  const fetchEstimates = async () => {
-    const response = await axios.get(
-      `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estimateId}`
-    );
-    try {
-      setEstimates(response.data);
-
-      setFormData((prevState) => ({
-        ...prevState,
-        CustomerId: response.data.CustomerId,
-        ...response.data,
-
-      }))
-
-      if (response.data.tblEstimateItems) {
-        setFormData((prevState) => ({
-          ...prevState,
-          CustomerId: response.data.CustomerId,
-          tblEstimateItems: response.data.tblEstimateItems,
-        }));
-      } else {
-        setFormData((prevState) => ({
-          ...prevState,
-          CustomerId: response.data.CustomerId,
-          tblEstimateItems: [],
-        }));
-      }
-
-      console.log("estimateeeeeee list is", response.data.tblEstimateItems);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
-    const adjustedValue = [
-      "CustomerId",
-      "Qty",
-      "Rate",
-      "EstimateStatusId",
-    ].includes(name)
-      ? Number(value)
-      : value;
-
-    setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
-  };
-
-  const handleSubmit = () => {
-    const postData = new FormData();
-
-    // Before merging, filter out the unnecessary fields from each item in tblEstimateItems
-    const filteredItems = formData.tblEstimateItems.map((item) => {
-      const { id, Amount, Approved, ...rest } = item;
-      return rest;
-    });
-
-    // Merge the current items with the new items for EstimateData
-    const mergedEstimateData = {
-      ...formData,
-      EstimateId: estimateId,
-      CreatedBy: 2,
-      EditBy: 2,
-      isActive: true,
-      tblEstimateItems: [...filteredItems, itemForm], // using the filteredItems here
-    };
-
-    console.log("mergedEstimateData:", mergedEstimateData);
-    // console.log("data:", data);
-
-    postData.append("EstimateData", JSON.stringify(mergedEstimateData));
-    console.log(JSON.stringify(mergedEstimateData));
-    // Appending files to postData
-    Files.forEach((fileObj) => {
-      postData.append("Files", fileObj);
-    });
-
-    submitData(postData);
-  };
-
- 
-
-  const submitData = async (postData) => {
-    try {
-      const response = await axios.post(
-        "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
-        postData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        console.log("Data submitted successfully:", response.data);
-      } else {
-        console.log("Error submitting data:", response.statusText);
-      }
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-
-    // Logging FormData contents (for debugging purposes)
-    for (let [key, value] of postData.entries()) {
-      console.log("fpayload....", key, value);
-    }
-    // window.location.reload();
-
-    // console.log("post data izzz",postData);
-  };
-
-  useEffect(() => {
-    fetchEstimates();
-    fetchCustomers();
-  }, []);
-
-  const addItem = (e) => {
-    e.preventDefault();
-    const newItem = {
-      id: formData.tblEstimateItems.length + 1,
-      ...itemForm,
-      Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
-      Approved: false,
-    };
-
-    // Clear itemForm fields after adding the new item
-    setFormData((prevData) => ({
-      ...prevData,
-      tblEstimateItems: [...prevData.tblEstimateItems, newItem],
-    }));
-    setItemForm({
-      Name: "",
-      Qty: 0,
-      Description: "",
-      Address: "12345",
-      Rate: 0,
-      isActive: true,
-      CreatedBy: 2,
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Convert to number if the field is Qty or Rate
-    const adjustedValue = ["Qty", "Rate", "EstimateStatusId"].includes(name)
-      ? Number(value)
-      : value;
-
-    setItemForm((prevState) => ({ ...prevState, [name]: adjustedValue }));
-  };
-
-  const addFile = () => {
-    inputFile.current.click();
-    // console.log("Filesss are", Files);
-  };
-
-  const trackFile = (e) => {
-    const uploadedFile = e.target.files[0];
-    if (uploadedFile) {
- 
-      setFiles((prevFiles) => [...prevFiles, uploadedFile]);
-    }
-  };
+  const [serviceLocations, setServiceLocations] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [contacts, setContacts] = useState([])
+  const [monthlyLandscape, setMonthlyLandscape] = useState({
+    CustomerId: 0,
+    ContactId: 0,
+    SupervisorVisitedthejobweekly: false,
+    CompletedLitterpickupofgroundareas: false,
+    Completedsweepingorblowingofwalkways: false,
+    HighpriorityareaswereVisitedweekly: false,
+    VDitcheswerecleanedandinspected: false,
+    Fertilizationoftrufoccoured: " ",
+    Trufwasmovedandedgedweekly: true,
+    Shrubstrimmedaccordingtorotationschedule: false,
+    FertilizationofShrubsoccoured: " ",
+    WateringofflowerbedsCompletedandchecked: false,
+    Headswereadjustedformaximumcoverage: false,
+    Repairsweremadetomaintainaneffectivesystem: false,
+    Controllerswereinspectedandadjusted: false,
+    Mainlinewasrepaired: false,
+    Valvewasrepaired: false,
+    Thismonthexpectedrotationschedule: " ",
+    Notes: " ",
+    isActive: false
+  })
 
 
   return (
-    <div class="card">
-      <div className="card-body">
-       
-      
-       
-        {/* Files */}
-        <div className="">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Files</h4>
-              </div>
-              <button
-                className="btn btn-primary btn-sm"
-                style={{ margin: "12px 20px" }}
-                onClick={addFile}
-              >
-                + Add File
-              </button>
-              <input
-                type="file"
-                name="Files"
-                ref={inputFile}
-                onChange={trackFile}
-                style={{ display: "none" }}
-              />
-              <div className="table-responsive active-projects style-1">
-                <table id="empoloyees-tblwrapper" className="table">
-                  <thead>
-                    <tr>
-                      <th>File Name</th>
-                      <th>Caption</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Files.map((file, index) => (
-                      <tr key={index}>
-                        <td>{file.name}</td>
-                        <td>{file.caption}</td>
-                        <td>{file.date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
+    <>
+      <div className="card-body container-fluid">
+        <div className="basic-form">
+          <form>
+            <div className="row">
+              <div className="mb-3 col-md-4">
+                <label className="form-label">Customer</label>
+                <Form.Select
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  name="CustomerId"
+                  id="inlineFormCustomSelect"
+                  onChange={handleCustomerChange} // Call the function on selection change
+                  value={selectedCustomer || ""} 
+                >
+                  <option value={null} selected>
+                    Select Customer
+                  </option>
 
-        <div className="estNotesBox">
-          <div className="row">
-            <div className="col-lg-5">
-              <div className="row">
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Estimate Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          placeholder={estimates.EstimateNotes || ""}
-                          value={formData.EstimateNotes}
-                          name="EstimateNotes"
-                          onChange={handleInputChange}
-                          className="form-txtarea form-control"
-                          rows="2"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Service Location Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          placeholder={estimates.ServiceLocationNotes || ""}
-                          value={formData.ServiceLocationNotes}
-                          name="ServiceLocationNotes"
-                          onChange={handleInputChange}
-                          className="form-txtarea form-control"
-                          rows="2"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div className="col-xl-12 col-lg-12">
-                  <div className="basic-form">
-                    <form>
-                      <h4 className="card-title">Private Notes</h4>
-                      <div className="mb-3">
-                        <textarea
-                          placeholder={estimates.PrivateNotes || ""}
-                          value={formData.PrivateNotes}
-                          name="PrivateNotes"
-                          onChange={handleInputChange}
-                          className="form-txtarea form-control"
-                          rows="2"
-                        ></textarea>
-                      </div>
-                    </form>
-                  </div>
-                </div>
+                  {customers.map((customer) => {
+                    return (
+                      <option
+                        value={customer.CustomerId}
+                        key={customer.CustomerId}
+                      >
+                        {customer.CustomerName}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
+              </div>
+              <div className="mb-3 col-md-4">
+                <label className="form-label">Service Location</label>
+                <Form.Select
+                    name="ServiceLocation"
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  id="inlineFormCustomSelect"
+                >
+                  <option value={null} selected>
+                    Select Service Location
+                  </option>
+                  {serviceLocations.map((srLocation) => {
+                    return (
+                      <option key={srLocation.ServiceRequestId}>
+                        {srLocation.ServiceLocation}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
+              </div>
+              <div className="mb-3 col-md-4">
+                <label>Contact</label>
+                <Form.Select
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  name="ContactId"
+                  id="inlineFormCustomSelect"
+                >
+                    {contacts.map((contact) => {
+                        return(
+                            <option key={contact.ContactId}>{contact.FirstName}</option>
+                        )
+                    })}
+                </Form.Select>
               </div>
             </div>
-            <div className="col-lg-5">
-              <div className="card" style={{ marginTop: "15px" }}>
-                <div className="card-body">
-                  <div className="sutotalBox">
-                    <div className="basic-form">
-                      <form>
-                        <Form.Select
-                          value={formData.QBStatus}
-                          name="QBStatus"
-                          onChange={handleInputChange}
-                          aria-label="Default select example"
-                          id="inputState"
-                          className="bg-white"
+          </form>
+        </div>
+        <div className="row">
+          <div className="col-xl-12">
+            <div className="card">
+              <div className="card-body p-0">
+                <div className="estDataBox">
+                  <div className="itemtitleBar">
+                    <h4>Maintainence Report</h4>
+                  </div>
+                  <div className="basic-form">
+                    <form className="SRdetailsForm srReportForm">
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>Supervisor Visited the job weekly</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              type="checkbox"
+                              name="SupervisorVisitedthejobweekly"
+                              class="form-check-input"
+                              id="customCheckBox2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>Completed Litter pickup of ground areas</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              type="checkbox"
+                              name="CompletedLitterpickupofgroundareas"
+                              class="form-check-input"
+                              id="customCheckBox2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>Completed sweeping or blowing of walkways</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              type="checkbox"
+                              class="form-check-input"
+                              name="Completedsweepingorblowingofwalkways"
+                              id="customCheckBox2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>High priority areas were Visited weekly</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              type="checkbox"
+                              class="form-check-input"
+                              name="HighpriorityareaswereVisitedweekly"
+                              id="customCheckBox2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>V Ditches were cleaned and inspected</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              type="checkbox"
+                              name="VDitcheswerecleanedandinspected"
+                              class="form-check-input"
+                              id="customCheckBox2"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div
+                          className="row"
+                          style={{ display: "flex", alignItems: "center" }}
                         >
-                          <option value={null}>select</option>
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                        </Form.Select>
-                      </form>
-                    </div>
-                    <div className="dataBox">
-                      <div className="dataRow">
-                        <h5>Subtotal:</h5>
-                        <p>10.00$</p>
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>
+                              Weep screen inspectedand cleaned in rotation
+                              section
+                            </h5>
+                          </div>
+                          <div className="col-md-7">
+                            <form>
+                              <Form.Select
+                                aria-label="Default select example"
+                                size="md"
+                                name="WeepscreeninspectedandcleanedinrotationsectionId"
+                                id="inlineFormCustomSelect"
+                              >
+                                <option>Select</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                              </Form.Select>
+                              {/* <select className="default-select  form-control wide" >
+                                                                <option>Select</option>
+                                                                <option>2</option>
+                                                                <option>3</option>
+                                                                <option>4</option>
+                                                            </select> */}
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                      <div className="dataRow">
-                        <h5>Tax:</h5>
-                        <p>0.00$</p>
-                      </div>
-                      <div className="dataRow">
-                        <h5>Total:</h5>
-                        <p>10.00$</p>
-                      </div>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-     
-    </div>
-    </div>
-  );
-};
+          <div className="col-xl-12">
+            <div className="card">
+              <div className="card-body p-0">
+                <div className="estDataBox">
+                  <div className="itemtitleBar">
+                    <h4>Lawn Maintainence</h4>
+                  </div>
+                  <div className="basic-form">
+                    <form className="SRdetailsForm srReportForm">
+                      <div className="col-md-12">
+                        <div
+                          className="row"
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>Fertilization of truf occoured</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
+                              name="Fertilizationoftrufoccoured"
+                              class="datepicker-default form-control form-control-sm"
+                            
+                              id="datepicker"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div
+                            className="col-md-5"
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-end",
+                            }}
+                          >
+                            <h5>Truf was moved and edged weekly</h5>
+                          </div>
+                          <div className="col-md-7">
+                            <input
 
-export default UpdateEstimateForm;
+                              type="checkbox"
+                              name="Trufwasmovedandedgedweekly"
+                              class="form-check-input"
+                              id="customCheckBox2"
+                            />
+                          </div>
