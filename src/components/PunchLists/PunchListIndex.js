@@ -7,31 +7,66 @@ import punchList from "../../assets/images/1.jpg";
 import axios from "axios";
 
 const PunchListIndex = () => {
+  const [punchData, setPunchData] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [serviceRequest, setServiceRequest] = useState([])
 
-   const [punchData, setPunchData] = useState([])
+  
 
-    useEffect(() => {
-        const fetchPunchList = async () => {
 
-            try{
-            const response = await axios.get('https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList') ;
-                setPunchData(response.data)
-                // console.log("punch data izzzzzzzzzzzzzzz", punchData);
-            }catch(error){
-                console.log("api call error", error);
-            }
+  const fetchPunchList = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList"
+      );
+      setPunchData(response.data);
+      // console.log("punch data izzzzzzzzzzzzzzz", punchData);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchServiceLocations = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList"
+    );
+    try {
+      setServiceRequest(response.data);
+      // console.log(".........",serviceLocations);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  
+  useEffect(() => {
+    fetchCustomers();
+    fetchPunchList();
+  }, []);
+
+  const handleCustomerChange = (event) => {
+    const selectedCustomerId = parseInt(event.target.value, 10);
+
+    setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
+
     
-        };
-        fetchPunchList()
-
-    },[])
-
-    useEffect(() => {
-        console.log("punch data izzzzzzzzzzzzzzz", punchData);
-      }, [punchData]);
-
+  };
     
+       
 
+ 
 
   const icon = (
     <svg
@@ -75,7 +110,6 @@ const PunchListIndex = () => {
     }
   };
 
- 
   const toggleRow = () => {
     document.getElementById("subRow").classList.toggle("dispNone");
   };
@@ -85,7 +119,6 @@ const PunchListIndex = () => {
       <TitleBar icon={icon} title="Punchlists" />
       <div className="container-fluid">
         <div className="row">
-            
           <div className="col-xl-3  col-lg-6 col-sm-6">
             <div className="widget-stat card">
               <div className=" p-4">
@@ -279,16 +312,11 @@ const PunchListIndex = () => {
                   </table>
                 </div> */}
 
-                <PunchTR punchData = {punchData}/>
-
-
-
-            
+                <PunchTR punchData={punchData} />
               </div>
             </div>
           </div>
         </div>
-
 
         {/* modal */}
         <div className="modal fade" id="addPhotos">
@@ -427,20 +455,36 @@ const PunchListIndex = () => {
                       <input
                         type="text"
                         className="form-control"
+                        name="Title"
                         placeholder="Title"
                         required
                       />
                     </div>
                     <div className=" col-md-6 mb-3">
-                      <label className="form-label">
-                        Customer Name<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Customer Name"
-                        required
-                      />
+                    <label className="form-label">Customer</label>
+                <Form.Select
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  name="CustomerId"
+                  onChange={handleCustomerChange}
+                  value={selectedCustomer || ""}
+                >
+                  <option value={null} selected>
+                    Select Customer
+                  </option>
+
+                  {customers.map((customer) => {
+                    return (
+                      <option
+                        value={customer.CustomerId}
+                        key={customer.CustomerId}
+                      >
+                        {customer.CustomerName}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
                     </div>
                     <div className=" col-md-6 mb-3">
                       <label className="form-label">
@@ -449,6 +493,7 @@ const PunchListIndex = () => {
                       <input
                         type="text"
                         className="form-control"
+                        name="ContactName"
                         placeholder="Contact Name"
                         required
                       />
@@ -461,6 +506,7 @@ const PunchListIndex = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput3"
+                        name="ContactCompany"
                         placeholder="Company Company"
                       />
                     </div>
@@ -471,6 +517,7 @@ const PunchListIndex = () => {
                       <input
                         type="email"
                         className="form-control"
+                        name="ContactEmail"
                         placeholder="Contact Email"
                         required=""
                       />
@@ -494,18 +541,24 @@ const PunchListIndex = () => {
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput3"
+                        name="AssignedTo"
                         placeholder="Assigned to"
                       />
                     </div>
                     <div className=" col-md-6">
                       <label className="form-label">Service Request</label>
 
-                      <Form.Select className="bg-white" size="lg">
-                        <option value="Select Customer First">
-                          Select Service Request
-                        </option>
-                        <option value="Select Customer First">00010</option>
-                        <option value="Select Customer First">00020</option>
+                      <Form.Select className="bg-white" size="lg" name="ServiceRequestId">
+                        <option value={null} selected>
+                    Select Service Location
+                  </option>
+                  {serviceRequest.map((srLocation) => {
+                    return (
+                      <option key={srLocation.ServiceRequestId}>
+                        {srLocation.ServiceLocation}
+                      </option>
+                    );
+                  })}
                       </Form.Select>
                     </div>
                   </div>

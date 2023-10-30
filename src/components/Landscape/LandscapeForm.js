@@ -8,7 +8,7 @@ const LandscapeForm = () => {
   const [customers, setCustomers] = useState([]);
   const [serviceLocations, setServiceLocations] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [contacts, setContacts] = useState([])
+  const [contacts, setContacts] = useState([]);
   const [monthlyLandscape, setMonthlyLandscape] = useState({
     CustomerId: null,
     ContactId: null,
@@ -30,8 +30,8 @@ const LandscapeForm = () => {
     Valvewasrepaired: false,
     Thismonthexpectedrotationschedule: " ",
     Notes: " ",
-    isActive: false
-  })
+    isActive: false,
+  });
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -63,12 +63,11 @@ const LandscapeForm = () => {
     );
     try {
       setContacts(response.data.tblContacts);
-      console.log(".........",contacts);
+      console.log(".........", contacts);
     } catch (error) {
       console.error("API Call Error:", error);
     }
   };
-
 
   useEffect(() => {
     fetchCustomers();
@@ -77,55 +76,57 @@ const LandscapeForm = () => {
 
   const handleCustomerChange = (event) => {
     const selectedCustomerId = parseInt(event.target.value, 10);
-    
+
     setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
-  
+
     // Also update the monthlyLandscape
-    setMonthlyLandscape(prevState => ({
+    setMonthlyLandscape((prevState) => ({
       ...prevState,
-      CustomerId: selectedCustomerId
+      CustomerId: selectedCustomerId,
     }));
   };
 
   useEffect(() => {
     // console.log("'''''''''''object'''''''''''", selectedCustomer);
     selectedCustomer && fetchContacts();
-  },[selectedCustomer])
-
+  }, [selectedCustomer]);
 
   const handleInputChange = (event) => {
     const { name, type } = event.target;
-    let value = type === 'checkbox' ? event.target.checked : event.target.value;
-  
+    let value = type === "checkbox" ? event.target.checked : event.target.value;
+
     // Convert values to numbers for specific keys
-    if (["CustomerId", "ContactId", "WeepscreeninspectedandcleanedinrotationsectionId"].includes(name)) {
+    if (
+      [
+        "CustomerId",
+        "ContactId",
+        "WeepscreeninspectedandcleanedinrotationsectionId",
+      ].includes(name)
+    ) {
       value = parseInt(value, 10);
     }
-  
-    setMonthlyLandscape(prevState => ({
+
+    setMonthlyLandscape((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
-  
 
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post(
-          "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/AddMonthlyLandsacpe",
-          monthlyLandscape
-        );
-    
-        // Log the response or handle success
-        console.log("Response:", response.data);
-    
-      } catch (error) {
-        // Handle the error
-        console.error("API Post Error:", error);
-      }
-  }
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/AddMonthlyLandsacpe",
+        monthlyLandscape
+      );
+
+      // Log the response or handle success
+      console.log("Response:", response.data);
+    } catch (error) {
+      // Handle the error
+      console.error("API Post Error:", error);
+    }
+  };
 
   return (
     <>
@@ -136,13 +137,13 @@ const handleSubmit = async (e) => {
               <div className="mb-3 col-md-4">
                 <label className="form-label">Customer</label>
                 <Form.Select
-  className="bg-white"
-  aria-label="Default select example"
-  size="md"
-  name="CustomerId"
-  onChange={handleCustomerChange}
-  value={selectedCustomer || ""}
->
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  name="CustomerId"
+                  onChange={handleCustomerChange}
+                  value={selectedCustomer || ""}
+                >
                   <option value={null} selected>
                     Select Customer
                   </option>
@@ -162,7 +163,7 @@ const handleSubmit = async (e) => {
               <div className="mb-3 col-md-4">
                 <label className="form-label">Service Location</label>
                 <Form.Select
-                    name="ServiceLocation"
+                  name="ServiceLocation"
                   className="bg-white"
                   aria-label="Default select example"
                   size="md"
@@ -183,28 +184,22 @@ const handleSubmit = async (e) => {
               <div className="mb-3 col-md-4">
                 <label>Contact</label>
                 <Form.Select
-  className="bg-white"
-  aria-label="Default select example"
-  size="md"
-  name="ContactId"
-  onChange={handleInputChange}
-  id="inlineFormCustomSelect"
->
-  <option value="">Select Contact</option>
-  {contacts.map((contact) => {
-    return (
-      <option key={contact.ContactId} value={contact.ContactId}>
-        {contact.FirstName}
-      </option>
-    );
-  })}
-</Form.Select>
-
-
-
-
-
-
+                  className="bg-white"
+                  aria-label="Default select example"
+                  size="md"
+                  name="ContactId"
+                  onChange={handleInputChange}
+                  id="inlineFormCustomSelect"
+                >
+                  <option value="">Select Contact</option>
+                  {contacts.map((contact) => {
+                    return (
+                      <option key={contact.ContactId} value={contact.ContactId}>
+                        {contact.FirstName}
+                      </option>
+                    );
+                  })}
+                </Form.Select>
               </div>
             </div>
           </form>
@@ -405,7 +400,6 @@ const handleSubmit = async (e) => {
                               name="Fertilizationoftrufoccoured"
                               onChange={handleInputChange}
                               class="datepicker-default form-control form-control-sm"
-                            
                               id="datepicker"
                             />
                           </div>
@@ -424,7 +418,6 @@ const handleSubmit = async (e) => {
                           </div>
                           <div className="col-md-7">
                             <input
-
                               type="checkbox"
                               name="Trufwasmovedandedgedweekly"
                               onChange={handleInputChange}
@@ -764,7 +757,11 @@ const handleSubmit = async (e) => {
         <div class="row text-end">
           <div>
             <NavLink to="/Dashboard/Landscape">
-              <button type="button" onClick={handleSubmit} class="btn btn-primary me-1">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                class="btn btn-primary me-1"
+              >
                 Submit
               </button>
             </NavLink>
