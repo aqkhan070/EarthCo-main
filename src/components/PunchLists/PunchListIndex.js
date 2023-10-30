@@ -79,12 +79,14 @@ const PunchListIndex = () => {
     const selectedServiceRequestId = parseInt(event.target.value, 10);
     setSelectedServiceRequest(selectedServiceRequestId);
     // Update the addPunchListData with the selected ServiceRequestId
+    console.log("Selected Service Request ID:", selectedServiceRequestId);
     setAddPunchListData((prevState) => ({
       ...prevState,
       ServiceRequestId: selectedServiceRequestId,
     }));
-    console.log(".............,,,", addPunchListData)
+    // console.log(".............,,,", addPunchListData)
   };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setAddPunchListData((prevState) => ({
@@ -101,8 +103,8 @@ const PunchListIndex = () => {
       // Handle success - maybe redirect or show a message
       console.log("successfully posted ",addPunchListData);
     } catch (error) {
-      console.error("Error sending data:", error);
-      console.log("Error sending dataaaaaa:",addPunchListData);
+      console.error("Error sending dataaaaaaaa:", error);
+      // console.log("Error sending dataaaaaa:",addPunchListData);
 
       // Handle error - show an error message to the user
     }

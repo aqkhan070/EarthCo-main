@@ -75,6 +75,7 @@ const PunchListIndex = () => {
       CustomerId: selectedCustomerId,
     }));
   };
+  
   const handleServiceRequestChange = (event) => {
     const selectedServiceRequestId = parseInt(event.target.value, 10);
     setSelectedServiceRequest(selectedServiceRequestId);
@@ -86,6 +87,8 @@ const PunchListIndex = () => {
     }));
     // console.log(".............,,,", addPunchListData)
   };
+
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setAddPunchListData((prevState) => ({
