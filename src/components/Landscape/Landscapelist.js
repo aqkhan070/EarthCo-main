@@ -2,27 +2,12 @@ import React, { useEffect } from "react";
 import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import LandscapeTR from "./LandscapeTR";
 
 
 const Landscapelist = () => {
 
-    
-  useEffect(() => {
-    const getEstimate = async () => {
-      try {
-        const response = await axios.get(
-          "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList"
-        );
-        console.log("........ response is", response.data);
-        
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
-    };
-
-    getEstimate();
-  }, []);
- 
+  
   return (
     <>
       <div className="container-fluid">
@@ -96,17 +81,10 @@ const Landscapelist = () => {
           <div className="col-xl-12">
             <div className="card">
               <div className="card-body">
-                <div className="tbl-caption">
-                  <div className="row p-3 ">
-                    <div className="col-md-6">
-                      <NavLink to="/Dashboard/Landscape/Add-Landscape">
-                        {" "}
-                        <a href="/" className="btn btn-primary btn-md">
-                          + Add{" "}
-                        </a>
-                      </NavLink>
-                    </div>
-                    <div
+                <div className="">
+                  <div className="">
+                    
+                    {/* <div
                       class="col-md-6"
                       style={{ display: "flex", justifyContent: "flex-end" }}
                     >
@@ -120,68 +98,11 @@ const Landscapelist = () => {
                           <option value="2">Previous Month</option>
                         </Form.Select>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table
-                    id="landscapeTbl"
-                    className="display table"
-                    style={{ minWidth: "845px" }}
-                  >
-                    <thead>
-                      <tr className="serviceRequestRecords">
-                        <th>#</th>
-
-                        <th>Customer Name</th>
-                        <th>Type</th>
-                        <th>Assigned to</th>
-
-                        <th>Status</th>
-                        <th>Date Created</th>
-                        <th>Report</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Vincente, Allan</td>
-                        <td>PL-1001</td>
-
-                        <td>Sunrise Lane</td>
-                        <td>Closed</td>
-                        <td>1/17/2014</td>
-
-                        <td>
-                          <NavLink to="/Dashboard/Landscape/PunchList-Report">
-                            <span class="badge badge-primary light border-0 me-1">
-                              Open
-                            </span>
-                          </NavLink>
-                        </td>
-                        <td>
-                          <div className="flex-box">
-                            <button
-                              title="Edit"
-                              type="button"
-                              className="btn btn-warning btn-sm mx-1"
-                            >
-                              <i className="fa fa-pen"></i>
-                            </button>
-
-                            <button
-                              title="Delete"
-                              type="button"
-                              className="btn btn-danger btn-sm mx-1"
-                            >
-                              <i className="fa fa-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <LandscapeTR></LandscapeTR>
                 </div>
               </div>
             </div>

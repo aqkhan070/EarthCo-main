@@ -1,323 +1,272 @@
-import React from "react";
-import { Form } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+  Paper,
+  TextField,
+  TablePagination,
+  Checkbox,
+  Button,
+  Grid,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const LandscapeForm = () => {
-  const [customers, setCustomers] = useState([]);
-  const [serviceLocations, setServiceLocations] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [contacts, setContacts] = useState([])
-  const [monthlyLandscape, setMonthlyLandscape] = useState({
-    CustomerId: 0,
-    ContactId: 0,
-    SupervisorVisitedthejobweekly: false,
-    CompletedLitterpickupofgroundareas: false,
-    Completedsweepingorblowingofwalkways: false,
-    HighpriorityareaswereVisitedweekly: false,
-    VDitcheswerecleanedandinspected: false,
-    Fertilizationoftrufoccoured: " ",
-    Trufwasmovedandedgedweekly: true,
-    Shrubstrimmedaccordingtorotationschedule: false,
-    FertilizationofShrubsoccoured: " ",
-    WateringofflowerbedsCompletedandchecked: false,
-    Headswereadjustedformaximumcoverage: false,
-    Repairsweremadetomaintainaneffectivesystem: false,
-    Controllerswereinspectedandadjusted: false,
-    Mainlinewasrepaired: false,
-    Valvewasrepaired: false,
-    Thismonthexpectedrotationschedule: " ",
-    Notes: " ",
-    isActive: false
+
+import { Delete, Create } from "@mui/icons-material";
+import axios from "axios";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#7c9c3d",
+    },
+  },
+  typography: {
+    fontSize: 14, // Making font a bit larger
+  },
+  components: {
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "8px 16px", // Adjust cell padding to reduce height
+        },
+      },
+    },
+  },
+});
+const Landscapelist = () => {
+  const [order, setOrder] = useState("asc");
+  const [orderBy, setOrderBy] = useState("EstimateId");
+  const [filtering, setFiltering] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [selectedItem, setSelectedItem] = useState();
+  const [showContent, setShowContent] = useState(true);
+
+ const [reports, setReports] = useState([])
+
+  const navigate = useNavigate();
+
+  const fetchReports = async () => {
+
+    const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`);
+    try{
+      console.log("////////", response.data);
+
+    }catch(error){
+      console.log("api call error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReports();
+
   })
 
+  const handleSort = (property) => {
+    let actualProperty;
+    switch (property) {
+      case "#":
+        actualProperty = "EstimateId";
+        break;
+      case "Customer Name":
+        actualProperty = "CustomerName";
+        break;
+      case "Estimate Number":
+        actualProperty = "EstimateNumber";
+        break;
+      case "Estimate Amount":
+        actualProperty = "EstimateAmount";
+        break;
+      case "Description Of Work":
+        actualProperty = "DescriptionofWork";
+        break;
+      case "Date Created":
+        actualProperty = "DateCreated";
+        break;
+      case "Status":
+        actualProperty = "ContactStatusEmail";
+        break;
+      default:
+        actualProperty = property;
+    }
+
+    const isAsc = orderBy === actualProperty && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(actualProperty);
+  };
+
+  const filteredReports = reports.filter((e) =>
+      e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+    )
+    .sort(getSorting(order, orderBy));
+
+  // ... Pagination, Sorting logic ...
+  function desc(a, b, orderBy) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function stableSort(array, cmp) {
+    const stabilizedThis = array.map((el, index) => [el, index]);
+    stabilizedThis.sort((a, b) => {
+      const order = cmp(a[0], b[0]);
+      if (order !== 0) return order;
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  function getSorting(order, orderBy) {
+    return order === "desc"
+      ? (a, b) => desc(a, b, orderBy)
+      : (a, b) => -desc(a, b, orderBy);
+  }
+
+  const deleteEstimate = async (id) => {
+   
+  };
+
+  const handleDelete = (id) => {
+   
+  };
 
   return (
     <>
-      <div className="card-body container-fluid">
-        <div className="basic-form">
-          <form>
-            <div className="row">
-              <div className="mb-3 col-md-4">
-                <label className="form-label">Customer</label>
-                <Form.Select
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  name="CustomerId"
-                  id="inlineFormCustomSelect"
-                  onChange={handleCustomerChange} // Call the function on selection change
-                  value={selectedCustomer || ""} 
-                >
-                  <option value={null} selected>
-                    Select Customer
-                  </option>
-
-                  {customers.map((customer) => {
-                    return (
-                      <option
-                        value={customer.CustomerId}
-                        key={customer.CustomerId}
-                      >
-                        {customer.CustomerName}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
-              </div>
-              <div className="mb-3 col-md-4">
-                <label className="form-label">Service Location</label>
-                <Form.Select
-                    name="ServiceLocation"
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  id="inlineFormCustomSelect"
-                >
-                  <option value={null} selected>
-                    Select Service Location
-                  </option>
-                  {serviceLocations.map((srLocation) => {
-                    return (
-                      <option key={srLocation.ServiceRequestId}>
-                        {srLocation.ServiceLocation}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
-              </div>
-              <div className="mb-3 col-md-4">
-                <label>Contact</label>
-                <Form.Select
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  name="ContactId"
-                  id="inlineFormCustomSelect"
-                >
-                    {contacts.map((contact) => {
-                        return(
-                            <option key={contact.ContactId}>{contact.FirstName}</option>
-                        )
-                    })}
-                </Form.Select>
-              </div>
-            </div>
-          </form>
-        </div>
-        <div className="row">
-          <div className="col-xl-12">
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="estDataBox">
-                  <div className="itemtitleBar">
-                    <h4>Maintainence Report</h4>
+     
+        <ThemeProvider theme={theme}>
+          <Paper>
+            <div className=" text-center">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="custom-search-container">
+                    <TextField
+                      label="Search"
+                      variant="standard"
+                      size="small"
+                      value={filtering}
+                      onChange={(e) => setFiltering(e.target.value)}
+                    />
                   </div>
-                  <div className="basic-form">
-                    <form className="SRdetailsForm srReportForm">
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>Supervisor Visited the job weekly</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
-                              type="checkbox"
-                              name="SupervisorVisitedthejobweekly"
-                              class="form-check-input"
-                              id="customCheckBox2"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>Completed Litter pickup of ground areas</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
-                              type="checkbox"
-                              name="CompletedLitterpickupofgroundareas"
-                              class="form-check-input"
-                              id="customCheckBox2"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>Completed sweeping or blowing of walkways</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
-                              type="checkbox"
-                              class="form-check-input"
-                              name="Completedsweepingorblowingofwalkways"
-                              id="customCheckBox2"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>High priority areas were Visited weekly</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
-                              type="checkbox"
-                              class="form-check-input"
-                              name="HighpriorityareaswereVisitedweekly"
-                              id="customCheckBox2"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>V Ditches were cleaned and inspected</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
-                              type="checkbox"
-                              name="VDitcheswerecleanedandinspected"
-                              class="form-check-input"
-                              id="customCheckBox2"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div
-                          className="row"
-                          style={{ display: "flex", alignItems: "center" }}
-                        >
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>
-                              Weep screen inspectedand cleaned in rotation
-                              section
-                            </h5>
-                          </div>
-                          <div className="col-md-7">
-                            <form>
-                              <Form.Select
-                                aria-label="Default select example"
-                                size="md"
-                                name="WeepscreeninspectedandcleanedinrotationsectionId"
-                                id="inlineFormCustomSelect"
-                              >
-                                <option>Select</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                              </Form.Select>
-                              {/* <select className="default-select  form-control wide" >
-                                                                <option>Select</option>
-                                                                <option>2</option>
-                                                                <option>3</option>
-                                                                <option>4</option>
-                                                            </select> */}
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </form>
+                  <div className="custom-button-container">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        navigate("/Dashboard/Estimates/Add-Estimate");
+                      }}
+                    >
+                      + Add Estimates
+                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="col-xl-12">
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="estDataBox">
-                  <div className="itemtitleBar">
-                    <h4>Lawn Maintainence</h4>
-                  </div>
-                  <div className="basic-form">
-                    <form className="SRdetailsForm srReportForm">
-                      <div className="col-md-12">
-                        <div
-                          className="row"
-                          style={{ display: "flex", alignItems: "center" }}
+            </div>{" "}
+            <br />
+            <TableContainer>
+              <Table>
+                <TableHead className="table-header">
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox />
+                    </TableCell>
+                    {[
+                      "#",
+                      "Customer Name",
+                      "Assign to",
+                      "Estimate Number",
+                      "Estimate Amount",
+                      "Description Of Work",
+                      "Date Created",
+                      "Status",
+                      "Actions",
+                    ].map((headCell) => (
+                      <TableCell
+                        key={headCell}
+                        sortDirection={orderBy === headCell ? order : false}
+                      >
+                        <TableSortLabel
+                          active={orderBy === headCell}
+                          direction={orderBy === headCell ? order : "asc"}
+                          onClick={() => handleSort(headCell)}
                         >
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>Fertilization of truf occoured</h5>
+                          {headCell}
+                        </TableSortLabel>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredReports
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((estimate, index) => (
+                      <TableRow key={estimate.EstimateId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox />
+                        </TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>
+                          <div className="button-container">
+                            <Button
+                              className="delete-button"
+                              onClick={() => {
+                                setSelectedItem(estimate.EstimateId);
+                                console.log(",,,,,,,,,,", selectedItem);
+                                setShowContent(false);
+                              }}
+                            >
+                              <Create />
+                            </Button>
+                            <Button className="delete-button">
+                              <Delete
+                                color="error"
+                                onClick={() =>
+                                  handleDelete(estimate.EstimateId)
+                                }
+                              />
+                            </Button>
                           </div>
-                          <div className="col-md-7">
-                            <input
-                              name="Fertilizationoftrufoccoured"
-                              class="datepicker-default form-control form-control-sm"
-                            
-                              id="datepicker"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div
-                            className="col-md-5"
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-end",
-                            }}
-                          >
-                            <h5>Truf was moved and edged weekly</h5>
-                          </div>
-                          <div className="col-md-7">
-                            <input
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={filteredReports.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(event, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setPage(0);
+              }}
+            />
+          </Paper>
+        </ThemeProvider>
+    </>
+  );
+};
 
-                              type="checkbox"
-                              name="Trufwasmovedandedgedweekly"
-                              class="form-check-input"
-                              id="customCheckBox2"
-                            />
-                          </div>
+export default Landscapelist;
