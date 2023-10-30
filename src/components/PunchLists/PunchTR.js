@@ -47,6 +47,7 @@ const theme = createTheme({
 });
 
 const PunchTR = ({ punchData }) => {
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -102,6 +103,38 @@ const PunchTR = ({ punchData }) => {
       return 0;
     }
   );
+
+  const deletePunchList = async (id) => {
+    try {
+      const response = await fetch(
+        `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlist?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete customer");
+      }
+
+      const data = await response.json();
+
+      // Handle the response. For example, you can reload the customers or show a success message
+      console.log("Customer deleted successfully:", data);
+      window.location.reload();
+    } catch (error) {
+      console.error("There was an error deleting the customer:", error);
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
+      deletePunchList(id);
+    }
+  };
 
   return (
     <>
@@ -218,7 +251,7 @@ const PunchTR = ({ punchData }) => {
                             <Edit />
                           </Button>
 
-                          <Button color="error" className="delete-button">
+                          <Button color="error" className="delete-button" onClick={handleDelete(item.PunchlistId)}>
                             <Delete />
                           </Button>
                         </TableCell>
