@@ -31,9 +31,9 @@ const PunchListIndex = () => {
         "https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList"
       );
       setPunchData(response.data);
-      // console.log("punch data izzzzzzzzzzzzzzz", punchData);
+      console.log("punch data izzzzzzzzzzzzzzz", punchData);
     } catch (error) {
-      console.log("api call error", error);
+      console.log("api call errorrrrrr", error);
     }
   };
 
