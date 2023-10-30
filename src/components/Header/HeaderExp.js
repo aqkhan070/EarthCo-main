@@ -101,7 +101,7 @@ const HeaderExp = () => {
   return (
     <>
       <div className="nav-header">
-        <NavLink className="brand-logo" style={{ background: "#131313" }}>
+        <NavLink className="brand-logo" style={{ background: "#181818" }}>
           <img style={{ width: "55%", marginLeft: "20%" }} src={logo} alt="" />
         </NavLink>
         <div className="nav-control" onClick={toggleSideBar} ref={eliminate}>

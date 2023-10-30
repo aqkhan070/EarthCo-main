@@ -75,6 +75,7 @@ const PunchListIndex = () => {
       CustomerId: selectedCustomerId,
     }));
   };
+
   const handleServiceRequestChange = (event) => {
     const selectedServiceRequestId = parseInt(event.target.value, 10);
     setSelectedServiceRequest(selectedServiceRequestId);
@@ -102,6 +103,7 @@ const PunchListIndex = () => {
       await axios.post("https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList", addPunchListData);
       // Handle success - maybe redirect or show a message
       console.log("successfully posted ",addPunchListData);
+      window.location.reload()
     } catch (error) {
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
@@ -489,7 +491,7 @@ const PunchListIndex = () => {
                   data-bs-dismiss="modal"
                 ></button>
               </div>
-              <form onSubmit={handleSubmit}>
+              <form >
                 <div className="modal-body">
                   <div className="row">
                     <div className=" col-md-6 mb-3">
@@ -634,6 +636,7 @@ const PunchListIndex = () => {
                     className="btn btn-primary"
                     data-bs-toggle="modal"
                     data-bs-target="#editPunch"
+                    onClick={handleSubmit}
                   >
                     Next
                   </button>
