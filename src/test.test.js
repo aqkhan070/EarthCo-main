@@ -1,272 +1,308 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Paper,
-  TextField,
-  TablePagination,
-  Checkbox,
-  Button,
-  Grid,
-} from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
-
-import { Delete, Create } from "@mui/icons-material";
+import TitleBar from "../TitleBar";
+import { NavLink } from "react-router-dom";
+import { Form } from "react-bootstrap";
+import PunchTR from "./PunchTR";
+import punchList from "../../assets/images/1.jpg";
 import axios from "axios";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#7c9c3d",
-    },
-  },
-  typography: {
-    fontSize: 14, // Making font a bit larger
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          padding: "8px 16px", // Adjust cell padding to reduce height
-        },
-      },
-    },
-  },
-});
-const Landscapelist = () => {
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("EstimateId");
-  const [filtering, setFiltering] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+const PunchListIndex = () => {
+  const [punchData, setPunchData] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedServiceRequest, setSelectedServiceRequest] = useState(null);
+  const [serviceRequest, setServiceRequest] = useState([]);
+  const [addPunchListData, setAddPunchListData] = useState({
+    Title: "",
+    ContactName: "",
+    ContactCompany: "",
+    ContactEmail: "",
+    AssignedTo: "",
+    CustomerId: null,
+    ServiceRequestId: null,
+    CreatedBy: 2,
+    EditBy: 2,
+    isActive: true,
+  });
 
-  const [selectedItem, setSelectedItem] = useState();
-  const [showContent, setShowContent] = useState(true);
-
- const [reports, setReports] = useState([])
-
-  const navigate = useNavigate();
-
-  const fetchReports = async () => {
-
-    const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`);
-    try{
-      console.log("////////", response.data);
-
-    }catch(error){
+  const fetchPunchList = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList"
+      );
+      setPunchData(response.data);
+      // console.log("punch data izzzzzzzzzzzzzzz", punchData);
+    } catch (error) {
       console.log("api call error", error);
     }
   };
 
+  const fetchCustomers = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+    );
+    try {
+      setCustomers(response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchServiceLocations = async () => {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList"
+    );
+    try {
+      setServiceRequest(response.data);
+      // console.log("sssssssssrrrrrrrrrrr.",response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchReports();
+    fetchCustomers();
+    fetchServiceLocations();
+    fetchPunchList();
+  }, []);
 
-  })
+  const handleCustomerChange = (event) => {
+    const selectedCustomerId = parseInt(event.target.value, 10);
 
-  const handleSort = (property) => {
-    let actualProperty;
-    switch (property) {
-      case "#":
-        actualProperty = "EstimateId";
-        break;
-      case "Customer Name":
-        actualProperty = "CustomerName";
-        break;
-      case "Estimate Number":
-        actualProperty = "EstimateNumber";
-        break;
-      case "Estimate Amount":
-        actualProperty = "EstimateAmount";
-        break;
-      case "Description Of Work":
-        actualProperty = "DescriptionofWork";
-        break;
-      case "Date Created":
-        actualProperty = "DateCreated";
-        break;
-      case "Status":
-        actualProperty = "ContactStatusEmail";
-        break;
-      default:
-        actualProperty = property;
-    }
-
-    const isAsc = orderBy === actualProperty && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(actualProperty);
+    setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      CustomerId: selectedCustomerId,
+    }));
+  };
+  const handleServiceRequestChange = (event) => {
+    const selectedServiceRequestId = parseInt(event.target.value, 10);
+    setSelectedServiceRequest(selectedServiceRequestId);
+    // Update the addPunchListData with the selected ServiceRequestId
+    console.log("Selected Service Request ID:", selectedServiceRequestId);
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      ServiceRequestId: selectedServiceRequestId,
+    }));
+    // console.log(".............,,,", addPunchListData)
+  };
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const filteredReports = reports.filter((e) =>
-      e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-    )
-    .sort(getSorting(order, orderBy));
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  // ... Pagination, Sorting logic ...
-  function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
+    try {
+      await axios.post("https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList", addPunchListData);
+      // Handle success - maybe redirect or show a message
+      console.log("successfully posted ",addPunchListData);
+    } catch (error) {
+      console.error("Error sending data:", error);
+      console.log("Error sending dataaaaaa:",addPunchListData);
+
+      // Handle error - show an error message to the user
     }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  }
-
-  function stableSort(array, cmp) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-      const order = cmp(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-  }
-
-  function getSorting(order, orderBy) {
-    return order === "desc"
-      ? (a, b) => desc(a, b, orderBy)
-      : (a, b) => -desc(a, b, orderBy);
-  }
-
-  const deleteEstimate = async (id) => {
-   
   };
 
-  const handleDelete = (id) => {
-   
+  const [returnElement, setReturnElement] = useState();
+  const hideOptional = () => {
+    const checkbox = document.getElementById("customCheckBox1");
+    if (checkbox.checked) {
+      setReturnElement(
+        <div className="mb-3 row">
+          <label className="col-sm-3 col-form-label">Photo (After)</label>
+          <div className="col-sm-9">
+            <input type="file" className="form-control" placeholder="" />
+          </div>
+        </div>
+      );
+    } else {
+      setReturnElement(false);
+    }
   };
+
+ 
 
   return (
     <>
-     
-        <ThemeProvider theme={theme}>
-          <Paper>
-            <div className=" text-center">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="custom-search-container">
-                    <TextField
-                      label="Search"
-                      variant="standard"
-                      size="small"
-                      value={filtering}
-                      onChange={(e) => setFiltering(e.target.value)}
-                    />
-                  </div>
-                  <div className="custom-button-container">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        navigate("/Dashboard/Estimates/Add-Estimate");
-                      }}
-                    >
-                      + Add Estimates
-                    </button>
+      <TitleBar icon={icon} title="Punchlists" />
+      <div className="container-fluid">
+        
+
+       
+        {/* modal2 */}
+        <div className="modal fade modal-lg" id="editPunch">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Punchlist</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                ></button>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="modal-body">
+                  <div className="row">
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Title<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="Title"
+                        onChange={handleChange}
+                        placeholder="Title"
+                        required
+                      />
+                    </div>
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">Customer</label>
+                      <Form.Select
+                        className="bg-white"
+                        aria-label="Default select example"
+                        size="md"
+                        name="CustomerId"
+                        onChange={handleCustomerChange}
+                        value={selectedCustomer || ""}
+                      >
+                        <option value={null} selected>
+                          Select Customer
+                        </option>
+
+                        {customers.map((customer) => {
+                          return (
+                            <option
+                              value={customer.CustomerId}
+                              key={customer.CustomerId}
+                            >
+                              {customer.CustomerName}
+                            </option>
+                          );
+                        })}
+                      </Form.Select>
+                    </div>
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Contact Name<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="ContactName"
+                        onChange={handleChange}
+                        placeholder="Contact Name"
+                        required
+                      />
+                    </div>
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Contact Company<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleFormControlInput3"
+                        name="ContactCompany"
+                        onChange={handleChange}
+                        placeholder="Company Company"
+                      />
+                    </div>
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Contact Email<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        name="ContactEmail"
+                        onChange={handleChange}
+                        placeholder="Contact Email"
+                        required=""
+                      />
+                    </div>
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Date Created<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Phone"
+                      />
+                    </div>
+
+                    <div className=" col-md-6 mb-3">
+                      <label className="form-label">
+                        Assigned to<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="exampleFormControlInput3"
+                        name="AssignedTo"
+                        onChange={handleChange}
+                        placeholder="Assigned to"
+                      />
+                    </div>
+                    <div className=" col-md-6">
+                      <label className="form-label">Service Request</label>
+
+                      <Form.Select
+                        className="bg-white"
+                        size="lg"
+                        name="ServiceRequestId"
+                        onChange={handleServiceRequestChange}
+                      >
+                        <option value={null} selected>
+                          Select Service Location
+                        </option>
+                        {serviceRequest.map((srLocation) => {
+                          return (
+                            <option
+                              key={srLocation.ServiceRequestId}
+                              value={srLocation.ServiceRequestId || ""}
+                            >
+                              {srLocation.ServiceLocation}
+                            </option>
+                          );
+                        })}
+                      </Form.Select>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>{" "}
-            <br />
-            <TableContainer>
-              <Table>
-                <TableHead className="table-header">
-                  <TableRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox />
-                    </TableCell>
-                    {[
-                      "#",
-                      "Customer Name",
-                      "Assign to",
-                      "Estimate Number",
-                      "Estimate Amount",
-                      "Description Of Work",
-                      "Date Created",
-                      "Status",
-                      "Actions",
-                    ].map((headCell) => (
-                      <TableCell
-                        key={headCell}
-                        sortDirection={orderBy === headCell ? order : false}
-                      >
-                        <TableSortLabel
-                          active={orderBy === headCell}
-                          direction={orderBy === headCell ? order : "asc"}
-                          onClick={() => handleSort(headCell)}
-                        >
-                          {headCell}
-                        </TableSortLabel>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredReports
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((estimate, index) => (
-                      <TableRow key={estimate.EstimateId} hover>
-                        <TableCell padding="checkbox">
-                          <Checkbox />
-                        </TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>
-                          <div className="button-container">
-                            <Button
-                              className="delete-button"
-                              onClick={() => {
-                                setSelectedItem(estimate.EstimateId);
-                                console.log(",,,,,,,,,,", selectedItem);
-                                setShowContent(false);
-                              }}
-                            >
-                              <Create />
-                            </Button>
-                            <Button className="delete-button">
-                              <Delete
-                                color="error"
-                                onClick={() =>
-                                  handleDelete(estimate.EstimateId)
-                                }
-                              />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 50]}
-              component="div"
-              count={filteredReports.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              onRowsPerPageChange={(event) => {
-                setRowsPerPage(parseInt(event.target.value, 10));
-                setPage(0);
-              }}
-            />
-          </Paper>
-        </ThemeProvider>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-danger light"
+                    data-bs-dismiss="modal"
+                    data-bs-target="#editPunch"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editPunch"
+                  >
+                    Next
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };
 
-export default Landscapelist;
+export default PunchListIndex;

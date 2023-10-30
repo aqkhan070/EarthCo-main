@@ -10,10 +10,20 @@ const PunchListIndex = () => {
   const [punchData, setPunchData] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [serviceRequest, setServiceRequest] = useState([])
-
-  
-
+  const [selectedServiceRequest, setSelectedServiceRequest] = useState(null);
+  const [serviceRequest, setServiceRequest] = useState([]);
+  const [addPunchListData, setAddPunchListData] = useState({
+    Title: "",
+    ContactName: "",
+    ContactCompany: "",
+    ContactEmail: "",
+    AssignedTo: "",
+    CustomerId: null,
+    ServiceRequestId: null,
+    CreatedBy: 2,
+    EditBy: 2,
+    isActive: true,
+  });
 
   const fetchPunchList = async () => {
     try {
@@ -44,15 +54,15 @@ const PunchListIndex = () => {
     );
     try {
       setServiceRequest(response.data);
-      // console.log(".........",serviceLocations);
+      // console.log("sssssssssrrrrrrrrrrr.",response.data);
     } catch (error) {
       console.error("API Call Error:", error);
     }
   };
 
-  
   useEffect(() => {
     fetchCustomers();
+    fetchServiceLocations();
     fetchPunchList();
   }, []);
 
@@ -60,13 +70,45 @@ const PunchListIndex = () => {
     const selectedCustomerId = parseInt(event.target.value, 10);
 
     setSelectedCustomer(selectedCustomerId); // Update the selectedCustomer state
-
-    
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      CustomerId: selectedCustomerId,
+    }));
   };
-    
-       
+  const handleServiceRequestChange = (event) => {
+    const selectedServiceRequestId = parseInt(event.target.value, 10);
+    setSelectedServiceRequest(selectedServiceRequestId);
+    // Update the addPunchListData with the selected ServiceRequestId
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      ServiceRequestId: selectedServiceRequestId,
+    }));
+    console.log(".............,,,", addPunchListData)
+  };
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
- 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      await axios.post("https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList", addPunchListData);
+      // Handle success - maybe redirect or show a message
+      console.log("successfully posted ",addPunchListData);
+    } catch (error) {
+      console.error("Error sending data:", error);
+      console.log("Error sending dataaaaaa:",addPunchListData);
+
+      // Handle error - show an error message to the user
+    }
+  };
+
+  
 
   const icon = (
     <svg
@@ -445,7 +487,7 @@ const PunchListIndex = () => {
                   data-bs-dismiss="modal"
                 ></button>
               </div>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="modal-body">
                   <div className="row">
                     <div className=" col-md-6 mb-3">
@@ -456,35 +498,36 @@ const PunchListIndex = () => {
                         type="text"
                         className="form-control"
                         name="Title"
+                        onChange={handleChange}
                         placeholder="Title"
                         required
                       />
                     </div>
                     <div className=" col-md-6 mb-3">
-                    <label className="form-label">Customer</label>
-                <Form.Select
-                  className="bg-white"
-                  aria-label="Default select example"
-                  size="md"
-                  name="CustomerId"
-                  onChange={handleCustomerChange}
-                  value={selectedCustomer || ""}
-                >
-                  <option value={null} selected>
-                    Select Customer
-                  </option>
-
-                  {customers.map((customer) => {
-                    return (
-                      <option
-                        value={customer.CustomerId}
-                        key={customer.CustomerId}
+                      <label className="form-label">Customer</label>
+                      <Form.Select
+                        className="bg-white"
+                        aria-label="Default select example"
+                        size="md"
+                        name="CustomerId"
+                        onChange={handleCustomerChange}
+                        value={selectedCustomer || ""}
                       >
-                        {customer.CustomerName}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
+                        <option value={null} selected>
+                          Select Customer
+                        </option>
+
+                        {customers.map((customer) => {
+                          return (
+                            <option
+                              value={customer.CustomerId}
+                              key={customer.CustomerId}
+                            >
+                              {customer.CustomerName}
+                            </option>
+                          );
+                        })}
+                      </Form.Select>
                     </div>
                     <div className=" col-md-6 mb-3">
                       <label className="form-label">
@@ -494,6 +537,7 @@ const PunchListIndex = () => {
                         type="text"
                         className="form-control"
                         name="ContactName"
+                        onChange={handleChange}
                         placeholder="Contact Name"
                         required
                       />
@@ -507,6 +551,7 @@ const PunchListIndex = () => {
                         className="form-control"
                         id="exampleFormControlInput3"
                         name="ContactCompany"
+                        onChange={handleChange}
                         placeholder="Company Company"
                       />
                     </div>
@@ -518,6 +563,7 @@ const PunchListIndex = () => {
                         type="email"
                         className="form-control"
                         name="ContactEmail"
+                        onChange={handleChange}
                         placeholder="Contact Email"
                         required=""
                       />
@@ -542,23 +588,32 @@ const PunchListIndex = () => {
                         className="form-control"
                         id="exampleFormControlInput3"
                         name="AssignedTo"
+                        onChange={handleChange}
                         placeholder="Assigned to"
                       />
                     </div>
                     <div className=" col-md-6">
                       <label className="form-label">Service Request</label>
 
-                      <Form.Select className="bg-white" size="lg" name="ServiceRequestId">
+                      <Form.Select
+                        className="bg-white"
+                        size="lg"
+                        name="ServiceRequestId"
+                        onChange={handleServiceRequestChange}
+                      >
                         <option value={null} selected>
-                    Select Service Location
-                  </option>
-                  {serviceRequest.map((srLocation) => {
-                    return (
-                      <option key={srLocation.ServiceRequestId}>
-                        {srLocation.ServiceLocation}
-                      </option>
-                    );
-                  })}
+                          Select Service Location
+                        </option>
+                        {serviceRequest.map((srLocation) => {
+                          return (
+                            <option
+                              key={srLocation.ServiceRequestId}
+                              value={srLocation.ServiceRequestId || ""}
+                            >
+                              {srLocation.ServiceLocation}
+                            </option>
+                          );
+                        })}
                       </Form.Select>
                     </div>
                   </div>
@@ -573,7 +628,7 @@ const PunchListIndex = () => {
                     Close
                   </button>
                   <button
-                    type="button"
+                    type="submit"
                     className="btn btn-primary"
                     data-bs-toggle="modal"
                     data-bs-target="#editPunch"
