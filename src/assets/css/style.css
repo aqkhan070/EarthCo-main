@@ -53607,3 +53607,8 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     height: 40vh; /* This makes the loader take up the entire viewport height */
     
   }
+
+  .card-header{
+    padding: 3px !important;
+    padding-left: 1em !important;
+  }

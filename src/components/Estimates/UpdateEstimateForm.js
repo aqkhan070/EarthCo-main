@@ -23,10 +23,10 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   });
   const [itemForm, setItemForm] = useState({
     Name: "",
-    Qty: 0,
+    Qty: null,
     Description: "",
     Address: "12345",
-    Rate: 0,
+    Rate: null,
     isActive: true,
     CreatedBy: 2,
   });
@@ -334,7 +334,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                     name="ServiceLocation"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder={estimates.ServiceLocation || ""}
                   />
                 </div>
@@ -345,7 +345,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                     name="Email"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder={estimates.Email || ""}
                   />
                 </div>
@@ -365,7 +365,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                     name="EstimateNumber"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder={estimates.EstimateNumber || ""}
                   />
                 </div>
@@ -375,7 +375,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                     value={formData.IssueDate}
                     name="IssueDate"
                     onChange={handleInputChange}
-                    className="form-control input-limit-datepicker"
+                    className="form-control form-control-sm input-limit-datepicker"
                     placeholder={estimates.IssueDate || ""}
                     type="date"
                   />
@@ -408,7 +408,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={itemForm.Name}
                           onChange={handleChange}
                           name="Name"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Name"
                           required
                         />
@@ -424,7 +424,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={itemForm.Qty}
                           onChange={handleChange}
                           name="Qty"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Quantity"
                           required
                         />
@@ -436,7 +436,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       </label>
                       <div className="col-sm-9">
                         <textarea
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           value={itemForm.Description}
                           onChange={handleChange}
                           name="Description"
@@ -453,7 +453,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={itemForm.Rate}
                           onChange={handleChange}
                           name="Rate"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Rate"
                           required
                         />
@@ -637,7 +637,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={formData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>
@@ -654,7 +654,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={formData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>
@@ -671,7 +671,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                           value={formData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>

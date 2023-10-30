@@ -278,7 +278,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">Service Location</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         value={SRData.ServiceRequestData.ServiceLocation || ''}
                         name="ServiceLocation"
                         onChange={handleInputChange}
@@ -292,7 +292,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="Contact"
                         value={SRData.ServiceRequestData.Contact || ''}
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder={sRList.Contact || " "}
                       />
                     </div>
@@ -305,7 +305,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="JobName"
                         value={SRData.ServiceRequestData.JobName || ''}
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder={sRList.JobName || " "}
 
                       />
@@ -318,7 +318,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="DueDate"
                         value={SRData.ServiceRequestData.DueDate || ''}
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder={sRList.DueDate || " "}
 
                       />
@@ -421,7 +421,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                                   Name: e.target.value,
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Name"
                             />
                           </div>
@@ -441,7 +441,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                                   Qty: Number(e.target.value),
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Quantity"
                             />
                           </div>
@@ -453,7 +453,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                           <div className="col-sm-9">
                             <textarea
                               name="Description"
-                              className="form-txtarea form-control"
+                              className="form-txtarea form-control form-control-sm"
                               value={itemInput.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -481,7 +481,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                                   Rate: Number(e.target.value),
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Rate"
                             />
                           </div>
@@ -662,7 +662,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="WorkRequest"
                         value={SRData.ServiceRequestData.WorkRequest || ''}
                         onChange={handleInputChange}
-                        className="form-txtarea form-control"
+                        className="form-txtarea form-control form-control-sm"
                         placeholder={sRList.WorkRequest || " "}
 
                         rows="2"
@@ -676,7 +676,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="ActionTaken"
                         value={SRData.ServiceRequestData.ActionTaken || ''}
                         onChange={handleInputChange}
-                        className="form-txtarea form-control"
+                        className="form-txtarea form-control form-control-sm"
                         placeholder={sRList.ActionTaken || " "}
 
                         rows="2"
@@ -691,7 +691,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         name="CompletedDate"                        
                         value={SRData.ServiceRequestData.CompletedDate || ''}
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder={sRList.CompletedDate || " "}
 
                       />

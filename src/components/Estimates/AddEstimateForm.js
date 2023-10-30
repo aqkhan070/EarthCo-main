@@ -27,10 +27,10 @@ const AddEstimateForm = () => {
   });
   const [itemForm, setItemForm] = useState({
     Name: "",
-    Qty: 0,
+    Qty: null,
     Description: "",
     Address:"12345",
-    Rate: 0,
+    Rate: null,
     isActive: true,
     CreatedBy: 2,
     
@@ -282,7 +282,7 @@ const handleSubmit = () => {
                     name="ServiceLocation"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder="Service Location"
                   />
                 </div>
@@ -293,7 +293,7 @@ const handleSubmit = () => {
                     name="Email"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder="Example@gmail.com."
                   />
                 </div>
@@ -313,7 +313,7 @@ const handleSubmit = () => {
                     name="EstimateNumber"
                     onChange={handleInputChange}
                     type="text"
-                    className="form-control"
+                    className="form-control form-control-sm"
                     placeholder="Estimate No."
                   />
                 </div>
@@ -323,7 +323,7 @@ const handleSubmit = () => {
                     value={formData.IssueDate}
                     name="IssueDate"
                     onChange={handleInputChange}
-                    className="form-control input-limit-datepicker"
+                    className="form-control form-control-sm input-limit-datepicker"
                     placeholder="Issued Date"
                     type="date"
                   />
@@ -356,7 +356,7 @@ const handleSubmit = () => {
                           value={itemForm.Name}
                           onChange={handleChange}
                           name="Name"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Name"
                           required
                         />
@@ -372,7 +372,7 @@ const handleSubmit = () => {
                           value={itemForm.Qty}
                           onChange={handleChange}
                           name="Qty"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Quantity"
                           required
                         />
@@ -384,7 +384,7 @@ const handleSubmit = () => {
                       </label>
                       <div className="col-sm-9">
                         <textarea
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           value={itemForm.Description}
                           onChange={handleChange}
                           name="Description"
@@ -401,7 +401,7 @@ const handleSubmit = () => {
                           value={itemForm.Rate}
                           onChange={handleChange}
                           name="Rate"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           placeholder="Rate"
                           required
                         />
@@ -557,7 +557,7 @@ const handleSubmit = () => {
                           value={formData.EstimateNotes}
                           name="EstimateNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>
@@ -573,7 +573,7 @@ const handleSubmit = () => {
                           value={formData.ServiceLocationNotes}
                           name="ServiceLocationNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>
@@ -589,7 +589,7 @@ const handleSubmit = () => {
                           value={formData.PrivateNotes}
                           name="PrivateNotes"
                           onChange={handleInputChange}
-                          className="form-txtarea form-control"
+                          className="form-txtarea form-control form-control-sm"
                           rows="2"
                         ></textarea>
                       </div>

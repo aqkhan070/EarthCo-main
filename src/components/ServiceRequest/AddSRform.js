@@ -232,7 +232,7 @@ const AddSRform = () => {
                       <label className="form-label">Service Location</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className="form-control form-control-sm"
                         name="ServiceLocation"
                         onChange={handleInputChange}
                         placeholder="Service Location"
@@ -244,7 +244,7 @@ const AddSRform = () => {
                         type="text"
                         name="Contact"
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder="Example@Example.com"
                       />
                     </div>
@@ -256,7 +256,7 @@ const AddSRform = () => {
                         type="text"
                         name="JobName"
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder="Job Name"
                       />
                     </div>
@@ -267,7 +267,7 @@ const AddSRform = () => {
                         type="date"
                         name="DueDate"
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder="Due Date"
                       />
                     </div>
@@ -364,7 +364,7 @@ const AddSRform = () => {
                                   Name: e.target.value,
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Name"
                             />
                           </div>
@@ -384,7 +384,7 @@ const AddSRform = () => {
                                   Qty: Number(e.target.value),
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Quantity"
                             />
                           </div>
@@ -396,7 +396,7 @@ const AddSRform = () => {
                           <div className="col-sm-9">
                             <textarea
                               name="Description"
-                              className="form-txtarea form-control"
+                              className="form-txtarea form-control form-control-sm"
                               value={itemInput.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -424,7 +424,7 @@ const AddSRform = () => {
                                   Rate: Number(e.target.value),
                                 })
                               }
-                              className="form-control"
+                              className="form-control form-control-sm"
                               placeholder="Rate"
                             />
                           </div>
@@ -604,7 +604,7 @@ const AddSRform = () => {
                       <textarea
                         name="WorkRequest"
                         onChange={handleInputChange}
-                        className="form-txtarea form-control"
+                        className="form-txtarea form-control form-control-sm"
                         rows="2"
                       ></textarea>
                     </div>
@@ -615,7 +615,7 @@ const AddSRform = () => {
                       <textarea
                         name="ActionTaken"
                         onChange={handleInputChange}
-                        className="form-txtarea form-control"
+                        className="form-txtarea form-control form-control-sm"
                         rows="2"
                       ></textarea>
                     </div>
@@ -627,7 +627,7 @@ const AddSRform = () => {
                         type="date"
                         name="CompletedDate"
                         onChange={handleInputChange}
-                        className="form-control"
+                        className="form-control form-control-sm"
                         placeholder="CompletedDate"
                       />
                     </div>

@@ -279,7 +279,7 @@ const AddCustomer = () => {
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control form-control-sm"
                   name="CustomerName"
                   placeholder="Customer Name"
                   onChange={handleChange}
@@ -311,7 +311,7 @@ const AddCustomer = () => {
                       ref={inputReffname}
                       onChange={handleChange}
                       name="FirstName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="First Name"
                       required
                     />
@@ -326,7 +326,7 @@ const AddCustomer = () => {
                       ref={inputReflname}
                       onChange={handleChange}
                       name="LastName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Last Name"
                       required
                     />
@@ -340,7 +340,7 @@ const AddCustomer = () => {
                       type="email"
                       id="contactInp2"
                       ref={inputRefemail}
-                      className="form-control"
+                      className="form-control form-control-sm"
                       onChange={handleChange}
                       name="Email"
                       placeholder="Email"
@@ -357,7 +357,7 @@ const AddCustomer = () => {
                       id="contactInp3"
                       onChange={handleChange}
                       name="Phone"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Phone"
                     />
                   </div>
@@ -370,7 +370,7 @@ const AddCustomer = () => {
                       ref={inputRefCname}
                       onChange={handleChange}
                       name="CompanyName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Company Name"
                       required
                     />
@@ -383,7 +383,7 @@ const AddCustomer = () => {
                       ref={inputRefaddress}
                       onChange={handleChange}
                       name="Address"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Address"
                       required
                     />

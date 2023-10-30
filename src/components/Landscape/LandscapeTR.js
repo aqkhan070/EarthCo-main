@@ -19,7 +19,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
-
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
 
@@ -56,7 +55,6 @@ const LandscapeTR = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-
   const navigate = useNavigate();
 
   const fetchReports = async () => {
@@ -64,8 +62,8 @@ const LandscapeTR = () => {
       `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`
     );
     try {
-      console.log("////////", response.data);
-
+      setReports(response.data);
+      console.log("////////", reports);
       if (response.data != null) {
         setIsLoading(false);
       }
@@ -82,26 +80,27 @@ const LandscapeTR = () => {
     let actualProperty;
     switch (property) {
       case "#":
-        actualProperty = "EstimateId";
+        actualProperty = "MonthlyLandsacpeId";
         break;
       case "Customer Name":
         actualProperty = "CustomerName";
         break;
-      case "Estimate Number":
-        actualProperty = "EstimateNumber";
+      // case "Estimate Number":
+      //   actualProperty = "EstimateNumber";
+      //   break;
+      case "Type":
+        actualProperty = "Type";
         break;
-      case "Estimate Amount":
-        actualProperty = "EstimateAmount";
-        break;
-      case "Description Of Work":
-        actualProperty = "DescriptionofWork";
-        break;
-      case "Date Created":
-        actualProperty = "DateCreated";
+      case "Assign To":
+        actualProperty = "";
         break;
       case "Status":
-        actualProperty = "ContactStatusEmail";
+        actualProperty = "";
         break;
+      case "Date Created":
+        actualProperty = "CreatedDate";
+        break;
+
       default:
         actualProperty = property;
     }
@@ -150,88 +149,87 @@ const LandscapeTR = () => {
 
   return (
     <>
-    {isLoading ? (
-                  <div className="center-loader">
-                    <CircularProgress style={{ color: "#789a3d" }} />
+      {isLoading ? (
+        <div className="center-loader">
+          <CircularProgress style={{ color: "#789a3d" }} />
+        </div>
+      ) : (
+        <ThemeProvider theme={theme}>
+          <Paper>
+            <div className=" text-center">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="custom-search-container">
+                    <TextField
+                      label="Search"
+                      variant="standard"
+                      size="small"
+                      value={filtering}
+                      onChange={(e) => setFiltering(e.target.value)}
+                    />
                   </div>
-                ) : (
-                  <ThemeProvider theme={theme}>
-        <Paper>
-          <div className=" text-center">
-            <div className="row">
-              <div className="col-md-12">
-                <div className="custom-search-container">
-                  <TextField
-                    label="Search"
-                    variant="standard"
-                    size="small"
-                    value={filtering}
-                    onChange={(e) => setFiltering(e.target.value)}
-                  />
-                </div>
-                <div className="custom-button-container">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                      navigate("/Dashboard/Landscape/Add-Landscape");
-                    }}
-                  >
-                    + Add
-                  </button>
+                  <div className="custom-button-container">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        navigate("/Dashboard/Landscape/Add-Landscape");
+                      }}
+                    >
+                      + Add
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>{" "}
-          <br />
-          <TableContainer>
-            <Table>
-              <TableHead className="table-header">
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox />
-                  </TableCell>
-                  {[
-                    "#",
-                    "Customer Name",
-                    "Type",
-                    "Assigned to",
-                    "Status",
-                    "Date Created",
-                    "Report",
-               
-                  ].map((headCell) => (
-                    <TableCell
-                      key={headCell}
-                      sortDirection={orderBy === headCell ? order : false}
-                    >
-                      <TableSortLabel
-                        active={orderBy === headCell}
-                        direction={orderBy === headCell ? order : "asc"}
-                        onClick={() => handleSort(headCell)}
-                      >
-                        {headCell}
-                      </TableSortLabel>
+            </div>{" "}
+            <br />
+            <TableContainer>
+              <Table>
+                <TableHead className="table-header">
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox />
                     </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredReports
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((estimate, index) => (
-                    <TableRow key={estimate.EstimateId} hover>
-                      <TableCell padding="checkbox">
-                        <Checkbox />
+                    {[
+                      "#",
+                      "Customer Name",
+                      "Type",
+                      "Assigned to",
+                      "Status",
+                      "Date Created",
+                      "Report",
+                    ].map((headCell) => (
+                      <TableCell
+                        key={headCell}
+                        sortDirection={orderBy === headCell ? order : false}
+                      >
+                        <TableSortLabel
+                          active={orderBy === headCell}
+                          direction={orderBy === headCell ? order : "asc"}
+                          onClick={() => handleSort(headCell)}
+                        >
+                          {headCell}
+                        </TableSortLabel>
                       </TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      {/* <TableCell>...</TableCell> */}
-                      {/* <TableCell>...</TableCell> */}
-                      {/* <TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredReports
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((estimate, index) => (
+                      <TableRow key={estimate.EstimateId} hover>
+                        <TableCell padding="checkbox">
+                          <Checkbox />
+                        </TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        {/* <TableCell>...</TableCell> */}
+                        {/* <TableCell>...</TableCell> */}
+                        {/* <TableCell>
                         <div className="button-container">
                           <Button
                             className="delete-button"
@@ -251,27 +249,26 @@ const LandscapeTR = () => {
                           </Button>
                         </div>
                       </TableCell> */}
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
-            component="div"
-            count={filteredReports.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={(event, newPage) => setPage(newPage)}
-            onRowsPerPageChange={(event) => {
-              setRowsPerPage(parseInt(event.target.value, 10));
-              setPage(0);
-            }}
-          />
-        </Paper>
-      </ThemeProvider>
-                )}
-     
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={filteredReports.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={(event, newPage) => setPage(newPage)}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setPage(0);
+              }}
+            />
+          </Paper>
+        </ThemeProvider>
+      )}
     </>
   );
 };

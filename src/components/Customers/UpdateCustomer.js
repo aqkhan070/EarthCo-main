@@ -273,7 +273,7 @@ const [customerData, setCustomerData] = useState({});
                 </label>
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control form-control-sm"
                   name="CustomerName"
                   value={formData.CustomerData.CustomerName}
                   // onClick={(e) => {e.target.value = ""}}
@@ -308,7 +308,7 @@ const [customerData, setCustomerData] = useState({});
                       
                       onChange={handleChange}
                       name="FirstName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="First Name"
                       required
                     />
@@ -323,7 +323,7 @@ const [customerData, setCustomerData] = useState({});
                       ref={inputReflname}
                       onChange={handleChange}
                       name="LastName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Last Name"
                       required
                     />
@@ -337,7 +337,7 @@ const [customerData, setCustomerData] = useState({});
                       type="email"
                       id="contactInp2"
                       ref={inputRefemail}
-                      className="form-control"
+                      className="form-control form-control-sm"
                       onChange={handleChange}
                       name="Email"
                       placeholder="Email"
@@ -354,7 +354,7 @@ const [customerData, setCustomerData] = useState({});
                       id="contactInp3"
                       onChange={handleChange}
                       name="Phone"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Phone"
                     />
                   </div>
@@ -367,7 +367,7 @@ const [customerData, setCustomerData] = useState({});
                       ref={inputRefCname}
                       onChange={handleChange}
                       name="CompanyName"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Company Name"
                       required
                     />
@@ -380,7 +380,7 @@ const [customerData, setCustomerData] = useState({});
                       ref={inputRefaddress}
                       onChange={handleChange}
                       name="Address"
-                      className="form-control"
+                      className="form-control form-control-sm"
                       placeholder="Address"
                       required
                     />
