@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LandscapeForm = () => {
   const [customers, setCustomers] = useState([]);
@@ -32,6 +33,8 @@ const LandscapeForm = () => {
     Notes: " ",
     isActive: false,
   });
+
+  const navigate = useNavigate();
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -122,6 +125,7 @@ const LandscapeForm = () => {
 
       // Log the response or handle success
       console.log("Response:", response.data);
+      navigate("/Dashboard/Landscape");
     } catch (error) {
       // Handle the error
       console.error("API Post Error:", error);

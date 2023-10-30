@@ -83,7 +83,7 @@ const LandscapeTR = () => {
         actualProperty = "MonthlyLandsacpeId";
         break;
       case "Customer Name":
-        actualProperty = "CustomerName";
+        actualProperty = "tblCustomer.CustomerName";
         break;
       // case "Estimate Number":
       //   actualProperty = "EstimateNumber";
@@ -112,7 +112,7 @@ const LandscapeTR = () => {
 
   const filteredReports = reports
     .filter((e) =>
-      e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+      e.tblCustomer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
     )
     .sort(getSorting(order, orderBy));
 
@@ -143,9 +143,37 @@ const LandscapeTR = () => {
       : (a, b) => -desc(a, b, orderBy);
   }
 
-  const deleteEstimate = async (id) => {};
+  const deleteReport = async (id) => {
+    try {
+      const response = await fetch(
+        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/DeleteMonthlyLandsacpe?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  const handleDelete = (id) => {};
+      if (!response.ok) {
+        throw new Error("Failed to delete customer");
+      }
+
+      const data = await response.json();
+
+      // Handle the response. For example, you can reload the customers or show a success message
+      console.log("Customer deleted successfully:", data);
+      window.location.reload();
+    } catch (error) {
+      console.error("There was an error deleting the customer:", error);
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
+      deleteReport(id);
+    }
+  };
 
   return (
     <>
@@ -197,6 +225,7 @@ const LandscapeTR = () => {
                       "Status",
                       "Date Created",
                       "Report",
+                      "Actions",
                     ].map((headCell) => (
                       <TableCell
                         key={headCell}
@@ -216,22 +245,23 @@ const LandscapeTR = () => {
                 <TableBody>
                   {filteredReports
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((estimate, index) => (
-                      <TableRow key={estimate.EstimateId} hover>
+                    .map((report, index) => (
+                      <TableRow key={report.MonthlyLandsacpeId} hover>
                         <TableCell padding="checkbox">
                           <Checkbox />
                         </TableCell>
+                        <TableCell>{report.MonthlyLandsacpeId}</TableCell>
+                        <TableCell>{report.tblCustomer.CustomerName}</TableCell>
                         <TableCell>...</TableCell>
                         <TableCell>...</TableCell>
                         <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
+                        <TableCell>{report.CreatedDate}</TableCell>
                         <TableCell>...</TableCell>
                         {/* <TableCell>...</TableCell> */}
                         {/* <TableCell>...</TableCell> */}
-                        {/* <TableCell>
+                        <TableCell>
                         <div className="button-container">
-                          <Button
+                          {/* <Button
                             className="delete-button"
                             onClick={() => {
                               setSelectedItem(estimate.EstimateId);
@@ -240,15 +270,15 @@ const LandscapeTR = () => {
                             }}
                           >
                             <Create />
-                          </Button>
+                          </Button> */}
                           <Button className="delete-button">
                             <Delete
                               color="error"
-                              onClick={() => handleDelete(estimate.EstimateId)}
+                              onClick={() => handleDelete(report.MonthlyLandsacpeId)}
                             />
                           </Button>
                         </div>
-                      </TableCell> */}
+                      </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
