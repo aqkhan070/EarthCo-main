@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Form } from "react-bootstrap";
 import punchList from "../../assets/images/1.jpg";
+import axios from "axios";
 
 import { Link } from "react-router-dom";
 import {
@@ -106,7 +107,7 @@ const PunchTR = ({ punchData }) => {
 
   const deletePunchList = async (id) => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlist?id=${id}`,
         {
           method: "GET",
@@ -251,7 +252,7 @@ const PunchTR = ({ punchData }) => {
                             <Edit />
                           </Button>
 
-                          <Button color="error" className="delete-button" onClick={handleDelete(item.PunchlistId)}>
+                          <Button color="error" className="delete-button" onClick={() => {handleDelete(item.PunchlistId)}}>
                             <Delete />
                           </Button>
                         </TableCell>
