@@ -10,6 +10,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import $ from "jquery";
 import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+
 
 const Estimates = () => {
   const activeRef = useRef(null);
@@ -26,6 +28,9 @@ const Estimates = () => {
 
   const [locations, setLocations] = useState(["Select Customer First"]);
 
+  const [isLoading, setIsLoading] = useState(true);
+
+
   const navigate = useNavigate();
 
  
@@ -38,6 +43,9 @@ const Estimates = () => {
         );
         // console.log("estimate response is", response.data);
         setEstimates(response.data);
+        if (response.data != null) {
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error("API Call Error:", error);
       }
@@ -146,15 +154,20 @@ const Estimates = () => {
         <div className="col-xl-12">
           <div className="card">
             <div className="card-body">
-              <div className="tbl-caption">
-                <div className="row mb-3">
-                  
-
-                  
-                </div>
-              </div>
               
-                <EstimateTR estimates={estimates} />
+            {isLoading ? (
+                <div className="center-loader">
+                <CircularProgress style={{ color: "#789a3d" }} />
+              </div>
+              ) : (
+                <div>
+                 
+                    <EstimateTR estimates={estimates} />
+                 
+                </div>
+              )}
+              
+                
                 
               
             </div>

@@ -17,6 +17,8 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+
 
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
@@ -52,6 +54,9 @@ const LandscapeTR = () => {
 
   const [reports, setReports] = useState([]);
 
+  const [isLoading, setIsLoading] = useState(true);
+
+
   const navigate = useNavigate();
 
   const fetchReports = async () => {
@@ -60,6 +65,10 @@ const LandscapeTR = () => {
     );
     try {
       console.log("////////", response.data);
+
+      if (response.data != null) {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log("api call error", error);
     }
@@ -141,7 +150,12 @@ const LandscapeTR = () => {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
+    {isLoading ? (
+                  <div className="center-loader">
+                    <CircularProgress style={{ color: "#789a3d" }} />
+                  </div>
+                ) : (
+                  <ThemeProvider theme={theme}>
         <Paper>
           <div className=" text-center">
             <div className="row">
@@ -179,13 +193,12 @@ const LandscapeTR = () => {
                   {[
                     "#",
                     "Customer Name",
-                    "Assign to",
-                    "Estimate Number",
-                    "Estimate Amount",
-                    "Description Of Work",
-                    "Date Created",
+                    "Type",
+                    "Assigned to",
                     "Status",
-                    "Actions",
+                    "Date Created",
+                    "Report",
+               
                   ].map((headCell) => (
                     <TableCell
                       key={headCell}
@@ -216,9 +229,9 @@ const LandscapeTR = () => {
                       <TableCell>...</TableCell>
                       <TableCell>...</TableCell>
                       <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>...</TableCell>
-                      <TableCell>
+                      {/* <TableCell>...</TableCell> */}
+                      {/* <TableCell>...</TableCell> */}
+                      {/* <TableCell>
                         <div className="button-container">
                           <Button
                             className="delete-button"
@@ -237,7 +250,7 @@ const LandscapeTR = () => {
                             />
                           </Button>
                         </div>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
               </TableBody>
@@ -257,6 +270,8 @@ const LandscapeTR = () => {
           />
         </Paper>
       </ThemeProvider>
+                )}
+     
     </>
   );
 };

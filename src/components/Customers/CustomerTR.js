@@ -99,7 +99,6 @@ const handleDelete = (id) => {
   return (
     <ThemeProvider theme={theme}>
       {showContent? <div className="">
-        <div className="text-center">
           <div className="row justify-content-between">
             <div className="col-3 search-container tblsearch-input">
               <TextField
@@ -121,6 +120,8 @@ const handleDelete = (id) => {
             </div>
           </div>{" "}
           <br />
+        <div className="text-center">
+
           <Table>
             <TableHead>
               <TableRow className="table-header">

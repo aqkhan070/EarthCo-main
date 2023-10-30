@@ -5,6 +5,7 @@ import { Form } from "react-bootstrap";
 import PunchTR from "./PunchTR";
 import punchList from "../../assets/images/1.jpg";
 import axios from "axios";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const PunchListIndex = () => {
   const [punchData, setPunchData] = useState([]);
@@ -25,12 +26,17 @@ const PunchListIndex = () => {
     isActive: true,
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
   const fetchPunchList = async () => {
     try {
       const response = await axios.get(
         "https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistList"
       );
       setPunchData(response.data);
+      if (response.data != null) {
+        setIsLoading(false);
+      }
       console.log("punch data izzzzzzzzzzzzzzz", punchData);
     } catch (error) {
       console.log("api call errorrrrrr", error);
@@ -100,10 +106,13 @@ const PunchListIndex = () => {
     event.preventDefault();
 
     try {
-      await axios.post("https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList", addPunchListData);
+      await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList",
+        addPunchListData
+      );
       // Handle success - maybe redirect or show a message
-      console.log("successfully posted ",addPunchListData);
-      window.location.reload()
+      console.log("successfully posted ", addPunchListData);
+      window.location.reload();
     } catch (error) {
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
@@ -111,8 +120,6 @@ const PunchListIndex = () => {
       // Handle error - show an error message to the user
     }
   };
-
-  
 
   const icon = (
     <svg
@@ -358,7 +365,15 @@ const PunchListIndex = () => {
                   </table>
                 </div> */}
 
-                <PunchTR punchData={punchData} />
+                {isLoading ? (
+                  <div className="center-loader">
+                    <CircularProgress style={{ color: "#789a3d" }} />
+                  </div>
+                ) : (
+                  <div>
+                    <PunchTR punchData={punchData} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -491,7 +506,7 @@ const PunchListIndex = () => {
                   data-bs-dismiss="modal"
                 ></button>
               </div>
-              <form >
+              <form>
                 <div className="modal-body">
                   <div className="row">
                     <div className=" col-md-6 mb-3">

@@ -5,16 +5,24 @@ import axios from "axios";
 import "datatables.net";
 import CustomerModal from "../Modals/CustomerModal";
 import { CustomerContext } from "../../context/CustomerData";
+import CircularProgress from "@mui/material/CircularProgress";
+
 
 const CustomersTable = () => {
   const { selectedCustomer } = useContext(CustomerContext);
   const [customers, setCustomers] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const fetchCustomers = async () => {
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
     );try {
       setCustomers(response.data);
+      if (response.data != null) {
+        setIsLoading(false);
+      }
 
     }catch(error){
       console.error("API Call Error:", error);
@@ -37,8 +45,18 @@ const CustomersTable = () => {
         <div className="card">
           
           <div className="card-body">
+
+          {isLoading ? (
+                  <div className="center-loader">
+                    <CircularProgress style={{ color: "#789a3d" }} />
+                  </div>
+                ) : (
+                  <div>
+                     <CustomerTR customers={customers}/>
+                  </div>
+                )}
            
-            <CustomerTR customers={customers}/>
+           
           </div>
         </div>
       </div>

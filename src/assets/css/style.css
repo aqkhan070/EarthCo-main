@@ -53600,3 +53600,10 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   .css-1t8l2tu-MuiInputBase-input-MuiOutlinedInput-input{
     height: 1.05em !important;
   }
+  .center-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40vh; /* This makes the loader take up the entire viewport height */
+    
+  }

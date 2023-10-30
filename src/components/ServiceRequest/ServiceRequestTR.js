@@ -208,9 +208,9 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                             <Checkbox />
                           </TableCell>
                           <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                          <TableCell>{customer.CustomerId}</TableCell>
+                          <TableCell>{customer.CustomerName}</TableCell>
                           <TableCell>{customer.Assign}</TableCell>
-                          <TableCell>{customer.SRStatusId}</TableCell>
+                          <TableCell>{customer.Status}</TableCell>
                           <TableCell>{customer.WorkRequest}</TableCell>
                           <TableCell>{customer.CreatedDate}</TableCell>
                           <TableCell>

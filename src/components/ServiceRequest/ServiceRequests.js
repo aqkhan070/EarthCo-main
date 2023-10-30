@@ -6,10 +6,11 @@ import { Form } from "react-bootstrap";
 import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const ServiceRequests = () => {
   const [serviceRequest, setserviceRequest] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   // const [locationOptions, setLocationOptions] = useState();
 
@@ -18,6 +19,9 @@ const ServiceRequests = () => {
       "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList"
     );
     try {
+      if (response.data != null) {
+        setIsLoading(false);
+      }
       setserviceRequest(response.data);
       console.log("zzzzzzzzzzzzzzz", response.data);
     } catch (error) {
@@ -31,15 +35,15 @@ const ServiceRequests = () => {
 
   return (
     <div className="container-fluid">
-       <CircularProgress color="success" />
+    
       <div className="row">
         <StatusCards newData={1178} open={5142} closed={71858} total={78178} />
         <div className="col-xl-12">
           <div className="card">
             <div className="card-body">
-              <div className="tbl-caption">
-                <div className="row p-3 ">
-                  {/* <div className="col-md-3">
+              {/* <div className="tbl-caption"> */}
+              {/* <div className="row p-3 "> */}
+              {/* <div className="col-md-3">
                     <a
                       href="/"
                       class="btn btn-primary"
@@ -49,8 +53,8 @@ const ServiceRequests = () => {
                       + Add Service Request
                     </a>
                   </div> */}
-                  <div className="col-md-7"></div>
-                  {/* <div
+              {/* <div className="col-md-7"></div> */}
+              {/* <div
                     class="col-md-2"
                     style={{ display: "flex", justifyContent: "flex-end" }}
                   >
@@ -65,13 +69,19 @@ const ServiceRequests = () => {
                       </Form.Select>
                     </div>
                   </div> */}
+              {/* </div> */}
+              {/* </div> */}
+              {isLoading ? (
+                <div className="center-loader">
+                <CircularProgress style={{ color: "#789a3d" }} />
+              </div>
+              ) : (
+                <div>
+                  {serviceRequest && (
+                    <ServiceRequestTR serviceRequest={serviceRequest} />
+                  )}
                 </div>
-              </div>
-              <div className="">
-                {serviceRequest && (
-                  <ServiceRequestTR serviceRequest={serviceRequest} />
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -111,7 +121,6 @@ const ServiceRequests = () => {
                         sx={{ width: 300 }}
                         renderInput={(params) => (
                           <TextField
-                            
                             label="Service Location"
                             variant="outlined"
                           />
