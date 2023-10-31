@@ -98,15 +98,15 @@ const AdressModal = ({
               <form onSubmit={handleSubmit}>
                 <div className="col-md-12 mb-2">
                   <input
-          ref={autocompleteRef}
-          type="text"
-          id='adressInput1'
-          onChange={handleChange}
-          value={adress.adressLine}
-          name='adressLine'
-          className="form-control input-default "
-          placeholder="Adress Line 1"
-        />
+                    ref={autocompleteRef}
+                    type="text"
+                    id="adressInput1"
+                    onChange={handleChange}
+                    value={adress.adressLine}
+                    name="adressLine"
+                    className="form-control input-default "
+                    placeholder="Adress Line 1"
+                  />
                 </div>
                 <div className="col-md-12 mb-2">
                   <input
