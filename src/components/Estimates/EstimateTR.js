@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Form } from "react-bootstrap";
 import {
   Table,
   TableBody,
@@ -48,6 +49,9 @@ const EstimateTR = ({ estimates }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [filterDate, setFilterDate] = useState("This Month");
+
+
   const [selectedItem, setSelectedItem] = useState();
   const [showContent, setShowContent] = useState(true);
 
@@ -84,12 +88,34 @@ const EstimateTR = ({ estimates }) => {
     const isAsc = orderBy === actualProperty && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(actualProperty);
+    
   };
+
+  function filterByDate(dateString, filterType) {
+    const date = new Date(dateString);
+    const now = new Date();
+    let startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    let endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    let startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    let endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    let startOfThreeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+  
+    switch (filterType) {
+      case "This Month":
+        return date >= startOfMonth && date <= endOfMonth;
+      case "Previous Month":
+        return date >= startOfPrevMonth && date <= endOfPrevMonth;
+      case "Last three months":
+        return date >= startOfThreeMonthsAgo && date <= endOfMonth;
+      default:
+        return true;  // By default, return true if the filter type is unrecognized
+    }
+  }
 
   const filteredEstimates = estimates
     .filter((e) =>
       e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-    )
+    ).filter((e) => filterByDate(e.DateCreated, filterDate))
     .sort(getSorting(order, orderBy));
 
   // ... Pagination, Sorting logic ...
@@ -102,6 +128,8 @@ const EstimateTR = ({ estimates }) => {
     }
     return 0;
   }
+
+
 
   function stableSort(array, cmp) {
     const stabilizedThis = array.map((el, index) => [el, index]);
@@ -151,6 +179,8 @@ const EstimateTR = ({ estimates }) => {
     }
   };
 
+  
+
   return (
     <>
       {showContent ? (
@@ -158,6 +188,21 @@ const EstimateTR = ({ estimates }) => {
           <Paper>
           <div className=" text-center">
       <div className="row">
+      <div>
+                    <Form.Select
+                      size="sm"
+                      value={filterDate}
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      aria-label="Default select example"
+                      className="bg-white date-sort-form"
+                    >
+                      <option value="This Month">This Month</option>
+                      <option value="Previous Month">Previous Month</option>
+                      <option value="Last three months">
+                        Last three months
+                      </option>
+                    </Form.Select>
+                  </div>
         <div className="col-md-12">
           <div className="custom-search-container">
             <TextField

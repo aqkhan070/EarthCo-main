@@ -53609,6 +53609,11 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   }
 
   .card-header{
-    padding: 3px !important;
+    padding: 0.8em !important;
     padding-left: 1em !important;
   }
+  .date-sort-form{
+    width: 15em ;
+    margin-left: 1em;
+    margin-bottom: 0px;
+}

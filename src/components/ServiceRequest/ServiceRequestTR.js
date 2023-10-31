@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import UpdateSRForm from "./UpdateSRForm";
+import { Form } from "react-bootstrap";
 import {
   Table,
   TableBody,
@@ -42,6 +43,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
+  const [filterDate, setFilterDate] = useState("This Month");
 
   const [search, setSearch] = useState("");
 
@@ -92,7 +94,42 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   };
 
   const handleSearch = (data) => {
-    return data.filter((item) => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prevMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+    const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const threeMonthsAgoStart = new Date(
+      now.getFullYear(),
+      now.getMonth() - 3,
+      1
+    );
+
+    let dateFilteredData = [];
+
+    switch (filterDate) {
+      case "This Month":
+        dateFilteredData = data.filter(
+          (item) => new Date(item.CreatedDate) >= monthStart
+        );
+        break;
+      case "Previous Month":
+        dateFilteredData = data.filter(
+          (item) =>
+            new Date(item.CreatedDate) >= prevMonthStart &&
+            new Date(item.CreatedDate) <= prevMonthEnd
+        );
+        break;
+      case "Last three months":
+        dateFilteredData = data.filter(
+          (item) => new Date(item.CreatedDate) >= threeMonthsAgoStart
+        );
+        break;
+      default:
+        dateFilteredData = data;
+        break;
+    }
+
+    return dateFilteredData.filter((item) => {
       const fieldsToSearch = [
         item.CustomerId?.toString(),
         item.ServiceRequestNumber?.toString(),
@@ -132,6 +169,21 @@ const ServiceRequestTR = ({ serviceRequest }) => {
             <div className=" text-center">
               <div className="row ">
                 <div className="col-md-12">
+                <div>
+                    <Form.Select
+                      size="sm"
+                      value={filterDate}
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      aria-label="Default select example"
+                      className="bg-white date-sort-form"
+                    >
+                      <option value="This Month">This Month</option>
+                      <option value="Previous Month">Previous Month</option>
+                      <option value="Last three months">
+                        Last three months
+                      </option>
+                    </Form.Select>
+                  </div>
                   <div className="col-3 custom-search-container">
                     <TextField
                       label="Search"
@@ -141,6 +193,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
+                  
                   <div className="custom-button-container">
                     <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
                       <Button variant="contained" color="primary">
