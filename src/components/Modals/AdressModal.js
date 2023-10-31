@@ -56,6 +56,7 @@ const AdressModal = ({
           });
 
           setAdress(addressObject);
+          console.log("oooooooooo",addressObject)
         }
       });
     }
@@ -91,7 +92,7 @@ const AdressModal = ({
       <div className={"adressmodal " + topClass}>
         <div className="" style={{ margin: "5px" }}>
           <div className="card-header" style={{ background: "#f8f4f4" }}>
-            <h4 className="card-title">Adress</h4>
+            <h4 className="card-title">Address</h4>
           </div>
           <div className="">
             <div className="">

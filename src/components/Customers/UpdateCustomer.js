@@ -218,6 +218,10 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
   const addContact = (e) => {
     e.preventDefault();
+    if (Object.keys(contacts).length === 0) {
+      alert("Contact data is empty");
+      return;
+    }
 
     const newContact = {
       FirstName: formData.ContactData.FirstName,
