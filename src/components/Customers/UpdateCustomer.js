@@ -2,11 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const UpdateCustomer = ({selectedItem, setShowContent}) => {
+const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
 
-  
-const [customerData, setCustomerData] = useState({});
+  const [customerData, setCustomerData] = useState({});
   const [contacts, setContacts] = useState([]);
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
@@ -16,7 +15,8 @@ const [customerData, setCustomerData] = useState({});
   const [inputNames, setinputNames] = useState([]);
   const [mainObj, setmainObj] = useState({});
 
-  
+  const [showContacts, setShowContacts] = useState(false);
+  const [showSRLocation, setShowSRLocation] = useState(false)
 
   const [formData, setFormData] = useState({
     CustomerData: {
@@ -51,34 +51,32 @@ const [customerData, setCustomerData] = useState({});
     // console.log("object is ,,,", mainObj);
   }, []);
 
-
   const getCustomerData = async () => {
     try {
-        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-
-        setCustomerData(response.data) ;
-        setFormData((prevState) => ({
-          ...prevState,
-          CustomerData: {
-            CustomerName: response.data.CustomerName,
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
           },
-        }));
-        
+        }
+      );
 
-        // Handle the response. For example, you can reload the customers or show a success message
-        console.log("Customer zzzzzzzz:", customerData.tblContacts);
-        setContacts(response.data.tblContacts);
-       
+      setCustomerData(response.data);
+      setFormData((prevState) => ({
+        ...prevState,
+        CustomerData: {
+          CustomerName: response.data.CustomerName,
+        },
+      }));
 
+      // Handle the response. For example, you can reload the customers or show a success message
+      console.log("Customer zzzzzzzz:", customerData.tblContacts);
+      setContacts(response.data.tblContacts);
     } catch (error) {
-        console.error("There was an error deleting the customer:", error);
+      console.error("There was an error deleting the customer:", error);
     }
-};
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -189,23 +187,23 @@ const [customerData, setCustomerData] = useState({});
     const { name, value } = e.target;
 
     if (name === "CustomerName") {
-        setFormData(prevState => ({
-            ...prevState,
-            CustomerData: {
-                CustomerName: value,
-            }
-        }));
+      setFormData((prevState) => ({
+        ...prevState,
+        CustomerData: {
+          CustomerName: value,
+        },
+      }));
     } else {
-        setFormData({
-            ...formData,
-            ContactData: {
-                ...formData.ContactData,
-                [name]: value,
-            },
-        });
+      setFormData({
+        ...formData,
+        ContactData: {
+          ...formData.ContactData,
+          [name]: value,
+        },
+      });
     }
     console.log(formData);
-};
+  };
 
   const addContact = (e) => {
     e.preventDefault();
@@ -217,7 +215,7 @@ const [customerData, setCustomerData] = useState({});
       Phone: formData.ContactData.Phone,
       CompanyName: formData.ContactData.CompanyName,
       Address: formData.ContactData.Address,
-      isPrimary: primary
+      isPrimary: primary,
     };
 
     setContacts([...contacts, newContact]);
@@ -237,13 +235,24 @@ const [customerData, setCustomerData] = useState({});
 
     setPrimary(true);
     clearInput();
+    setShowContacts(false);
   };
 
-  const deleteContact = (index) => {
+  const delContact = (index) => {
     const updatedContacts = [...contacts];
     updatedContacts.splice(index, 1);
     setContacts(updatedContacts);
   };
+
+  const deleteContact = (index) => {
+    if (window.confirm("Are you sure you want to delete this Contact?")) {
+      delContact(index);
+    }
+  };
+
+  const addSRLocation = () => {
+    setShowSRLocation(false)
+  }
 
   useEffect(() => {
     if (loginState === "allow") {
@@ -254,9 +263,9 @@ const [customerData, setCustomerData] = useState({});
   }, [loginState]);
 
   return (
-    <div className="container-fluid">
+    <div className="">
       <form onSubmit={(e) => e.preventDefault()}>
-        <div className="card">
+        <div className="">
           <div className="card-header">
             <h4 className="modal-title" id="#gridSystemModal">
               Customer Info
@@ -277,7 +286,7 @@ const [customerData, setCustomerData] = useState({});
                   name="CustomerName"
                   value={formData.CustomerData.CustomerName}
                   // onClick={(e) => {e.target.value = ""}}
-                  placeholder={ customerData.CustomerName}
+                  placeholder={customerData.CustomerName}
                   onChange={handleChange}
                   required
                 />
@@ -287,7 +296,9 @@ const [customerData, setCustomerData] = useState({});
         </div>
       </form>
 
-      <form onSubmit={addContact}>
+      {/* Contacts Table */}
+
+      <form>
         <div className="card">
           <div className="card-header">
             <h4 className="modal-title" id="#gridSystemModal">
@@ -295,141 +306,160 @@ const [customerData, setCustomerData] = useState({});
             </h4>
           </div>
           <div className="card-body">
-            <div className="row">
-              <div className="col-lg-12">
-                <div className="row">
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      First Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      ref={inputReffname}
-                      
-                      onChange={handleChange}
-                      name="FirstName"
-                      className="form-control form-control-sm"
-                      placeholder="First Name"
-                      required
-                    />
-                  </div>
+            {showContacts ? null : (
+              <div
+                className="col-xl-4 mb-3"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setShowContacts(true);
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            )}
 
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Last Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      ref={inputReflname}
-                      onChange={handleChange}
-                      name="LastName"
-                      className="form-control form-control-sm"
-                      placeholder="Last Name"
-                      required
-                    />
-                  </div>
-
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Email<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="contactInp2"
-                      ref={inputRefemail}
-                      className="form-control form-control-sm"
-                      onChange={handleChange}
-                      name="Email"
-                      placeholder="Email"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Phone<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      ref={inputRefphone}
-                      id="contactInp3"
-                      onChange={handleChange}
-                      name="Phone"
-                      className="form-control form-control-sm"
-                      placeholder="Phone"
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Company Name<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      id="contactInp4"
-                      ref={inputRefCname}
-                      onChange={handleChange}
-                      name="CompanyName"
-                      className="form-control form-control-sm"
-                      placeholder="Company Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">
-                      Address<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      ref={inputRefaddress}
-                      onChange={handleChange}
-                      name="Address"
-                      className="form-control form-control-sm"
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
+            {showContacts && (
+              <div className="row">
+                <div className="col-lg-12">
                   <div className="row">
-                    <label className="col-form-label col-form-label-lg">
-                      Set as Primary
-                    </label>
-                    <div className="mb-3 mb-0">
-                      <form>
-                        <div className="form-check custom-checkbox form-check-inline">
-                          <input
-                            type="checkbox"
-                            name="isPrimary"
-                            className="form-check-input"
-                            id="customCheckBox"
-                            checked={primary}
-                            onChange={() => setPrimary(!primary)}
-                          />
-
-                          <label
-                            className="form-check-label"
-                            htmlFor="customCheckBox"
-                          >
-                            Set as Primary
-                          </label>
-                        </div>
-                      </form>
+                    <div className="col-xl-3 mb-2">
+                      <label className="form-label">
+                        First Name<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        ref={inputReffname}
+                        onChange={handleChange}
+                        name="FirstName"
+                        className="form-control form-control-sm"
+                        placeholder="First Name"
+                        required
+                      />
                     </div>
-                  </div>
 
-                  <div
-                    className="col-xl-4 mb-3"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingTop: "26px",
-                    }}
-                  >
-                    <button className="btn btn-primary">Add</button>
+                    <div className="col-xl-3 mb-2">
+                      <label className="form-label">
+                        Last Name<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        ref={inputReflname}
+                        onChange={handleChange}
+                        name="LastName"
+                        className="form-control form-control-sm"
+                        placeholder="Last Name"
+                        required
+                      />
+                    </div>
+
+                    <div className="col-xl-3 mb-2">
+                      <label className="form-label">
+                        Email<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="contactInp2"
+                        ref={inputRefemail}
+                        className="form-control form-control-sm"
+                        onChange={handleChange}
+                        name="Email"
+                        placeholder="Email"
+                        required
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Phone<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        ref={inputRefphone}
+                        id="contactInp3"
+                        onChange={handleChange}
+                        name="Phone"
+                        className="form-control form-control-sm"
+                        placeholder="Phone"
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Company Name<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        id="contactInp4"
+                        ref={inputRefCname}
+                        onChange={handleChange}
+                        name="CompanyName"
+                        className="form-control form-control-sm"
+                        placeholder="Company Name"
+                        required
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Address<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        ref={inputRefaddress}
+                        onChange={handleChange}
+                        name="Address"
+                        className="form-control form-control-sm"
+                        placeholder="Address"
+                        required
+                      />
+                    </div>
+
+                    <div className="col-xl-3 mb-3">
+                      <label className="col-form-label col-form-label-lg">
+                        Set as Primary
+                      </label>
+                      <div className="mb-3 mb-0">
+                        <form>
+                          <div className="form-check custom-checkbox form-check-inline">
+                            <input
+                              type="checkbox"
+                              name="isPrimary"
+                              className="form-check-input"
+                              id="customCheckBox"
+                              checked={primary}
+                              onChange={() => setPrimary(!primary)}
+                            />
+
+                            <label
+                              className="form-check-label"
+                              htmlFor="customCheckBox"
+                            >
+                              Set as Primary
+                            </label>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div className="col-xl-3 mb-3 mt-4 ">
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        onClick={addContact}
+                      >
+                        Save
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
             <div className="col-xl-12">
               <div className="card">
                 <div className="card-body p-0">
                   <div className="estDataBox">
-                    
                     <div className="table-responsive active-projects style-1">
                       <table id="empoloyees-tblwrapper" className="table">
                         <thead>
@@ -454,10 +484,8 @@ const [customerData, setCustomerData] = useState({});
                               <td>{contact.Email}</td>
                               <td>{contact.Phone}</td>
                               <td>{contact.CompanyName}</td>{" "}
-                            
                               <td>{contact.Address}</td>
                               <td>{contact.isPrimary ? "Yes" : "No"}</td>{" "}
-                             
                               <td>
                                 <div className="badgeBox">
                                   <span
@@ -483,16 +511,186 @@ const [customerData, setCustomerData] = useState({});
         </div>
       </form>
 
-      {/* Contacts Table */}
+      {/* servive location */}
 
-      <div className="text-end">
-        <button className="btn btn-primary me-1" onClick={handleSubmit}>
-          Submit
-        </button>
-        <NavLink to="/Dashboard/Customers">
-          <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
-        </NavLink>
-      </div>
+      <form>
+        <div className="card">
+          <div className="card-header">
+            <h4 className="modal-title" id="#gridSystemModal">
+              Service Locations
+            </h4>
+          </div>
+          <div className="card-body">
+
+          <button onClick={()=>{setShowSRLocation(true)}} className="btn btn-primary">Add</button>
+            {showSRLocation && <div className="row">
+              <div className="col-lg-12">
+                <div className="row">
+                  <div className="col-xl-4 mb-3">
+                    <label className="form-label">
+                      Name<span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="FirstName"
+                      className="form-control form-control-sm"
+                      placeholder="Name"
+                      required
+                    />
+                  </div>
+                  <div className="col-xl-6 mb-5">
+                    <div className="form-check form-check-inline radio-margin">
+                      <label className="form-check-label" for="inlineRadio1">
+                        Bill to:
+                      </label>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="BillToCustomer"
+                          id="inlineRadio1"
+                          value="option1"
+                        />
+                        <label className="form-check-label" for="inlineRadio1">
+                          Customer
+                        </label>
+                      </div>
+                      <div className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="BillToSRLocation"
+                          id="inlineRadio2"
+                          value="option2"
+                        />
+                        <label className="form-check-label" for="inlineRadio2">
+                          This service Location
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <h4>Details</h4>{" "}
+                  <hr
+                    style={{
+                      border: "none", // Remove the default border
+                      backgroundColor: "#d9d9d9", // Set the background color to create the line
+                      height: "1px", // Set the height to 1px for a thin line
+                      margin: " 0px 0px 19px", // Add margin for spacing
+                    }}
+                  />
+                  <div className="row">
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Address<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        name="SRAddress"
+                        className="form-control form-control-sm"
+                        placeholder="Address"
+                        required
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Phone<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        onChange={handleChange}
+                        name="SRPhone"
+                        className="form-control form-control-sm"
+                        placeholder="Phone"
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Alt Phone<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        id="contactInp4"
+                        name="AltPhone"
+                        className="form-control form-control-sm"
+                        placeholder="Alt Phone"
+                        required
+                      />
+                    </div>
+                  <div
+                    className="col-xl-3 mb-3"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      paddingTop: "26px",
+                    }}
+                  >
+                    <button onClick={addSRLocation} className="btn btn-primary">Save</button>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>}
+
+            
+
+            
+            <div className="col-xl-12">
+              <div className="card">
+                <div className="card-body p-0">
+                  <div className="estDataBox">
+                    <div className="table-responsive active-projects style-1">
+                      <table id="empoloyees-tblwrapper" className="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Alt Phone</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>#</td>
+                            <td>Name</td>
+                            <td>Address</td>
+                            <td>Phone</td>
+                            <td>Alt Phone</td>
+
+                            <td>
+                              <div className="badgeBox">
+                                <span className="actionBadge badge-danger light border-0 badgebox-size">
+                                  <span className="material-symbols-outlined badgebox-size">
+                                    delete
+                                  </span>
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-end">
+                <button className="btn btn-primary me-1" onClick={handleSubmit}>
+                  Submit
+                </button>
+                <NavLink to="/Dashboard/Customers">
+                  <button
+                    className="btn btn-danger light ms-1"
+                    onClick={() => {
+                      setShowContent(true);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </NavLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };
