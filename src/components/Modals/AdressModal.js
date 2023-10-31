@@ -77,9 +77,9 @@ const AdressModal = ({
   const adressLine = adress.adressLine || "";
   const roomNo = (adress.room && ", " + adress.room) || "";
   const city = (adress.city && ", " + adress.city) || "";
-  const adState = (adress.state && "," + adress.state) || "";
+  const adState = (adress.state && ", " + adress.state) || "";
   const postCode = (adress.postalCode && ", " + adress.postalCode) || "";
-  const country = (adress.country && "," + adress.country) || "";
+  const country = (adress.country && ", " + adress.country) || "";
 
   handleAdress(adressLine + roomNo + city + adState + postCode + country);
 
