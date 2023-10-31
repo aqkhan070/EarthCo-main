@@ -39,7 +39,6 @@ const theme = createTheme({
 });
 
 const ServiceRequestTR = ({ serviceRequest }) => {
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -53,7 +52,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
     "Service Request #": "ServiceRequestNumber",
     "Customer Name": "CustomerId",
     "Assigned to": "Assign",
-    "Status": "SRStatusId",
+    Status: "SRStatusId",
     "Work Requested": "WorkRequest",
     "Date Created": "CreatedDate",
   };
@@ -131,18 +130,15 @@ const ServiceRequestTR = ({ serviceRequest }) => {
         <ThemeProvider theme={theme}>
           <div className="">
             <div className=" text-center">
-
               <div className="row ">
                 <div className="col-md-12">
                   <div className="col-3 custom-search-container">
                     <TextField
                       label="Search"
                       variant="standard"
-              size="small"
-                      
+                      size="small"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                  
                     />
                   </div>
                   <div className="custom-button-container">
@@ -214,31 +210,27 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                           <TableCell>{customer.WorkRequest}</TableCell>
                           <TableCell>{customer.CreatedDate}</TableCell>
                           <TableCell>
-                            
-                              <Button
-                                className="delete-button"
-                                onClick={() => {
-                                  setServiceRequestId(
-                                    customer.ServiceRequestId
-                                  );
-                                  setShowContent(false);
-                                  console.log("////////", serviceRequestId);
-                                  // console.log("////////",customer.ServiceRequestId);
-                                }}
-                              >
-                                <Create />
-                              </Button>
+                            <Button
+                              className="delete-button"
+                              onClick={() => {
+                                setServiceRequestId(customer.ServiceRequestId);
+                                setShowContent(false);
+                                console.log("////////", serviceRequestId);
+                                // console.log("////////",customer.ServiceRequestId);
+                              }}
+                            >
+                              <Create />
+                            </Button>
 
-                              <Button
-                                color="error"
-                                className="delete-button"
-                                onClick={() =>
-                                  handleDelete(customer.ServiceRequestId)
-                                }
-                              >
-                                <Delete />
-                              </Button>
-                           
+                            <Button
+                              color="error"
+                              className="delete-button"
+                              onClick={() =>
+                                handleDelete(customer.ServiceRequestId)
+                              }
+                            >
+                              <Delete />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
