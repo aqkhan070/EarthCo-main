@@ -7,6 +7,7 @@ const AdressModal = ({ boolState, handleAdress, adress, setAdress, topClass }) =
     const handleSubmit = (e) => {
         e.preventDefault();
         boolState(true);
+    
     }
 
 
@@ -19,22 +20,22 @@ const AdressModal = ({ boolState, handleAdress, adress, setAdress, topClass }) =
     }
 
     const adressLine = adress.adressLine || '';
-    const roomNo = (adress.room && (' / ' + adress.room)) || '';
-    const city = (adress.city && (' / ' + adress.city)) || '';
-    const adState = (adress.state && (' / ' + adress.state)) || '';
-    const postCode = (adress.postalCode && (' / ' + adress.postalCode)) || '';
-    const country = (adress.country && (' / ' + adress.country)) || '';
+    const roomNo = (adress.room && (', ' + adress.room)) || '';
+    const city = (adress.city && (', ' + adress.city)) || '';
+    const adState = (adress.state && (',' + adress.state)) || '';
+    const postCode = (adress.postalCode && (', ' + adress.postalCode)) || '';
+    const country = (adress.country && (',' + adress.country)) || '';
 
     handleAdress(adressLine + roomNo + city + adState + postCode + country)
 
     return (
         <div className={"adressmodal " + topClass}>
-            <div className="card" style={{ marginBottom: '0px' }}>
+            <div className="" style={{ margin: '5px' }}>
                 <div className="card-header" style={{ background: '#f8f4f4' }}>
                     <h4 className="card-title">Adress</h4>
                 </div>
-                <div className="card-body">
-                    <div className="basic-form">
+                <div className="">
+                    <div className="">
                         <form onSubmit={handleSubmit}>
                             <div className="col-md-12 mb-2">
                                 <input type="text" id='adressInput1' onChange={handleChange} value={adress.adressLine} name='adressLine' className="form-control input-default " placeholder="Adress Line 1" />

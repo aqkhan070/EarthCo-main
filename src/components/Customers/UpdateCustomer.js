@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import AdressModal from "../Modals/AdressModal";
 
 const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [mainObj, setmainObj] = useState({});
 
   const [showContacts, setShowContacts] = useState(false);
-  const [showSRLocation, setShowSRLocation] = useState(false)
+  const [showSRLocation, setShowSRLocation] = useState(false);
 
   const [formData, setFormData] = useState({
     CustomerData: {
@@ -24,6 +25,16 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     },
     ContactData: customerData.tblContacts,
   });
+
+  const [serviceLocations, setServiceLocations] = useState({});
+  const [slForm, setSlForm] = useState([])
+  const [adress1, setAdress1] = useState("");
+  const [adress2, setAdress2] = useState("");
+
+  const [showPop1, setShowPop1] = useState(true);
+  const [showPop2, setShowPop2] = useState(true);
+
+  const [SLadress, setSLadress] = useState({});
 
   const inputReffname = useRef();
   const inputReflname = useRef();
@@ -250,9 +261,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     }
   };
 
-  const addSRLocation = () => {
-    setShowSRLocation(false)
-  }
 
   useEffect(() => {
     if (loginState === "allow") {
@@ -261,6 +269,65 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       setShowLogin(false);
     }
   }, [loginState]);
+
+  const handleSLChange = (e) => {
+    const { name, value, type, checked } = e.target;
+  
+    if (type === "radio") {
+      // Handle radio button inputs
+      setServiceLocations((prevLocations) => ({
+        ...prevLocations,
+        [name]: checked ? value : "", // Only update the value if the radio button is checked
+      }));
+    } else {
+      // Handle text inputs
+      setServiceLocations((prevLocations) => ({
+        ...prevLocations,
+        [name]: value,
+      }));
+    }
+    // console.log("<><><><><<", serviceLocations)
+  };
+
+  const addServiceLocation = (e) => {
+    e.preventDefault();
+    // Check if serviceLocations has data to add
+    if (Object.keys(serviceLocations).length === 0) {
+      alert("Service Locations data is empty");
+      return;
+    }
+  
+    // Create a new object containing the serviceLocations data
+    const newObject = serviceLocations;
+    
+  
+    // Append the new object to the array
+    setSlForm((prevObjects) => [...prevObjects, newObject]);
+  
+    // Clear the serviceLocations state after adding it to the array
+    setServiceLocations({});
+    console.log("><><><><><",slForm)
+    setShowSRLocation(false);
+  };
+
+  const handleDelete = (index) => {
+    const shouldDelete = window.confirm('Are you sure you want to delete this Service Location?');
+
+    if (shouldDelete) {
+      // Create a copy of the slForm array
+      const updatedSlForm = [...slForm];
+
+      // Remove the element at the specified index
+      updatedSlForm.splice(index, 1);
+
+      // Update the state with the modified array
+      setSlForm(updatedSlForm);
+    }
+  };
+  
+  
+
+  // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
   return (
     <div className="">
@@ -521,117 +588,161 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
             </h4>
           </div>
           <div className="card-body">
+            {showSRLocation ? null : (
+              <button
+                onClick={() => {
+                  setShowSRLocation(true);
+                }}
+                className="btn btn-primary"
+              >
+                Add
+              </button>
+            )}
 
-          <button onClick={()=>{setShowSRLocation(true)}} className="btn btn-primary">Add</button>
-            {showSRLocation && <div className="row">
-              <div className="col-lg-12">
-                <div className="row">
-                  <div className="col-xl-4 mb-3">
+            {showSRLocation && (
+              <div className="row">
+                <div className="col-lg-12">
+                  <div className="row">
+                    <div className="col-xl-4 mb-3">
+                      <label className="form-label">
+                        Name<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="SRName"
+                        onChange={handleSLChange}
+                        className="form-control form-control-sm"
+                        placeholder="Name"
+                        required
+                      />
+                    </div>
+                    <div className="col-xl-6 mb-5">
+                      <div className="form-check form-check-inline radio-margin">
+                        <label className="form-check-label" for="inlineRadio1">
+                          Bill to:
+                        </label>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="BillTo"
+                            id="inlineRadio1"
+                            onClick={handleSLChange}
+                            value="Customer"
+                          />
+                          <label
+                            className="form-check-label"
+                            for="inlineRadio1"
+                          >
+                            Customer
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="BillTo"
+                            id="inlineRadio2"
+                            onClick={handleSLChange}
+                            value="BillToServiceLocation"
+                          />
+                          <label
+                            className="form-check-label"
+                            for="inlineRadio2"
+                          >
+                            This service Location
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <h4>Details</h4>{" "}
+                    <hr
+                      style={{
+                        border: "none", // Remove the default border
+                        backgroundColor: "#d9d9d9", // Set the background color to create the line
+                        height: "1px", // Set the height to 1px for a thin line
+                        margin: " 0px 0px 19px", // Add margin for spacing
+                      }}
+                    />
+                    <div className="row">
+                    <div
+                    className="col-xl-3 mb-3"
+                    style={{ position: "relative" }}
+                  >
                     <label className="form-label">
-                      Name<span className="text-danger">*</span>
+                      Address<span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      name="FirstName"
+                      id="SRinput2"
+                      onClick={() => {
+                        setShowPop2(!showPop2);
+                        
+                      }}
+                      style={{ cursor: "pointer" }}
+                      name="SLAddress"
+                                   
+
                       className="form-control form-control-sm"
-                      placeholder="Name"
-                      required
+                      value={adress2}
+                      placeholder="Address"
+                      readOnly
                     />
+                    {showPop2 || (
+                      <AdressModal
+                        boolState={setShowPop2}
+                        handleAdress={setAdress2}
+                        adress={SLadress}
+                        setAdress={setSLadress}
+                      />
+                    )}
                   </div>
-                  <div className="col-xl-6 mb-5">
-                    <div className="form-check form-check-inline radio-margin">
-                      <label className="form-check-label" for="inlineRadio1">
-                        Bill to:
-                      </label>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="BillToCustomer"
-                          id="inlineRadio1"
-                          value="option1"
-                        />
-                        <label className="form-check-label" for="inlineRadio1">
-                          Customer
+                      <div className="col-xl-3 mb-3">
+                        <label className="form-label">
+                          Phone<span className="text-danger">*</span>
                         </label>
-                      </div>
-                      <div className="form-check form-check-inline">
                         <input
-                          className="form-check-input"
-                          type="radio"
-                          name="BillToSRLocation"
-                          id="inlineRadio2"
-                          value="option2"
+                          type="number"
+                          onChange={handleSLChange}
+                          name="SLPhone"
+                          className="form-control form-control-sm"
+                          placeholder="Phone"
                         />
-                        <label className="form-check-label" for="inlineRadio2">
-                          This service Location
+                      </div>
+                      <div className="col-xl-3 mb-3">
+                        <label className="form-label">
+                          Alt Phone<span className="text-danger">*</span>
                         </label>
+                        <input
+                          type="number"
+                          name="AltPhone"
+                          onChange={handleSLChange}
+                          className="form-control form-control-sm"
+                          placeholder="Alt Phone"
+                          required
+                        />
+                      </div>
+                      <div
+                        className="col-xl-3 mb-3"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          paddingTop: "26px",
+                        }}
+                      >
+                        <button
+                          onClick={addServiceLocation}
+                          className="btn btn-primary"
+                        >
+                          Save
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  <h4>Details</h4>{" "}
-                  <hr
-                    style={{
-                      border: "none", // Remove the default border
-                      backgroundColor: "#d9d9d9", // Set the background color to create the line
-                      height: "1px", // Set the height to 1px for a thin line
-                      margin: " 0px 0px 19px", // Add margin for spacing
-                    }}
-                  />
-                  <div className="row">
-                    <div className="col-xl-3 mb-3">
-                      <label className="form-label">
-                        Address<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        name="SRAddress"
-                        className="form-control form-control-sm"
-                        placeholder="Address"
-                        required
-                      />
-                    </div>
-                    <div className="col-xl-3 mb-3">
-                      <label className="form-label">
-                        Phone<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        onChange={handleChange}
-                        name="SRPhone"
-                        className="form-control form-control-sm"
-                        placeholder="Phone"
-                      />
-                    </div>
-                    <div className="col-xl-3 mb-3">
-                      <label className="form-label">
-                        Alt Phone<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        id="contactInp4"
-                        name="AltPhone"
-                        className="form-control form-control-sm"
-                        placeholder="Alt Phone"
-                        required
-                      />
-                    </div>
-                  <div
-                    className="col-xl-3 mb-3"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      paddingTop: "26px",
-                    }}
-                  >
-                    <button onClick={addSRLocation} className="btn btn-primary">Save</button>
-                  </div>
                   </div>
                 </div>
               </div>
-            </div>}
+            )}
 
-            
-
-            
             <div className="col-xl-12">
               <div className="card">
                 <div className="card-body p-0">
@@ -645,27 +756,31 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                             <th>Address</th>
                             <th>Phone</th>
                             <th>Alt Phone</th>
+                            <th>Bill to</th>
                             <th>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>#</td>
-                            <td>Name</td>
-                            <td>Address</td>
-                            <td>Phone</td>
-                            <td>Alt Phone</td>
-
-                            <td>
+                          {slForm.map((slData, index) =>  (
+                            <tr>
+                              <td>{index + 1}</td>
+                              <td>{slData.SRName}</td>
+                              <td>{slData.SRName}</td>
+                              <td>{slData.SLPhone}</td>
+                              <td>{slData.AltPhone}</td>
+                              <td>{slData.BillTo}</td>
+                              <td>
                               <div className="badgeBox">
                                 <span className="actionBadge badge-danger light border-0 badgebox-size">
-                                  <span className="material-symbols-outlined badgebox-size">
+                                  <span className="material-symbols-outlined badgebox-size" onClick={() => handleDelete(index)}>
                                     delete
                                   </span>
                                 </span>
                               </div>
                             </td>
-                          </tr>
+                            </tr>
+                          )                  
+                          )}                          
                         </tbody>
                       </table>
                     </div>
