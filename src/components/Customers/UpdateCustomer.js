@@ -31,8 +31,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [adress1, setAdress1] = useState("");
   const [adress2, setAdress2] = useState("");
 
-  const [showPop1, setShowPop1] = useState(true);
-  const [showPop2, setShowPop2] = useState(true);
+  const [showPop1, setShowPop1] = useState(false);
+  const [showPop2, setShowPop2] = useState(false);
 
   const [SLadress, setSLadress] = useState({});
 
