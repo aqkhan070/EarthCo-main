@@ -49,6 +49,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   };
 
   const fetchEstimates = async () => {
+    if (estimateId === 0){
+      return
+    }
     const response = await axios.get(
       `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estimateId}`
     );

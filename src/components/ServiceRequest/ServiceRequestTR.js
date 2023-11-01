@@ -17,7 +17,7 @@ import {
   Checkbox,
   Paper,
 } from "@mui/material";
-import { Create, Delete } from "@mui/icons-material";
+import { Create, Delete  } from "@mui/icons-material";
 
 const theme = createTheme({
   palette: {

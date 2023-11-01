@@ -3,6 +3,7 @@ import { Form } from "react-bootstrap";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import { Print, Email, Download  } from "@mui/icons-material";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
@@ -222,19 +223,19 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                   type="button"
                   className="btn btn-sm btn-outline-primary"
                 >
-                  Email
+                  <Email></Email>
                 </button>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline-primary mx-2"
                 >
-                  Print
+                  <Print></Print>
                 </button>
                 <button
                   type="button"
                   className="btn btn-sm btn-outline-primary"
                 >
-                  Download
+                  <Download></Download>
                 </button>
               </div>
             </div>
@@ -477,38 +478,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                           </div>
                         </div>
 
-                        <div className="mb-3 row">
-                          <div className="row">
-                            <label className="col-sm-3 col-form-label">
-                              Duration
-                            </label>
-                            <div className="col-sm-2 ">
-                              <input
-                                type="text"
-                                name="Hour"
-                                className="form-control form-control-sm"
-                                placeholder="hr"
-                              />
-                            </div>
-                            <div className="col-sm-2 ">
-                              <input
-                                type="text"
-                                name="Minuts"
-                                className="form-control form-control-sm"
-                                placeholder="min"
-                              />
-                            </div>
-                            <div className="col-sm-2 ">
-                            <input
-                              type="text"
-                              name="Seconds"
-                              className="form-control form-control-sm"
-                              placeholder="sec"
-                            />
-                          </div>
-                          </div>
-                          
-                        </div>
+                        
 
                         <div className="mb-3 row">
                           <label className="col-sm-3 col-form-label">

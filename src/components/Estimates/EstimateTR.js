@@ -52,7 +52,7 @@ const EstimateTR = ({ estimates }) => {
   const [filterDate, setFilterDate] = useState("This Month");
 
 
-  const [selectedItem, setSelectedItem] = useState();
+  const [selectedItem, setSelectedItem] = useState(0);
   const [showContent, setShowContent] = useState(true);
 
   const navigate = useNavigate();
@@ -217,7 +217,8 @@ const EstimateTR = ({ estimates }) => {
             <button
               className="btn btn-primary"
               onClick={() => {
-                navigate("/Dashboard/Estimates/Add-Estimate");
+                setSelectedItem(0);
+                setShowContent(false);
               }}
             >
               + Add Estimates
