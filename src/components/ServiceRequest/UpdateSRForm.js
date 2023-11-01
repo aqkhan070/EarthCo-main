@@ -477,7 +477,6 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                             />
                           </div>
                         </div>
-
                         
 
                         <div className="mb-3 row">

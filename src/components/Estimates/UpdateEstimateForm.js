@@ -4,6 +4,7 @@ import { Form } from "react-bootstrap";
 import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
+import { Print, Email, Download  } from "@mui/icons-material";
 
 const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   const [estimates, setEstimates] = useState({});
@@ -284,25 +285,25 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       <option value={3}>Closed Billed</option>
                     </Form.Select>
                   </div>
-                  <div className="col-lg-8 col-md-12 actionBtns">
+                  <div className="col-lg-8 col-md-12 ">
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary"
+                      className="btn btn-sm btn-outline-primary estm-action-btn" 
                     >
-                      Email
+                      <Email/>
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary "
+                      className="btn btn-sm btn-outline-primary estm-action-btn"
                     >
-                      Print
+                      <Print></Print>
                     </button>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      style={{ minWidth: "120px" }}
+                      className="btn btn-sm btn-outline-primary estm-action-btn"
+                      // style={{ minWidth: "120px" }}
                     >
-                      Download
+                      <Download />
                     </button>
                   </div>
                 </div>
