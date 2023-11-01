@@ -12,6 +12,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
   const [primary, setPrimary] = useState(false);
+  const [alowContactLogin, setAlowContactLogin] = useState(false);
   const [allowLogin, setAllowLogin] = useState(false);
 
   const [apiKeys, setapiKeys] = useState([]);
@@ -220,10 +221,19 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
   const addContact = (e) => {
     e.preventDefault();
-    if (Object.keys(contacts).length === 0) {
-      alert("Contact data is empty");
-      return;
-    }
+   
+    // if (
+    //   formData.ContactData.FirstName === "" ||
+    //   formData.ContactData.LastName === "" ||
+    //   formData.ContactData.Email === "" ||
+    //   formData.ContactData.Phone === "" ||
+    //   formData.ContactData.CompanyName === "" ||
+    //   formData.ContactData.Address === ""
+    // ) {
+    //   // Display an alert if any field is empty
+    //   alert("Please fill in all required fields.");
+    //   return; // Exit the function to prevent further execution
+    // }
 
     const newContact = {
       FirstName: formData.ContactData.FirstName,
@@ -373,7 +383,25 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <option value="">Tax</option>
                 </Form.Select>
               </div>
+
+              {formData.CustomerData.CustomerName && <div className="col-xl-4 mb-3">
+                <div className="form-check custom-checkbox form-check-inline radio-margin">
+                  <input
+                    type="checkbox"
+                    name="isPrimary"
+                    className="form-check-input"
+                    id="customCheckBox"
+                  />
+
+                  <label className="form-check-label" htmlFor="customCheckBox">
+                    Send text message to {formData.CustomerData.CustomerName}
+                  </label>
+                </div>
+              </div>}
+              
+
             </div>
+
             <h4 className="modal-title" id="#gridSystemModal">
               Contact
             </h4>
@@ -498,7 +526,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     Password <span className="text-danger">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control form-control-sm"
                     name=""
                     required
@@ -512,7 +540,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     Confirm Password <span className="text-danger">*</span>
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control form-control-sm"
                     name=""
                     required
@@ -706,6 +734,37 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       />
                     </div>
 
+                    
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Phone<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        ref={inputRefphone}
+                        id="contactInp3"
+                        onChange={handleChange}
+                        name="Phone"
+                        className="form-control form-control-sm"
+                        placeholder="Phone"
+                        required
+                      />
+                    </div>
+                    <div className="col-xl-3 mb-3">
+                      <label className="form-label">
+                        Alt Phone<span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        
+                        id="contactInp3"
+                       
+                        name=" Alt Phone"
+                        className="form-control form-control-sm"
+                        placeholder=" Alt Phone"
+                        required
+                      />
+                    </div>
                     <div className="col-xl-3 mb-2">
                       <label className="form-label">
                         Email<span className="text-danger">*</span>
@@ -719,20 +778,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         name="Email"
                         placeholder="Email"
                         required
-                      />
-                    </div>
-                    <div className="col-xl-3 mb-3">
-                      <label className="form-label">
-                        Phone<span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        ref={inputRefphone}
-                        id="contactInp3"
-                        onChange={handleChange}
-                        name="Phone"
-                        className="form-control form-control-sm"
-                        placeholder="Phone"
                       />
                     </div>
                     <div className="col-xl-3 mb-3">
@@ -762,33 +807,130 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         required
                       />
                     </div>
+                    <div className="col-xl-3 mb-3">
+                    <label className="form-label">Point of contact</label>
+                <Form.Select
+                  size="md"
+                  name="Point of contact"
+                  aria-label="Default select example"
+                  id="inputState"
+                  className="bg-white"
+                >
+                  <option value="">yes</option>
+                  <option value="">no</option>
+                </Form.Select>
+                    </div>
+
+                    <div className="col-xl-3 mb-3">
+                      <label className="col-form-label col-form-label-lg">
+                       Allow Login
+                      </label>
+                      <div className="mb-3 mb-0">
+                        <div className="form-check custom-checkbox form-check-inline">
+                          <input
+                            type="checkbox"
+                            name="isPrimary"
+                            className="form-check-input"
+                            id="customCheckBox"
+                            checked={alowContactLogin}
+                            onChange={() => setAlowContactLogin(!alowContactLogin)}
+                            required
+                          />
+
+                          <label
+                            className="form-check-label"
+                            htmlFor="customCheckBox"
+                          >
+                            Allow Login
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {alowContactLogin && (
+              <div className="row">
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Username <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Password <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Confirm Password <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+              </div>
+            )}
 
                     <div className="col-xl-3 mb-3">
                       <label className="col-form-label col-form-label-lg">
                         Set as Primary
                       </label>
                       <div className="mb-3 mb-0">
-                        <form>
-                          <div className="form-check custom-checkbox form-check-inline">
-                            <input
-                              type="checkbox"
-                              name="isPrimary"
-                              className="form-check-input"
-                              id="customCheckBox"
-                              checked={primary}
-                              onChange={() => setPrimary(!primary)}
-                            />
+                        <div className="form-check custom-checkbox form-check-inline">
+                          <input
+                            type="checkbox"
+                            name="isPrimary"
+                            className="form-check-input"
+                            id="customCheckBox"
+                            checked={primary}
+                            onChange={() => setPrimary(!primary)}
+                            required
+                          />
 
-                            <label
-                              className="form-check-label"
-                              htmlFor="customCheckBox"
-                            >
-                              Set as Primary
-                            </label>
-                          </div>
-                        </form>
+                          <label
+                            className="form-check-label"
+                            htmlFor="customCheckBox"
+                          >
+                            Set as Primary
+                          </label>
+                        </div>
                       </div>
                     </div>
+
+                    <div className="col-xl-3 mb-3">
+                <label className="form-label">Comments</label>
+                <textarea
+                  name="Comments"
+                  className="form-txtarea form-control form-control-sm"
+                  rows="2"
+                ></textarea>
+              </div>
+                    
+
+
                     <div className="col-xl-3 mb-3 mt-4 ">
                       <button
                         type="submit"
