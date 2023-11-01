@@ -5,15 +5,15 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 // import { Autocomplete, TextField } from '@mui/material';
 
-const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
+const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
   const [customers, setCustomers] = useState([]);
 
-  const [sRList, setSRList] = useState({})
+  const [sRList, setSRList] = useState({});
 
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
-      ServiceRequestId: serviceRequestId,        
-     
+      ServiceRequestId: serviceRequestId,
+
       CustomerId: 0,
       ServiceLocation: "",
       Contact: "",
@@ -31,17 +31,14 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
   const [itemInput, setItemInput] = useState({
     Name: "",
-    Qty: 0,
+    Qty: null,
     Description: "",
-    Rate: 0,
+    Rate: null,
   });
   const [tblSRItems, setTblSRItems] = useState([]);
 
   const [files, setFiles] = useState([]);
   const inputFile = useRef(null);
-
-
- 
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -62,7 +59,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
     formData.append(
-      "ServiceRequestData", JSON.stringify(SRData.ServiceRequestData)
+      "ServiceRequestData",
+      JSON.stringify(SRData.ServiceRequestData)
     );
 
     // formData.append(
@@ -93,8 +91,6 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
     }
-
-
   };
 
   const removeItem = (index) => {
@@ -116,52 +112,51 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
     setFiles(updatedFiles);
   };
 
-
-  
   useEffect(() => {
     const fetchSR = async () => {
-        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`);
-        try {     
-            setSRList(response.data);
-            setSRData(prevData => ({
-                ServiceRequestData: {
-                    ...prevData.ServiceRequestData,
-                    CustomerId: response.data.CustomerId,
-                    ...response.data,
-                }
-            }));
-            // Set the tblSRItems state with the response.data.tblSRItems
-            setTblSRItems(response.data.tblSRItems);
-            // Set the itemInput state with the first item from the response.data.tblSRItems
-            if(response.data.tblSRItems && response.data.tblSRItems.length > 0) {
-                setItemInput(response.data.tblSRItems[0]);
-            }
-
-            if(response.data.tblSRFiles) {
-              setFiles(prevFiles => [...prevFiles, ...response.data.tblSRFiles]);
-          }
-            console.log(" list is///////", response.data);
-        } catch (error) {
-            console.error("API Call Error:", error);
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
+      );
+      try {
+        setSRList(response.data);
+        setSRData((prevData) => ({
+          ServiceRequestData: {
+            ...prevData.ServiceRequestData,
+            CustomerId: response.data.CustomerId,
+            ...response.data,
+          },
+        }));
+        // Set the tblSRItems state with the response.data.tblSRItems
+        setTblSRItems(response.data.tblSRItems);
+        // Set the itemInput state with the first item from the response.data.tblSRItems
+        if (response.data.tblSRItems && response.data.tblSRItems.length > 0) {
+          setItemInput(response.data.tblSRItems[0]);
         }
+
+        if (response.data.tblSRFiles) {
+          setFiles((prevFiles) => [...prevFiles, ...response.data.tblSRFiles]);
+        }
+        console.log(" list is///////", response.data);
+      } catch (error) {
+        console.error("API Call Error:", error);
+      }
     };
 
     const fetchCustomers = async () => {
-        const response = await axios.get("https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList");
-        try {
-            setCustomers(response.data);
-            console.log(customers);
-        } catch (error) {
-            console.error("API Call Error:", error);
-        }
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+      );
+      try {
+        setCustomers(response.data);
+        console.log(customers);
+      } catch (error) {
+        console.error("API Call Error:", error);
+      }
     };
 
     fetchSR();
     fetchCustomers();
-}, [serviceRequestId]);
-
-
-
+  }, [serviceRequestId]);
 
   // useEffect(() => {
   //   fetchSR();
@@ -204,9 +199,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
   return (
     <>
-      <TitleBar icon={icon} title=" Add Service Request" />
-      <div className="container-fluid">
-        <div className="card">
+      <div className="">
+        <div className="">
           <div className="card-body">
             {/* Add service form */}
             <div className="row mb-3">
@@ -252,13 +246,13 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                 <br />
                 <div className="basic-form">
                   <div className="row">
-                    <div className="mb-2 col-md-9 SrCustomerList">
+                    <div className="col-xl-3 mb-2 col-md-9 ">
                       <label className="form-label">Customers</label>
                       <Form.Select
                         size="lg"
                         name="CustomerId"
                         onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.CustomerId || ''}
+                        value={SRData.ServiceRequestData.CustomerId || ""}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
@@ -274,7 +268,29 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         ))}
                       </Form.Select>
                     </div>
-                    <div className="mb-3 col-md-4">
+                    <div className="col-xl-3 mb-2 col-md-9 ">
+                      <label className="form-label">Servive Locations</label>
+                      <Form.Select
+                        size="lg"
+                        name="CustomerId"
+                        onChange={handleInputChange}
+                        value={SRData.ServiceRequestData.CustomerId || ""}
+                        aria-label="Default select example"
+                        id="inputState"
+                        className="bg-white"
+                      >
+                        <option value="">Service Location</option>{" "}
+                        {customers.map((customer) => (
+                          <option
+                            key={customer.CustomerId}
+                            value={customer.CustomerId}
+                          >
+                            {customer.CustomerName}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </div>
+                    {/* <div className="mb-3 col-md-4">
                       <label className="form-label">Service Location</label>
                       <input
                         type="text"
@@ -284,8 +300,30 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         onChange={handleInputChange}
                         placeholder={sRList.ServiceLocation || " "}
                       />
+                    </div> */}
+                    <div className="col-xl-3 mb-2 col-md-9 ">
+                      <label className="form-label">Contacts</label>
+                      <Form.Select
+                        size="lg"
+                        name="CustomerId"
+                        onChange={handleInputChange}
+                        value={SRData.ServiceRequestData.CustomerId || ""}
+                        aria-label="Default select example"
+                        id="inputState"
+                        className="bg-white"
+                      >
+                        <option value="">Customer</option>{" "}
+                        {customers.map((customer) => (
+                          <option
+                            key={customer.CustomerId}
+                            value={customer.CustomerId}
+                          >
+                            {customer.CustomerName}
+                          </option>
+                        ))}
+                      </Form.Select>
                     </div>
-                    <div className="mb-3 col-md-4">
+                    {/* <div className="mb-3 col-md-4">
                       <label>Contact</label>
                       <input
                         type="text"
@@ -295,39 +333,38 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         className="form-control form-control-sm"
                         placeholder={sRList.Contact || " "}
                       />
-                    </div>
-                  </div>
-                  <div className="row  mt-2 mb-2">
-                    <div className="col-md-4">
+                    </div> */}
+                    <div className="col-xl-3">
                       <label className="form-label">Job Name:</label>
                       <input
                         type="text"
                         name="JobName"
-                        value={SRData.ServiceRequestData.JobName || ''}
+                        value={SRData.ServiceRequestData.JobName || ""}
                         onChange={handleInputChange}
                         className="form-control form-control-sm"
                         placeholder={sRList.JobName || " "}
-
                       />
                     </div>
-                    <div className=" col-md-4">
+                  </div>
+
+                  <div className="row  mt-2 mb-2">
+                    <div className=" col-xl-3 col-md-4">
                       <label className="form-label">Due Date:</label>
 
                       <input
                         type="date"
                         name="DueDate"
-                        value={SRData.ServiceRequestData.DueDate || ''}
+                        value={SRData.ServiceRequestData.DueDate || ""}
                         onChange={handleInputChange}
                         className="form-control form-control-sm"
                         placeholder={sRList.DueDate || " "}
-
                       />
                     </div>
-                    <div className=" col-md-4">
+                    <div className="col-xl-3 col-md-4">
                       <label className="form-label">Type:</label>
                       <Form.Select
                         name="SRTypeId"
-                        value={SRData.ServiceRequestData.SRTypeId || ''}
+                        value={SRData.ServiceRequestData.SRTypeId || ""}
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
@@ -340,11 +377,22 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                         <option value="Tree Care">Tree Care</option>
                       </Form.Select>
                     </div>
-                    <div className="col-lg-2 col-md-2 mt-2">
+                    <div className="col-xl-3 ">
+                      <label className="form-label">Notes</label>
+                      <textarea
+                        name="WorkRequest"
+                        value={SRData.ServiceRequestData.WorkRequest || ""}
+                        onChange={handleInputChange}
+                        className="form-txtarea form-control form-control-sm"
+                        placeholder={sRList.WorkRequest || " "}
+                        rows="2"
+                      ></textarea>
+                    </div>
+                    <div className="col-lg-2 col-md-2 ">
                       <label className="form-label">Status:</label>
                       <Form.Select
                         name="SRStatusId"
-                        value={SRData.ServiceRequestData.SRStatusId || ''}
+                        value={SRData.ServiceRequestData.SRStatusId || ""}
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
@@ -372,9 +420,11 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">
                         Assign / Appointment:
                       </label>
-                      <Form.Select name="Assign" size="lg" className="bg-white"
-                        value={SRData.ServiceRequestData.Assign || ''}
-                      
+                      <Form.Select
+                        name="Assign"
+                        size="lg"
+                        className="bg-white"
+                        value={SRData.ServiceRequestData.Assign || ""}
                       >
                         <option value={null}>Choose...</option>
                         <option value="option 1">option 1</option>
@@ -426,6 +476,59 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                             />
                           </div>
                         </div>
+
+                        <div className="mb-3 row">
+                          <div className="row">
+                            <label className="col-sm-3 col-form-label">
+                              Duration
+                            </label>
+                            <div className="col-sm-2 ">
+                              <input
+                                type="text"
+                                name="Hour"
+                                className="form-control form-control-sm"
+                                placeholder="hr"
+                              />
+                            </div>
+                            <div className="col-sm-2 ">
+                              <input
+                                type="text"
+                                name="Minuts"
+                                className="form-control form-control-sm"
+                                placeholder="min"
+                              />
+                            </div>
+                            <div className="col-sm-2 ">
+                            <input
+                              type="text"
+                              name="Seconds"
+                              className="form-control form-control-sm"
+                              placeholder="sec"
+                            />
+                          </div>
+                          </div>
+                          
+                        </div>
+
+                        <div className="mb-3 row">
+                          <label className="col-sm-3 col-form-label">
+                            Staff
+                          </label>
+                          <div className="col-sm-9">
+                          <Form.Select
+                        name="Assign"
+                        size="md"
+                        className="bg-white"
+                       
+                      >
+                        <option value={null}>Choose...</option>
+                        <option value="option 1">option 1</option>
+                        <option value="option 2">option 2</option>
+                        <option value="option 3">option 3</option>
+                      </Form.Select>
+                          </div>
+                        </div>
+
                         <div className="mb-3 row">
                           <label className="col-sm-3 col-form-label">
                             Quantity
@@ -486,6 +589,47 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                             />
                           </div>
                         </div>
+
+                        <div className="mb-3 row">
+                          <label className="col-sm-3 col-form-label">
+                            Tax
+                          </label>
+                          <div className="col-sm-9">
+                          <Form.Select
+                        name="Assign"
+                        size="md"
+                        className="bg-white"
+                       
+                      >
+                        
+                        <option value="option 1">Non (Non-Taxable Sales)</option>
+                        <option value="option 2">Tax (Taxable Sales)</option>
+                        <option value="option 3">LBR (Non-Taxable Labour)</option>
+                      </Form.Select>
+                          </div>
+                        </div>
+                        <div className="mb-3 row">
+                          <label className="col-sm-3 col-form-label">
+                            
+                          </label>
+                          <div className="col-sm-9">
+                          <input
+                            type="checkbox"
+                            name="isPrimary"
+                            className="form-check-input"
+                            id="customCheckBox"
+                            
+                          />
+
+                          <label
+                            className="form-check-label"
+                            htmlFor="customCheckBox"
+                          >
+                           Billable
+                          </label>
+                          </div>
+                        </div>
+
                         <div className="row">
                           <label className="col-sm-3 col-form-label">
                             Item Total
@@ -494,7 +638,8 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                             className="col-sm-9"
                             style={{ display: "flex", alignItems: "center" }}
                           >
-                            <h5 style={{ margin: "0" }}>$100.00</h5>
+                            <h5 style={{ margin: "0" }}>{itemInput.Rate * itemInput.Qty}</h5>
+
                           </div>
                         </div>
                       </form>
@@ -620,9 +765,7 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                           <tr key={index}>
                             <td>{index + 1}</td>
                             <td>{file.FileName || file.name}</td>
-                            <td>
-                              
-                            </td>
+                            <td></td>
                             <td>{file.type || "N/A"}</td>
                             <td>{file.size} bytes</td>
                             <td>
@@ -660,11 +803,10 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       <label className="form-label">Work Requested:</label>
                       <textarea
                         name="WorkRequest"
-                        value={SRData.ServiceRequestData.WorkRequest || ''}
+                        value={SRData.ServiceRequestData.WorkRequest || ""}
                         onChange={handleInputChange}
                         className="form-txtarea form-control form-control-sm"
                         placeholder={sRList.WorkRequest || " "}
-
                         rows="2"
                       ></textarea>
                     </div>
@@ -674,11 +816,10 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
                       {/* Adjust the column size as needed */}
                       <textarea
                         name="ActionTaken"
-                        value={SRData.ServiceRequestData.ActionTaken || ''}
+                        value={SRData.ServiceRequestData.ActionTaken || ""}
                         onChange={handleInputChange}
                         className="form-txtarea form-control form-control-sm"
                         placeholder={sRList.ActionTaken || " "}
-
                         rows="2"
                       ></textarea>
                     </div>
@@ -688,12 +829,11 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
 
                       <input
                         type="date"
-                        name="CompletedDate"                        
-                        value={SRData.ServiceRequestData.CompletedDate || ''}
+                        name="CompletedDate"
+                        value={SRData.ServiceRequestData.CompletedDate || ""}
                         onChange={handleInputChange}
                         className="form-control form-control-sm"
                         placeholder={sRList.CompletedDate || " "}
-
                       />
                     </div>
                   </div>
@@ -712,9 +852,15 @@ const UpdateSRForm = ({serviceRequestId, setShowContent}) => {
               >
                 Submit
               </button>
-              
-                <button class="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
-              
+
+              <button
+                class="btn btn-danger light ms-1"
+                onClick={() => {
+                  setShowContent(true);
+                }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
