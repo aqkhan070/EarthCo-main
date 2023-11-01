@@ -115,6 +115,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
 
   useEffect(() => {
     const fetchSR = async () => {
+      if(serviceRequestId === 0){return}
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
       );

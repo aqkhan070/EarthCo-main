@@ -47,7 +47,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
 
   const [search, setSearch] = useState("");
 
-  const [serviceRequestId, setServiceRequestId] = useState();
+  const [serviceRequestId, setServiceRequestId] = useState(0);
   const [showContent, setShowContent] = useState(true);
 
   const columnFieldMapping = {
@@ -195,11 +195,11 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                   </div>
                   
                   <div className="custom-button-container">
-                    <Link to={"/Dashboard/Service-Requests/Add-SRform"}>
-                      <Button variant="contained" color="primary">
+                    
+                      <Button variant="contained" color="primary" onClick={() => {setShowContent(false); setServiceRequestId(0)}}>
                         + Add Service Request
                       </Button>
-                    </Link>
+                   
                   </div>
                 </div>
               </div>
