@@ -366,7 +366,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   className="form-control form-control-sm"
                   name="CustomerName"
                   value={formData.CustomerData.CustomerName}
-                  placeholder={customerData.CustomerName}
+                  placeholder={customerData.CustomerName ||"Customer Name" }
                   onChange={handleChange}
                   required
                 />
@@ -426,6 +426,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   type="text"
                   className="form-control form-control-sm"
                   name="Firstname"
+                  placeholder="First Name"
                   required
                 />
               </div>
@@ -439,7 +440,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 <input
                   type="text"
                   className="form-control form-control-sm"
-                  name="Firstname"
+                  name="LastName"
+                  placeholder="Last Name"
                   required
                 />
               </div>
@@ -453,7 +455,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 <input
                   type="text"
                   className="form-control form-control-sm"
-                  name="Firstname"
+                  name="Email"
+                  placeholder="Email"
                   required
                 />
               </div>
@@ -514,7 +517,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    name=""
+                    name="UserName"
+                    placeholder="User Name"
                     required
                   />
                 </div>
@@ -528,7 +532,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="password"
                     className="form-control form-control-sm"
-                    name=""
+                    name="Password"
+                    placeholder="Password"
                     required
                   />
                 </div>
@@ -542,7 +547,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="password"
                     className="form-control form-control-sm"
-                    name=""
+                    name="ConfirmPassword"
+                    placeholder="Confirm Password"
                     required
                   />
                 </div>
@@ -572,7 +578,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 <input
                   type="text"
                   className="form-control form-control-sm"
-                  name="CustomerName"
+                  name="Address"
+                  placeholder="Address"
                   required
                 />
               </div>
@@ -587,6 +594,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   type="text"
                   className="form-control form-control-sm"
                   name="CustomerName"
+                  placeholder="Phone"
                   required
                 />
               </div>
@@ -600,7 +608,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 <input
                   type="text"
                   className="form-control form-control-sm"
-                  name="CustomerName"
+                  name="AltPhone"
+                  placeholder="Alternate Phone"
                   required
                 />
               </div>
@@ -614,7 +623,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 <input
                   type="text"
                   className="form-control form-control-sm"
-                  name="CustomerName"
+                  name="CustomerFax"
+                  placeholder="Customer Fax"
                   required
                 />
               </div>
@@ -642,7 +652,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   id="inputState"
                   className="bg-white"
                 >
-                  <option value="">Tax</option>
+                  <option value="">Customer Type</option>
                 </Form.Select>
               </div>
 
@@ -859,7 +869,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="text"
                     className="form-control form-control-sm"
-                    name=""
+                    name="UserName"
+                    placeholder="User Name"
                     required
                   />
                 </div>
@@ -873,7 +884,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="password"
                     className="form-control form-control-sm"
-                    name=""
+                    name="Password"
+                    placeholder="Password"
                     required
                   />
                 </div>
@@ -887,7 +899,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <input
                     type="password"
                     className="form-control form-control-sm"
-                    name=""
+                    name="ConfirmPassword"
+                    placeholder="Confirm Password"
                     required
                   />
                 </div>
@@ -939,6 +952,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       >
                         Save
                       </button>
+                      <button
+                    className="btn btn-danger light ms-1"
+                    onClick={() => {
+                      setShowContacts(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
                     </div>
                   </div>
                 </div>
@@ -1015,7 +1036,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 onClick={() => {
                   setShowSRLocation(true);
                 }}
-                className="btn btn-primary"
+                className="btn btn-primary mb-3"
               >
                 Add
               </button>
@@ -1155,6 +1176,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         >
                           Save
                         </button>
+                        <button
+                    className="btn btn-danger light ms-1"
+                    onClick={() => {
+                      setShowSRLocation(false);
+                    }}
+                  >
+                    Cancel
+                  </button>
                       </div>
                     </div>
                   </div>
