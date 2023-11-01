@@ -27,6 +27,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       CustomerName: "",
     },
     ContactData: customerData.tblContacts,
+    ServiceLocationData: customerData.tblServiceLocations,
   });
 
   const [serviceLocations, setServiceLocations] = useState({});
