@@ -565,7 +565,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                           </label>
                           <div className="col-sm-9">
                           <Form.Select
-                        name="Assign"
+                        name="Tax"
                         size="md"
                         className="bg-white"
                        

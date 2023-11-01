@@ -484,6 +484,24 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                         />
                       </div>
                     </div>
+                    <div className="mb-3 row">
+                          <label className="col-sm-3 col-form-label">
+                            Tax
+                          </label>
+                          <div className="col-sm-9">
+                          <Form.Select
+                        name="Tax"
+                        size="md"
+                        className="bg-white"
+                       
+                      >
+                        
+                        <option value="option 1">Non (Non-Taxable Sales)</option>
+                        <option value="option 2">Tax (Taxable Sales)</option>
+                        <option value="option 3">LBR (Non-Taxable Labour)</option>
+                      </Form.Select>
+                          </div>
+                        </div>
                     <div className="row">
                       <label className="col-sm-3 col-form-label">
                         Item Total
