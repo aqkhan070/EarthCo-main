@@ -4,7 +4,7 @@ import { Form } from "react-bootstrap";
 import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-import { Print, Email, Download  } from "@mui/icons-material";
+import { Print, Email, Download } from "@mui/icons-material";
 
 const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   const [estimates, setEstimates] = useState({});
@@ -50,8 +50,8 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   };
 
   const fetchEstimates = async () => {
-    if (estimateId === 0){
-      return
+    if (estimateId === 0) {
+      return;
     }
     const response = await axios.get(
       `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estimateId}`
@@ -63,8 +63,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
         ...prevState,
         CustomerId: response.data.CustomerId,
         ...response.data,
-
-      }))
+      }));
 
       if (response.data.tblEstimateItems) {
         setFormData((prevState) => ({
@@ -263,131 +262,153 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     <div class="card">
       <div className="card-body">
         <div className="row">
-          <div className="basic-form col-md-6">
-            <div className="row">
-              <div className="col-md-8 mb-3">
-                <div className="row statusRow">
-                  <div
-                    className="col-lg-4 col-md-12 mb-2"
-                    style={{ minWidth: "150px" }}
-                  >
-                    <Form.Select
-                      aria-label="Default select example"
-                      value={formData.EstimateStatusId}
-                      onChange={handleStatusChange}
-                      name="Status"
-                      size="md"
-                      id="inlineFormCustomSelect"
-                    >
-                      <option value={null}>Select</option>
-                      <option value={1}>Open</option>
-                      <option value={2}>Approved</option>
-                      <option value={3}>Closed Billed</option>
-                    </Form.Select>
-                  </div>
-                  <div className="col-lg-8 col-md-12 ">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary estm-action-btn" 
-                    >
-                      <Email/>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary estm-action-btn"
-                    >
-                      <Print></Print>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary estm-action-btn"
-                      // style={{ minWidth: "120px" }}
-                    >
-                      <Download />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <form>
-              <div className="row">
-                <div className="mb-2 col-md-9">
-                  <Form.Select
-                    value={formData.CustomerId || 1}
-                    name="CustomerId"
-                    size="lg"
-                    onChange={handleInputChange}
-                    aria-label="Default select example"
-                    id="inputState"
-                    className="bg-white"
-                  >
-                    {customers.map((customer) => (
-                      <option
-                        key={customer.CustomerId}
-                        value={customer.CustomerId}
-                      >
-                        {customer.CustomerName}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </div>
-
-                <div className="mb-4 col-md-9">
-                  <input
-                    value={formData.ServiceLocation}
-                    name="ServiceLocation"
-                    onChange={handleInputChange}
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder={estimates.ServiceLocation || ""}
-                  />
-                </div>
-
-                <div className="mb-4 col-md-9">
-                  <input
-                    value={formData.Email}
-                    name="Email"
-                    onChange={handleInputChange}
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder={estimates.Email || ""}
-                  />
-                </div>
-              </div>
-            </form>
+          <div className="col-xl-3 mt-2">
+            <Form.Select
+              aria-label="Default select example"
+              value={formData.EstimateStatusId}
+              onChange={handleStatusChange}
+              name="Status"
+              size="md"
+              id="inlineFormCustomSelect"
+            >
+              <option value={null}>Select</option>
+              <option value={1}>Open</option>
+              <option value={2}>Approved</option>
+              <option value={3}>Closed Billed</option>
+            </Form.Select>
           </div>
-          <div className="basic-form col-md-6">
-            <form>
-              <div
-                className="row"
-                style={{ display: "flex", justifyContent: "end" }}
+          <div className="col-xl-4">
+            <div
+              className="col-lg-4 col-md-12 mb-2"
+              style={{ minWidth: "150px" }}
+            ></div>
+            <div className="col-lg-8 col-md-12 ">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary estm-action-btn"
               >
-                <div className="mb-3 col-md-9">
-                  <label className="form-label">Estimate No.</label>
-                  <input
-                    value={formData.EstimateNumber}
-                    name="EstimateNumber"
-                    onChange={handleInputChange}
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder={estimates.EstimateNumber || ""}
-                  />
-                </div>
-                <div className="mb-3 col-md-9">
-                  <label className="form-label">Issued Date</label>
-                  <input
-                    value={formData.IssueDate}
-                    name="IssueDate"
-                    onChange={handleInputChange}
-                    className="form-control form-control-sm input-limit-datepicker"
-                    placeholder={estimates.IssueDate || ""}
-                    type="date"
-                  />
-                </div>
-              </div>
-            </form>
+                <Email />
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary estm-action-btn"
+              >
+                <Print></Print>
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary estm-action-btn"
+                // style={{ minWidth: "120px" }}
+              >
+                <Download />
+              </button>
+            </div>
           </div>
         </div>
+        <div className="row mt-3">
+          <div className="col-xl-4">
+          <label className="form-label">Customer</label>
+            <Form.Select
+              value={formData.CustomerId || 1}
+              name="CustomerId"
+              size="md"
+              onChange={handleInputChange}
+              aria-label="Default select example"
+              id="inputState"
+              className="bg-white"
+            >
+              {customers.map((customer) => (
+                <option key={customer.CustomerId} value={customer.CustomerId}>
+                  {customer.CustomerName}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+          <div className="col-xl-4">
+          <label className="form-label">Service location</label>
+            <Form.Select
+              value={formData.CustomerId || 1}
+              name="CustomerId"
+              size="md"
+              onChange={handleInputChange}
+              aria-label="Default select example"
+              id="inputState"
+              className="bg-white"
+            >
+              {" "}
+              <option value="" selected>
+                Contacts
+              </option>
+              {customers.map((customer) => (
+                <option key={customer.CustomerId} value={customer.CustomerId}>
+                  {customer.CustomerName}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+          <div className="col-xl-4">
+          <label className="form-label">Contact</label>
+            <Form.Select
+              value={formData.CustomerId || 1}
+              name="CustomerId"
+              size="md"
+              onChange={handleInputChange}
+              aria-label="Default select example"
+              id="inputState"
+              className="bg-white"
+            >
+              {" "}
+              <option value="" selected>
+                Contacts
+              </option>
+              {customers.map((customer) => (
+                <option key={customer.CustomerId} value={customer.CustomerId}>
+                  {customer.CustomerName}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+          
+        </div>
+
+        <div className="row mt-3 mb-3">
+        <div className="col-xl-3">
+          <label className="form-label">Email</label>
+            <input
+              value={formData.Email}
+              name="Email"
+              onChange={handleInputChange}
+              type="text"
+              className="form-control form-control-sm"
+              placeholder={estimates.Email || "Email"}
+            />
+          </div>
+          <div className="col-xl-3">
+            <label className="form-label">Estimate No.</label>
+            <input
+              value={formData.EstimateNumber}
+              name="EstimateNumber"
+              onChange={handleInputChange}
+              type="text"
+              className="form-control form-control-sm"
+              placeholder={estimates.EstimateNumber || "Estimate Number"}
+            />
+          </div>
+          <div className=" col-xl-3">
+            <label className="form-label">Issued Date</label>
+            <input
+              value={formData.IssueDate}
+              name="IssueDate"
+              onChange={handleInputChange}
+              className="form-control form-control-sm input-limit-datepicker"
+              placeholder={estimates.IssueDate || "Issue Date"}
+              type="date"
+            />
+          </div>
+        </div>
+
+        
+       
 
         {/* add item modal */}
         <div className="modal fade" id="basicModal">
@@ -606,18 +627,20 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                         <td>{file.name}</td>
                         <td>{file.caption}</td>
                         <td>{file.date}</td>
-                        <td><div className="badgeBox">
-                                <span
-                                  className="actionBadge badge-danger light border-0 badgebox-size"
-                                  onClick={() => {
-                                    handleDeleteFile(index);
-                                  }}
-                                >
-                                  <span className="material-symbols-outlined badgebox-size">
-                                    delete
-                                  </span>
-                                </span>
-                              </div></td>
+                        <td>
+                          <div className="badgeBox">
+                            <span
+                              className="actionBadge badge-danger light border-0 badgebox-size"
+                              onClick={() => {
+                                handleDeleteFile(index);
+                              }}
+                            >
+                              <span className="material-symbols-outlined badgebox-size">
+                                delete
+                              </span>
+                            </span>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
