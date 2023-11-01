@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
+import { Form } from "react-bootstrap";
 
 const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [loginState, setLoginState] = useState("dontallow");
   const [showLogin, setShowLogin] = useState(false);
   const [primary, setPrimary] = useState(false);
+  const [allowLogin, setAllowLogin] = useState(false);
 
   const [apiKeys, setapiKeys] = useState([]);
   const [inputNames, setinputNames] = useState([]);
@@ -27,7 +29,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   });
 
   const [serviceLocations, setServiceLocations] = useState({});
-  const [slForm, setSlForm] = useState([])
+  const [slForm, setSlForm] = useState([]);
   const [adress1, setAdress1] = useState("");
   const [adress2, setAdress2] = useState("");
 
@@ -265,7 +267,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     }
   };
 
-
   useEffect(() => {
     if (loginState === "allow") {
       setShowLogin(true);
@@ -276,7 +277,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
   const handleSLChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+
     if (type === "radio") {
       // Handle radio button inputs
       setServiceLocations((prevLocations) => ({
@@ -300,22 +301,23 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       alert("Service Locations data is empty");
       return;
     }
-  
+
     // Create a new object containing the serviceLocations data
     const newObject = serviceLocations;
-    
-  
+
     // Append the new object to the array
     setSlForm((prevObjects) => [...prevObjects, newObject]);
-  
+
     // Clear the serviceLocations state after adding it to the array
     setServiceLocations({});
-    console.log("><><><><><",slForm)
+    console.log("><><><><><", slForm);
     setShowSRLocation(false);
   };
 
   const handleDelete = (index) => {
-    const shouldDelete = window.confirm('Are you sure you want to delete this Service Location?');
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this Service Location?"
+    );
 
     if (shouldDelete) {
       // Create a copy of the slForm array
@@ -328,8 +330,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       setSlForm(updatedSlForm);
     }
   };
-  
-  
 
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
@@ -356,11 +356,287 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   className="form-control form-control-sm"
                   name="CustomerName"
                   value={formData.CustomerData.CustomerName}
-                  // onClick={(e) => {e.target.value = ""}}
                   placeholder={customerData.CustomerName}
                   onChange={handleChange}
                   required
                 />
+              </div>
+              <div className="col-xl-4 mb-3">
+                <label className="form-label">Tax</label>
+                <Form.Select
+                  size="md"
+                  name="Tax"
+                  aria-label="Default select example"
+                  id="inputState"
+                  className="bg-white"
+                >
+                  <option value="">Tax</option>
+                </Form.Select>
+              </div>
+            </div>
+            <h4 className="modal-title" id="#gridSystemModal">
+              Contact
+            </h4>
+            <hr
+              style={{
+                border: "none", // Remove the default border
+                backgroundColor: "#d9d9d9", // Set the background color to create the line
+                height: "1px", // Set the height to 1px for a thin line
+                margin: " 0px 0px 19px", // Add margin for spacing
+              }}
+            />
+
+            <div className="row">
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  First Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="Firstname"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  Last Name <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="Firstname"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  Email <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="Firstname"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3 ">
+                <div className="form-check form-check-inline radio-margin">
+                  <label className="form-check-label" htmlFor="inlineRadio1">
+                    Allow Login:
+                  </label>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="inlineRadio1"
+                      value="Customer"
+                      checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
+                      onChange={() => {
+                        setAllowLogin(true);
+                      }}
+                    />
+                    <label
+                      className="form-check-label allow-customer-login"
+                      htmlFor="inlineRadio1"
+                    >
+                      yes
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      id="inlineRadio2"
+                      value="BillToServiceLocation"
+                      checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
+                      onChange={() => {
+                        setAllowLogin(false);
+                      }}
+                    />
+                    <label
+                      className="form-check-label allow-customer-login"
+                      htmlFor="inlineRadio2"
+                    >
+                      no
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {allowLogin && (
+              <div className="row">
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Username <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Password <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+                <div className="col-xl-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    Confirm Password <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    name=""
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            <h4 className="modal-title" id="#gridSystemModal">
+              Details
+            </h4>
+            <hr
+              style={{
+                border: "none", // Remove the default border
+                backgroundColor: "#d9d9d9", // Set the background color to create the line
+                height: "1px", // Set the height to 1px for a thin line
+                margin: " 0px 0px 19px", // Add margin for spacing
+              }}
+            />
+
+            <div className="row">
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  Address <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="CustomerName"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  Phone <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="CustomerName"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  AltPhone <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="CustomerName"
+                  required
+                />
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label
+                  htmlFor="exampleFormControlInput1"
+                  className="form-label"
+                >
+                  Customer Fax <span className="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="CustomerName"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-xl-3 mb-3">
+                <label className="form-label">Ad Campain</label>
+                <Form.Select
+                  size="md"
+                  name="Tax"
+                  aria-label="Default select example"
+                  id="inputState"
+                  className="bg-white"
+                >
+                  <option value="">Ad Campain</option>
+                </Form.Select>
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label className="form-label">Customer Type</label>
+                <Form.Select
+                  size="md"
+                  name="Tax"
+                  aria-label="Default select example"
+                  id="inputState"
+                  className="bg-white"
+                >
+                  <option value="">Tax</option>
+                </Form.Select>
+              </div>
+
+              <div className="col-xl-3 mb-3">
+                <label className="form-label">Terms</label>
+                <Form.Select
+                  size="md"
+                  name="Tax"
+                  aria-label="Default select example"
+                  id="inputState"
+                  className="bg-white"
+                >
+                  <option value="">Terms</option>
+                </Form.Select>
+              </div>
+              <div className="col-xl-3 mb-3">
+                <label className="form-label">Notes</label>
+                <textarea
+                  name="Notes"
+                  className="form-txtarea form-control form-control-sm"
+                  rows="2"
+                ></textarea>
               </div>
             </div>
           </div>
@@ -373,7 +649,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         <div className="card">
           <div className="card-header">
             <h4 className="modal-title" id="#gridSystemModal">
-              Contact
+              Contacts
             </h4>
           </div>
           <div className="card-body">
@@ -669,38 +945,35 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       }}
                     />
                     <div className="row">
-                    <div
-                    className="col-xl-3 mb-3"
-                    style={{ position: "relative" }}
-                  >
-                    <label className="form-label">
-                      Address<span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="SRinput2"
-                      onClick={() => {
-                        setShowPop2(!showPop2);
-                        
-                      }}
-                      style={{ cursor: "pointer" }}
-                      name="SLAddress"
-                                   
-
-                      className="form-control form-control-sm"
-                      value={adress2}
-                      placeholder="Address"
-                      readOnly
-                    />
-                    {showPop2 || (
-                      <AdressModal
-                        boolState={setShowPop2}
-                        handleAdress={setAdress2}
-                        adress={SLadress}
-                        setAdress={setSLadress}
-                      />
-                    )}
-                  </div>
+                      <div
+                        className="col-xl-3 mb-3"
+                        style={{ position: "relative" }}
+                      >
+                        <label className="form-label">
+                          Address<span className="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="SRinput2"
+                          onClick={() => {
+                            setShowPop2(!showPop2);
+                          }}
+                          style={{ cursor: "pointer" }}
+                          name="SLAddress"
+                          className="form-control form-control-sm"
+                          value={adress2}
+                          placeholder="Address"
+                          readOnly
+                        />
+                        {showPop2 || (
+                          <AdressModal
+                            boolState={setShowPop2}
+                            handleAdress={setAdress2}
+                            adress={SLadress}
+                            setAdress={setSLadress}
+                          />
+                        )}
+                      </div>
                       <div className="col-xl-3 mb-3">
                         <label className="form-label">
                           Phone<span className="text-danger">*</span>
@@ -765,7 +1038,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {slForm.map((slData, index) =>  (
+                          {slForm.map((slData, index) => (
                             <tr>
                               <td>{index + 1}</td>
                               <td>{slData.SRName}</td>
@@ -774,17 +1047,19 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                               <td>{slData.AltPhone}</td>
                               <td>{slData.BillTo}</td>
                               <td>
-                              <div className="badgeBox">
-                                <span className="actionBadge badge-danger light border-0 badgebox-size">
-                                  <span className="material-symbols-outlined badgebox-size" onClick={() => handleDelete(index)}>
-                                    delete
+                                <div className="badgeBox">
+                                  <span className="actionBadge badge-danger light border-0 badgebox-size">
+                                    <span
+                                      className="material-symbols-outlined badgebox-size"
+                                      onClick={() => handleDelete(index)}
+                                    >
+                                      delete
+                                    </span>
                                   </span>
-                                </span>
-                              </div>
-                            </td>
+                                </div>
+                              </td>
                             </tr>
-                          )                  
-                          )}                          
+                          ))}
                         </tbody>
                       </table>
                     </div>

@@ -53621,3 +53621,6 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .radio-margin{
     margin-top: 2.4em;
 }
+.allow-customer-login{
+    margin-left: -3px !important;
+}
