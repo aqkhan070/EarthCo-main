@@ -429,18 +429,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 </div>
               )}
             </div>
-            {/* 
-            <h4 className="modal-title" id="#gridSystemModal">
-              Contact
-            </h4> 
-            <hr
-              style={{
-                border: "none", // Remove the default border
-                backgroundColor: "#d9d9d9", // Set the background color to create the line
-                height: "1px", // Set the height to 1px for a thin line
-                margin: " 0px 0px 19px", // Add margin for spacing
-              }}
-            />*/}
+           
 
             <div class="row">
               <div class="col-9">

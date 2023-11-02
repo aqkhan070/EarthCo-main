@@ -57,7 +57,7 @@ const CustomerTR = ({ customers }) => {
 
   // Filtering logic here...
   const filteredCustomers = sortedCustomers.filter((customer) =>
-    customer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+    customer.CompanyName.toLowerCase().includes(filtering.toLowerCase())
   );
 
   const deleteCustomer = async (id) => {
@@ -172,11 +172,11 @@ const CustomerTR = ({ customers }) => {
                     onChange={() => setSelectedItem(customer.CustomerId)}
                   /> 
                 </TableCell>*/}
-                      <TableCell>{customer.CustomerId}</TableCell>
-                      <TableCell>{customer.CustomerName}</TableCell>
-                      <TableCell>{customer.ContactName}</TableCell>
-                      <TableCell>{customer.ContactCompany}</TableCell>
-                      <TableCell>{customer.ContactEmail}</TableCell>
+                      <TableCell>{customer.UserId}</TableCell>
+                      <TableCell>{customer.CompanyName}</TableCell>
+                      <TableCell>{customer.FirstName} {customer.LastName}</TableCell>
+                      <TableCell>{customer.Address}</TableCell>
+                      <TableCell>{customer.Email}</TableCell>
                       <TableCell>
                         <Link
                         // to={"/Dashboard/Customers/Update-Customer"}
