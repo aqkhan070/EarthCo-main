@@ -5,6 +5,8 @@ import { DataContext } from "../../context/AppData";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   const [estimates, setEstimates] = useState({});
@@ -36,6 +38,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   const [Files, setFiles] = useState([]);
 
   const [customers, setCustomers] = useState([]);
+
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedSL, setSelectedSL] = useState(null);
 
   const fetchCustomers = async () => {
     const response = await axios.get(
@@ -85,8 +90,11 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e, newValue) => {
     const { name, value } = e.target;
+
+    setSelectedCustomer(newValue);
+    setSelectedSL(newValue)
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
     const adjustedValue = [
@@ -99,6 +107,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
       : value;
 
     setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
+    console.log("opopopopopop", selectedCustomer);
   };
 
   const handleSubmit = () => {
@@ -307,27 +316,26 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
         </div>
         <div className="row mt-3">
           <div className="col-xl-4">
-          <label className="form-label">Customer</label>
-            <Form.Select
-              value={formData.CustomerId || 1}
-              name="CustomerId"
-              size="md"
+            <label className="form-label">Customer</label>
+            <Autocomplete
+              value={selectedCustomer}
               onChange={handleInputChange}
-              aria-label="Default select example"
-              id="inputState"
-              className="bg-white"
-            >
-              {customers.map((customer) => (
-                <option key={customer.CustomerId} value={customer.CustomerId}>
-                  {customer.CustomerName}
-                </option>
-              ))}
-            </Form.Select>
+              options={customers}
+              getOptionLabel={(customer) => customer.CustomerName}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Customer"
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+            />
           </div>
           <div className="col-xl-4">
-          <label className="form-label">Service location</label>
+            <label className="form-label">Service location</label>
             <Form.Select
-              value={formData.CustomerId || 1}
+              value={formData.CustomerId || 0}
               name="CustomerId"
               size="md"
               onChange={handleInputChange}
@@ -347,9 +355,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
             </Form.Select>
           </div>
           <div className="col-xl-4">
-          <label className="form-label">Contact</label>
+            <label className="form-label">Contact</label>
             <Form.Select
-              value={formData.CustomerId || 1}
+              value={formData.CustomerId || 0}
               name="CustomerId"
               size="md"
               onChange={handleInputChange}
@@ -368,12 +376,11 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
               ))}
             </Form.Select>
           </div>
-          
         </div>
 
         <div className="row mt-3 mb-3">
-        <div className="col-xl-3">
-          <label className="form-label">Email</label>
+          <div className="col-xl-3">
+            <label className="form-label">Email</label>
             <input
               value={formData.Email}
               name="Email"
@@ -406,9 +413,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
             />
           </div>
         </div>
-
-        
-       
 
         {/* add item modal */}
         <div className="modal fade" id="basicModal">
@@ -485,23 +489,19 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       </div>
                     </div>
                     <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Tax
-                          </label>
-                          <div className="col-sm-9">
-                          <Form.Select
-                        name="Tax"
-                        size="md"
-                        className="bg-white"
-                       
-                      >
-                        
-                        <option value="option 1">Non (Non-Taxable Sales)</option>
-                        <option value="option 2">Tax (Taxable Sales)</option>
-                        <option value="option 3">LBR (Non-Taxable Labour)</option>
-                      </Form.Select>
-                          </div>
-                        </div>
+                      <label className="col-sm-3 col-form-label">Tax</label>
+                      <div className="col-sm-9">
+                        <Form.Select name="Tax" size="md" className="bg-white">
+                          <option value="option 1">
+                            Non (Non-Taxable Sales)
+                          </option>
+                          <option value="option 2">Tax (Taxable Sales)</option>
+                          <option value="option 3">
+                            LBR (Non-Taxable Labour)
+                          </option>
+                        </Form.Select>
+                      </div>
+                    </div>
                     <div className="row">
                       <label className="col-sm-3 col-form-label">
                         Item Total

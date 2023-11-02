@@ -332,7 +332,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         [name]: value,
       }));
     }
-    console.log("<><><><><<", serviceLocations)
+    console.log("<><><><><<", serviceLocations);
   };
 
   const addServiceLocation = (e) => {
@@ -350,11 +350,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
     // Clear the serviceLocations state after adding it to the array
     setServiceLocations({
-      SRName: '',
-      SLAddress: '',
-      BillTo: '',
-      SLPhone: '',
-      AltPhone: '',
+      SRName: "",
+      SLAddress: "",
+      BillTo: "",
+      SLPhone: "",
+      AltPhone: "",
       // Reset other fields as necessary
     });
     console.log("><><><><><", slForm);
@@ -879,7 +879,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   data-bs-target="#basicModal"
                   style={{ margin: "12px 20px" }}
                 >
-                  + Add Items
+                  + Add Contacts
                 </button>
 
                 {showContacts ? null : (
@@ -1201,14 +1201,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   <div className="modal-body">
                     <div className="basic-form">
                       <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">
-                          Name
-                        </label>
+                        <label className="col-sm-3 col-form-label">Name</label>
                         <div className="col-sm-9">
-                        <input
+                          <input
                             type="text"
                             name="SRName"
-                            onChange={handleSLChange}                            
+                            onChange={handleSLChange}
                             className="form-control form-control-sm"
                             placeholder="Name"
                             value={serviceLocations.SRName}
@@ -1222,7 +1220,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         </label>
                         <div className="col-sm-9">
                           <div className="row">
-                          <div className="col-5">
+                            <div className="col-5">
                               <input
                                 className="form-check-input radio-margin-top"
                                 type="radio"
@@ -1230,7 +1228,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 id="inlineRadio1"
                                 onChange={handleSLChange}
                                 value="Customer"
-                                checked={serviceLocations.BillTo === 'Customer'}
+                                checked={serviceLocations.BillTo === "Customer"}
                               />
                               <label
                                 className="form-check-label"
@@ -1247,7 +1245,10 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 id="inlineRadio2"
                                 onChange={handleSLChange}
                                 value="BillToServiceLocation"
-                                checked={serviceLocations.BillTo === 'BillToServiceLocation'}
+                                checked={
+                                  serviceLocations.BillTo ===
+                                  "BillToServiceLocation"
+                                }
                               />
                               <label
                                 className="form-check-label"
@@ -1256,43 +1257,35 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 This service Location
                               </label>
                             </div>
-
                           </div>
-                       
-                            
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">Address</label>
-                        <div className="col-sm-9">
-                        <input
-                              type="text"
-                                                      
-                              onChange={handleSLChange}
-                              name="SLAddress"
-                              value={serviceLocations.SLAddress}
-                            
-                              className="form-control form-control-sm"
-                              
-                              placeholder="Address"
-                              
-                            />
                         </div>
                       </div>
                       <div className="mb-3 row">
                         <label className="col-sm-3 col-form-label">
-                          Phone
+                          Address
                         </label>
                         <div className="col-sm-9">
-                        <input
-                              type="number"
-                              onChange={handleSLChange}
-                              value={serviceLocations.SLPhone}
-
-                              name="SLPhone"
-                              className="form-control form-control-sm"
-                              placeholder="Phone"
-                            />
+                          <input
+                            type="text"
+                            onChange={handleSLChange}
+                            name="SLAddress"
+                            value={serviceLocations.SLAddress}
+                            className="form-control form-control-sm"
+                            placeholder="Address"
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">Phone</label>
+                        <div className="col-sm-9">
+                          <input
+                            type="number"
+                            onChange={handleSLChange}
+                            value={serviceLocations.SLPhone}
+                            name="SLPhone"
+                            className="form-control form-control-sm"
+                            placeholder="Phone"
+                          />
                         </div>
                       </div>
                       <div className="mb-3 row">
@@ -1300,21 +1293,17 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                           Alt Phone
                         </label>
                         <div className="col-sm-9">
-                        <input
-                              type="number"
-                              name="AltPhone"
-                              onChange={handleSLChange}
-                              value={serviceLocations.AltPhone}
-
-                              className="form-control form-control-sm"
-                              placeholder="Alt Phone"
-                              required
-                            />
+                          <input
+                            type="number"
+                            name="AltPhone"
+                            onChange={handleSLChange}
+                            value={serviceLocations.AltPhone}
+                            className="form-control form-control-sm"
+                            placeholder="Alt Phone"
+                            required
+                          />
                         </div>
                       </div>
-                      
-                      
-                      
                     </div>
                   </div>
                   <div className="modal-footer">
@@ -1366,7 +1355,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         e.preventDefault();
                       }}
                     >
-                      + Add Items
+                      + Add Service Locations
                     </button>
                   </>
                 )}
@@ -1376,7 +1365,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <div className="col-lg-12">
                       <div className="row">
                         <div className="col-xl-4 mb-1">
-                          <label className="form-label"> 
+                          <label className="form-label">
                             Name<span className="text-danger">*</span>
                           </label>
                           <input
