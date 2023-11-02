@@ -184,7 +184,7 @@ const CustomerTR = ({ customers }) => {
                           <Button
                             className="delete-button"
                             onClick={() => {
-                              setSelectedItem(customer.CustomerId);
+                              setSelectedItem(customer.UserId);
                               console.log(",,,,,,,,,,", selectedItem);
                               setShowContent(false);
                             }}
@@ -195,7 +195,7 @@ const CustomerTR = ({ customers }) => {
                         <Button
                           color="error"
                           className="delete-button"
-                          onClick={() => handleDelete(customer.CustomerId)}
+                          onClick={() => handleDelete(customer.UserId)}
                         >
                           <Delete />
                         </Button>

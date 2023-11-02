@@ -30,10 +30,29 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     ServiceLocationData: customerData.tblServiceLocations,
   });
 
+  // company data
+  const [companyData, setCompanyData] = useState({
+    CompanyName: "",
+    FirstName: "",
+    LastName: "",
+    Email: "",
+    Address: "",
+    Phone: "",
+    AltPhone: "",
+    Fax: "",
+    CustomerTypeId: "",
+    Notes: "",
+    username: "",
+    Password: "",
+    ConfirmPassword: "",
+  });
+  const [customerType, setCustomerType] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState({})
+  const [responseid, setresponseid] = useState(0)
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
-
+  // service Locations
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
   const [adress1, setAdress1] = useState("");
@@ -70,7 +89,26 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     // console.log("object is ,,,", mainObj);
   }, []);
 
+  const getCustomerType = async () => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerTypes`
+      );
+      console.log("getCustomerType", response.data);
+      setCustomerType(response.data);
+      console.log(".............", customerType);
+    } catch (error) {
+      console.log("getCustomerType api call error", error);
+    }
+  };
+  useEffect(() => {
+    console.log("typess are", customerType);
+  }, [customerType]);
+
   const getCustomerData = async () => {
+    if (selectedItem === 0) {
+      return;
+    }
     try {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`,
@@ -81,31 +119,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         }
       );
 
-      setCustomerData(response.data);
-      setFormData((prevState) => ({
-        ...prevState,
-        CustomerData: {
-          CustomerName: response.data.CustomerName,
-        },
-      }));
 
       // Handle the response. For example, you can reload the customers or show a success message
-      console.log("Customer zzzzzzzz:", customerData.tblContacts);
-      setContactDataList(response.data.tblContacts);
+      console.log("Customer zzzzzzzz:", response.data);
+      setSelectedCompany(response.data)
+      setAllowLogin(response.data.isLoginAllow)
+      setCompanyData(response.data)
+      
     } catch (error) {
-      console.error("There was an error deleting the customer:", error);
-    }
-  };
-
-  const fetchCustomers = async () => {
-    try {
-      const responses = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=0"
-      );
-    } catch (error) {
-      // console.log("API Call Error:", error.response.data);
-      const keys = Object.keys(error.response.data.ContactData[0]);
-      setapiKeys(keys);
+      console.error("There was an error updating the customer:", error);
     }
   };
 
@@ -118,65 +140,19 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     console.log("Input array is", inputNames);
   };
   useEffect(() => {
-    fetchCustomers();
     getCustomerData();
+    getCustomerType();
 
     extractInputNames();
   }, []);
 
-  const setMainObjValues = () => {
-    let updatedObj = { ...mainObj };
-    inputNames.forEach((name) => {
-      const inputValue = document.querySelector(`input[name="${name}"]`).value;
-      updatedObj[name] = inputValue;
-      // console.log(updatedObj[name]);
-    });
-    setmainObj(updatedObj);
-    console.log(mainObj);
-  };
+  
 
   const handleSubmit = async () => {
-    setMainObjValues();
-
-    // Prepare the CustomerData and ContactData payload
-    const customerPayload = {
-      CustomerId: selectedItem,
-      CustomerName: formData.CustomerData.CustomerName,
-      CreatedBy: 1, // Set this as per your need
-      EditBy: 1, // Set this as per your need
-      isActive: true,
-    };
-
-    // This function filters out the mainObj based on the apiKeys and returns the valid payload object.
-    const preparePayload = (obj) => {
-      let payload = {};
-      apiKeys.forEach((key) => {
-        if (obj[key]) {
-          payload[key] = obj[key];
-        }
-      });
-      return payload;
-    };
-
-    const contactPayload = contacts.map((contact) => {
-      return {
-        ...preparePayload(contact),
-        isPrimary: contact.isPrimary || false,
-        isActive: true,
-        CreatedBy: "2", // Set this as per your need
-      };
-    });
-
-    // POST request payload
-    const postData = {
-      CustomerData: customerPayload,
-      ContactData: contacts,
-    };
-
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
-        postData,
+        companyData,
         {
           headers: {
             "Content-Type": "application/json",
@@ -184,16 +160,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         }
       );
 
-      console.log("postData,,,,,,,,,:", postData);
+      // console.log("postData,,,,,,,,,:", postData);
 
-      setFormData({
-        CustomerData: {
-          CustomerName: "",
-        },
-        ContactData: [],
-      });
-
-      setContacts([]); // Clear the contacts array
       navigate("/Dashboard/Customers");
       setShowContent(true);
       window.location.reload();
@@ -224,6 +192,17 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     console.log(formData);
   };
 
+  // company
+  const handleCompanyChange = (e) => {
+    const { name, value } = e.target;
+    setCompanyData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+      isLoginAllow: allowLogin,
+    }));
+    console.log("cdcdcdcdcdcdc", companyData);
+  };
+
   //  Contacts
   const handleContactChange = (e) => {
     const { name, value, type } = e.target;
@@ -233,12 +212,19 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     setContactData({
       ...contactData,
       [name]: value,
+      CustomerId: selectedItem,
+      ContactId: 0,
     });
+    console.log("contact data,,,,,,", contactData)
   };
-  const handleContactSave = () => {
-    setContactDataList([...contactDataList, contactData]);
 
-    console.log("modal contact data is", contactDataList);
+  useEffect(() => {
+    // This effect will run whenever state.data is updated
+    console.log("contactDataList", contactData)
+    console.log("contactDataList \First", contactDataList)
+    setContactDataList([...contactDataList, contactData]);
+    console.log("contactDataList izzzzzz", contactData)
+    console.log("contactDataList Last", contactDataList)
     setContactData({
       FirstName: "",
       LastName: "",
@@ -247,24 +233,32 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       Email: "",
       Address: "",
       Comments: "",
-    });
+    }); 
+  }, [responseid]);
+  
+  const handleContactSave = async () => {
+    
+    try{
+
+      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/Customer/AddContact',contactData );
+      console.log("successfull contact api call", response.data.Id);
+      setresponseid(response.data.Id);
+      setContactData(prevState => ({
+        ...prevState,
+        ContactId: response.data.Id,
+      }), () => {
+   
+      });
+      
+
+    }catch(error){
+      console.log("api call error", error)
+    }
+
   };
 
   const addContact = (e) => {
     e.preventDefault();
-
-    // if (
-    //   formData.ContactData.FirstName === "" ||
-    //   formData.ContactData.LastName === "" ||
-    //   formData.ContactData.Email === "" ||
-    //   formData.ContactData.Phone === "" ||
-    //   formData.ContactData.CompanyName === "" ||
-    //   formData.ContactData.Address === ""
-    // ) {
-    //   // Display an alert if any field is empty
-    //   alert("Please fill in all required fields.");
-    //   return; // Exit the function to prevent further execution
-    // }
 
     const newContact = {
       FirstName: formData.ContactData.FirstName,
@@ -391,25 +385,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
           </div>
           <div className="card-body">
             <div className="row">
-              <div className="col-xl-4 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label"
-                >
-                  Company Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  name="CustomerName"
-                  value={formData.CustomerData.CustomerName}
-                  placeholder={customerData.CustomerName || "Customer Name"}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              {formData.CustomerData.CustomerName && (
+              {/* {formData.CustomerData.CustomerName && (
                 <div className="col-xl-4 mb-3">
                   <div className="form-check custom-checkbox form-check-inline message-customer">
                     <input
@@ -427,12 +403,30 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     </label>
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
-           
 
             <div class="row">
               <div class="col-9">
+                <div className="row">
+                  <div className="col-xl-4 mb-3">
+                    <label
+                      htmlFor="exampleFormControlInput1"
+                      className="form-label"
+                    >
+                      Company Name <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      name="CompanyName"
+                      value={companyData.CompanyName}
+                      onChange={handleCompanyChange}
+                      placeholder="Company Name"
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="row">
                   <div className="col-xl-4 mb-3">
                     <label
@@ -444,7 +438,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <input
                       type="text"
                       className="form-control form-control-sm"
-                      name="Firstname"
+                      name="FirstName"
+                      value={companyData.FirstName}
+                      onChange={handleCompanyChange}
                       placeholder="First Name"
                       required
                     />
@@ -460,6 +456,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       type="text"
                       className="form-control form-control-sm"
                       name="LastName"
+                      value={companyData.LastName}
+                      onChange={handleCompanyChange}
                       placeholder="Last Name"
                       required
                     />
@@ -475,6 +473,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       type="text"
                       className="form-control form-control-sm"
                       name="Email"
+                      value={companyData.Email}
+                      onChange={handleCompanyChange}
                       placeholder="Email"
                       required
                     />
@@ -490,6 +490,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       type="text"
                       className="form-control form-control-sm"
                       name="Address"
+                      value={companyData.Address}
+                      onChange={handleCompanyChange}
                       placeholder="Address"
                       required
                     />
@@ -504,7 +506,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <input
                       type="text"
                       className="form-control form-control-sm"
-                      name="CustomerName"
+                      name="Phone"
+                      value={companyData.Phone}
+                      onChange={handleCompanyChange}
                       placeholder="Phone"
                       required
                     />
@@ -520,6 +524,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       type="text"
                       className="form-control form-control-sm"
                       name="AltPhone"
+                      value={companyData.AltPhone}
+                      onChange={handleCompanyChange}
                       placeholder="Alternate Phone"
                       required
                     />
@@ -534,7 +540,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <input
                       type="text"
                       className="form-control form-control-sm"
-                      name="CustomerFax"
+                      name="Fax"
+                      value={companyData.Fax}
+                      onChange={handleCompanyChange}
                       placeholder="Customer Fax"
                       required
                     />
@@ -543,31 +551,30 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <label className="form-label">Customer Type</label>
                     <Form.Select
                       size="md"
-                      name="Tax"
+                      name="CustomerTypeId"
                       aria-label="Default select example"
                       id="inputState"
                       className="bg-white"
                     >
-                      <option value="">Customer Type</option>
+                      {customerType.map((customer, index) => {
+                        return (
+                          <option
+                            key={customer.CustomerTypeId}
+                            value={customer.CustomerTypeId}
+                          >
+                            {customer.CustomerType}
+                          </option>
+                        );
+                      })}
                     </Form.Select>
                   </div>
 
-                  {/* <div className="col-xl-4 mb-3">
-                <label className="form-label">Terms</label>
-                <Form.Select
-                  size="md"
-                  name="Tax"
-                  aria-label="Default select example"
-                  id="inputState"
-                  className="bg-white"
-                >
-                  <option value="">Terms</option>
-                </Form.Select>
-              </div> */}
                   <div className="col-xl-4 mb-3">
                     <label className="form-label">Notes</label>
                     <textarea
                       name="Notes"
+                      value={companyData.Notes}
+                      onChange={handleCompanyChange}
                       className="form-txtarea form-control form-control-sm"
                       rows="2"
                     ></textarea>
@@ -630,7 +637,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       <input
                         type="text"
                         className="form-control form-control-sm"
-                        name="UserName"
+                        name="username"
+                        value={companyData.username}
+                        onChange={handleCompanyChange}
                         placeholder="User Name"
                         required
                       />
@@ -646,6 +655,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         type="password"
                         className="form-control form-control-sm"
                         name="Password"
+                        value={companyData.Password}
+                        onChange={handleCompanyChange}
                         placeholder="Password"
                         required
                       />
@@ -669,42 +680,10 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 )}
               </div>
             </div>
-
-            {/* 
-            <h4 className="modal-title" id="#gridSystemModal">
-              Details
-            </h4> 
-            <hr
-              style={{
-                border: "none", // Remove the default border
-                backgroundColor: "#d9d9d9", // Set the background color to create the line
-                height: "1px", // Set the height to 1px for a thin line
-                margin: " 0px 0px 19px", // Add margin for spacing
-              }}
-            />
-
-            <div className="row">
-              
-            </div>
-
-            <div className="row">
-              <div className="col-xl-3 mb-3">
-                <label className="form-label">Ad Campain</label>
-                <Form.Select
-                  size="md"
-                  name="Tax"
-                  aria-label="Default select example"
-                  id="inputState"
-                  className="bg-white"
-                >
-                  <option value="">Ad Campain</option>
-                </Form.Select>
-              </div> 
-
-            </div>*/}
           </div>
         </div>
       </form>
+
       {/* contact modal */}
       <div className="modal fade" id="basicModal">
         <div className="modal-dialog" role="document">
@@ -735,6 +714,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         onChange={handleContactChange}
                         value={contactData.FirstName}
                         required
+                      />
+                      <input
+                        type="text"
+                        name="ContactId"
+                        className="form-control form-control-sm"
+                        onChange={handleContactChange}
+                        value={contactData.ContactId}
+                        hidden
                       />
                     </div>
                   </div>
@@ -773,7 +760,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       <input
                         type="number"
                         id="contactInp3"
-                        name=" AltPhone"
+                        name="AltPhone"
                         className="form-control form-control-sm"
                         placeholder=" Alt Phone"
                         onChange={handleContactChange}
@@ -871,252 +858,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   + Add Contacts
                 </button>
 
-                {showContacts ? null : (
-                  <div
-                    className="col-xl-4 mb-3"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    {/* <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setShowContacts(true);
-                      }}
-                    >
-                      Add
-                    </button> */}
-                  </div>
-                )}
-
-                {showContacts && (
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <div className="row">
-                        <div className="col-xl-3 mb-2">
-                          <label className="form-label">First Name</label>
-                          <input
-                            type="text"
-                            ref={inputReffname}
-                            onChange={handleChange}
-                            name="FirstName"
-                            className="form-control form-control-sm"
-                            placeholder="First Name"
-                            required
-                          />
-                        </div>
-
-                        <div className="col-xl-3 mb-2">
-                          <label className="form-label">Last Name</label>
-                          <input
-                            type="text"
-                            ref={inputReflname}
-                            onChange={handleChange}
-                            name="LastName"
-                            className="form-control form-control-sm"
-                            placeholder="Last Name"
-                            required
-                          />
-                        </div>
-
-                        <div className="col-xl-3 mb-3">
-                          <label className="form-label">Phone</label>
-                          <input
-                            type="number"
-                            ref={inputRefphone}
-                            id="contactInp3"
-                            onChange={handleChange}
-                            name="Phone"
-                            className="form-control form-control-sm"
-                            placeholder="Phone"
-                            required
-                          />
-                        </div>
-                        <div className="col-xl-3 mb-3">
-                          <label className="form-label">Alt Phone</label>
-                          <input
-                            type="number"
-                            id="contactInp3"
-                            name=" Alt Phone"
-                            className="form-control form-control-sm"
-                            placeholder=" Alt Phone"
-                            required
-                          />
-                        </div>
-                        <div className="col-xl-3 mb-2">
-                          <label className="form-label">Email</label>
-                          <input
-                            type="email"
-                            id="contactInp2"
-                            ref={inputRefemail}
-                            className="form-control form-control-sm"
-                            onChange={handleChange}
-                            name="Email"
-                            placeholder="Email"
-                            required
-                          />
-                        </div>
-                        {/* <div className="col-xl-3 mb-3">
-                          <label className="form-label">Company Name</label>
-                          <input
-                            id="contactInp4"
-                            ref={inputRefCname}
-                            onChange={handleChange}
-                            name="CompanyName"
-                            className="form-control form-control-sm"
-                            placeholder="Company Name"
-                            required
-                          />
-                        </div> */}
-                        <div className="col-xl-3 mb-3">
-                          <label className="form-label">Address</label>
-                          <input
-                            ref={inputRefaddress}
-                            onChange={handleChange}
-                            name="Address"
-                            className="form-control form-control-sm"
-                            placeholder="Address"
-                            required
-                          />
-                        </div>
-
-                        {/* <div className="col-xl-3 mb-3">
-                          <label className="col-form-label col-form-label-lg">
-                            Allow Login
-                          </label>
-                          <div className="mb-3 mb-0">
-                            <div className="form-check custom-checkbox form-check-inline">
-                              <input
-                                type="checkbox"
-                                name="isPrimary"
-                                className="form-check-input"
-                                id="customCheckBox"
-                                checked={alowContactLogin}
-                                onChange={() =>
-                                  setAlowContactLogin(!alowContactLogin)
-                                }
-                                required
-                              />
-
-                              <label
-                                className="form-check-label"
-                                htmlFor="customCheckBox"
-                              >
-                                Allow Login
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-
-                        {alowContactLogin && (
-                          <div className="row">
-                            <div className="col-xl-3 mb-3">
-                              <label
-                                htmlFor="exampleFormControlInput1"
-                                className="form-label"
-                              >
-                                Username <span className="text-danger">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="UserName"
-                                placeholder="User Name"
-                                required
-                              />
-                            </div>
-                            <div className="col-xl-3 mb-3">
-                              <label
-                                htmlFor="exampleFormControlInput1"
-                                className="form-label"
-                              >
-                                Password <span className="text-danger">*</span>
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control form-control-sm"
-                                name="Password"
-                                placeholder="Password"
-                                required
-                              />
-                            </div>
-                            <div className="col-xl-3 mb-3">
-                              <label
-                                htmlFor="exampleFormControlInput1"
-                                className="form-label"
-                              >
-                                Confirm Password{" "}
-                                <span className="text-danger">*</span>
-                              </label>
-                              <input
-                                type="password"
-                                className="form-control form-control-sm"
-                                name="ConfirmPassword"
-                                placeholder="Confirm Password"
-                                required
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="col-xl-3 mb-3">
-                          <label className="col-form-label col-form-label-lg">
-                            Set as Primary
-                          </label>
-                          <div className="mb-3 mb-0">
-                            <div className="form-check custom-checkbox form-check-inline">
-                              <input
-                                type="checkbox"
-                                name="isPrimary"
-                                className="form-check-input"
-                                id="customCheckBox"
-                                checked={primary}
-                                onChange={() => setPrimary(!primary)}
-                                required
-                              />
-
-                              <label
-                                className="form-check-label"
-                                htmlFor="customCheckBox"
-                              >
-                                Set as Primary
-                              </label>
-                            </div>
-                          </div>
-                        </div> */}
-
-                        <div className="col-xl-3 mb-3">
-                          <label className="form-label">Comments</label>
-                          <textarea
-                            name="Comments"
-                            className="form-txtarea form-control form-control-sm"
-                            rows="2"
-                          ></textarea>
-                        </div>
-
-                        <div className="col-xl-3 mb-3 mt-4 ">
-                          <button
-                            type="submit"
-                            className="btn btn-primary"
-                            onClick={addContact}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="btn btn-danger light ms-1"
-                            onClick={() => {
-                              setShowContacts(false);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="col-xl-12">
                   <div className="card">
                     <div className="card-body p-0">
@@ -1138,7 +879,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                             <tbody>
                               {contactDataList.map((contact, index) => (
                                 <tr key={index}>
-                                  <td>{index + 1}</td>
+                                  <td>{contact.ContactId}</td>
                                   <td>{contact.FirstName}</td>
                                   <td>{contact.LastName}</td>
                                   <td>{contact.Email}</td>
@@ -1547,6 +1288,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
           </form>
         </div>
       )}
+
       <div className="text-end">
         <button className="btn btn-primary me-1" onClick={handleSubmit}>
           Submit
