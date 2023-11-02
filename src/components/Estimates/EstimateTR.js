@@ -243,6 +243,7 @@ const EstimateTR = ({ estimates }) => {
                       "Description Of Work",
                       "Date Created",
                       "Status",
+                      "QBStatus",
                       "Actions",
                     ].map((headCell) => (
                       <TableCell
@@ -275,7 +276,8 @@ const EstimateTR = ({ estimates }) => {
                         <TableCell>{estimate.EstimateAmount}</TableCell>
                         <TableCell>{estimate.DescriptionofWork}</TableCell>
                         <TableCell>{estimate.DateCreated}</TableCell>
-                        <TableCell>{estimate.ContactStatustEmail}</TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
                         <TableCell>
                           <div className="button-container">
                             <Button

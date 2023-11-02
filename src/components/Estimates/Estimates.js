@@ -10,6 +10,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import $ from "jquery";
 import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
+import StatusCards from "./StatusCards";
 import CircularProgress from "@mui/material/CircularProgress";
 
 
@@ -144,13 +145,14 @@ const Estimates = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        <StatusCardsEst
+      <StatusCards />
+        {/* <StatusCardsEst
           drafts={28102}
           sent={7089}
           approved={4576}
           rejected={145}
           total={39912}
-        />
+        /> */}
         <div className="col-xl-12">
           <div className="card">
             <div className="card-body">

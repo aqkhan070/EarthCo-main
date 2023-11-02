@@ -1,97 +1,120 @@
-import React, { useEffect, useRef } from 'react';
-import { LoadScript } from '@react-google-maps/api';
-
-const AdressModal = ({ boolState, handleAdress, adress, setAdress, topClass }) => {
-  const autocompleteRef = useRef(null);
-
-  useEffect(() => {
-    if (autocompleteRef.current) {
-      const autocomplete = new window.google.maps.places.Autocomplete(autocompleteRef.current);
-
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-
-        if (place.address_components) {
-          const addressObject = {
-            adressLine: '',
-            room: '',
-            city: '',
-            state: '',
-            postalCode: '',
-            country: '',
-          };
-
-          place.address_components.forEach(component => {
-            switch (component.types[0]) {
-              case 'street_number':
-                addressObject.adressLine += component.long_name;
-                break;
-              case 'route':
-                addressObject.adressLine += ' ' + component.long_name;
-                break;
-              case 'locality':
-                addressObject.city = component.long_name;
-                break;
-              case 'administrative_area_level_1':
-                addressObject.state = component.short_name;
-                break;
-              case 'postal_code':
-                addressObject.postalCode = component.long_name;
-                break;
-              case 'country':
-                addressObject.country = component.long_name;
-                break;
-              default:
-                break;
-            }
-          });
-
-          setAdress(addressObject);
-        }
-      });
-    }
-  }, []);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    boolState(true);
-  };
-
-  const handleChange = (event) => {
-    const value = event.target.value;
-    setAdress({
-      ...adress,
-      [event.target.name]: value,
-    });
-  };
-
-  const adressLine = adress.adressLine || '';
-  const roomNo = (adress.room && (', ' + adress.room)) || '';
-  const city = (adress.city && (', ' + adress.city)) || '';
-  const adState = (adress.state && (',' + adress.state)) || '';
-  const postCode = (adress.postalCode && (', ' + adress.postalCode)) || '';
-  const country = (adress.country && (',' + adress.country)) || '';
-
-  handleAdress(adressLine + roomNo + city + adState + postCode + country);
-
-  return (
-    <LoadScript googleMapsApiKey="AIzaSyD-S-cuUziy083ZS2a2X_Btnr-msbXJFnw" libraries={['places']}>
-      <div className={"adressmodal " + topClass}>
-        { /* ...rest of the component */ }
-        <input
-          ref={autocompleteRef}
-          type="text"
-          id='adressInput1'
-          onChange={handleChange}
-          value={adress.adressLine}
-          name='adressLine'
-          className="form-control input-default "
-          placeholder="Adress Line 1"
-        />
-        { /* ...rest of the component */ }
-      </div>
-    </LoadScript>
-  );
-};
-
-export default AdressModal;
+<div className="modal fade" id="basicModal">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <form onSubmit={(e) => {e.preventDefault()}}>
+                <div className="modal-header">
+                  <h5 className="modal-title">Add Item</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <div className="basic-form">
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">Name</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="text"
+                          
+                          name="Name"
+                          className="form-control form-control-sm"
+                          placeholder="Name"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">
+                        Quantity
+                      </label>
+                      <div className="col-sm-9">
+                        <input
+                          type="number"
+                         
+                          name="Qty"
+                          className="form-control form-control-sm"
+                          placeholder="Quantity"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">
+                        Description
+                      </label>
+                      <div className="col-sm-9">
+                        <textarea
+                          className="form-txtarea form-control form-control-sm"
+                          
+                          name="Description"
+                          rows="3"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <label className="col-sm-3 col-form-label">Rate</label>
+                      <div className="col-sm-9">
+                        <input
+                          type="number"
+                         
+                          name="Rate"
+                          className="form-control form-control-sm"
+                          placeholder="Rate"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                          <label className="col-sm-3 col-form-label">
+                            Tax
+                          </label>
+                          <div className="col-sm-9">
+                          <Form.Select
+                        name="Tax"
+                        size="md"
+                        className="bg-white"
+                       
+                      >
+                        
+                        <option value="option 1">Non (Non-Taxable Sales)</option>
+                        <option value="option 2">Tax (Taxable Sales)</option>
+                        <option value="option 3">LBR (Non-Taxable Labour)</option>
+                      </Form.Select>
+                          </div>
+                        </div>
+                    <div className="row">
+                      <label className="col-sm-3 col-form-label">
+                        Item Total
+                      </label>
+                      <div
+                        className="col-sm-9"
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <h5 style={{ margin: "0" }}>
+                         
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    id="closer"
+                    className="btn btn-danger light"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        
+        </div>
