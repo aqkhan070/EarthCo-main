@@ -53635,3 +53635,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .message-customer{
     margin-top: 2.2em;
 }
+
+.radio-margin-top{
+    margin-top: 6px !important;
+}

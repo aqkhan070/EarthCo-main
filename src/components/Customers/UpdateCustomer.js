@@ -30,6 +30,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     ServiceLocationData: customerData.tblServiceLocations,
   });
 
+  // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
 
@@ -42,7 +43,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [showPop2, setShowPop2] = useState(false);
 
   const [SLadress, setSLadress] = useState({});
-
 
   const inputReffname = useRef();
   const inputReflname = useRef();
@@ -224,36 +224,31 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     console.log(formData);
   };
 
-//  Contacts
-const handleContactChange = (e) => {
-  const { name, value, type } = e.target;
+  //  Contacts
+  const handleContactChange = (e) => {
+    const { name, value, type } = e.target;
 
-  // Check if the input type is "number" and convert the value to a number
-  // const parsedValue = type === 'number' ? parseFloat(value) : value;
-  setContactData({
-    ...contactData,
-    [name]: value,
-  });
-  
-};
-const handleContactSave = () => {
-  
-  setContactDataList([...contactDataList, contactData]);
- 
-  console.log("modal contact data is",contactDataList)
-  setContactData({
-    FirstName: '',
-    LastName: '',
-    Phone: '',
-    AltPhone: '',
-    Email: '',
-    Address: '',
-    Comments: '',
-  });
-};
+    // Check if the input type is "number" and convert the value to a number
+    // const parsedValue = type === 'number' ? parseFloat(value) : value;
+    setContactData({
+      ...contactData,
+      [name]: value,
+    });
+  };
+  const handleContactSave = () => {
+    setContactDataList([...contactDataList, contactData]);
 
-
-
+    console.log("modal contact data is", contactDataList);
+    setContactData({
+      FirstName: "",
+      LastName: "",
+      Phone: "",
+      AltPhone: "",
+      Email: "",
+      Address: "",
+      Comments: "",
+    });
+  };
 
   const addContact = (e) => {
     e.preventDefault();
@@ -337,7 +332,7 @@ const handleContactSave = () => {
         [name]: value,
       }));
     }
-    // console.log("<><><><><<", serviceLocations)
+    console.log("<><><><><<", serviceLocations)
   };
 
   const addServiceLocation = (e) => {
@@ -347,7 +342,6 @@ const handleContactSave = () => {
       alert("Service Locations data is empty");
       return;
     }
-
     // Create a new object containing the serviceLocations data
     const newObject = serviceLocations;
 
@@ -355,7 +349,14 @@ const handleContactSave = () => {
     setSlForm((prevObjects) => [...prevObjects, newObject]);
 
     // Clear the serviceLocations state after adding it to the array
-    setServiceLocations({});
+    setServiceLocations({
+      SRName: '',
+      SLAddress: '',
+      BillTo: '',
+      SLPhone: '',
+      AltPhone: '',
+      // Reset other fields as necessary
+    });
     console.log("><><><><><", slForm);
     setShowSRLocation(false);
   };
@@ -715,7 +716,7 @@ const handleContactSave = () => {
           </div>
         </div>
       </form>
-            {/* contact modal */}
+      {/* contact modal */}
       <div className="modal fade" id="basicModal">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
@@ -738,7 +739,7 @@ const handleContactSave = () => {
                     <label className="col-sm-3 col-form-label">FirstName</label>
                     <div className="col-sm-9">
                       <input
-                        type="text"                        
+                        type="text"
                         name="FirstName"
                         className="form-control form-control-sm"
                         placeholder="First Name"
@@ -753,7 +754,6 @@ const handleContactSave = () => {
                     <div className="col-sm-9">
                       <input
                         type="text"
-                        
                         name="LastName"
                         className="form-control form-control-sm"
                         placeholder="Last Name"
@@ -768,15 +768,12 @@ const handleContactSave = () => {
                     <div className="col-sm-9">
                       <input
                         type="number"
-                        
                         id="contactInp3"
-                        
                         name="Phone"
                         className="form-control form-control-sm"
                         placeholder="Phone"
                         onChange={handleContactChange}
                         value={contactData.Phone}
-
                         required
                       />
                     </div>
@@ -792,7 +789,6 @@ const handleContactSave = () => {
                         placeholder=" Alt Phone"
                         onChange={handleContactChange}
                         value={contactData.AltPhone}
-
                         required
                       />
                     </div>
@@ -803,14 +799,11 @@ const handleContactSave = () => {
                       <input
                         type="email"
                         id="contactInp2"
-                      
                         className="form-control form-control-sm"
-                        
                         name="Email"
                         placeholder="Email"
                         onChange={handleContactChange}
                         value={contactData.Email}
-
                         required
                       />
                     </div>
@@ -819,13 +812,11 @@ const handleContactSave = () => {
                     <label className="col-sm-3 col-form-label">Address</label>
                     <div className="col-sm-9">
                       <input
-                       
                         name="Address"
                         className="form-control form-control-sm"
                         placeholder="Address"
                         onChange={handleContactChange}
                         value={contactData.Address}
-
                         required
                       />
                     </div>
@@ -838,7 +829,6 @@ const handleContactSave = () => {
                         className="form-txtarea form-control form-control-sm"
                         onChange={handleContactChange}
                         value={contactData.Comments}
-
                         rows="2"
                       ></textarea>
                     </div>
@@ -854,7 +844,11 @@ const handleContactSave = () => {
                 >
                   Close
                 </button>
-                <button className="btn btn-primary"  data-bs-dismiss="modal"  onClick={handleContactSave} >
+                <button
+                  className="btn btn-primary"
+                  data-bs-dismiss="modal"
+                  onClick={handleContactSave}
+                >
                   Save
                 </button>
               </div>
@@ -887,7 +881,7 @@ const handleContactSave = () => {
                 >
                   + Add Items
                 </button>
-                
+
                 {showContacts ? null : (
                   <div
                     className="col-xl-4 mb-3"
@@ -1133,7 +1127,6 @@ const handleContactSave = () => {
                     </div>
                   </div>
                 )}
-                
 
                 <div className="col-xl-12">
                   <div className="card">
@@ -1147,9 +1140,9 @@ const handleContactSave = () => {
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Email</th>
-                                <th>Phone</th>                                
+                                <th>Phone</th>
                                 <th>Address</th>
-                               
+
                                 <th>Actions</th>
                               </tr>
                             </thead>
@@ -1160,8 +1153,8 @@ const handleContactSave = () => {
                                   <td>{contact.FirstName}</td>
                                   <td>{contact.LastName}</td>
                                   <td>{contact.Email}</td>
-                                  <td>{contact.Phone}</td>                                 
-                                  <td>{contact.Address}</td>                                  
+                                  <td>{contact.Phone}</td>
+                                  <td>{contact.Address}</td>
                                   <td>
                                     <div className="badgeBox">
                                       <span
@@ -1189,6 +1182,163 @@ const handleContactSave = () => {
 
           {/* servive location */}
 
+          <div className="modal fade" id="basicModal2">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  <div className="modal-header">
+                    <h5 className="modal-title">Add Service location</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    <div className="basic-form">
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Name
+                        </label>
+                        <div className="col-sm-9">
+                        <input
+                            type="text"
+                            name="SRName"
+                            onChange={handleSLChange}                            
+                            className="form-control form-control-sm"
+                            placeholder="Name"
+                            value={serviceLocations.SRName}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Bill To
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                          <div className="col-5">
+                              <input
+                                className="form-check-input radio-margin-top"
+                                type="radio"
+                                name="BillTo"
+                                id="inlineRadio1"
+                                onChange={handleSLChange}
+                                value="Customer"
+                                checked={serviceLocations.BillTo === 'Customer'}
+                              />
+                              <label
+                                className="form-check-label"
+                                for="inlineRadio1"
+                              >
+                                Customer
+                              </label>
+                            </div>
+                            <div className="col-7">
+                              <input
+                                className="form-check-input radio-margin-top"
+                                type="radio"
+                                name="BillTo"
+                                id="inlineRadio2"
+                                onChange={handleSLChange}
+                                value="BillToServiceLocation"
+                                checked={serviceLocations.BillTo === 'BillToServiceLocation'}
+                              />
+                              <label
+                                className="form-check-label"
+                                for="inlineRadio2"
+                              >
+                                This service Location
+                              </label>
+                            </div>
+
+                          </div>
+                       
+                            
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">Address</label>
+                        <div className="col-sm-9">
+                        <input
+                              type="text"
+                                                      
+                              onChange={handleSLChange}
+                              name="SLAddress"
+                              value={serviceLocations.SLAddress}
+                            
+                              className="form-control form-control-sm"
+                              
+                              placeholder="Address"
+                              
+                            />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Phone
+                        </label>
+                        <div className="col-sm-9">
+                        <input
+                              type="number"
+                              onChange={handleSLChange}
+                              value={serviceLocations.SLPhone}
+
+                              name="SLPhone"
+                              className="form-control form-control-sm"
+                              placeholder="Phone"
+                            />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Alt Phone
+                        </label>
+                        <div className="col-sm-9">
+                        <input
+                              type="number"
+                              name="AltPhone"
+                              onChange={handleSLChange}
+                              value={serviceLocations.AltPhone}
+
+                              className="form-control form-control-sm"
+                              placeholder="Alt Phone"
+                              required
+                            />
+                        </div>
+                      </div>
+                      
+                      
+                      
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      id="closer"
+                      className="btn btn-danger light"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      data-bs-dismiss="modal"
+                      onClick={addServiceLocation}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
           <form>
             <div className="card">
               <div className="">
@@ -1198,14 +1348,27 @@ const handleContactSave = () => {
               </div>
               <div className="card-body">
                 {showSRLocation ? null : (
-                  <button
-                    onClick={() => {
-                      setShowSRLocation(true);
-                    }}
-                    className="btn btn-primary mb-3"
-                  >
-                    Add
-                  </button>
+                  <>
+                    {/* <button
+                      onClick={() => {
+                        setShowSRLocation(true);
+                      }}
+                      className="btn btn-primary mb-3"
+                    >
+                      Add
+                    </button> */}
+                    <button
+                      className="btn btn-primary btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#basicModal2"
+                      style={{ margin: "12px 20px" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      + Add Items
+                    </button>
+                  </>
                 )}
 
                 {showSRLocation && (
@@ -1213,7 +1376,7 @@ const handleContactSave = () => {
                     <div className="col-lg-12">
                       <div className="row">
                         <div className="col-xl-4 mb-1">
-                          <label className="form-label">
+                          <label className="form-label"> 
                             Name<span className="text-danger">*</span>
                           </label>
                           <input
@@ -1277,7 +1440,7 @@ const handleContactSave = () => {
                 }}
               /> */}
                         <div className="row">
-                          <div
+                          {/* <div
                             className="col-xl-3 mb-3"
                             style={{ position: "relative" }}
                           >
@@ -1303,7 +1466,7 @@ const handleContactSave = () => {
                                 setAdress={setSLadress}
                               />
                             )}
-                          </div>
+                          </div> */}
                           <div className="col-xl-3 mb-3">
                             <label className="form-label">Phone</label>
                             <input
@@ -1376,7 +1539,7 @@ const handleContactSave = () => {
                                 <tr>
                                   <td>{index + 1}</td>
                                   <td>{slData.SRName}</td>
-                                  <td>{slData.SRName}</td>
+                                  <td>{slData.SLAddress}</td>
                                   <td>{slData.SLPhone}</td>
                                   <td>{slData.AltPhone}</td>
                                   <td>{slData.BillTo}</td>
