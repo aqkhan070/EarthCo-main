@@ -30,6 +30,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     ServiceLocationData: customerData.tblServiceLocations,
   });
 
+  const [contactData, setContactData] = useState({});
+  const [contactDataList, setContactDataList] = useState([]);
+
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
   const [adress1, setAdress1] = useState("");
@@ -39,6 +42,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [showPop2, setShowPop2] = useState(false);
 
   const [SLadress, setSLadress] = useState({});
+
 
   const inputReffname = useRef();
   const inputReflname = useRef();
@@ -87,7 +91,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
       // Handle the response. For example, you can reload the customers or show a success message
       console.log("Customer zzzzzzzz:", customerData.tblContacts);
-      setContacts(response.data.tblContacts);
+      setContactDataList(response.data.tblContacts);
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
     }
@@ -220,6 +224,37 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     console.log(formData);
   };
 
+//  Contacts
+const handleContactChange = (e) => {
+  const { name, value, type } = e.target;
+
+  // Check if the input type is "number" and convert the value to a number
+  // const parsedValue = type === 'number' ? parseFloat(value) : value;
+  setContactData({
+    ...contactData,
+    [name]: value,
+  });
+  
+};
+const handleContactSave = () => {
+  
+  setContactDataList([...contactDataList, contactData]);
+ 
+  console.log("modal contact data is",contactDataList)
+  setContactData({
+    FirstName: '',
+    LastName: '',
+    Phone: '',
+    AltPhone: '',
+    Email: '',
+    Address: '',
+    Comments: '',
+  });
+};
+
+
+
+
   const addContact = (e) => {
     e.preventDefault();
 
@@ -267,9 +302,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   };
 
   const delContact = (index) => {
-    const updatedContacts = [...contacts];
+    const updatedContacts = [...contactDataList];
     updatedContacts.splice(index, 1);
-    setContacts(updatedContacts);
+    setContactDataList(updatedContacts);
   };
 
   const deleteContact = (index) => {
@@ -680,7 +715,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
           </div>
         </div>
       </form>
-
+            {/* contact modal */}
       <div className="modal fade" id="basicModal">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
@@ -700,15 +735,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
               <div className="modal-body">
                 <div className="basic-form">
                   <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">Name</label>
+                    <label className="col-sm-3 col-form-label">FirstName</label>
                     <div className="col-sm-9">
                       <input
-                        type="text"
-                        ref={inputReffname}
-                        onChange={handleChange}
+                        type="text"                        
                         name="FirstName"
                         className="form-control form-control-sm"
                         placeholder="First Name"
+                        onChange={handleContactChange}
+                        value={contactData.FirstName}
                         required
                       />
                     </div>
@@ -718,11 +753,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <div className="col-sm-9">
                       <input
                         type="text"
-                        ref={inputReflname}
-                        onChange={handleChange}
+                        
                         name="LastName"
                         className="form-control form-control-sm"
                         placeholder="Last Name"
+                        onChange={handleContactChange}
+                        value={contactData.LastName}
                         required
                       />
                     </div>
@@ -732,12 +768,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <div className="col-sm-9">
                       <input
                         type="number"
-                        ref={inputRefphone}
+                        
                         id="contactInp3"
-                        onChange={handleChange}
+                        
                         name="Phone"
                         className="form-control form-control-sm"
                         placeholder="Phone"
+                        onChange={handleContactChange}
+                        value={contactData.Phone}
+
                         required
                       />
                     </div>
@@ -751,6 +790,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         name=" AltPhone"
                         className="form-control form-control-sm"
                         placeholder=" Alt Phone"
+                        onChange={handleContactChange}
+                        value={contactData.AltPhone}
+
                         required
                       />
                     </div>
@@ -761,11 +803,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       <input
                         type="email"
                         id="contactInp2"
-                        ref={inputRefemail}
+                      
                         className="form-control form-control-sm"
-                        onChange={handleChange}
+                        
                         name="Email"
                         placeholder="Email"
+                        onChange={handleContactChange}
+                        value={contactData.Email}
+
                         required
                       />
                     </div>
@@ -774,11 +819,13 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     <label className="col-sm-3 col-form-label">Address</label>
                     <div className="col-sm-9">
                       <input
-                        ref={inputRefaddress}
-                        onChange={handleChange}
+                       
                         name="Address"
                         className="form-control form-control-sm"
                         placeholder="Address"
+                        onChange={handleContactChange}
+                        value={contactData.Address}
+
                         required
                       />
                     </div>
@@ -789,6 +836,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                       <textarea
                         name="Comments"
                         className="form-txtarea form-control form-control-sm"
+                        onChange={handleContactChange}
+                        value={contactData.Comments}
+
                         rows="2"
                       ></textarea>
                     </div>
@@ -804,7 +854,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 >
                   Close
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button className="btn btn-primary"  data-bs-dismiss="modal"  onClick={handleContactSave} >
                   Save
                 </button>
               </div>
@@ -1097,26 +1147,21 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Email</th>
-                                <th>Phone</th>
-                                <th>Company Name</th>
+                                <th>Phone</th>                                
                                 <th>Address</th>
-                                <th>Primary</th>
+                               
                                 <th>Actions</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {contacts.map((contact, index) => (
+                              {contactDataList.map((contact, index) => (
                                 <tr key={index}>
                                   <td>{index + 1}</td>
                                   <td>{contact.FirstName}</td>
                                   <td>{contact.LastName}</td>
                                   <td>{contact.Email}</td>
-                                  <td>{contact.Phone}</td>
-                                  <td>{contact.CompanyName}</td>{" "}
-                                  <td>{contact.Address}</td>
-                                  <td>
-                                    {contact.isPrimary ? "Yes" : "No"}
-                                  </td>{" "}
+                                  <td>{contact.Phone}</td>                                 
+                                  <td>{contact.Address}</td>                                  
                                   <td>
                                     <div className="badgeBox">
                                       <span
