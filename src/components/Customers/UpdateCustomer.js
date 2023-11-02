@@ -347,9 +347,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   return (
     <div className="">
       <form onSubmit={(e) => e.preventDefault()}>
-        <div className="">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
+        <div className="card mt-3">
+          <div className="">
+            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
               Customer Info
             </h4>
           </div>
@@ -463,12 +463,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
               </div>
               <div className="col-xl-3 mb-3 ">
                 <div className="form-check form-check-inline radio-margin">
-                  <label className="form-check-label" htmlFor="inlineRadio1">
+                  <label className="form-check-label " htmlFor="inlineRadio1">
                     Allow Login:
                   </label>
-                  <div className="form-check form-check-inline">
+                  <div className="form-check form-check-inline radio-margin-div">
                     <input
-                      className="form-check-input"
+                      className="form-check-input ml-2 pl-2"
                       type="radio"
                       id="inlineRadio1"
                       value="Customer"
@@ -686,8 +686,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
       <form>
         <div className="card">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
+          <div className="">
+            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
               Contacts
             </h4>
           </div>
@@ -1026,8 +1026,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
       <form>
         <div className="card">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
+          <div className="">
+            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
               Service Locations
             </h4>
           </div>

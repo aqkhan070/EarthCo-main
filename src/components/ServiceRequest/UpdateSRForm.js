@@ -443,7 +443,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                 </div>
               </div>
             </div>
-            ;{/* modal */}
+            {/* modal */}
             <div className="modal fade" id="basicModal">
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
