@@ -4,6 +4,7 @@ import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 
+
 const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
 
@@ -15,20 +16,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [alowContactLogin, setAlowContactLogin] = useState(false);
   const [allowLogin, setAllowLogin] = useState(false);
 
-  const [apiKeys, setapiKeys] = useState([]);
-  const [inputNames, setinputNames] = useState([]);
-  const [mainObj, setmainObj] = useState({});
+
+
+
 
   const [showContacts, setShowContacts] = useState(false);
   const [showSRLocation, setShowSRLocation] = useState(false);
-
-  const [formData, setFormData] = useState({
-    CustomerData: {
-      CustomerName: "",
-    },
-    ContactData: customerData.tblContacts,
-    ServiceLocationData: customerData.tblServiceLocations,
-  });
 
   // company data
   const [companyData, setCompanyData] = useState({
@@ -47,47 +40,28 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     ConfirmPassword: "",
   });
   const [customerType, setCustomerType] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState({})
-  const [responseid, setresponseid] = useState(0)
+  const [selectedCompany, setSelectedCompany] = useState({});
+  const [responseid, setresponseid] = useState(0);
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
   // service Locations
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
+
+
+
   const [adress1, setAdress1] = useState("");
   const [adress2, setAdress2] = useState("");
 
   const [showPop1, setShowPop1] = useState(false);
   const [showPop2, setShowPop2] = useState(false);
 
-  const [SLadress, setSLadress] = useState({});
+  
 
-  const inputReffname = useRef();
-  const inputReflname = useRef();
-  const inputRefemail = useRef();
-  const inputRefphone = useRef();
-  const inputRefCname = useRef();
-  const inputRefaddress = useRef();
-  const clearInput = () => {
-    // Step 3: Access the current property and set it to an empty string
-    inputReffname.current.value = "";
-    inputReflname.current.value = "";
-    inputRefemail.current.value = "";
-    inputRefphone.current.value = "";
-    inputRefCname.current.value = "";
-    inputRefaddress.current.value = "";
-  };
+  
 
-  useEffect(() => {
-    const dataObject = {};
-    inputNames.forEach((name) => {
-      dataObject[name] = "";
-    });
-
-    setmainObj(dataObject);
-    // console.log("object is ,,,", mainObj);
-  }, []);
+ 
 
   const getCustomerType = async () => {
     try {
@@ -119,35 +93,27 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         }
       );
 
-
       // Handle the response. For example, you can reload the customers or show a success message
       console.log("Customer zzzzzzzz:", response.data);
-      setSelectedCompany(response.data)
-      setAllowLogin(response.data.isLoginAllow)
-      setCompanyData(response.data)
-      
+      setSelectedCompany(response.data);
+      setAllowLogin(response.data.isLoginAllow);
+      setCompanyData(response.data);
     } catch (error) {
       console.error("There was an error updating the customer:", error);
     }
-  };
-
-  const extractInputNames = () => {
-    const inputElements = document.querySelectorAll("form input");
-
-    setinputNames(
-      Array.from(inputElements).map((input) => input.getAttribute("name"))
-    );
-    console.log("Input array is", inputNames);
   };
   useEffect(() => {
     getCustomerData();
     getCustomerType();
 
-    extractInputNames();
+   
   }, []);
 
-  
+ 
 
+  
+  
+  // company logic
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
@@ -169,30 +135,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       console.error("Error submitting data:", error);
     }
   };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "CustomerName") {
-      setFormData((prevState) => ({
-        ...prevState,
-        CustomerData: {
-          CustomerName: value,
-        },
-      }));
-    } else {
-      setFormData({
-        ...formData,
-        ContactData: {
-          ...formData.ContactData,
-          [name]: value,
-        },
-      });
-    }
-    console.log(formData);
-  };
-
-  // company
   const handleCompanyChange = (e) => {
     const { name, value } = e.target;
     setCompanyData((prevFormData) => ({
@@ -203,7 +145,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     console.log("cdcdcdcdcdcdc", companyData);
   };
 
-  //  Contacts
+  //  Contacts logic
   const handleContactChange = (e) => {
     const { name, value, type } = e.target;
 
@@ -213,17 +155,22 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       ...contactData,
       [name]: value,
       CustomerId: selectedItem,
-      ContactId: 0,
+     
     });
-    console.log("contact data,,,,,,", contactData)
+    console.log("contact data,,,,,,", contactData);
   };
 
   useEffect(() => {
     // Only add to contactDataList if contactData is not empty
-    if (contactData.FirstName || contactData.LastName || contactData.Phone || contactData.Email) {
+    if (
+      contactData.FirstName ||
+      contactData.LastName ||
+      contactData.Phone ||
+      contactData.Email
+    ) {
       console.log("contactDataList", contactDataList);
       console.log("Adding to contactDataList: ", contactData);
-      setContactDataList(prevList => [...prevList, contactData]);
+      setContactDataList((prevList) => [...prevList, contactData]);
     }
     setContactData({
       FirstName: "",
@@ -233,31 +180,39 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       Email: "",
       Address: "",
       Comments: "",
-    }); 
-  
+    });
+
     // Resetting the contactData should probably not be in this useEffect if you want to ensure it's not reset before being added to the list.
   }, [responseid]); // Depends on when responseid is set
-  
-  const handleContactSave = async () => {
+
+  const handleContactSave = async (e) => {
+    e.preventDefault();
+    if (Object.keys(contactData).length === 0) {
+      alert("contactc data is empty");
+      return;
+    }
+    
     try {
-      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/Customer/AddContact', contactData);
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
+        contactData
+      );
       console.log("successful contact api call", response.data.Id);
-  
+
       // Update the contactData with the response id, then add to list
-      setContactData(prevState => ({
+      setContactData((prevState) => ({
         ...prevState,
         Id: response.data.Id,
       }));
-  
+
       // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
       setresponseid(response.data.Id);
       // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
-  
     } catch (error) {
-      console.log("api call error", error)
+      console.log("api call error", error);
     }
   };
- 
+
   const delContact = (index) => {
     const updatedContacts = [...contactDataList];
     updatedContacts.splice(index, 1);
@@ -278,6 +233,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     }
   }, [loginState]);
 
+
+  // service locations logic
+
   const handleSLChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -292,36 +250,47 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       setServiceLocations((prevLocations) => ({
         ...prevLocations,
         [name]: value,
+        CustomerId: selectedItem,
       }));
     }
-    console.log("<><><><><<", serviceLocations);
+    // console.log("<><><><><<", serviceLocations);
   };
 
-  const addServiceLocation = (e) => {
+  const addServiceLocation = async (e) => {
     e.preventDefault();
     // Check if serviceLocations has data to add
     if (Object.keys(serviceLocations).length === 0) {
-      alert("Service Locations data is empty");
-      return;
+        alert("Service Locations data is empty");
+        return;
     }
-    // Create a new object containing the serviceLocations data
-    const newObject = serviceLocations;
+    try {
+        const response = await axios.post(`https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`, serviceLocations);
+        
+        // Assuming that the response data has an ID that you want to append
+        const serviceLocationWithId = {
+            ...serviceLocations, // spread the existing serviceLocations fields
+            Id: response.data.Id // add the new ID from the response
+        };
+        
+        // Update your form state with the new service location object that includes the response ID
+        setSlForm(prevObjects => [...prevObjects, serviceLocationWithId]);
+        
+        // Reset serviceLocations state to clear the form or set it for a new entry
+        setServiceLocations({
+            Name: "",
+            Address: "",
+            BillTo: "",
+            Phone: "",
+            AltPhone: "",
+            isBilltoCustomer: "",
+        });
 
-    // Append the new object to the array
-    setSlForm((prevObjects) => [...prevObjects, newObject]);
+        console.log("successfully sent service locations", response.data.Id);
+    } catch (error) {
+        console.log("service locations Post error", error);
+    }
+};
 
-    // Clear the serviceLocations state after adding it to the array
-    setServiceLocations({
-      SRName: "",
-      SLAddress: "",
-      BillTo: "",
-      SLPhone: "",
-      AltPhone: "",
-      // Reset other fields as necessary
-    });
-    console.log("><><><><><", slForm);
-    setShowSRLocation(false);
-  };
 
   const handleDelete = (index) => {
     const shouldDelete = window.confirm(
@@ -683,7 +652,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         value={contactData.FirstName}
                         required
                       />
-                      
                     </div>
                   </div>
                   <div className="mb-3 row">
@@ -871,7 +839,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
             </div>
           </form>
 
-          {/* servive location */}
+          {/* servive location form */}
 
           <div className="modal fade" id="basicModal2">
             <div className="modal-dialog" role="document">
@@ -896,11 +864,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         <div className="col-sm-9">
                           <input
                             type="text"
-                            name="SRName"
+                            name="Name"
                             onChange={handleSLChange}
                             className="form-control form-control-sm"
                             placeholder="Name"
-                            value={serviceLocations.SRName}
+                            value={serviceLocations.Name}
                             required
                           />
                         </div>
@@ -915,11 +883,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                               <input
                                 className="form-check-input radio-margin-top"
                                 type="radio"
-                                name="BillTo"
+                                name="isBilltoCustomer"
                                 id="inlineRadio1"
                                 onChange={handleSLChange}
                                 value="Customer"
-                                checked={serviceLocations.BillTo === "Customer"}
+                                checked={
+                                  serviceLocations.isBilltoCustomer ===
+                                  "Customer"
+                                }
                               />
                               <label
                                 className="form-check-label"
@@ -932,12 +903,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                               <input
                                 className="form-check-input radio-margin-top"
                                 type="radio"
-                                name="BillTo"
+                                name="isBilltoCustomer"
                                 id="inlineRadio2"
                                 onChange={handleSLChange}
                                 value="BillToServiceLocation"
                                 checked={
-                                  serviceLocations.BillTo ===
+                                  serviceLocations.isBilltoCustomer ===
                                   "BillToServiceLocation"
                                 }
                               />
@@ -959,8 +930,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                           <input
                             type="text"
                             onChange={handleSLChange}
-                            name="SLAddress"
-                            value={serviceLocations.SLAddress}
+                            name="Address"
+                            value={serviceLocations.Address}
                             className="form-control form-control-sm"
                             placeholder="Address"
                           />
@@ -972,8 +943,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                           <input
                             type="number"
                             onChange={handleSLChange}
-                            value={serviceLocations.SLPhone}
-                            name="SLPhone"
+                            value={serviceLocations.Phone}
+                            name="Phone"
                             className="form-control form-control-sm"
                             placeholder="Phone"
                           />
@@ -1027,16 +998,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 </h4>
               </div>
               <div className="card-body">
-                {showSRLocation ? null : (
-                  <>
-                    {/* <button
-                      onClick={() => {
-                        setShowSRLocation(true);
-                      }}
-                      className="btn btn-primary mb-3"
-                    >
-                      Add
-                    </button> */}
+               
                     <button
                       className="btn btn-primary btn-sm"
                       data-bs-toggle="modal"
@@ -1048,154 +1010,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                     >
                       + Add Service Locations
                     </button>
-                  </>
-                )}
-
-                {showSRLocation && (
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <div className="row">
-                        <div className="col-xl-4 mb-1">
-                          <label className="form-label">
-                            Name<span className="text-danger">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            name="SRName"
-                            onChange={handleSLChange}
-                            className="form-control form-control-sm"
-                            placeholder="Name"
-                            required
-                          />
-                        </div>
-                        <div className="col-xl-6 mb-3">
-                          <div className="form-check form-check-inline radio-margin">
-                            <label
-                              className="form-check-label"
-                              for="inlineRadio1"
-                            >
-                              Bill to:
-                            </label>
-                            <div className="form-check form-check-inline radio-margin-div">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="BillTo"
-                                id="inlineRadio1"
-                                onClick={handleSLChange}
-                                value="Customer"
-                              />
-                              <label
-                                className="form-check-label"
-                                for="inlineRadio1"
-                              >
-                                Customer
-                              </label>
-                            </div>
-                            <div className="form-check form-check-inline">
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name="BillTo"
-                                id="inlineRadio2"
-                                onClick={handleSLChange}
-                                value="BillToServiceLocation"
-                              />
-                              <label
-                                className="form-check-label"
-                                for="inlineRadio2"
-                              >
-                                This service Location
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                        {/* <h4>Details</h4>{" "}
-              <hr
-                style={{
-                  border: "none", // Remove the default border
-                  backgroundColor: "#d9d9d9", // Set the background color to create the line
-                  height: "1px", // Set the height to 1px for a thin line
-                  margin: " 0px 0px 19px", // Add margin for spacing
-                }}
-              /> */}
-                        <div className="row">
-                          {/* <div
-                            className="col-xl-3 mb-3"
-                            style={{ position: "relative" }}
-                          >
-                            <label className="form-label">Address</label>
-                            <input
-                              type="text"
-                              id="SRinput2"
-                              onClick={() => {
-                                setShowPop2(!showPop2);
-                              }}
-                              style={{ cursor: "pointer" }}
-                              name="SLAddress"
-                              className="form-control form-control-sm"
-                              value={adress2}
-                              placeholder="Address"
-                              readOnly
-                            />
-                            {showPop2 || (
-                              <AdressModal
-                                boolState={setShowPop2}
-                                handleAdress={setAdress2}
-                                adress={SLadress}
-                                setAdress={setSLadress}
-                              />
-                            )}
-                          </div> */}
-                          <div className="col-xl-3 mb-3">
-                            <label className="form-label">Phone</label>
-                            <input
-                              type="number"
-                              onChange={handleSLChange}
-                              name="SLPhone"
-                              className="form-control form-control-sm"
-                              placeholder="Phone"
-                            />
-                          </div>
-                          <div className="col-xl-3 mb-3">
-                            <label className="form-label">Alt Phone</label>
-                            <input
-                              type="number"
-                              name="AltPhone"
-                              onChange={handleSLChange}
-                              className="form-control form-control-sm"
-                              placeholder="Alt Phone"
-                              required
-                            />
-                          </div>
-                          <div
-                            className="col-xl-3 mb-3"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              paddingTop: "26px",
-                            }}
-                          >
-                            <button
-                              onClick={addServiceLocation}
-                              className="btn btn-primary"
-                            >
-                              Save
-                            </button>
-                            <button
-                              className="btn btn-danger light ms-1"
-                              onClick={() => {
-                                setShowSRLocation(false);
-                              }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                 
+               
 
                 <div className="col-xl-12">
                   <div className="card">
@@ -1217,12 +1033,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                             <tbody>
                               {slForm.map((slData, index) => (
                                 <tr>
-                                  <td>{index + 1}</td>
-                                  <td>{slData.SRName}</td>
-                                  <td>{slData.SLAddress}</td>
-                                  <td>{slData.SLPhone}</td>
+                                  <td>{slData.Id}</td>
+                                  <td>{slData.Name}</td>
+                                  <td>{slData.Address}</td>
+                                  <td>{slData.Phone}</td>
                                   <td>{slData.AltPhone}</td>
-                                  <td>{slData.BillTo}</td>
+                                  <td>{slData.isBilltoCustomer}</td>
                                   <td>
                                     <div className="badgeBox">
                                       <span className="actionBadge badge-danger light border-0 badgebox-size">
