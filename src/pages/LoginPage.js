@@ -48,7 +48,9 @@ const LoginPage = () => {
         setError("");
         const token = response.data.token.data;
         Cookies.set('token', token, { expires: 7 });
-        console.log("login response iss", Cookies.get('token'))
+        Cookies.set('userData', response.data.Data, { expires: 7 });
+        // console.log("login response iss", Cookies.get('token'))
+        console.log("login response is",response.data)
 
         
         navigate("/Dashboard"); 

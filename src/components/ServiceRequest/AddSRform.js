@@ -106,13 +106,15 @@ const AddSRform = () => {
   };
 
   const fetchCustomers = async () => {
+
+    try {
+      console.log("in fetch customers");
     const response = await axios.get(
       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
     );
-    try {
       setCustomers(response.data);
-      // console.log(response.data);
-      console.log(customers);
+      console.log("SR customer drop down is",response.data);
+      // console.log(customers);
       //   console.log("Custommer list is", customers[1].CustomerName);
     } catch (error) {
       console.error("API Call Error:", error);

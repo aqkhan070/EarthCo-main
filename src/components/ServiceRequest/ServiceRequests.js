@@ -12,8 +12,10 @@ import Cookies from "js-cookie";
 const ServiceRequests = () => {
   const [serviceRequest, setserviceRequest] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const token = Cookies.get("token");
 
+  const token = Cookies.get("token");
+  const userdata = Cookies.get('userData');
+  
   // const [locationOptions, setLocationOptions] = useState();
 
 
@@ -47,6 +49,7 @@ const ServiceRequests = () => {
 
   useEffect(() => {
     fetchServiceRequest();
+    console.log("cookies user data is",userdata.Firstname);
   }, []);
 
   return (

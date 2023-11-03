@@ -88,6 +88,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
         customerInfo
       );
+      window.location.reload();
       console.log("staff added successfully", customerInfo);
     } catch (error) {
 
