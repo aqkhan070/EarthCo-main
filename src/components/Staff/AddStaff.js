@@ -4,8 +4,9 @@ import TitleBar from "../TitleBar";
 import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-import Cookies from 'js-cookie';
-
+import Cookies from "js-cookie";
+import Alert from "@mui/material/Alert";
+import Stack from "@mui/material/Stack";
 
 const AddStaff = () => {
   const icon = (
@@ -35,43 +36,66 @@ const AddStaff = () => {
     </svg>
   );
 
-//   const [showPop1, setShowPop1] = useState(true);
-//   const [adress1, setAdress1] = useState("");
-//   const [customerAdress, setCustomerAdress] = useState({});
+  //   const [showPop1, setShowPop1] = useState(true);
+  //   const [adress1, setAdress1] = useState("");
+  //   const [customerAdress, setCustomerAdress] = useState({});
   const [customerInfo, setCustomerInfo] = useState([]);
+  const [userRoles, setUserRoles] = useState([]);
+  const [alert, setAlert] = useState(false)
 
-  const token = Cookies.get('token');
-
+  const token = Cookies.get("token");
 
   const getRoles = async () => {
-    console.log("token izzz", token)
-    try{
-       
-
-// Set up the headers with the token
-const headers = {
-  Authorization: `Bearer ${token}`,
-};
-        const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/UserManagement/Roles`, {headers}) ;
-        console.log("user roles areee", response.data)
-    }catch(error){
-        console.log("roles api call error", error)
+    console.log("token izzz", token);
+    try {
+      // Set up the headers with the token
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/UserManagement/Roles`,
+        { headers }
+      );
+      console.log("user roles areee", response.data);
+      setUserRoles(response.data);
+    } catch (error) {
+        console.log("erroor ", error)
     }
   };
 
-  useEffect(() => {getRoles()},[])
+  useEffect(() => {
+    getRoles();
+  }, []);
 
   const handleCustomerInfo = (event) => {
-    const value = event.target.value;
+    const { name, value } = event.target;
+    const newValue = name === "RoleId" ? parseInt(value, 10) : value;
+
     setCustomerInfo({
       ...customerInfo,
-      [event.target.name]: value,
+      [name]: newValue,
     });
-    console.log("staff info",customerInfo)
+
+    console.log("customer info", {
+      ...customerInfo,
+      [name]: newValue,
+    });
   };
 
-  const addStaff = () => {
+  const addStaff = async () => {
+    try {
+      const response = await axios.post(
+        `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
+        customerInfo
+      );
+      console.log("staff added successfully", customerInfo);
+    } catch (error) {
 
+      if (error.response.status === 409) {
+            setAlert(true)
+        }
+      console.log("roles api call error", error.response.status);
+    }
   };
 
   return (
@@ -85,6 +109,12 @@ const headers = {
             </h4>
           </div>
           <div className="card-body">
+            {alert && <Stack sx={{ width: "100%" }} spacing={2}>
+              <Alert severity="error">
+                The Email/User already exists
+              </Alert>
+            </Stack>}
+            
             <div className="row">
               <div className="col-xl-6 mb-3">
                 <label
@@ -155,7 +185,6 @@ const headers = {
                 <input
                   type="password"
                   className="form-control"
-                 
                   id="exampleFormControlInput3"
                   placeholder="Confirm Password"
                   required
@@ -200,13 +229,12 @@ const headers = {
                   Adress<span className="text-danger">*</span>
                 </label>
                 <input
-                  type="text"                  
-                  onChange={handleCustomerInfo}                 
+                  type="text"
+                  onChange={handleCustomerInfo}
                   className="form-control"
                   name="Address"
                   id="exampleFormControlInput3"
                   placeholder="Address"
-                 
                   required
                 />
                 {/* {showPop1 || (
@@ -218,7 +246,7 @@ const headers = {
                     handleAdress={setAdress1}
                   />
                 )} */}
-              </div>              
+              </div>
               <div className="col-xl-6 mb-3">
                 <label
                   htmlFor="exampleFormControlInput4"
@@ -226,19 +254,30 @@ const headers = {
                 >
                   User Role
                 </label>
-                <Form.Select name="RoleId" size="lg" className="bg-white" onChange={handleCustomerInfo}>
+                <Form.Select
+                  name="RoleId"
+                  size="lg"
+                  className="bg-white"
+                  onChange={handleCustomerInfo}
+                >
                   <option value="">Select Role ...</option>
-                  <option value="">Admin</option>
-                  <option value="">Manager</option>
-                  <option value="">Staff</option>
+                  {userRoles.map((roles) => {
+                    return (
+                      <option key={roles.RoleId} value={roles.RoleId}>
+                        {roles.Role}
+                      </option>
+                    );
+                  })}
                 </Form.Select>
               </div>
             </div>
           </div>
         </div>
         <div className="text-end">
-          <NavLink to="/Dashboard/Staff">
-            <button className="btn btn-primary me-1">Submit</button>
+          <NavLink>
+            <button className="btn btn-primary me-1" onClick={addStaff}>
+              Submit
+            </button>
           </NavLink>
           <NavLink className="active" to="/Dashboard/Staff">
             <button className="btn btn-danger light ms-1">Cancel</button>
