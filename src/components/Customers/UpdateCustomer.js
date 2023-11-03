@@ -4,7 +4,6 @@ import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 
-
 const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
 
@@ -15,10 +14,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [primary, setPrimary] = useState(false);
   const [alowContactLogin, setAlowContactLogin] = useState(false);
   const [allowLogin, setAllowLogin] = useState(false);
-
-
-
-
 
   const [showContacts, setShowContacts] = useState(false);
   const [showSRLocation, setShowSRLocation] = useState(false);
@@ -42,6 +37,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [customerType, setCustomerType] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState({});
   const [responseid, setresponseid] = useState(0);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
@@ -49,32 +45,13 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
 
-
-
   const [adress1, setAdress1] = useState("");
   const [adress2, setAdress2] = useState("");
 
   const [showPop1, setShowPop1] = useState(false);
   const [showPop2, setShowPop2] = useState(false);
 
-  
-
-  
-
  
-
-  const getCustomerType = async () => {
-    try {
-      const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerTypes`
-      );
-      console.log("getCustomerType", response.data);
-      setCustomerType(response.data);
-      console.log(".............", customerType);
-    } catch (error) {
-      console.log("getCustomerType api call error", error);
-    }
-  };
   useEffect(() => {
     console.log("typess are", customerType);
   }, [customerType]);
@@ -98,6 +75,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       setSelectedCompany(response.data);
       setAllowLogin(response.data.isLoginAllow);
       setCompanyData(response.data);
+      setContactDataList(response.data.tblContacts)
+      setSlForm(response.data.tblServiceLocations)
     } catch (error) {
       console.error("There was an error updating the customer:", error);
     }
@@ -105,15 +84,21 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   useEffect(() => {
     getCustomerData();
     getCustomerType();
-
-   
   }, []);
 
- 
-
-  
-  
   // company logic
+  const getCustomerType = async () => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerTypes`
+      );
+      console.log("getCustomerType", response.data);
+      setCustomerType(response.data);
+      console.log(".............", customerType);
+    } catch (error) {
+      console.log("getCustomerType api call error", error);
+    }
+  };
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
@@ -142,6 +127,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       [name]: value,
       isLoginAllow: allowLogin,
     }));
+    // if (name === 'Password' || name === 'ConfirmPassword') {
+    //   setPasswordsMatch(companyData.Password === companyData.ConfirmPassword);
+    // }
     console.log("cdcdcdcdcdcdc", companyData);
   };
 
@@ -155,7 +143,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       ...contactData,
       [name]: value,
       CustomerId: selectedItem,
-     
     });
     console.log("contact data,,,,,,", contactData);
   };
@@ -191,7 +178,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       alert("contactc data is empty");
       return;
     }
-    
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
@@ -202,7 +189,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       // Update the contactData with the response id, then add to list
       setContactData((prevState) => ({
         ...prevState,
-        Id: response.data.Id,
+        ContactId: response.data.Id,
       }));
 
       // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
@@ -213,15 +200,20 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     }
   };
 
-  const delContact = (index) => {
-    const updatedContacts = [...contactDataList];
-    updatedContacts.splice(index, 1);
+  const delContact = async (id) => {
+try{
+  const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`);
+
+  const updatedContacts = contactDataList.filter(contact => contact.ContactId !== id);
     setContactDataList(updatedContacts);
+  console.log("contact deleted sussessfully",id, response)
+}catch(error){
+  console.log("error deleting contact",error )}
   };
 
-  const deleteContact = (index) => {
+  const deleteContact = (id) => {
     if (window.confirm("Are you sure you want to delete this Contact?")) {
-      delContact(index);
+      delContact(id);
     }
   };
 
@@ -233,81 +225,83 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     }
   }, [loginState]);
 
-
   // service locations logic
 
   const handleSLChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, type, value } = e.target;
+  
+    const updatedValue = e.target.value ;
+  
+    setServiceLocations((prevLocations) => ({
+      ...prevLocations,
+      [name]: updatedValue,
+    }));
+    console.log("ssssssss",serviceLocations)
 
-    if (type === "radio") {
-      // Handle radio button inputs
-      setServiceLocations((prevLocations) => ({
-        ...prevLocations,
-        [name]: checked ? value : "", // Only update the value if the radio button is checked
-      }));
-    } else {
-      // Handle text inputs
-      setServiceLocations((prevLocations) => ({
-        ...prevLocations,
-        [name]: value,
-        CustomerId: selectedItem,
-      }));
-    }
-    // console.log("<><><><><<", serviceLocations);
+    
   };
+  
 
   const addServiceLocation = async (e) => {
     e.preventDefault();
     // Check if serviceLocations has data to add
     if (Object.keys(serviceLocations).length === 0) {
-        alert("Service Locations data is empty");
-        return;
+      alert("Service Locations data is empty");
+      return;
     }
     try {
-        const response = await axios.post(`https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`, serviceLocations);
-        
-        // Assuming that the response data has an ID that you want to append
-        const serviceLocationWithId = {
-            ...serviceLocations, // spread the existing serviceLocations fields
-            Id: response.data.Id // add the new ID from the response
-        };
-        
-        // Update your form state with the new service location object that includes the response ID
-        setSlForm(prevObjects => [...prevObjects, serviceLocationWithId]);
-        
-        // Reset serviceLocations state to clear the form or set it for a new entry
-        setServiceLocations({
-            Name: "",
-            Address: "",
-            BillTo: "",
-            Phone: "",
-            AltPhone: "",
-            isBilltoCustomer: "",
-        });
+      const response = await axios.post(
+        `https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`,
+        serviceLocations
+      );
 
-        console.log("successfully sent service locations", response.data.Id);
+      // Assuming that the response data has an ID that you want to append
+      const serviceLocationWithId = {
+        ...serviceLocations, // spread the existing serviceLocations fields
+        ServiceLocationId: response.data.Id, // add the new ID from the response
+      };
+      console.log('New service location to add:', serviceLocationWithId);
+      // Update your form state with the new service location object that includes the response ID
+      setSlForm((prevObjects) => {
+        const updatedSlForm = [...prevObjects, serviceLocationWithId];
+        console.log('Updated slForm:', updatedSlForm);
+        return updatedSlForm;
+      });
+
+      // Reset serviceLocations state to clear the form or set it for a new entry
+      setServiceLocations({
+        Name: "",
+        Address: "",        
+        Phone: "",
+        AltPhone: "",
+        isBilltoCustomer: null,
+      });
+
+      console.log("successfully sent service locations", response.data.Id);
     } catch (error) {
-        console.log("service locations Post error", error);
-    }
-};
-
-
-  const handleDelete = (index) => {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this Service Location?"
-    );
-
-    if (shouldDelete) {
-      // Create a copy of the slForm array
-      const updatedSlForm = [...slForm];
-
-      // Remove the element at the specified index
-      updatedSlForm.splice(index, 1);
-
-      // Update the state with the modified array
-      setSlForm(updatedSlForm);
+      console.log("service locations Post error", error);
     }
   };
+
+  const handleDelete = async (serviceLocationId) => {
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete this Service Location?"
+    );      
+
+    if (shouldDelete) {
+      // Filter out the slForm item with the matching ServiceLocationId
+      
+      // Update the state with the modified array
+    }
+    try{
+      const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`);
+      const updatedSlForm = slForm.filter(sl => sl.ServiceLocationId !== serviceLocationId);
+        setSlForm(updatedSlForm);
+        console.log("successfully deleted service location", response)
+    }catch(error){
+      console.log("error deleting service location",error)
+    }
+};
 
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
@@ -321,8 +315,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
             </h4>
           </div>
           <div className="card-body">
-            <div className="row">
-              {/* {formData.CustomerData.CustomerName && (
+            {/* {formData.CustomerData.CustomerName && (
                 <div className="col-xl-4 mb-3">
                   <div className="form-check custom-checkbox form-check-inline message-customer">
                     <input
@@ -341,7 +334,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   </div>
                 </div>
               )} */}
-            </div>
 
             <div class="row">
               <div class="col-9">
@@ -609,14 +601,36 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         type="password"
                         className="form-control form-control-sm"
                         name="ConfirmPassword"
+                        value={companyData.ConfirmPassword}
+                        onChange={handleCompanyChange}
                         placeholder="Confirm Password"
                         required
                       />
+                      {!passwordsMatch && (
+                        <div className="text-danger">
+                          Passwords do not match.
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
               </div>
             </div>
+          </div>
+          <div className="text-end">
+            <button className="btn btn-primary me-1" onClick={handleSubmit}>
+              Submit
+            </button>
+            <NavLink to="/Dashboard/Customers">
+              <button
+                className="btn btn-danger light ms-1"
+                onClick={() => {
+                  setShowContent(true);
+                }}
+              >
+                Cancel
+              </button>
+            </NavLink>
           </div>
         </div>
       </form>
@@ -808,7 +822,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                             <tbody>
                               {contactDataList.map((contact, index) => (
                                 <tr key={index}>
-                                  <td>{contact.Id}</td>
+                                  <td>{contact.ContactId}</td>
                                   <td>{contact.FirstName}</td>
                                   <td>{contact.LastName}</td>
                                   <td>{contact.Email}</td>
@@ -818,7 +832,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                     <div className="badgeBox">
                                       <span
                                         className="actionBadge badge-danger light border-0 badgebox-size"
-                                        onClick={() => deleteContact(index)}
+                                        onClick={() => deleteContact(contact.ContactId)}
                                       >
                                         <span className="material-symbols-outlined badgebox-size">
                                           delete
@@ -886,11 +900,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 name="isBilltoCustomer"
                                 id="inlineRadio1"
                                 onChange={handleSLChange}
-                                value="Customer"
-                                checked={
-                                  serviceLocations.isBilltoCustomer ===
-                                  "Customer"
-                                }
+                                value={true}
+                                // checked={serviceLocations.isBilltoCustomer === true}
                               />
                               <label
                                 className="form-check-label"
@@ -906,11 +917,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 name="isBilltoCustomer"
                                 id="inlineRadio2"
                                 onChange={handleSLChange}
-                                value="BillToServiceLocation"
-                                checked={
-                                  serviceLocations.isBilltoCustomer ===
-                                  "BillToServiceLocation"
-                                }
+                                value={false}
+                                // checked={serviceLocations.isBilltoCustomer === false}
                               />
                               <label
                                 className="form-check-label"
@@ -998,20 +1006,17 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 </h4>
               </div>
               <div className="card-body">
-               
-                    <button
-                      className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal2"
-                      style={{ margin: "12px 20px" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      + Add Service Locations
-                    </button>
-                 
-               
+                <button
+                  className="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#basicModal2"
+                  style={{ margin: "12px 20px" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  + Add Service Locations
+                </button>
 
                 <div className="col-xl-12">
                   <div className="card">
@@ -1026,14 +1031,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 <th>Address</th>
                                 <th>Phone</th>
                                 <th>Alt Phone</th>
-                                <th>Bill to</th>
+                                <th>Bill to Customer</th>
                                 <th>Actions</th>
                               </tr>
                             </thead>
                             <tbody>
                               {slForm.map((slData, index) => (
-                                <tr>
-                                  <td>{slData.Id}</td>
+                                <tr key={slData.ServiceLocationId}>
+                                  <td>{slData.ServiceLocationId}</td>
                                   <td>{slData.Name}</td>
                                   <td>{slData.Address}</td>
                                   <td>{slData.Phone}</td>
@@ -1044,7 +1049,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                       <span className="actionBadge badge-danger light border-0 badgebox-size">
                                         <span
                                           className="material-symbols-outlined badgebox-size"
-                                          onClick={() => handleDelete(index)}
+                                          onClick={() => handleDelete(slData.ServiceLocationId)}
                                         >
                                           delete
                                         </span>
@@ -1065,22 +1070,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
           </form>
         </div>
       )}
-
-      <div className="text-end">
-        <button className="btn btn-primary me-1" onClick={handleSubmit}>
-          Submit
-        </button>
-        <NavLink to="/Dashboard/Customers">
-          <button
-            className="btn btn-danger light ms-1"
-            onClick={() => {
-              setShowContent(true);
-            }}
-          >
-            Cancel
-          </button>
-        </NavLink>
-      </div>
     </div>
   );
 };
