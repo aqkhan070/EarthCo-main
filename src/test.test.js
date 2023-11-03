@@ -1,255 +1,216 @@
-<form onSubmit={(e) => e.preventDefault()}>
-        <div className="card mt-3">
-          <div className="">
-            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
-              Customer Info
-            </h4>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-xl-4 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label"
+<div className="modal fade" id="basicModal2">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
                 >
-                  Company Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  name="CompanyName"
-                  placeholder="Company Name"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-9">
-                <div className="row">
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="FirstName"
-                      placeholder="First Name"
-                      required
-                    />
+                  <div className="modal-header">
+                    <h5 className="modal-title">Add Service location</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                    ></button>
                   </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="LastName"
-                      placeholder="Last Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Email"
-                      placeholder="Email"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Address"
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Phone"
-                      placeholder="Phone"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      AltPhone
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="AltPhone"
-                      placeholder="Alternate Phone"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Customer Fax
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Fax"
-                      placeholder="Customer Fax"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">Customer Type</label>
-                    <Form.Select
-                      size="md"
-                      name="CustomerTypeId"
-                      aria-label="Default select example"
-                      id="inputState"
-                      className="bg-white"
-                    >
-                      <option value="">Customer Type</option>
-                    </Form.Select>
-                  </div>
-
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">Notes</label>
-                    <textarea
-                      name="Notes"
-                      className="form-txtarea form-control form-control-sm"
-                      rows="2"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="col-3">
-                <div className="col-xl-12 mb-3 ">
-                  <div className="form-check form-check-inline radio-margin">
-                    <label className="form-check-label " htmlFor="inlineRadio1">
-                      Allow Login:
-                    </label>
-                    <div className="form-check form-check-inline radio-margin-div">
-                      <input
-                        className="form-check-input ml-2 pl-2"
-                        type="radio"
-                        id="inlineRadio1"
-                        value="Customer"
-                        checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
-                        onChange={() => {
-                          setAllowLogin(true);
-                        }}
-                      />
-                      <label
-                        className="form-check-label allow-customer-login"
-                        htmlFor="inlineRadio1"
-                      >
-                        yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="inlineRadio2"
-                        value="BillToServiceLocation"
-                        checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
-                        onChange={() => {
-                          setAllowLogin(false);
-                        }}
-                      />
-                      <label
-                        className="form-check-label allow-customer-login"
-                        htmlFor="inlineRadio2"
-                      >
-                        no
-                      </label>
+                  <div className="modal-body">
+                    <div className="basic-form">
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">Name</label>
+                        <div className="col-sm-9">
+                          <input
+                            type="text"
+                            name="Name"
+                            onChange={handleSLChange}
+                            className="form-control form-control-sm"
+                            placeholder="Name"
+                            value={serviceLocations.Name}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Bill To
+                        </label>
+                        <div className="col-sm-9">
+                          <div className="row">
+                            <div className="col-5">
+                              <input
+                                className="form-check-input radio-margin-top"
+                                type="radio"
+                                name="isBilltoCustomer"
+                                id="inlineRadio1"
+                                onChange={handleSLChange}
+                                value={true}
+                                // checked={serviceLocations.isBilltoCustomer === true}
+                              />
+                              <label
+                                className="form-check-label"
+                                for="inlineRadio1"
+                              >
+                                Customer
+                              </label>
+                            </div>
+                            <div className="col-7">
+                              <input
+                                className="form-check-input radio-margin-top"
+                                type="radio"
+                                name="isBilltoCustomer"
+                                id="inlineRadio2"
+                                onChange={handleSLChange}
+                                value={false}
+                                // checked={serviceLocations.isBilltoCustomer === false}
+                              />
+                              <label
+                                className="form-check-label"
+                                for="inlineRadio2"
+                              >
+                                This service Location
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Address
+                        </label>
+                        <div className="col-sm-9">
+                          <input
+                            type="text"
+                            onChange={handleSLChange}
+                            name="Address"
+                            value={serviceLocations.Address}
+                            className="form-control form-control-sm"
+                            placeholder="Address"
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">Phone</label>
+                        <div className="col-sm-9">
+                          <input
+                            type="number"
+                            onChange={handleSLChange}
+                            value={serviceLocations.Phone}
+                            name="Phone"
+                            className="form-control form-control-sm"
+                            placeholder="Phone"
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-3 col-form-label">
+                          Alt Phone
+                        </label>
+                        <div className="col-sm-9">
+                          <input
+                            type="number"
+                            name="AltPhone"
+                            onChange={handleSLChange}
+                            value={serviceLocations.AltPhone}
+                            className="form-control form-control-sm"
+                            placeholder="Alt Phone"
+                            required
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                {allowLogin && (
-                  <div className="row">
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Username <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        name="UserName"
-                        placeholder="User Name"
-                        required
-                      />
-                    </div>
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Password <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control form-control-sm"
-                        name="Password"
-                        placeholder="Password"
-                        required
-                      />
-                    </div>
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Confirm Password <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control form-control-sm"
-                        name="ConfirmPassword"
-                        placeholder="Confirm Password"
-                        required
-                      />
-                    </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      id="closer"
+                      className="btn btn-danger light"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      data-bs-dismiss="modal"
+                      onClick={addServiceLocation}
+                    >
+                      Save
+                    </button>
                   </div>
-                )}
+                </form>
               </div>
             </div>
           </div>
-        </div>
-      </form>
+
+          <form>
+            <div className="card">
+              <div className="">
+                <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
+                  Service Locations
+                </h4>
+              </div>
+              <div className="card-body">
+                <button
+                  className="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#basicModal2"
+                  style={{ margin: "12px 20px" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  + Add Service Locations
+                </button>
+
+                <div className="col-xl-12">
+                  <div className="card">
+                    <div className="card-body p-0">
+                      <div className="estDataBox">
+                        <div className="table-responsive active-projects style-1">
+                          <table id="empoloyees-tblwrapper" className="table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Alt Phone</th>
+                                <th>Bill to Customer</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {slForm.map((slData, index) => (
+                                <tr key={slData.ServiceLocationId}>
+                                  <td>{slData.ServiceLocationId}</td>
+                                  <td>{slData.Name}</td>
+                                  <td>{slData.Address}</td>
+                                  <td>{slData.Phone}</td>
+                                  <td>{slData.AltPhone}</td>
+                                  <td>
+                                    {slData.isBilltoCustomer
+                                      ? "Customer"
+                                      : "Service Location"}
+                                  </td>
+
+                                  <td style={{ cursor: 'pointer' }}>
+                                    
+                                    <Create  onClick={() => {}}></Create>
+                                    <Delete
+                                      color="error"
+                                      onClick={() =>
+                                        handleDelete(slData.ServiceLocationId)
+                                      }
+                                    ></Delete>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>

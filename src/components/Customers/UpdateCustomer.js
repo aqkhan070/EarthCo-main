@@ -52,9 +52,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [showPop1, setShowPop1] = useState(false);
   const [showPop2, setShowPop2] = useState(false);
 
-  useEffect(() => {
-    console.log("typess are", customerType);
-  }, [customerType]);
+
 
   const getCustomerData = async () => {
     if (selectedItem === 0) {
@@ -85,6 +83,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     getCustomerData();
     getCustomerType();
   }, []);
+  
 
   // company logic
   const getCustomerType = async () => {
@@ -194,6 +193,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
       // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
       setresponseid(response.data.Id);
+      getCustomerData();
       // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
     } catch (error) {
       console.log("api call error", error);
@@ -220,6 +220,13 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     if (window.confirm("Are you sure you want to delete this Contact?")) {
       delContact(id);
     }
+  };
+
+  const updateContact = (id) => {
+    const updatedContacts = contactDataList.filter(
+      (contact) => contact.ContactId !== id
+    );
+    setContactDataList(updatedContacts);
   };
 
   useEffect(() => {
@@ -278,6 +285,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
         AltPhone: "",
         isBilltoCustomer: null,
       });
+      getCustomerData();
+
 
       console.log("successfully sent service locations", response.data.Id);
     } catch (error) {
@@ -306,6 +315,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
     } catch (error) {
       console.log("error deleting service location", error);
     }
+  };
+  const updateSL = (serviceLocationId) => {
+    const updatedSlForm = slForm.filter(
+      (sl) => sl.ServiceLocationId !== serviceLocationId
+    );
+    setSlForm(updatedSlForm);
   };
 
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
@@ -833,16 +848,21 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                   <td>{contact.Email}</td>
                                   <td>{contact.Phone}</td>
                                   <td>{contact.Address}</td>
-                                  <td style={{ cursor: 'pointer' }}>
-                                 
-                                    <Create onClick={() => {}}></Create>
+                                  <td style={{ cursor: "pointer" }}>
+                                    <Create
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#basicModal"
+                                      onClick={() => {
+                                        setContactData(contact);
+                                        updateContact(contact.ContactId);
+                                      }}
+                                    ></Create>
                                     <Delete
                                       color="error"
                                       onClick={() =>
                                         deleteContact(contact.ContactId)
                                       }
-                                    ></Delete>                                 
-                                   
+                                    ></Delete>
                                   </td>
                                 </tr>
                               ))}
@@ -1053,9 +1073,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                       : "Service Location"}
                                   </td>
 
-                                  <td style={{ cursor: 'pointer' }}>
-                                    
-                                    <Create  onClick={() => {}}></Create>
+                                  <td style={{ cursor: "pointer" }}>
+                                    <Create
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#basicModal2"
+                                      onClick={() => {
+                                        setServiceLocations(slData);
+                                        updateSL(slData.ServiceLocationId);
+                                      }}
+                                    ></Create>
                                     <Delete
                                       color="error"
                                       onClick={() =>
