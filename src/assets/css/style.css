@@ -53639,3 +53639,11 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .radio-margin-top{
     margin-top: 6px !important;
 }
+.custom-create-icon {
+cursor: pointer;
+  color: #7c9c3d; /* Set your custom color here */
+}
+.custom-delete-icon {
+    cursor: pointer;
+      /* color: #7c9c3d; Set your custom color here */
+    }

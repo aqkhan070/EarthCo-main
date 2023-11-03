@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack";
 
-const AddStaff = () => {
+const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
   const icon = (
     <svg
       width="22"
@@ -39,7 +39,7 @@ const AddStaff = () => {
   //   const [showPop1, setShowPop1] = useState(true);
   //   const [adress1, setAdress1] = useState("");
   //   const [customerAdress, setCustomerAdress] = useState({});
-  const [customerInfo, setCustomerInfo] = useState([]);
+  const [customerInfo, setCustomerInfo] = useState({});
   const [userRoles, setUserRoles] = useState([]);
   const [alert, setAlert] = useState(false)
 
@@ -98,6 +98,19 @@ const AddStaff = () => {
     }
   };
 
+  const getStaffData = async () => {
+    try {
+      const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Staff/GetStaff?id=${selectedStaff}`);
+      console.log("staffdata izzzzzz",response.data)
+      setCustomerInfo(response.data)
+    } catch (error) {
+      console.log("error fetching staff data", error)
+    }
+  };
+  useEffect(() => {
+    getStaffData();
+  },[selectedStaff])
+
   return (
     <>
       <TitleBar icon={icon} title="Add Staff" />
@@ -129,6 +142,7 @@ const AddStaff = () => {
                   name="FirstName"
                   id="exampleFormControlInput1"
                   onChange={handleCustomerInfo}
+                  value={customerInfo.FirstName}
                   placeholder="First Name"
                   required
                 />
@@ -145,6 +159,7 @@ const AddStaff = () => {
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="LastName"
+                  value={customerInfo.LastName}
                   id="exampleFormControlInput4"
                   placeholder="Last Name"
                   required
@@ -159,6 +174,7 @@ const AddStaff = () => {
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="Email"
+                  value={customerInfo.Email}
                   id="exampleFormControlInput3"
                   placeholder="Email / User Name Name"
                   required
@@ -173,6 +189,7 @@ const AddStaff = () => {
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="Password"
+                  value={customerInfo.Password}
                   id="exampleFormControlInput3"
                   placeholder="Password"
                   required
@@ -186,6 +203,7 @@ const AddStaff = () => {
                   type="password"
                   className="form-control"
                   id="exampleFormControlInput3"
+                  value={customerInfo.Password}
                   placeholder="Confirm Password"
                   required
                 />
@@ -202,6 +220,7 @@ const AddStaff = () => {
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="Phone"
+                  value={customerInfo.Phone}
                   id="exampleFormControlInput4"
                   placeholder="Phone 1"
                   required
@@ -219,8 +238,9 @@ const AddStaff = () => {
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="AltPhone"
+                  value={customerInfo.AltPhone}
                   id="exampleFormControlInput4"
-                  placeholder="Phone 2"
+                  placeholder="Alt Phone"
                   required
                 />
               </div>
@@ -233,6 +253,7 @@ const AddStaff = () => {
                   onChange={handleCustomerInfo}
                   className="form-control"
                   name="Address"
+                  value={customerInfo.Address}
                   id="exampleFormControlInput3"
                   placeholder="Address"
                   required
@@ -258,6 +279,7 @@ const AddStaff = () => {
                   name="RoleId"
                   size="lg"
                   className="bg-white"
+                  value={customerInfo.RoleId}
                   onChange={handleCustomerInfo}
                 >
                   <option value="">Select Role ...</option>
@@ -279,9 +301,9 @@ const AddStaff = () => {
               Submit
             </button>
           </NavLink>
-          <NavLink className="active" to="/Dashboard/Staff">
-            <button className="btn btn-danger light ms-1">Cancel</button>
-          </NavLink>
+         
+            <button className="btn btn-danger light ms-1" onClick={() => {settoggleAddStaff(true)}}  >Cancel</button>
+         
         </div>
       </div>
     </>
