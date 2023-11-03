@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
+import { Create, Delete, Update } from "@mui/icons-material";
 
 const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const navigate = useNavigate();
@@ -51,7 +52,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [showPop1, setShowPop1] = useState(false);
   const [showPop2, setShowPop2] = useState(false);
 
- 
   useEffect(() => {
     console.log("typess are", customerType);
   }, [customerType]);
@@ -75,8 +75,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       setSelectedCompany(response.data);
       setAllowLogin(response.data.isLoginAllow);
       setCompanyData(response.data);
-      setContactDataList(response.data.tblContacts)
-      setSlForm(response.data.tblServiceLocations)
+      setContactDataList(response.data.tblContacts);
+      setSlForm(response.data.tblServiceLocations);
     } catch (error) {
       console.error("There was an error updating the customer:", error);
     }
@@ -201,14 +201,19 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   };
 
   const delContact = async (id) => {
-try{
-  const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`);
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`
+      );
 
-  const updatedContacts = contactDataList.filter(contact => contact.ContactId !== id);
-    setContactDataList(updatedContacts);
-  console.log("contact deleted sussessfully",id, response)
-}catch(error){
-  console.log("error deleting contact",error )}
+      const updatedContacts = contactDataList.filter(
+        (contact) => contact.ContactId !== id
+      );
+      setContactDataList(updatedContacts);
+      console.log("contact deleted sussessfully", id, response);
+    } catch (error) {
+      console.log("error deleting contact", error);
+    }
   };
 
   const deleteContact = (id) => {
@@ -229,18 +234,15 @@ try{
 
   const handleSLChange = (e) => {
     const { name, type, value } = e.target;
-  
-    const updatedValue = e.target.value ;
-  
+
+    const updatedValue = e.target.value;
+
     setServiceLocations((prevLocations) => ({
       ...prevLocations,
       [name]: updatedValue,
     }));
-    console.log("ssssssss",serviceLocations)
-
-    
+    console.log("ssssssss", serviceLocations);
   };
-  
 
   const addServiceLocation = async (e) => {
     e.preventDefault();
@@ -260,18 +262,18 @@ try{
         ...serviceLocations, // spread the existing serviceLocations fields
         ServiceLocationId: response.data.Id, // add the new ID from the response
       };
-      console.log('New service location to add:', serviceLocationWithId);
+      console.log("New service location to add:", serviceLocationWithId);
       // Update your form state with the new service location object that includes the response ID
       setSlForm((prevObjects) => {
         const updatedSlForm = [...prevObjects, serviceLocationWithId];
-        console.log('Updated slForm:', updatedSlForm);
+        console.log("Updated slForm:", updatedSlForm);
         return updatedSlForm;
       });
 
       // Reset serviceLocations state to clear the form or set it for a new entry
       setServiceLocations({
         Name: "",
-        Address: "",        
+        Address: "",
         Phone: "",
         AltPhone: "",
         isBilltoCustomer: null,
@@ -286,22 +288,25 @@ try{
   const handleDelete = async (serviceLocationId) => {
     const shouldDelete = window.confirm(
       "Are you sure you want to delete this Service Location?"
-    );      
+    );
 
     if (shouldDelete) {
       // Filter out the slForm item with the matching ServiceLocationId
-      
       // Update the state with the modified array
     }
-    try{
-      const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`);
-      const updatedSlForm = slForm.filter(sl => sl.ServiceLocationId !== serviceLocationId);
-        setSlForm(updatedSlForm);
-        console.log("successfully deleted service location", response)
-    }catch(error){
-      console.log("error deleting service location",error)
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`
+      );
+      const updatedSlForm = slForm.filter(
+        (sl) => sl.ServiceLocationId !== serviceLocationId
+      );
+      setSlForm(updatedSlForm);
+      console.log("successfully deleted service location", response);
+    } catch (error) {
+      console.log("error deleting service location", error);
     }
-};
+  };
 
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
@@ -828,17 +833,16 @@ try{
                                   <td>{contact.Email}</td>
                                   <td>{contact.Phone}</td>
                                   <td>{contact.Address}</td>
-                                  <td>
-                                    <div className="badgeBox">
-                                      <span
-                                        className="actionBadge badge-danger light border-0 badgebox-size"
-                                        onClick={() => deleteContact(contact.ContactId)}
-                                      >
-                                        <span className="material-symbols-outlined badgebox-size">
-                                          delete
-                                        </span>
-                                      </span>
-                                    </div>
+                                  <td style={{ cursor: 'pointer' }}>
+                                 
+                                    <Create onClick={() => {}}></Create>
+                                    <Delete
+                                      color="error"
+                                      onClick={() =>
+                                        deleteContact(contact.ContactId)
+                                      }
+                                    ></Delete>                                 
+                                   
                                   </td>
                                 </tr>
                               ))}
@@ -1043,18 +1047,21 @@ try{
                                   <td>{slData.Address}</td>
                                   <td>{slData.Phone}</td>
                                   <td>{slData.AltPhone}</td>
-                                  <td>{slData.isBilltoCustomer}</td>
                                   <td>
-                                    <div className="badgeBox">
-                                      <span className="actionBadge badge-danger light border-0 badgebox-size">
-                                        <span
-                                          className="material-symbols-outlined badgebox-size"
-                                          onClick={() => handleDelete(slData.ServiceLocationId)}
-                                        >
-                                          delete
-                                        </span>
-                                      </span>
-                                    </div>
+                                    {slData.isBilltoCustomer
+                                      ? "Customer"
+                                      : "Service Location"}
+                                  </td>
+
+                                  <td style={{ cursor: 'pointer' }}>
+                                    
+                                    <Create  onClick={() => {}}></Create>
+                                    <Delete
+                                      color="error"
+                                      onClick={() =>
+                                        handleDelete(slData.ServiceLocationId)
+                                      }
+                                    ></Delete>
                                   </td>
                                 </tr>
                               ))}
