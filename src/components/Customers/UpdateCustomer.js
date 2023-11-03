@@ -219,12 +219,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   };
 
   useEffect(() => {
-    // This effect will run whenever state.data is updated
-    console.log("contactDataList", contactData)
-    console.log("contactDataList \First", contactDataList)
-    setContactDataList([...contactDataList, contactData]);
-    console.log("contactDataList izzzzzz", contactData)
-    console.log("contactDataList Last", contactDataList)
+    // Only add to contactDataList if contactData is not empty
+    if (contactData.FirstName || contactData.LastName || contactData.Phone || contactData.Email) {
+      console.log("contactDataList", contactDataList);
+      console.log("Adding to contactDataList: ", contactData);
+      setContactDataList(prevList => [...prevList, contactData]);
+    }
     setContactData({
       FirstName: "",
       LastName: "",
@@ -234,62 +234,30 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       Address: "",
       Comments: "",
     }); 
-  }, [responseid]);
+  
+    // Resetting the contactData should probably not be in this useEffect if you want to ensure it's not reset before being added to the list.
+  }, [responseid]); // Depends on when responseid is set
   
   const handleContactSave = async () => {
-    
-    try{
-
-      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/Customer/AddContact',contactData );
-      console.log("successfull contact api call", response.data.Id);
-      setresponseid(response.data.Id);
+    try {
+      const response = await axios.post('https://earthcoapi.yehtohoga.com/api/Customer/AddContact', contactData);
+      console.log("successful contact api call", response.data.Id);
+  
+      // Update the contactData with the response id, then add to list
       setContactData(prevState => ({
         ...prevState,
-        ContactId: response.data.Id,
-      }), () => {
-   
-      });
-      
-
-    }catch(error){
+        Id: response.data.Id,
+      }));
+  
+      // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
+      setresponseid(response.data.Id);
+      // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
+  
+    } catch (error) {
       console.log("api call error", error)
     }
-
   };
-
-  const addContact = (e) => {
-    e.preventDefault();
-
-    const newContact = {
-      FirstName: formData.ContactData.FirstName,
-      LastName: formData.ContactData.LastName,
-      Email: formData.ContactData.Email,
-      Phone: formData.ContactData.Phone,
-      CompanyName: formData.ContactData.CompanyName,
-      Address: formData.ContactData.Address,
-      isPrimary: primary,
-    };
-
-    setContacts([...contacts, newContact]);
-
-    // Clear the form fields
-    setFormData((prevState) => ({
-      ...prevState,
-      ContactData: {
-        FirstName: "",
-        LastName: "",
-        Email: "",
-        Phone: "",
-        CompanyName: "",
-        Address: "",
-      },
-    }));
-
-    setPrimary(true);
-    clearInput();
-    setShowContacts(false);
-  };
-
+ 
   const delContact = (index) => {
     const updatedContacts = [...contactDataList];
     updatedContacts.splice(index, 1);
@@ -715,14 +683,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                         value={contactData.FirstName}
                         required
                       />
-                      <input
-                        type="text"
-                        name="ContactId"
-                        className="form-control form-control-sm"
-                        onChange={handleContactChange}
-                        value={contactData.ContactId}
-                        hidden
-                      />
+                      
                     </div>
                   </div>
                   <div className="mb-3 row">
@@ -879,7 +840,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                             <tbody>
                               {contactDataList.map((contact, index) => (
                                 <tr key={index}>
-                                  <td>{contact.ContactId}</td>
+                                  <td>{contact.Id}</td>
                                   <td>{contact.FirstName}</td>
                                   <td>{contact.LastName}</td>
                                   <td>{contact.Email}</td>
