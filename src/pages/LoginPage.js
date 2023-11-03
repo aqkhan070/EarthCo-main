@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import logo1 from "../assets/images/background/earthco_logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -44,9 +46,12 @@ const LoginPage = () => {
         // if (response.status === 200){
           sessionStorage.setItem("userEmail", email);
         setError("");
+        const token = response.data.token.data;
+        Cookies.set('token', token, { expires: 7 });
+        console.log("login response iss", Cookies.get('token'))
 
-        console.log(sessionStorage.getItem("userEmail"));
-        navigate("/Dashboard"); // Navigation
+        
+        navigate("/Dashboard"); 
       } else {
         setError("Invalid email or password. Please try again.");
       }
