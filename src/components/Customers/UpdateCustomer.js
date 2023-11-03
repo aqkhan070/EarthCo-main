@@ -126,9 +126,12 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       [name]: value,
       isLoginAllow: allowLogin,
     }));
-    // if (name === 'Password' || name === 'ConfirmPassword') {
-    //   setPasswordsMatch(companyData.Password === companyData.ConfirmPassword);
-    // }
+    
+    if (name === 'Password' || name === 'ConfirmPassword') {
+       
+      setPasswordsMatch(companyData.Password === companyData.ConfirmPassword);
+    }
+
     console.log("cdcdcdcdcdcdc", companyData);
   };
 

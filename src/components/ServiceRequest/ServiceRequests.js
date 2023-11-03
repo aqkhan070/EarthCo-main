@@ -7,25 +7,41 @@ import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from "js-cookie";
 
 const ServiceRequests = () => {
   const [serviceRequest, setserviceRequest] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const token = Cookies.get("token");
 
   // const [locationOptions, setLocationOptions] = useState();
 
+
   const fetchServiceRequest = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList"
-    );
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     try {
+    const response = await axios.get(
+      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",{headers}
+    );
       if (response.data != null) {
         setIsLoading(false);
       }
       setserviceRequest(response.data);
       console.log("zzzzzzzzzzzzzzz", response.data);
-    } catch (error) {
-      console.error("API Call Error:", error);
+    } catch(error){
+      console.log("EEEEEEEEEEEEEEEEE",error);
+      if(error.response.status === 404){
+        setIsLoading(false);
+
+      }
+      else{
+        console.error("API Call Error:", error);
+
+      }
+
     }
   };
 
@@ -77,9 +93,9 @@ const ServiceRequests = () => {
               </div>
               ) : (
                 <div>
-                  {serviceRequest && (
-                    <ServiceRequestTR serviceRequest={serviceRequest} />
-                  )}
+                  
+                    <ServiceRequestTR serviceRequest={serviceRequest } />
+                 
                 </div>
               )}
             </div>

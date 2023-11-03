@@ -16,16 +16,25 @@ const CustomersTable = () => {
 
 
   const fetchCustomers = async () => {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-    );try {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+      );
       setCustomers(response.data);
       if (response.data != null) {
         setIsLoading(false);
       }
 
     }catch(error){
-      console.error("API Call Error:", error);
+      console.log("EEEEEEEEEEEEEEEEE",error);
+      if(error.response.status === 404){
+        setIsLoading(false);
+
+      }
+      else{
+        console.error("API Call Error:", error);
+
+      }
 
     }
   };

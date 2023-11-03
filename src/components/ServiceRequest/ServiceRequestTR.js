@@ -18,6 +18,9 @@ import {
   Paper,
 } from "@mui/material";
 import { Create, Delete  } from "@mui/icons-material";
+import axios from "axios";
+import Cookies from "js-cookie";
+
 
 const theme = createTheme({
   palette: {
@@ -39,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const ServiceRequestTR = ({ serviceRequest }) => {
+const ServiceRequestTR = ({ serviceRequest = [] }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -49,6 +52,8 @@ const ServiceRequestTR = ({ serviceRequest }) => {
 
   const [serviceRequestId, setServiceRequestId] = useState(0);
   const [showContent, setShowContent] = useState(true);
+  const token = Cookies.get("token");
+
 
   const columnFieldMapping = {
     "Service Request #": "ServiceRequestNumber",
@@ -62,15 +67,13 @@ const ServiceRequestTR = ({ serviceRequest }) => {
   //
 
   const deleteServiceRequest = async (id) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
     try {
-      const response = await fetch(
-        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`,{headers}        
+       
       );
 
       if (!response.ok) {
@@ -246,8 +249,7 @@ const ServiceRequestTR = ({ serviceRequest }) => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedAndSearchedCustomers
-                      .slice(
+                    {sortedAndSearchedCustomers.slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       )
