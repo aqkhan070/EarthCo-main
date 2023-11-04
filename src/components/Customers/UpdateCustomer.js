@@ -46,12 +46,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
 
-  const [adress1, setAdress1] = useState("");
-  const [adress2, setAdress2] = useState("");
-
-  const [showPop1, setShowPop1] = useState(false);
-  const [showPop2, setShowPop2] = useState(false);
-
 
 
   const getCustomerData = async () => {
