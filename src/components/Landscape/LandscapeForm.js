@@ -234,7 +234,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="SupervisorVisitedthejobweekly"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -256,7 +256,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="CompletedLitterpickupofgroundareas"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -276,7 +276,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
-                              class="form-check-input"
+                              className="form-check-input"
                               name="Completedsweepingorblowingofwalkways"
                               onChange={handleInputChange}
                               id="customCheckBox2"
@@ -298,7 +298,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
-                              class="form-check-input"
+                              className="form-check-input"
                               name="HighpriorityareaswereVisitedweekly"
                               onChange={handleInputChange}
                               id="customCheckBox2"
@@ -322,7 +322,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="VDitcheswerecleanedandinspected"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -403,7 +403,7 @@ const LandscapeForm = () => {
                             <input
                               name="Fertilizationoftrufoccoured"
                               onChange={handleInputChange}
-                              class="datepicker-default form-control form-control-sm"
+                              className="datepicker-default form-control form-control-sm"
                               id="datepicker"
                             />
                           </div>
@@ -425,7 +425,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Trufwasmovedandedgedweekly"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -463,7 +463,7 @@ const LandscapeForm = () => {
                           <div className="col-md-7">
                             <input
                               type="checkbox"
-                              class="form-check-input"
+                              className="form-check-input"
                               name="Shrubstrimmedaccordingtorotationschedule"
                               onChange={handleInputChange}
                               id="customCheckBox2"
@@ -489,7 +489,7 @@ const LandscapeForm = () => {
                             <input
                               name="FertilizationofShrubsoccoured"
                               onChange={handleInputChange}
-                              class="datepicker-default form-control"
+                              className="datepicker-default form-control"
                               id="datepicker"
                             />
                           </div>
@@ -529,7 +529,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="WateringofflowerbedsCompletedandchecked"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -567,7 +567,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Headswereadjustedformaximumcoverage"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -591,7 +591,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Repairsweremadetomaintainaneffectivesystem"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -613,7 +613,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Controllerswereinspectedandadjusted"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -635,7 +635,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Mainlinewasrepaired"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -657,7 +657,7 @@ const LandscapeForm = () => {
                               type="checkbox"
                               name="Valvewasrepaired"
                               onChange={handleInputChange}
-                              class="form-check-input"
+                              className="form-check-input"
                               id="customCheckBox2"
                             />
                           </div>
@@ -691,11 +691,11 @@ const LandscapeForm = () => {
                             <h5>This month's expected rotation schedule</h5>
                           </div>
                           <div className="col-md-7">
-                            <div class="basic-form">
+                            <div className="basic-form">
                               <form>
-                                <div class="mb-3">
+                                <div className="mb-3">
                                   <textarea
-                                    class="form-txtarea form-control"
+                                    className="form-txtarea form-control"
                                     name="Thismonthexpectedrotationschedule"
                                     onChange={handleInputChange}
                                     rows="2"
@@ -735,11 +735,11 @@ const LandscapeForm = () => {
                             <h5>Notes</h5>
                           </div>
                           <div className="col-md-7">
-                            <div class="basic-form">
+                            <div className="basic-form">
                               <form>
-                                <div class="mb-3">
+                                <div className="mb-3">
                                   <textarea
-                                    class="form-txtarea form-control"
+                                    className="form-txtarea form-control"
                                     rows="2"
                                     name="Notes"
                                     onChange={handleInputChange}
@@ -758,18 +758,18 @@ const LandscapeForm = () => {
             </div>
           </div>
         </div>
-        <div class="row text-end">
+        <div className="row text-end">
           <div>
             <NavLink to="/Dashboard/Landscape">
               <button
                 type="button"
                 onClick={handleSubmit}
-                class="btn btn-primary me-1"
+                className="btn btn-primary me-1"
               >
                 Submit
               </button>
             </NavLink>
-            <button class="btn btn-danger light ms-1">Cancel</button>
+            <button className="btn btn-danger light ms-1">Cancel</button>
           </div>
         </div>
       </div>

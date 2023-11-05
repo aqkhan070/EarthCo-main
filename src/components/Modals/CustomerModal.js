@@ -91,29 +91,29 @@ const CustomerModal = () => {
             </label>
             {!!selectedCustomer.userLogin && (
               <>
-                <div class="mb-2 row">
-                  <label class="col-sm-3 text-right col-form-label-sm">
+                <div className="mb-2 row">
+                  <label className="col-sm-3 text-right col-form-label-sm">
                     Email
                   </label>
-                  <div class="col-sm-9">
+                  <div className="col-sm-9">
                     <input
                       type="email"
                       value={selectedCustomer.userLogin.email}
-                      class="form-control form-control-sm"
+                      className="form-control form-control-sm"
                       placeholder="Email"
                       readOnly
                     />
                   </div>
                 </div>
-                <div class="row">
-                  <label class="col-sm-3 text-right col-form-label-sm">
+                <div className="row">
+                  <label className="col-sm-3 text-right col-form-label-sm">
                     Password
                   </label>
-                  <div class="col-sm-9">
+                  <div className="col-sm-9">
                     <input
                       type="password"
                       value={selectedCustomer.userLogin.password}
-                      class="form-control form-control-sm"
+                      className="form-control form-control-sm"
                       placeholder="Password"
                       readOnly
                     />

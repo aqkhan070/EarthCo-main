@@ -244,10 +244,10 @@ const IrrigationForm = () => {
                             <div className="col-xl-12 text-right">
                                 <div>
                                     <NavLink to='/Dashboard/Irrigation'>
-                                        <button type='button' class="btn btn-primary me-1">Submit</button>
+                                        <button type='button' className="btn btn-primary me-1">Submit</button>
                                     </NavLink>
                                     <NavLink to='/Dashboard/Irrigation'>
-                                        <button class="btn btn-danger light ms-1">Cancel</button>
+                                        <button className="btn btn-danger light ms-1">Cancel</button>
                                     </NavLink>
                                 </div>
                             </div>

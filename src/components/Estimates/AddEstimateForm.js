@@ -202,7 +202,7 @@ const handleSubmit = () => {
   // }, [formData]);
 
   return (
-    <div class="card">
+    <div className="card">
       <div className="card-body">
         <div className="row">
           <div className="basic-form col-md-6">
@@ -641,17 +641,17 @@ const handleSubmit = () => {
           </div>
         </div>
 
-        <div class="mb-2 row text-end">
+        <div className="mb-2 row text-end">
           <div className="flex-right">
             <button
               type="button"
-              class="btn btn-primary me-1"
+              className="btn btn-primary me-1"
               onClick={handleSubmit}
             >
               Submit
             </button>
             <NavLink to="/Dashboard/Estimates">
-              <button class="btn btn-danger light ms-1">Cancel</button>
+              <button className="btn btn-danger light ms-1">Cancel</button>
             </NavLink>
           </div>
         </div>

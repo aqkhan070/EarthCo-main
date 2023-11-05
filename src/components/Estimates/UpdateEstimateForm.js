@@ -268,7 +268,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   // }, [formData]);
 
   return (
-    <div class="card">
+    <div className="card">
       <div className="card-body">
         <div className="row">
           <div className="col-xl-3 mt-2">
@@ -768,18 +768,18 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
           </div>
         </div>
 
-        <div class="mb-2 row text-end">
+        <div className="mb-2 row text-end">
           <div className="flex-right">
             <button
               type="button"
-              class="btn btn-primary me-1"
+              className="btn btn-primary me-1"
               onClick={handleSubmit}
             >
               Submit
             </button>
             <NavLink to="/Dashboard/Estimates">
               <button
-                class="btn btn-danger light ms-1"
+                className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
                 }}

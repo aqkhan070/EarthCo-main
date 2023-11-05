@@ -5,15 +5,15 @@ const SummaryReport = () => {
 
     return (
         <>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card mt-3">
-                            {/* <div class="card-header"> Invoice <strong>01/01/01/2018</strong> <span class="float-end">
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-lg-12">
+                        <div className="card mt-3">
+                            {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-                            <div class="card-body">
-                                <div class="row mb-5">
-                                    <div class="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                            <div className="card-body">
+                                <div className="row mb-5">
+                                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                         <div> <strong>Webz Poland</strong> </div>
                                         <div>1225 E. Wakeham Avenue</div>
                                         <div>71-101 Szczecin, Poland</div>
@@ -22,19 +22,19 @@ const SummaryReport = () => {
                                         <div>Christian Walton</div>
                                         <div>Optimum</div>
                                     </div>
-                                    <div class="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-12 text-center">
+                                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-12 text-center">
                                         <h3> <strong>Service Request Summary Report</strong> </h3>
                                         <h3>Grandview Crest</h3>
                                     </div>
-                                    <div class="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
-                                        <div class="brand-logo mb-2 inovice-logo">
+                                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                                        <div className="brand-logo mb-2 inovice-logo">
                                             <img src='./assets/images/background/earthco_logo.png' alt="" className="light-logo" style={{ width: '100%' }} />
                                         </div>
                                     </div>
                                 </div>
                                 <hr />
-                                <div class="table-responsive">
-                                    <table class="text-center table table-bordered ">
+                                <div className="table-responsive">
+                                    <table className="text-center table table-bordered ">
                                         <thead>
                                             <tr>
                                                 <th >RECEIVED:</th>
@@ -48,7 +48,7 @@ const SummaryReport = () => {
                                         <tbody>
                                             <tr>
                                                 <td >2/13/2023</td>
-                                                <td class="left strong">XN2172549</td>
+                                                <td className="left strong">XN2172549</td>
                                                 <td >22016 Newbridge Dr<br />
                                                     Please inspect and check soil level around the <br />
                                                     chimney at 22016<br />

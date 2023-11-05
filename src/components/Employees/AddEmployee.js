@@ -127,7 +127,7 @@ const AddEmployee = () => {
                         </div>
                         <div>
                             <button className="btn btn-primary me-1">Help Desk</button>
-                            <button type="button" class="btn btn-danger light" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">Close</button>
+                            <button type="button" className="btn btn-danger light" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">Close</button>
                         </div>
                     </form>
                 </div>

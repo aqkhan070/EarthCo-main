@@ -352,8 +352,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                 </div>
               )} */}
 
-            <div class="row">
-              <div class="col-9">
+            <div className="row">
+              <div className="col-9">
                 <div className="row">
                   <div className="col-xl-4 mb-3">
                     <label
@@ -527,7 +527,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                   </div>
                 </div>
               </div>
-              <div class="col-3">
+              <div className="col-3">
                 <div className="col-xl-12 mb-3 ">
                   <div className="form-check form-check-inline radio-margin">
                     <label className="form-check-label " htmlFor="inlineRadio1">

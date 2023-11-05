@@ -77,7 +77,7 @@ const AddWRform = () => {
                                     <option>Hillandale Ave</option>
                                     <option>Crest DeVille</option>
                                 </Form.Select>
-                                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
+                                {/* <select className="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
                                         <option>Select Custmer...</option>
                                         <option>Hillandale Ave</option>
                                         <option>Crest DeVille</option>
@@ -90,7 +90,7 @@ const AddWRform = () => {
                                     <option>Keystone Pacific</option>
                                     <option>Brian Jacobs</option>
                                 </Form.Select>
-                                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
+                                {/* <select className="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
                                         <option>Select Service Location...</option>
                                         <option>Keystone Pacific</option>
                                         <option>Brian Jacobs</option>
@@ -103,7 +103,7 @@ const AddWRform = () => {
                                     <option>mark334@gmail.com</option>
                                     <option>Jchavis@keystonepacific.com</option>
                                 </Form.Select>
-                                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
+                                {/* <select className="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
                                         <option>Select Contact...</option>
                                         <option>mark334@gmail.com</option>
                                         <option>Jchavis@keystonepacific.com</option>
@@ -120,20 +120,20 @@ const AddWRform = () => {
                             <h4>General Information</h4>
                         </div>
                         <div className="card-body" style={{ padding: '1.5rem 5rem' }}>
-                            <div class="basic-form">
+                            <div className="basic-form">
                                 <form>
-                                    <div class="row flexCenter">
-                                        <div class="col-sm-5 mx-2 mb-3">
+                                    <div className="row flexCenter">
+                                        <div className="col-sm-5 mx-2 mb-3">
                                             <div className="col-md-12">
                                                 <h5>Job Name</h5>
                                             </div>
-                                            <input type="text" class="form-control" placeholder="Customer Name" />
+                                            <input type="text" className="form-control" placeholder="Customer Name" />
                                         </div>
-                                        <div class="col-sm-5 mx-2 mb-3">
+                                        <div className="col-sm-5 mx-2 mb-3">
                                             <div className="col-md-12">
                                                 <h5>Created</h5>
                                             </div>
-                                            <input type="date" class="form-control" placeholder="Created" />
+                                            <input type="date" className="form-control" placeholder="Created" />
                                         </div>
                                         <div className="col-sm-5 mx-2 mb-3">
                                             <h5 className="form-label">Notes:</h5>
@@ -159,7 +159,7 @@ const AddWRform = () => {
                                                         </select> */}
                                                 </div>
                                                 <div className="col-md-12 mt-3 text-end">
-                                                    <button type="button" class="btn btn-outline-dark btn-md scheduleBTN">Schedule</button>
+                                                    <button type="button" className="btn btn-outline-dark btn-md scheduleBTN">Schedule</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -240,24 +240,24 @@ const AddWRform = () => {
                             <h4>General Information</h4>
                         </div>
                         <div className="card-body" style={{ padding: '1.5rem 5rem' }}>
-                            <div class="basic-form">
+                            <div className="basic-form">
                                 <form>
-                                    <div class="row flexCenter">
-                                        <div class="col-sm-4">
+                                    <div className="row flexCenter">
+                                        <div className="col-sm-4">
                                             <div className="col-md-12">
                                                 <h5>Report for Week of:</h5>
                                             </div>
-                                            <input type="date" class="form-control" placeholder="Created" />
+                                            <input type="date" className="form-control" placeholder="Created" />
                                         </div>
-                                        <div class="col-sm-4">
+                                        <div className="col-sm-4">
                                             <div className="col-md-12">
                                                 <h5>This week's rotation:</h5>
                                             </div>
-                                            <input type="number" class="form-control" value={4} />
+                                            <input type="number" className="form-control" value={4} />
                                         </div>
                                         <div className="col-sm-4">
                                             <h5 className="form-label">Next weeks rotation: </h5>
-                                            <input type="number" class="form-control" value={5} />
+                                            <input type="number" className="form-control" value={5} />
                                         </div>
                                     </div>
                                 </form>
@@ -310,10 +310,10 @@ const AddWRform = () => {
                                             <h5>Proposals Completed</h5>
                                         </div>
                                         <div className="col-md-8">
-                                            <div class="basic-form">
+                                            <div className="basic-form">
                                                 <form>
-                                                    <div class="mb-3">
-                                                        <textarea class="form-txtarea form-control" rows="3" id="comment"></textarea>
+                                                    <div className="mb-3">
+                                                        <textarea className="form-txtarea form-control" rows="3" id="comment"></textarea>
                                                     </div>
                                                 </form>
                                             </div>
@@ -322,10 +322,10 @@ const AddWRform = () => {
                                             <h5>Proposals Submitted</h5>
                                         </div>
                                         <div className="col-md-8">
-                                            <div class="basic-form">
+                                            <div className="basic-form">
                                                 <form>
-                                                    <div class="mb-3">
-                                                        <textarea class="form-txtarea form-control" rows="3" id="comment"></textarea>
+                                                    <div className="mb-3">
+                                                        <textarea className="form-txtarea form-control" rows="3" id="comment"></textarea>
                                                     </div>
                                                 </form>
                                             </div>
@@ -334,10 +334,10 @@ const AddWRform = () => {
                                             <h5>Notes</h5>
                                         </div>
                                         <div className="col-md-8">
-                                            <div class="basic-form">
+                                            <div className="basic-form">
                                                 <form>
-                                                    <div class="mb-3">
-                                                        <textarea class="form-txtarea form-control" rows="3" id="comment"></textarea>
+                                                    <div className="mb-3">
+                                                        <textarea className="form-txtarea form-control" rows="3" id="comment"></textarea>
                                                     </div>
                                                 </form>
                                             </div>
@@ -433,10 +433,10 @@ const AddWRform = () => {
                     </div>
                 </div>
 
-                <div class="row text-end">
+                <div className="row text-end">
                     <div>
-                        <NavLink to='/Dashboard/Weekly-Reports'><button type='button' class="btn btn-primary me-1">Submit</button></NavLink>
-                        <button class="btn btn-danger light ms-1">Cancel</button>
+                        <NavLink to='/Dashboard/Weekly-Reports'><button type='button' className="btn btn-primary me-1">Submit</button></NavLink>
+                        <button className="btn btn-danger light ms-1">Cancel</button>
                     </div>
                 </div>
 

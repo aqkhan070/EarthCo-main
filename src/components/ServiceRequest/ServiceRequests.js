@@ -65,7 +65,7 @@ const ServiceRequests = () => {
               {/* <div className="col-md-3">
                     <a
                       href="/"
-                      class="btn btn-primary"
+                      className="btn btn-primary"
                       data-bs-toggle="modal"
                       data-bs-target="#basicModal"
                     >
@@ -74,7 +74,7 @@ const ServiceRequests = () => {
                   </div> */}
               {/* <div className="col-md-7"></div> */}
               {/* <div
-                    class="col-md-2"
+                    className="col-md-2"
                     style={{ display: "flex", justifyContent: "flex-end" }}
                   >
                     <div className="col-md-12">

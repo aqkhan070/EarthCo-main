@@ -3,16 +3,16 @@ import React from "react";
 const Landscape = () => {
   return (
     <>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-2"></div>
-          <div class="col-lg-8">
-            <div class="card mt-3">
-              {/* <div class="card-header"> Invoice <strong>01/01/01/2018</strong> <span class="float-end">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-2"></div>
+          <div className="col-lg-8">
+            <div className="card mt-3">
+              {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-              <div class="card-body">
-                <div class="row mb-5">
-                  <div class="mt-4 col-xl-10 col-lg-10 col-md-10 col-sm-12">
+              <div className="card-body">
+                <div className="row mb-5">
+                  <div className="mt-4 col-xl-10 col-lg-10 col-md-10 col-sm-12">
                     <div>
                       {" "}
                       <strong>Earthco</strong>{" "}
@@ -28,8 +28,8 @@ const Landscape = () => {
                     </div>
                   </div>
 
-                  <div class="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
-                    <div class="brand-logo mb-2 inovice-logo">
+                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="brand-logo mb-2 inovice-logo">
                       <img
                         src="./assets/images/background/earthco_logo.png"
                         alt=""
@@ -39,11 +39,11 @@ const Landscape = () => {
                     </div>
                   </div>
                 </div>
-                <h2 class="text-center">Landscape Report</h2>
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="table-responsive">
-                      <table class="text-center table-striped table table-bordered ">
+                <h2 className="text-center">Landscape Report</h2>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="table-responsive">
+                      <table className="text-center table-striped table table-bordered ">
                         <thead>
                           <tr>
                             <th>Requested By:</th>
@@ -59,7 +59,7 @@ const Landscape = () => {
                               <br />
                               Pacific
                             </td>
-                            <td class="left strong">
+                            <td className="left strong">
                               Donna Depledge,
                               <br /> Keystone Pacific
                             </td>
@@ -68,17 +68,17 @@ const Landscape = () => {
                       </table>
                     </div>{" "}
                   </div>
-                  <div class="col-md-6">
-                    <div class="text-right">
+                  <div className="col-md-6">
+                    <div className="text-right">
                       <strong>Date Created:</strong> 11/3/2014{" "}
                     </div>
-                    <div class="text-right">
+                    <div className="text-right">
                       <strong>Target Completion:</strong> 11/7/2014
                     </div>
                   </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table-bordered table  ">
+                <div className="table-responsive">
+                  <table className="table-bordered table  ">
                     <thead></thead>
                     <tbody>
                       <tr
@@ -266,7 +266,7 @@ const Landscape = () => {
                   </table>
                 </div>
 
-                <p class="mt-5">
+                <p className="mt-5">
                   *Note Beginning October 1, Earthco will commence annual skip
                   mowing of the grass due to the winter season
                 </p>

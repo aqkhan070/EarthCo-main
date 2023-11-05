@@ -813,18 +813,18 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
             ;
           </div>
 
-          <div class="mb-2 row text-end">
+          <div className="mb-2 row text-end">
             <div className="flex-right">
               <button
                 type="button"
-                class="btn btn-primary me-1"
+                className="btn btn-primary me-1"
                 onClick={submitHandler}
               >
                 Submit
               </button>
 
               <button
-                class="btn btn-danger light ms-1"
+                className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
                 }}

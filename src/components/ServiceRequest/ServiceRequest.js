@@ -28,7 +28,7 @@ const ServiceRequest = () => {
                                     <option>Hillandale Ave</option>
                                     <option>Crest DeVille</option>
                                 </Form.Select>
-                                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
+                                {/* <select className="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
                                         <option>Select Custmer...</option>
                                         <option>Hillandale Ave</option>
                                         <option>Crest DeVille</option>
@@ -41,7 +41,7 @@ const ServiceRequest = () => {
                                     <option>Keystone Pacific</option>
                                     <option>Brian Jacobs</option>
                                 </Form.Select>
-                                {/* <select class="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
+                                {/* <select className="me-sm-2 default-select form-control wide" id="inlineFormCustomSelect">
                                         <option>Select Service Location...</option>
                                         <option>Keystone Pacific</option>
                                         <option>Brian Jacobs</option>
@@ -64,10 +64,10 @@ const ServiceRequest = () => {
                 <div className="card">
                     <div className="card-body " >
                         <AddSRform />
-                        <div class="mb-2 row text-end">
+                        <div className="mb-2 row text-end">
                             <div>
-                                <button type='button' class="btn btn-primary me-1">Submit</button>
-                                <button class="btn btn-danger light ms-1">Cancel</button>
+                                <button type='button' className="btn btn-primary me-1">Submit</button>
+                                <button className="btn btn-danger light ms-1">Cancel</button>
                             </div>
                         </div>
                     </div>

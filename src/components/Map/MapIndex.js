@@ -4,7 +4,7 @@ import Map from './Map'
 
 const MapIndex = () => {
 
-    const icon = <span class="material-symbols-outlined" style={{ fontWeight: '100' }}>
+    const icon = <span className="material-symbols-outlined" style={{ fontWeight: '100' }}>
         location_on
     </span>
 

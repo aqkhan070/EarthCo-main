@@ -37,7 +37,7 @@ const WeeklyReportlist = () => {
                 <td>{item.created}</td>
                 <td>
                     <NavLink to='/Dashboard/Weekly-Reports/WeeklyReport'>
-                        <span class="badge badge-primary light border-0 me-1">Open Report</span>
+                        <span className="badge badge-primary light border-0 me-1">Open Report</span>
                     </NavLink>
                 </td>
             </tr>
@@ -59,7 +59,7 @@ const WeeklyReportlist = () => {
                                                 <a href='/' className="btn btn-primary btn-md">+ Add Weekly Report</a>
                                             </NavLink>
                                         </div>
-                                        <div class="col-md-6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <div className="col-md-6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                             <div className="col-md-3">
                                                 <Form.Select aria-label="Default select example" size="md">
                                                     <option>All</option>

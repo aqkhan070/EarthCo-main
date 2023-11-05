@@ -43,7 +43,7 @@ const SideBar = () => {
         {
             label: 'Map',
             path: '/Dashboard/Map',
-            icon: <span class="material-symbols-outlined locationIcon">
+            icon: <span className="material-symbols-outlined locationIcon">
                 location_on
             </span>
         },

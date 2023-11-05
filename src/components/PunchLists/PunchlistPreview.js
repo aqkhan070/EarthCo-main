@@ -3,14 +3,14 @@ import React from "react";
 const PunchlistPreview = () => {
   return (
     <>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="card mt-3">
-              <div class="card-body">
-                <div class="row mb-5">
-                  <div class="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
-                    <div class="brand-logo mb-2 inovice-logo">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-12">
+            <div className="card mt-3">
+              <div className="card-body">
+                <div className="row mb-5">
+                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="brand-logo mb-2 inovice-logo">
                       <img
                         src="./assets/images/background/earthco_logo.png"
                         alt=""
@@ -19,16 +19,16 @@ const PunchlistPreview = () => {
                       />
                     </div>
                   </div>
-                  <div class="mt-5 col-xl-6 col-lg-6 col-md-6 col-sm-12 text-center">
+                  <div className="mt-5 col-xl-6 col-lg-6 col-md-6 col-sm-12 text-center">
                     <h3>
                       {" "}
                       <strong>Punchlist</strong>{" "}
                     </h3>
                   </div>
                 </div>
-                <div class="row mb-2" style={{ margin: "10px 0" }}>
+                <div className="row mb-2" style={{ margin: "10px 0" }}>
                   <div
-                    class="col-md-4 p-2"
+                    className="col-md-4 p-2"
                     style={{ padding: "2px", border: "1px solid #789a3d" }}
                   >
                     <div>
@@ -43,7 +43,7 @@ const PunchlistPreview = () => {
                     <div>January Walk</div>
                   </div>
                   <div
-                    class="col-md-4 p-2"
+                    className="col-md-4 p-2"
                     style={{
                       padding: "2px",
                       border: "1px solid #789a3d",
@@ -62,7 +62,7 @@ const PunchlistPreview = () => {
                     <div>Keystone Pacific Property Management</div>
                   </div>
                   <div
-                    class="col-md-4 p-2"
+                    className="col-md-4 p-2"
                     style={{
                       padding: "2px",
                       border: "1px solid #789a3d",
@@ -81,8 +81,8 @@ const PunchlistPreview = () => {
                     <div>01/09/2023</div>
                   </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-bordered ">
+                <div className="table-responsive">
+                  <table className="table table-bordered ">
                     <thead>
                       <tr
                         style={{ backgroundColor: "#789a3d", color: "black" }}
@@ -96,7 +96,7 @@ const PunchlistPreview = () => {
                     </thead>
                     <tbody className="punchlistTable">
                       <tr>
-                        <td class="tdbreak">
+                        <td className="tdbreak">
                           {/* <strong>Controller Number:</strong><br />1<br />
                                         <strong>Controller Make/ Model:</strong><br />Evolution DX2<br />
                                         <strong>Serial:</strong><br />03023<br />
@@ -106,17 +106,17 @@ const PunchlistPreview = () => {
                                         <strong>Photo:</strong><br /><br /> */}
                           <strong>1</strong>
                         </td>
-                        <td class="tdbreak">
+                        <td className="tdbreak">
                           <img
                             style={{ width: "400px" }}
                             src="./assets/images/product/punchlist1.jpeg"
                             alt=""
                           />
                         </td>
-                        <td class="tdbreak">
+                        <td className="tdbreak">
                           <strong>Pool</strong>
                         </td>
-                        <td class="tdbreak">
+                        <td className="tdbreak">
                           Keep plants below the inside the pool
                         </td>
                         <td></td>

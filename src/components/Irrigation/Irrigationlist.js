@@ -60,7 +60,7 @@ const Irrigationlist = () => {
                                                 </Form.Select>
                                             </td>
                                             <td><NavLink to='/Dashboard/Irrigation/Audit-Report'>
-                                                <span class="badge badge-primary light border-0 me-1">Open</span>
+                                                <span className="badge badge-primary light border-0 me-1">Open</span>
                                             </NavLink></td>
                                             <td>
                                                 <div className="flex-box">
