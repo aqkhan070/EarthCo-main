@@ -74,7 +74,7 @@ const CustomersTable = () => {
 
       <div
         className="modal fade bd-example-modal-lg"
-        tabindex="-1"
+        tabIndex="-1"
         id="customerShow"
         role="dialog"
         aria-labelledby="myLargeModalLabel"
