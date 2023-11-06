@@ -36,7 +36,7 @@ const theme = createTheme({
   },
 });
 
-const CustomerTR = ({ customers }) => {
+const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showContent, setShowContent] = useState(true);
 
@@ -44,6 +44,8 @@ const CustomerTR = ({ customers }) => {
   const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  
 
   // Sorting logic here...
   const sortedCustomers = [...customers].sort((a, b) => {
@@ -219,8 +221,11 @@ const CustomerTR = ({ customers }) => {
         </div>
       ) : (
         <UpdateCustomer
+        setCustomerAddSuccess={setCustomerAddSuccess}
           selectedItem={selectedItem}
           setShowContent={setShowContent}
+          fetchCustomers={fetchCustomers}
+
         />
       )}
     </ThemeProvider>

@@ -5,7 +5,7 @@ import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 import { Create, Delete, Update } from "@mui/icons-material";
 
-const UpdateCustomer = ({ selectedItem, setShowContent }) => {
+const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fetchCustomers }) => {
   const navigate = useNavigate();
 
   const [customerData, setCustomerData] = useState({});
@@ -73,7 +73,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
       console.error("There was an error updating the customer:", error);
     }
   };
-  useEffect(() => {
+  useEffect(() => {    
     getCustomerData();
     getCustomerType();
   }, []);
@@ -106,9 +106,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
 
       // console.log("postData,,,,,,,,,:", postData);
 
-      navigate("/Dashboard/Customers");
+      setTimeout(() => {
+        setCustomerAddSuccess(false)
+        
+      }, 4000);
+      setCustomerAddSuccess(true);
+      fetchCustomers();
+      // navigate("/Dashboard/Customers");
       setShowContent(true);
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error("Error submitting data:", error);
     }
@@ -919,14 +925,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 className="form-check-input radio-margin-top"
                                 type="radio"
                                 name="isBilltoCustomer"
-                                id="inlineRadio1"
+                                id="inlineRadio11"
                                 onChange={handleSLChange}
                                 value={true}
                                 // checked={serviceLocations.isBilltoCustomer === true}
                               />
                               <label
                                 className="form-check-label"
-                                for="inlineRadio1"
+                                htmlFor="inlineRadio11"
                               >
                                 Customer
                               </label>
@@ -936,14 +942,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent }) => {
                                 className="form-check-input radio-margin-top"
                                 type="radio"
                                 name="isBilltoCustomer"
-                                id="inlineRadio2"
+                                id="inlineRadio22"
                                 onChange={handleSLChange}
                                 value={false}
                                 // checked={serviceLocations.isBilltoCustomer === false}
                               />
                               <label
                                 className="form-check-label"
-                                for="inlineRadio2"
+                                htmlFor="inlineRadio22"
                               >
                                 This service Location
                               </label>

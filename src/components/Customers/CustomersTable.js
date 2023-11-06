@@ -6,11 +6,13 @@ import "datatables.net";
 import CustomerModal from "../Modals/CustomerModal";
 import { CustomerContext } from "../../context/CustomerData";
 import CircularProgress from "@mui/material/CircularProgress";
+import Alert from '@mui/material/Alert';
 
 
 const CustomersTable = () => {
   const { selectedCustomer } = useContext(CustomerContext);
   const [customers, setCustomers] = useState([]);
+  const [customerAddSuccess, setCustomerAddSuccess] = useState(false)
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -52,6 +54,11 @@ const CustomersTable = () => {
     <div className="container-fluid">
       <div className="row">
         <div className="card">
+          <div className="mt-3">
+            {customerAddSuccess && <Alert severity="success">Customer Added/Updated Successfuly</Alert>}
+        
+          </div>
+          
           
           <div className="card-body">
 
@@ -61,7 +68,7 @@ const CustomersTable = () => {
                   </div>
                 ) : (
                   <div>
-                     <CustomerTR customers={customers}/>
+                     <CustomerTR customers={customers} setCustomerAddSuccess={setCustomerAddSuccess} fetchCustomers={fetchCustomers}/>
                   </div>
                 )}
            
