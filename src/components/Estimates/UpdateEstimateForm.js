@@ -7,6 +7,7 @@ import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import Cookies from "js-cookie";
 
 const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) => {
   const [estimates, setEstimates] = useState({});
@@ -43,6 +44,8 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSL, setSelectedSL] = useState(null);
+  
+  const token = Cookies.get("token");
 
   // const fetchCustomers = async () => {
   //   const response = await axios.get(
@@ -254,14 +257,16 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
   // };
 
   const submitData = async (postData) => {
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data', // Important for multipart/form-data requests
+    };
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
         postData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers
         }
       );
 
