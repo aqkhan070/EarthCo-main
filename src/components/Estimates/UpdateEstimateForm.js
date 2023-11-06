@@ -729,10 +729,10 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Qty / Duration</th>
+                      
                       <th>Name</th>
                       <th>Description</th>
+                      <th>Qty / Duration</th>
                       <th>Rate</th>
                       <th>Amount</th>
                       <th>Approved</th>
@@ -745,10 +745,10 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       formData.tblEstimateItems.length > 0 ? (
                         formData.tblEstimateItems.map((item) => (
                           <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.Qty}</td>
+                            
                             <td>{item.Name}</td>
                             <td>{item.Description}</td>
+                            <td>{item.Qty}</td>
                             <td>{item.Rate}</td>
                             <td>{item.Amount}</td>
                             <td>{item.Approved ? "Yes" : "No"}</td>
@@ -774,6 +774,70 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                         </tr>
                       ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
                     }
+                    <tr>
+                          <td>
+                          <input
+                type="text"
+                value={itemForm.Name}
+                onChange={handleChange}
+                name="Name"
+                className="form-control form-control-sm"
+                placeholder="Name"
+                required
+              />
+                          </td>
+                          <td>
+                          <textarea
+                className="form-txtarea form-control form-control-sm"
+                value={itemForm.Description}
+                onChange={handleChange}
+                name="Description"
+                rows="1"
+                id="comment"
+              ></textarea>
+                          </td>
+                          <td>
+                          <div className="col-sm-9">
+              <input
+                type="number"
+                value={itemForm.Qty}
+                onChange={handleChange}
+                name="Qty"
+                className="form-control form-control-sm"
+                placeholder="Quantity"
+                required
+              />
+            </div>
+                          </td>
+
+                          <td>
+                            <div className="col-sm-9">
+                            <input
+                type="number"
+                value={itemForm.Rate}
+                onChange={handleChange}
+                name="Rate"
+                className="form-control form-control-sm"
+                placeholder="Rate"
+                required
+              />
+                            </div>
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                            {itemForm.Rate * itemForm.Qty}
+                            </h5>
+                          </td>
+                          <td></td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={addItem}                              
+                            >
+                              Add
+                            </button>
+                          </td>
+                        </tr>
                   </tbody>
                 </table>
               </div>
