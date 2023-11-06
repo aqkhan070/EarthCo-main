@@ -7,7 +7,7 @@ import { Print, Email, Download } from "@mui/icons-material";
 import { async } from "q";
 // import { Autocomplete, TextField } from '@mui/material';
 
-const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
+const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
   const [customers, setCustomers] = useState([]);
 
   const [sRList, setSRList] = useState({});
@@ -40,36 +40,77 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
   const [tblSRItems, setTblSRItems] = useState([]);
 
   const [files, setFiles] = useState([]);
+
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([])
+  const [staffData, setStaffData] = useState([])
 
   const inputFile = useRef(null);
 
   const fetchServiceLocations = async (id) => {
-    try {
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
-      );
-      setSLList(res.data);
-      console.log("service locations are", res.data);
-    } catch (error) {
-      console.log("service locations fetch error", error);
-    }
+
+    axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`)
+      .then(res => {
+        setSLList(res.data);
+        console.log("service locations are", res.data);
+      })
+      .catch(error => {
+        setSLList([]);
+        console.log("service locations fetch error", error);
+      });
+
+
+    // try {
+    //   const res = await axios.get(
+    //     `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+    //   );
+    //   setSLList(res.data);
+    //   console.log("service locations are", res.data);
+    // } catch (error) {
+    //   setSLList([]);
+    //   console.log("service locations fetch error", error);
+    // }
   };
 
   const fetctContacts = async (id) => {
+
+
+    axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`)
+      .then(res => {
+        console.log("contacts data isss", res.data);
+        setContactList(res.data)
+      })
+      .catch(error => {
+        setContactList([])
+        console.log("contacts data fetch error", error);
+      });
+
+    // try {
+    //   const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`);
+    //   console.log("contacts data isss", res.data);
+    //   setContactList(res.data)
+    // } catch (error) {
+    //   setContactList([])
+    //   console.log("contacts data fetch error", error);
+    // }
+  };
+  // useEffect(() => {
+  //   fetchServiceLocations(SRData.ServiceRequestData.UserId);
+  //   fetctContacts(SRData.ServiceRequestData.UserId);
+  // }, [SRData]);
+
+  const fetchStaffList = async () => {
     try {
-      const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`);
-      console.log("contacts data isss", res.data);
-      setContactList(res.data)
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`
+      );
+      setStaffData(response.data);
+     
+      console.log("staff list iss", response.data);
     } catch (error) {
-      console.log("contacts data fetch error", error);
+      console.log("error getting staff list", error);
     }
   };
-  useEffect(() => {
-    fetchServiceLocations(SRData.ServiceRequestData.UserId);
-    fetctContacts(SRData.ServiceRequestData.UserId);
-  }, [SRData]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -85,7 +126,17 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
       },
     }));
 
-    console.log("object,,,,,,", SRData.UserId);
+    
+    
+if(name === "UserId" && value !=0)
+{
+  console.log(value);
+  fetchServiceLocations(value);
+  fetctContacts(value);
+}
+    
+
+    console.log("object,,,,,,", SRData);
   };
 
   const submitHandler = async () => {
@@ -119,6 +170,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
       console.log("payload izzzzzzz", formData);
       // Handle successful submission
       window.location.reload();
+      setShowCards(true)
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -196,10 +248,10 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
     fetchCustomers();
   }, [serviceRequestId]);
 
-  // useEffect(() => {
-  //   fetchSR();
-  //   fetchCustomers();
-  // }, []);
+  useEffect(() => {
+    setShowCards(false)
+    fetchStaffList();
+  }, []);
 
   const icon = (
     <svg
@@ -295,7 +347,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         id="inputState"
                         className="bg-white"
                       >
-                        <option value="">Customer</option>{" "}
+                        <option value="">Customer</option>
                         {customers.map((customer) => (
                           <option key={customer.UserId} value={customer.UserId}>
                             {customer.CompanyName}
@@ -412,7 +464,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         <option value="Tree Care">Tree Care</option>
                       </Form.Select>
                     </div>
-                    <div className="col-xl-3 ">
+                    {/* <div className="col-xl-3 ">
                       <label className="form-label">Notes</label>
                       <textarea
                         name="WorkRequest"
@@ -422,7 +474,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         placeholder={sRList.WorkRequest || " "}
                         rows="2"
                       ></textarea>
-                    </div>
+                    </div> */}
                     <div className="col-lg-2 col-md-2 ">
                       <label className="form-label">Status:</label>
                       <Form.Select
@@ -462,9 +514,10 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         value={SRData.ServiceRequestData.Assign || ""}
                       >
                         <option value={null}>Choose...</option>
-                        <option value="option 1">option 1</option>
-                        <option value="option 2">option 2</option>
-                        <option value="option 3">option 3</option>
+                        {staffData.map((staff) => {
+                          return(<option key={staff.UserId} value={staff.UserId}>{staff.FirstName}</option>)
+                        })}
+                       
                       </Form.Select>
                     </div>
                     <div className="col-md-6 pt-4">
@@ -858,6 +911,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                 className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
+                  setShowCards(true)
                 }}
               >
                 Cancel

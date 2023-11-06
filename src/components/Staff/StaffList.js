@@ -126,7 +126,7 @@ const StaffList = () => {
                                     <td>{staff.FirstName}</td>
                                     <td>{staff.LastName}</td>
                                     <td>{staff.Email}</td>
-                                    <td>{staff.tblRole.Role}</td>
+                                    <td>{staff.Role}</td>
                                     <td>
                                       {" "}
                                       <Create

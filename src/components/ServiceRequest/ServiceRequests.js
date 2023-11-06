@@ -15,11 +15,13 @@ const ServiceRequests = () => {
 
   const token = Cookies.get("token");
   const userdata = Cookies.get('userData');
+  const [showCards, setShowCards] = useState(true)
   
   // const [locationOptions, setLocationOptions] = useState();
 
 
   const fetchServiceRequest = async () => {
+    
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -56,7 +58,7 @@ const ServiceRequests = () => {
     <div className="container-fluid">
     
       <div className="row">
-        <StatusCards newData={1178} open={5142} closed={71858} total={78178} />
+        {showCards && <StatusCards newData={1178} open={5142} closed={71858} total={78178} />}
         <div className="col-xl-12">
           <div className="card">
             <div className="card-body">
@@ -97,7 +99,7 @@ const ServiceRequests = () => {
               ) : (
                 <div>
                   
-                    <ServiceRequestTR serviceRequest={serviceRequest } />
+                    <ServiceRequestTR serviceRequest={serviceRequest } setShowCards={setShowCards} />
                  
                 </div>
               )}

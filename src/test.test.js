@@ -1,21 +1,40 @@
-
-
-<Form.Select
-                        size="lg"
-                        name="UserId"
-                        onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.UserId || ""}
-                        aria-label="Default select example"
-                        id="inputState"
-                        className="bg-white"
-                      >
-                        <option value="">Customer</option>{" "}
-                        {customers.map((customer) => (
-                          <option
-                            key={customer.UserId}
-                            value={customer.UserId}
-                          >
-                            {customer.CompanyName}
-                          </option>
-                        ))}
-                      </Form.Select>
+{
+  "ServiceRequestNumber": "13211",
+      "ServiceLocation": "13211",
+      "Contact": "13211@gmail.com",
+      "JobName": null,
+      "WorkRequest": null,
+      "ActionTaken": null,
+      "CompletedDate": null,
+      "DueDate": null,
+      "CustomerId": 1596,
+"Assign": 1596,
+      "SRTypeId": 2,
+      "SRStatusId": 2,
+      "EstimateStatusId":1,
+      "CreatedBy": 2,
+      "EditBy": 2,
+      "isActive":true,
+  "tblSRItems": [
+          {
+              "Name": "Name1",
+              "Description": "Description1",
+              "Qty":1,
+              "Rate":2.5,
+              "Address":"Address1",
+              "CreatedBy":2,
+              "EditBy": 2,
+              "isActive":true
+          },
+          {
+              "Name": "Name2",
+              "Description": "Description2",
+              "Qty":2,
+              "Rate":2.5,
+              "Address":"Address2",
+              "CreatedBy":2,
+              "EditBy": 2,
+              "isActive":true
+          }
+      ]
+  }

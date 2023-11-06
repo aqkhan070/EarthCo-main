@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import UpdateSRForm from "./UpdateSRForm";
@@ -42,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const ServiceRequestTR = ({ serviceRequest = [] }) => {
+const ServiceRequestTR = ({ serviceRequest = [], setShowCards }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -95,6 +95,10 @@ const ServiceRequestTR = ({ serviceRequest = [] }) => {
       deleteServiceRequest(id);
     }
   };
+
+  useEffect(() => {
+    setShowCards(true)
+  }, []);
 
   const handleSearch = (data) => {
     const now = new Date();
@@ -311,6 +315,7 @@ const ServiceRequestTR = ({ serviceRequest = [] }) => {
         <UpdateSRForm
           serviceRequestId={serviceRequestId}
           setShowContent={setShowContent}
+          setShowCards={setShowCards}
         />
       )}
     </>
