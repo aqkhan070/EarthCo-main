@@ -53517,6 +53517,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 }
 .add-customer-btn{
     padding-top: 20px;
+    padding-left: -10px !important;    
 }
 .search-wrap{
     margin-bottom: 2em;
@@ -53648,6 +53649,17 @@ cursor: pointer;
       /* color: #7c9c3d; Set your custom color here */
     }
 .search-row{
-    background-color: #005983;
+   
     margin-left: 1em !important;
+    padding-right: 0px !important;
 }
+
+.search-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .add-customer-btn {
+    width: auto; /* Adjust this as needed */
+  }
+  

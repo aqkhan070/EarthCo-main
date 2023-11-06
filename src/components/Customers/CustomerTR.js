@@ -99,36 +99,42 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
       {showContent ? (
         <div className="">
           
-          <div className="row">
-            <div className="d-flex"></div>
-          </div>
+        
 
 
-          <div className=" ml-2 row search-row ">
-            <div className="col-3  search-container tblsearch-input">
-              <TextField
-                className="tblsearch-input "
-                variant="standard"
-                size="small"
-                label="Search"
-                value={filtering}
-                onChange={(e) => setFiltering(e.target.value)}
-              />
-            </div>
-            <div className="col-3 add-customer-btn">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setSelectedItem(0);
-                  console.log(",,,,,,,,,,", selectedItem);
-                  setShowContent(false);
-                }}
-              >
-                + Add Customer
-              </Button>
-            </div>
-          </div>{" "}
+          <div className="search-row">
+  <div className="search-container tblsearch-input">
+    <TextField
+      className="tblsearch-input"
+      variant="standard"
+      size="small"
+      label="Search"
+      value={filtering}
+      onChange={(e) => setFiltering(e.target.value)}
+    />
+  </div>
+  <div className="add-customer-btn">
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => {
+        setSelectedItem(0);
+        console.log(",,,,,,,,,,", selectedItem);
+        setShowContent(false);
+      }}
+    >
+      + Add Customer
+    </Button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
           <br />
           <div className="text-center">
             <Table>
