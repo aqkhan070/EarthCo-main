@@ -53647,3 +53647,7 @@ cursor: pointer;
     cursor: pointer;
       /* color: #7c9c3d; Set your custom color here */
     }
+.search-row{
+    background-color: #005983;
+    margin-left: 1em !important;
+}

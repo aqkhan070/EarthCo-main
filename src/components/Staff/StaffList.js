@@ -6,12 +6,14 @@ import { useEffect, useState } from "react";
 import { Create, Delete, Update } from "@mui/icons-material";
 import AddStaff from "./AddStaff";
 import Alert from '@mui/material/Alert';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const StaffList = () => {
   const [staffData, setStaffData] = useState([]);
   const [toggleAddStaff, settoggleAddStaff] = useState(true);
   const [selectedStaff, setSelectedStaff] = useState(0)
   const [addStaffSuccess, setAddStaffSuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
 
   const icon = (
     <svg
@@ -46,6 +48,9 @@ const StaffList = () => {
         `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`
       );
       setStaffData(response.data);
+      if (response.data != null) {
+        setIsLoading(false);
+      }
       console.log("staff list iss", response.data);
     } catch (error) {
       console.log("error getting staff list", error);
@@ -72,93 +77,103 @@ const StaffList = () => {
       {toggleAddStaff ? (
         <>
           <TitleBar icon={icon} title="Staff Management" />
-          <div className="container-fluid">
-            <div className="row">
-              <div className="col-xl-12">
-                <div className="card">
-                  <div className="card-body">
-                  {addStaffSuccess && <Alert severity="success">This is a success alert — check it out!</Alert>}
-                    <div className="table-responsive active-projects style-1">
-                      <div className="tbl-caption mb-3">
-                        <h4 className="heading mb-0">Staff</h4>
-                        <div>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            role="button"
-                            onClick={() => {
-                                setSelectedStaff(0)
-                              settoggleAddStaff(false);
-
-                            }}
-                          >
-                            + Add Staff
-                          </button>
+          {isLoading ? (
+                  <div className="center-loader">
+                    <CircularProgress style={{ color: "#789a3d" }} />
+                  </div>
+                ) : (<div className="container-fluid">
+                <div className="row">
+                  <div className="col-xl-12">
+                    <div className="card">
+                      <div className="card-body">
+                      {addStaffSuccess && <Alert severity="success">This is a success alert — check it out!</Alert>}
+                        <div className="table-responsive active-projects style-1">
+                          <div className="tbl-caption mb-3">
+                            <h4 className="heading mb-0">Staff</h4>
+    
+                            
+    
+                            <div>
+                              <button
+                                className="btn btn-primary btn-sm"
+                                role="button"
+                                onClick={() => {
+                                    setSelectedStaff(0)
+                                  settoggleAddStaff(false);
+    
+                                }}
+                              >
+                                + Add Staff
+                              </button>
+                            </div>
+                          </div>
+                          <table id="customerTbl" className="table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>First Name </th>
+                                <th>Last Name</th>
+                                <th>User Name</th>
+                                <th>Role </th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {staffData.map((staff) => {
+                                return (
+                                  <tr key={staff.UserId}>
+                                    <td>{staff.UserId}</td>
+                                    <td>{staff.FirstName}</td>
+                                    <td>{staff.LastName}</td>
+                                    <td>{staff.Email}</td>
+                                    <td>{staff.tblRole.Role}</td>
+                                    <td>
+                                      {" "}
+                                      <Create
+                                        className="custom-create-icon"
+                                        onClick={() => {
+                                          settoggleAddStaff(false);
+                                          setSelectedStaff(staff.UserId)
+                                        }}
+                                      ></Create>{" "}
+                                      <Delete
+                                        className="custom-delete-icon"
+                                        color="error"
+                                        onClick={() => {
+                                          deleteStaff(staff.UserId);
+                                        }}
+                                      ></Delete>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
-                      <table id="customerTbl" className="table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>First Name </th>
-                            <th>Last Name</th>
-                            <th>User Name</th>
-                            <th>Role </th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {staffData.map((staff) => {
-                            return (
-                              <tr key={staff.UserId}>
-                                <td>{staff.UserId}</td>
-                                <td>{staff.FirstName}</td>
-                                <td>{staff.LastName}</td>
-                                <td>{staff.Email}</td>
-                                <td>{staff.tblRole.Role}</td>
-                                <td>
-                                  {" "}
-                                  <Create
-                                    className="custom-create-icon"
-                                    onClick={() => {
-                                      settoggleAddStaff(false);
-                                      setSelectedStaff(staff.UserId)
-                                    }}
-                                  ></Create>{" "}
-                                  <Delete
-                                    className="custom-delete-icon"
-                                    color="error"
-                                    onClick={() => {
-                                      deleteStaff(staff.UserId);
-                                    }}
-                                  ></Delete>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* #modal */}
-
-            {/* <div className="modal fade" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered" role="document">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            ...
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
+    
+                {/* #modal */}
+    
+                {/* <div className="modal fade" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                ...
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary">Save changes</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div> */}
-          </div>
+                </div> */}
+              </div>)}
+
+
+          
         </>
       ) : (
         <AddStaff selectedStaff={selectedStaff} settoggleAddStaff={settoggleAddStaff} setAddStaffSuccess={setAddStaffSuccess} getStaffList={getStaffList} />

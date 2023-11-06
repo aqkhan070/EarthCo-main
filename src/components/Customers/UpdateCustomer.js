@@ -867,6 +867,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                                   <td>{contact.Address}</td>
                                   <td style={{ cursor: "pointer" }}>
                                     <Create
+                                      className="custom-create-icon"
                                       data-bs-toggle="modal"
                                       data-bs-target="#basicModal"
                                       onClick={() => {
@@ -1094,6 +1095,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
 
                                   <td style={{ cursor: "pointer" }}>
                                     <Create
+                                    className="custom-create-icon"
                                       data-bs-toggle="modal"
                                       data-bs-target="#basicModal2"
                                       onClick={() => {

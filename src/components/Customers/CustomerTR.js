@@ -98,10 +98,16 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
     <ThemeProvider theme={theme}>
       {showContent ? (
         <div className="">
-          <div className="row justify-content-between">
-            <div className="col-3 search-container tblsearch-input">
+          
+          <div className="row">
+            <div className="d-flex"></div>
+          </div>
+
+
+          <div className=" ml-2 row search-row ">
+            <div className="col-3  search-container tblsearch-input">
               <TextField
-                className="tblsearch-input"
+                className="tblsearch-input "
                 variant="standard"
                 size="small"
                 label="Search"
