@@ -167,7 +167,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
         [name]:
           name === "UserId" ||
           name === "ServiceLocationId" ||
-          name === "ContactId" || 
+          name === "ContactId" ||
           name === "Assign"
             ? Number(value)
             : value,
@@ -716,7 +716,6 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                                   ...itemInput,
                                   Description: e.target.value,
                                 })
-                                
                               }
                               rows="3"
                               id="comment"
@@ -846,9 +845,9 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
                         <tr>
-                          <th>Qty / Duration</th>
                           <th>Name</th>
                           <th>Description</th>
+                          <th>Qty / Duration</th>
                           <th>Rate</th>
                           <th>Amount</th>
                           <th>Actions</th>
@@ -857,9 +856,9 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                       <tbody>
                         {tblSRItems.map((item, index) => (
                           <tr key={index}>
-                            <td>{item.Qty}</td>
                             <td>{item.Name}</td>
                             <td>{item.Description}</td>
+                            <td>{item.Qty}</td>
                             <td>{item.Rate}</td>
                             <td>{item.Qty * item.Rate}</td>
                             <td>
@@ -876,6 +875,92 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                             </td>
                           </tr>
                         ))}
+                        <tr>
+                        <td>
+                            <input
+                              type="text"
+                              name="Name"
+                              value={itemInput.Name}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Name: e.target.value,
+                                })
+                              }
+                              className="form-control form-control-sm"
+                              placeholder="Name"
+                            />
+                          </td>
+                          <td>
+                            <textarea
+                              name="Description"
+                              className="form-txtarea form-control form-control-sm"
+                              value={itemInput.Description}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Description: e.target.value,
+                                })
+                              }
+                              rows="1"
+                              id="comment"
+                            ></textarea>
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="Qty"
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
+                              className="form-control form-control-sm"
+                              placeholder="Quantity"
+                            />
+                          </td>
+                          
+                          <td>
+                            <div className="col-sm-9">
+                              <input
+                                name="Rate"
+                                type="number"
+                                value={itemInput.Rate}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Rate: Number(e.target.value),
+                                  })
+                                }
+                                className="form-control form-control-sm"
+                                placeholder="Rate"
+                              />
+                            </div>
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.Rate * itemInput.Qty}
+                            </h5>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                setTblSRItems([...tblSRItems, itemInput]);
+                                setItemInput({
+                                  Name: "",
+                                  Qty: 0,
+                                  Description: "",
+                                  Rate: 0,
+                                }); // Reset the modal input fields
+                              }}
+                            >
+                              Add
+                            </button>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
