@@ -135,7 +135,6 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
   };
 
   const handleAutocompleteChange = (event, newValue) => {
-   
     const simulatedEvent = {
       target: {
         name: "UserId",
@@ -143,20 +142,20 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       },
     };
 
-    
     handleInputChange(simulatedEvent);
   };
 
   const handleStaffAutocompleteChange = (event, newValue) => {
-   
+    // Construct an event-like object with the structure expected by handleInputChange
     const simulatedEvent = {
       target: {
         name: "Assign",
-        value: newValue ? newValue.UserId : "",
+        value: newValue ? newValue.UserId : null,
       },
     };
 
-   
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
     handleInputChange(simulatedEvent);
   };
 
@@ -385,7 +384,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                       <label className="form-label">Customers</label>
 
                       <Autocomplete
-                        id="inputState"
+                        id="inputState1"
                         size="small"
                         options={customers}
                         getOptionLabel={(option) => option.CompanyName || ""}
@@ -435,7 +434,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         onChange={handleInputChange}
                         value={SRData.ServiceRequestData.CustomerId || ""}
                         aria-label="Default select example"
-                        id="inputState"
+                        id="inputState3"
                         className="bg-white"
                       >
                         <option value="">Service Location</option>{" "}
@@ -468,7 +467,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         onChange={handleInputChange}
                         value={SRData.ServiceRequestData.CustomerId || ""}
                         aria-label="Default select example"
-                        id="inputState"
+                        id="inputState2"
                         className="bg-white"
                       >
                         <option value="">contacts</option>{" "}
@@ -579,17 +578,15 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                       <label className="form-label">
                         Assign / Appointment:
                       </label>
-
                       <Autocomplete
-                        id="inputState"
+                        id="staff-autocomplete"
                         size="small"
                         options={staffData}
                         getOptionLabel={(option) => option.FirstName || ""}
                         value={
                           staffData.find(
-                            (customer) =>
-                              customer.Assign ===
-                              SRData.ServiceRequestData.Assign
+                            (staff) =>
+                              staff.UserId === SRData.ServiceRequestData.Assign
                           ) || null
                         }
                         onChange={handleStaffAutocompleteChange}
@@ -600,14 +597,11 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                           <TextField
                             {...params}
                             label=""
-                            placeholder="Staff"
+                            placeholder="Choose..."
                             className="bg-white"
                           />
                         )}
-                        aria-label="Default select example"
-                      />                
-
-
+                      />
                       {/* <Form.Select
                         name="Assign"
                         size="lg"
