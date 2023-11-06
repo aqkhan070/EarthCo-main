@@ -373,7 +373,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
 
                       <Autocomplete
                         id="inputState"
-                        size="large"
+                        size="small"
                         options={customers}
                         getOptionLabel={(option) => option.CompanyName || ""}
                         value={
@@ -390,7 +390,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Customer"
+                            label=""
+                            placeholder="Customer"
                             className="bg-white"
                           />
                         )}
