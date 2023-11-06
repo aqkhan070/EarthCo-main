@@ -4,6 +4,7 @@ import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 import { Create, Delete, Update } from "@mui/icons-material";
+import Alert from '@mui/material/Alert';
 
 const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fetchCustomers }) => {
   const navigate = useNavigate();
@@ -42,9 +43,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
+  const [contactAddSuccess, setContactAddSuccess] = useState(false)
   // service Locations
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
+  const [addSLSuccess, setAddSLSuccess] = useState(false)
 
 
 
@@ -197,6 +200,10 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
       setresponseid(response.data.Id);
       getCustomerData();
+      setTimeout(() => {
+        setContactAddSuccess(false)
+      }, 3000);
+      setContactAddSuccess(true)
       // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
     } catch (error) {
       console.log("api call error", error);
@@ -271,6 +278,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       const serviceLocationWithId = {
         ...serviceLocations, // spread the existing serviceLocations fields
         ServiceLocationId: response.data.Id, // add the new ID from the response
+        
       };
       console.log("New service location to add:", serviceLocationWithId);
       // Update your form state with the new service location object that includes the response ID
@@ -289,6 +297,10 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
         isBilltoCustomer: null,
       });
       getCustomerData();
+      setTimeout(() => {
+        setAddSLSuccess(false)
+      }, 3000);
+      setAddSLSuccess(true)
 
 
       console.log("successfully sent service locations", response.data.Id);
@@ -809,12 +821,14 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
             }}
           >
             <div className="card">
-              <div className="">
-                <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
+              <div className="">  
+                <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
                   Contacts
                 </h4>
               </div>
               <div className="card-body">
+                {contactAddSuccess && <Alert severity="success">Contact Added/Updated Successfuly</Alert>}
+              
                 <button
                   className="btn btn-primary btn-sm"
                   data-bs-toggle="modal"
@@ -1033,6 +1047,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                 </h4>
               </div>
               <div className="card-body">
+                {addSLSuccess && <Alert severity="success">Service Location Added/Updated Successfuly</Alert>}
+              
                 <button
                   className="btn btn-primary btn-sm"
                   data-bs-toggle="modal"
