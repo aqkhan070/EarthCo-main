@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Create, Delete, Update } from "@mui/icons-material";
 import AddStaff from "./AddStaff";
+import Alert from '@mui/material/Alert';
 
 const StaffList = () => {
   const [staffData, setStaffData] = useState([]);
   const [toggleAddStaff, settoggleAddStaff] = useState(true);
   const [selectedStaff, setSelectedStaff] = useState(0)
+  const [addStaffSuccess, setAddStaffSuccess] = useState(false)
 
   const icon = (
     <svg
@@ -75,6 +77,7 @@ const StaffList = () => {
               <div className="col-xl-12">
                 <div className="card">
                   <div className="card-body">
+                  {addStaffSuccess && <Alert severity="success">This is a success alert — check it out!</Alert>}
                     <div className="table-responsive active-projects style-1">
                       <div className="tbl-caption mb-3">
                         <h4 className="heading mb-0">Staff</h4>
@@ -158,7 +161,7 @@ const StaffList = () => {
           </div>
         </>
       ) : (
-        <AddStaff selectedStaff={selectedStaff} settoggleAddStaff={settoggleAddStaff} />
+        <AddStaff selectedStaff={selectedStaff} settoggleAddStaff={settoggleAddStaff} setAddStaffSuccess={setAddStaffSuccess} getStaffList={getStaffList} />
       )}
     </>
   );

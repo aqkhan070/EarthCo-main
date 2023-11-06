@@ -6,9 +6,9 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
-import Stack from "@mui/material/Stack";
 
-const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
+
+const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaffList}) => {
   const icon = (
     <svg
       width="22"
@@ -42,6 +42,8 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
   const [customerInfo, setCustomerInfo] = useState({});
   const [userRoles, setUserRoles] = useState([]);
   const [alert, setAlert] = useState(false)
+  const [alertSuccess, setAlertSuccess] = useState(false)
+
 
   const token = Cookies.get("token");
 
@@ -80,6 +82,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
       ...customerInfo,
       [name]: newValue,
     });
+    setAlert(false)
   };
 
   const addStaff = async () => {
@@ -88,7 +91,20 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
         customerInfo
       );
-      window.location.reload();
+      // window.location.reload();
+      setTimeout(() => {
+        setAlertSuccess(false)
+      }, 3000);
+      
+      setTimeout(() => {
+        setAddStaffSuccess(false)
+        
+      }, 4000);
+      setAddStaffSuccess(true)
+      setAlertSuccess(true)
+      getStaffList();
+      settoggleAddStaff(true)
+
       console.log("staff added successfully", customerInfo);
     } catch (error) {
 
@@ -123,11 +139,12 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
             </h4>
           </div>
           <div className="card-body">
-            {alert && <Stack sx={{ width: "100%" }} spacing={2}>
+            {alert && 
               <Alert severity="error">
                 The Email/User already exists
               </Alert>
-            </Stack>}
+           }
+           {alertSuccess && <Alert severity="success">Successfuly Added/Updated staff</Alert>}
             
             <div className="row">
               <div className="col-xl-6 mb-3">
@@ -293,10 +310,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
                   })}
                 </Form.Select>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className="text-end">
+              <div className=" mt-4 col-xl-6 text-end">
           <NavLink>
             <button className="btn btn-primary me-1" onClick={addStaff}>
               Submit
@@ -306,6 +320,12 @@ const AddStaff = ({selectedStaff, settoggleAddStaff}) => {
             <button className="btn btn-danger light ms-1" onClick={() => {settoggleAddStaff(true)}}  >Cancel</button>
          
         </div>
+            </div>
+            
+          </div>
+          
+        </div>
+        
       </div>
     </>
   );
