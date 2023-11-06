@@ -135,7 +135,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
   };
 
   const handleAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
+   
     const simulatedEvent = {
       target: {
         name: "UserId",
@@ -143,7 +143,20 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       },
     };
 
-    // Call handleInputChange with the simulated event
+    
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleStaffAutocompleteChange = (event, newValue) => {
+   
+    const simulatedEvent = {
+      target: {
+        name: "Assign",
+        value: newValue ? newValue.UserId : "",
+      },
+    };
+
+   
     handleInputChange(simulatedEvent);
   };
 
@@ -566,7 +579,36 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                       <label className="form-label">
                         Assign / Appointment:
                       </label>
-                      <Form.Select
+
+                      <Autocomplete
+                        id="inputState"
+                        size="small"
+                        options={staffData}
+                        getOptionLabel={(option) => option.FirstName || ""}
+                        value={
+                          staffData.find(
+                            (customer) =>
+                              customer.Assign ===
+                              SRData.ServiceRequestData.Assign
+                          ) || null
+                        }
+                        onChange={handleStaffAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.UserId === value.UserId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label=""
+                            placeholder="Staff"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Default select example"
+                      />                
+
+
+                      {/* <Form.Select
                         name="Assign"
                         size="lg"
                         className="bg-white"
@@ -580,7 +622,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                             </option>
                           );
                         })}
-                      </Form.Select>
+                      </Form.Select> */}
                     </div>
                     <div className="col-md-6 pt-4">
                       {" "}
