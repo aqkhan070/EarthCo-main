@@ -256,6 +256,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
 
     setServiceLocations((prevLocations) => ({
       ...prevLocations,
+      CustomerId: selectedItem,
       [name]: updatedValue,
     }));
     console.log("ssssssss", serviceLocations);
@@ -278,6 +279,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       const serviceLocationWithId = {
         ...serviceLocations, // spread the existing serviceLocations fields
         ServiceLocationId: response.data.Id, // add the new ID from the response
+        
         
       };
       console.log("New service location to add:", serviceLocationWithId);
