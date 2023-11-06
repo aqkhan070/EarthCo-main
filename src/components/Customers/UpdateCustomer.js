@@ -71,14 +71,15 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     Fax: "",
     CustomerTypeId: "",
     Notes: "",
-    username: "",
-    Password: "",
+    username: '',
+  Password: '',
     ConfirmPassword: "",
   });
   const [customerType, setCustomerType] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState({});
   const [responseid, setresponseid] = useState(0);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [disableButton, setDisableButton] = useState(false)
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
@@ -166,19 +167,24 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
   };
   const handleCompanyChange = (e) => {
     const { name, value } = e.target;
-    setCompanyData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-      isLoginAllow: allowLogin,
-    }));
-    
-    if (name === 'Password' || name === 'ConfirmPassword') {
-       
-      setPasswordsMatch(companyData.Password === companyData.ConfirmPassword);
-    }
-
-    console.log("cdcdcdcdcdcdc", companyData);
+  
+    setCompanyData((prevFormData) => {
+      // Update the form data with the new value
+      const updatedFormData = {
+        ...prevFormData,
+        [name]: value
+      };
+  
+      // Determine whether to enable or disable the submit button
+      const shouldDisable = !updatedFormData.username || !updatedFormData.Password;
+      setDisableButton(shouldDisable);
+  
+      // Return the updated form data to update the state
+      return updatedFormData;
+    });
   };
+  
+  
 
   //  Contacts logic
   const handleContactChange = (e) => {
@@ -611,6 +617,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
                         onChange={() => {
                           setAllowLogin(true);
+                          setDisableButton(true);
                         }}
                       />
                       <label
@@ -629,6 +636,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
                         onChange={() => {
                           setAllowLogin(false);
+                          setDisableButton(false)
                         }}
                       />
                       <label
@@ -704,7 +712,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
             </div>
           </div>
           <div className="text-end">
-            <button className="btn btn-primary me-1" onClick={handleSubmit}>
+            <button className="btn btn-primary me-1" onClick={handleSubmit} disabled={disableButton}>
               Submit
             </button>
             <NavLink to="/Dashboard/Customers">

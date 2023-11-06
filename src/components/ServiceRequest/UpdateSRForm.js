@@ -4,7 +4,7 @@ import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
-import { async } from "q";
+import Cookies from "js-cookie";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
@@ -44,6 +44,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([])
   const [staffData, setStaffData] = useState([])
+  const [sRTypes, setSRTypes] = useState([])
+  const token = Cookies.get("token");
 
   const inputFile = useRef(null);
 
@@ -112,6 +114,21 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
     }
   };
 
+  const fetchSRTypes = async () => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    try {
+      const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestTypes`,{headers});
+      console.log("service request types are", res.data);
+      setSRTypes(res.data)
+    } catch (error) {
+      console.log("error fetching SR types", error);
+    }
+
+  };
+
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setSRData((prevData) => ({
@@ -126,6 +143,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
       },
     }));
 
+   
     
     
 if(name === "UserId" && value !=0)
@@ -247,9 +265,10 @@ if(name === "UserId" && value !=0)
 
     fetchCustomers();
   }, [serviceRequestId]);
-
+  
   useEffect(() => {
     setShowCards(false)
+    fetchSRTypes();
     fetchStaffList();
   }, []);
 
@@ -455,13 +474,14 @@ if(name === "UserId" && value !=0)
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
-                      >
-                        <option value={null}>Inspect and Advise</option>
-                        <option value="Irrigation">Irrigation</option>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Other">Other</option>
-                        <option value="Proposal Needed">Proposal Needed</option>
-                        <option value="Tree Care">Tree Care</option>
+                      ><option value={null}>Choose types...</option>
+                        {sRTypes.map((type) => {
+                          return(
+                            <option value={type.SRTypeId}>{type.Type}</option>
+                          )
+                        }) }
+                        
+                        
                       </Form.Select>
                     </div>
                     {/* <div className="col-xl-3 ">
