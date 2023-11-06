@@ -167,7 +167,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
         [name]:
           name === "UserId" ||
           name === "ServiceLocationId" ||
-          name === "ContactId"
+          name === "ContactId" || 
+          name === "Assign"
             ? Number(value)
             : value,
       },
@@ -715,6 +716,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                                   ...itemInput,
                                   Description: e.target.value,
                                 })
+                                
                               }
                               rows="3"
                               id="comment"
