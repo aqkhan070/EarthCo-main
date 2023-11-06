@@ -5,11 +5,11 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 // import { Autocomplete, TextField } from '@mui/material';
 
-const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
+const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
   const [customers, setCustomers] = useState([]);
 
   const [sRList, setSRList] = useState({});
@@ -44,25 +44,26 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
   const [files, setFiles] = useState([]);
 
   const [sLList, setSLList] = useState([]);
-  const [contactList, setContactList] = useState([])
-  const [staffData, setStaffData] = useState([])
-  const [sRTypes, setSRTypes] = useState([])
+  const [contactList, setContactList] = useState([]);
+  const [staffData, setStaffData] = useState([]);
+  const [sRTypes, setSRTypes] = useState([]);
   const token = Cookies.get("token");
 
   const inputFile = useRef(null);
 
   const fetchServiceLocations = async (id) => {
-
-    axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`)
-      .then(res => {
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+      )
+      .then((res) => {
         setSLList(res.data);
         console.log("service locations are", res.data);
       })
-      .catch(error => {
+      .catch((error) => {
         setSLList([]);
         console.log("service locations fetch error", error);
       });
-
 
     // try {
     //   const res = await axios.get(
@@ -77,15 +78,16 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
   };
 
   const fetctContacts = async (id) => {
-
-
-    axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`)
-      .then(res => {
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
+      )
+      .then((res) => {
         console.log("contacts data isss", res.data);
-        setContactList(res.data)
+        setContactList(res.data);
       })
-      .catch(error => {
-        setContactList([])
+      .catch((error) => {
+        setContactList([]);
         console.log("contacts data fetch error", error);
       });
 
@@ -109,7 +111,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
         `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`
       );
       setStaffData(response.data);
-     
+
       console.log("staff list iss", response.data);
     } catch (error) {
       console.log("error getting staff list", error);
@@ -121,13 +123,15 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
       Authorization: `Bearer ${token}`,
     };
     try {
-      const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestTypes`,{headers});
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestTypes`,
+        { headers }
+      );
       console.log("service request types are", res.data);
-      setSRTypes(res.data)
+      setSRTypes(res.data);
     } catch (error) {
       console.log("error fetching SR types", error);
     }
-
   };
 
   const handleAutocompleteChange = (event, newValue) => {
@@ -135,14 +139,13 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
     const simulatedEvent = {
       target: {
         name: "UserId",
-        value: newValue ? newValue.UserId : '',
-      }
+        value: newValue ? newValue.UserId : "",
+      },
     };
 
     // Call handleInputChange with the simulated event
     handleInputChange(simulatedEvent);
   };
-
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -158,16 +161,11 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
       },
     }));
 
-   
-    
-    
-if(name === "UserId" && value !=0)
-{
-  console.log(value);
-  fetchServiceLocations(value);
-  fetctContacts(value);
-}
-    
+    if (name === "UserId" && value != 0) {
+      console.log(value);
+      fetchServiceLocations(value);
+      fetctContacts(value);
+    }
 
     console.log("object,,,,,,", SRData);
   };
@@ -203,7 +201,7 @@ if(name === "UserId" && value !=0)
       console.log("payload izzzzzzz", formData);
       // Handle successful submission
       window.location.reload();
-      setShowCards(true)
+      setShowCards(true);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -280,9 +278,9 @@ if(name === "UserId" && value !=0)
 
     fetchCustomers();
   }, [serviceRequestId]);
-  
+
   useEffect(() => {
-    setShowCards(false)
+    setShowCards(false);
     fetchSRTypes();
     fetchStaffList();
   }, []);
@@ -374,22 +372,30 @@ if(name === "UserId" && value !=0)
                       <label className="form-label">Customers</label>
 
                       <Autocomplete
-      id="inputState"
-      size="large"
-      options={customers}
-      getOptionLabel={(option) => option.CompanyName || ''}
-      value={customers.find(customer => customer.UserId === SRData.ServiceRequestData.UserId) || null}
-      onChange={handleAutocompleteChange}
-      isOptionEqualToValue={(option, value) => option.UserId === value.UserId}
-      renderInput={(params) => (
-        <TextField 
-          {...params} 
-          label="Customer" 
-          className="bg-white" 
-        />
-      )}
-      aria-label="Default select example"
-    />
+                        id="inputState"
+                        size="large"
+                        options={customers}
+                        getOptionLabel={(option) => option.CompanyName || ""}
+                        value={
+                          customers.find(
+                            (customer) =>
+                              customer.UserId ===
+                              SRData.ServiceRequestData.UserId
+                          ) || null
+                        }
+                        onChange={handleAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.UserId === value.UserId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Customer"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Default select example"
+                      />
                       {/* <Form.Select
                         size="lg"
                         name="UserId"
@@ -507,14 +513,13 @@ if(name === "UserId" && value !=0)
                         onChange={handleInputChange}
                         size="lg"
                         className="bg-white"
-                      ><option value={null}>Choose types...</option>
+                      >
+                        <option value={null}>Choose types...</option>
                         {sRTypes.map((type) => {
-                          return(
+                          return (
                             <option value={type.SRTypeId}>{type.Type}</option>
-                          )
-                        }) }
-                        
-                        
+                          );
+                        })}
                       </Form.Select>
                     </div>
                     {/* <div className="col-xl-3 ">
@@ -568,9 +573,12 @@ if(name === "UserId" && value !=0)
                       >
                         <option value={null}>Choose...</option>
                         {staffData.map((staff) => {
-                          return(<option key={staff.UserId} value={staff.UserId}>{staff.FirstName}</option>)
+                          return (
+                            <option key={staff.UserId} value={staff.UserId}>
+                              {staff.FirstName}
+                            </option>
+                          );
                         })}
-                       
                       </Form.Select>
                     </div>
                     <div className="col-md-6 pt-4">
@@ -964,7 +972,7 @@ if(name === "UserId" && value !=0)
                 className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
-                  setShowCards(true)
+                  setShowCards(true);
                 }}
               >
                 Cancel
