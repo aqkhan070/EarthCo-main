@@ -168,7 +168,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
           name === "UserId" ||
           name === "ServiceLocationId" ||
           name === "ContactId" ||
-          name === "Assign"
+          name === "Assign"||
+          name === "SRTypeId"
             ? Number(value)
             : value,
       },
@@ -433,7 +434,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         size="lg"
                         name="ServiceLocationId"
                         onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.CustomerId || ""}
+                        value={SRData.ServiceRequestData.ServiceLocationId || ""}
                         aria-label="Default select example"
                         id="inputState3"
                         className="bg-white"
@@ -466,7 +467,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         size="lg"
                         name="ContactId"
                         onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.CustomerId || ""}
+                        value={SRData.ServiceRequestData.ContactId || ""}
                         aria-label="Default select example"
                         id="inputState2"
                         className="bg-white"
