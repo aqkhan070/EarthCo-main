@@ -3,7 +3,8 @@ import { Form } from "react-bootstrap";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-import { Print, Email, Download  } from "@mui/icons-material";
+import { Print, Email, Download } from "@mui/icons-material";
+import { async } from "q";
 // import { Autocomplete, TextField } from '@mui/material';
 
 const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
@@ -15,7 +16,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
     ServiceRequestData: {
       ServiceRequestId: serviceRequestId,
 
-      CustomerId: 0,
+      UserId: 0,
       ServiceLocation: "",
       Contact: "",
       JobName: "",
@@ -39,7 +40,36 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
   const [tblSRItems, setTblSRItems] = useState([]);
 
   const [files, setFiles] = useState([]);
+  const [sLList, setSLList] = useState([]);
+  const [contactList, setContactList] = useState([])
+
   const inputFile = useRef(null);
+
+  const fetchServiceLocations = async (id) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+      );
+      setSLList(res.data);
+      console.log("service locations are", res.data);
+    } catch (error) {
+      console.log("service locations fetch error", error);
+    }
+  };
+
+  const fetctContacts = async (id) => {
+    try {
+      const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`);
+      console.log("contacts data isss", res.data);
+      setContactList(res.data)
+    } catch (error) {
+      console.log("contacts data fetch error", error);
+    }
+  };
+  useEffect(() => {
+    fetchServiceLocations(SRData.ServiceRequestData.UserId);
+    fetctContacts(SRData.ServiceRequestData.UserId);
+  }, [SRData]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -47,12 +77,15 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
       ServiceRequestData: {
         ...prevData.ServiceRequestData,
         [name]:
-          name === "CustomerId" || name === "SRTypeId" || name === "SRStatusId"
+          name === "UserId" ||
+          name === "ServiceLocationId" ||
+          name === "ContactId"
             ? Number(value)
             : value,
       },
     }));
-    // console.log("object,,,,,,", SRData);
+
+    console.log("object,,,,,,", SRData.UserId);
   };
 
   const submitHandler = async () => {
@@ -113,9 +146,23 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
     setFiles(updatedFiles);
   };
 
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+      );
+      setCustomers(response.data);
+      console.log("customers list iss", response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchSR = async () => {
-      if(serviceRequestId === 0){return}
+      if (serviceRequestId === 0) {
+        return;
+      }
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`
       );
@@ -144,19 +191,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
       }
     };
 
-    const fetchCustomers = async () => {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-      );
-      try {
-        setCustomers(response.data);
-        console.log(customers);
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
-    };
-
     fetchSR();
+
     fetchCustomers();
   }, [serviceRequestId]);
 
@@ -252,20 +288,17 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                       <label className="form-label">Customers</label>
                       <Form.Select
                         size="lg"
-                        name="CustomerId"
+                        name="UserId"
                         onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.CustomerId || ""}
+                        value={SRData.ServiceRequestData.UserId || ""}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
                       >
                         <option value="">Customer</option>{" "}
                         {customers.map((customer) => (
-                          <option
-                            key={customer.CustomerId}
-                            value={customer.CustomerId}
-                          >
-                            {customer.CustomerName}
+                          <option key={customer.UserId} value={customer.UserId}>
+                            {customer.CompanyName}
                           </option>
                         ))}
                       </Form.Select>
@@ -274,7 +307,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                       <label className="form-label">Servive Locations</label>
                       <Form.Select
                         size="lg"
-                        name="CustomerId"
+                        name="ServiceLocationId"
                         onChange={handleInputChange}
                         value={SRData.ServiceRequestData.CustomerId || ""}
                         aria-label="Default select example"
@@ -282,12 +315,12 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         className="bg-white"
                       >
                         <option value="">Service Location</option>{" "}
-                        {customers.map((customer) => (
+                        {sLList.map((sr) => (
                           <option
-                            key={customer.CustomerId}
-                            value={customer.CustomerId}
+                            key={sr.ServiceLocationId}
+                            value={sr.ServiceLocationId}
                           >
-                            {customer.CustomerName}
+                            {sr.Name}
                           </option>
                         ))}
                       </Form.Select>
@@ -307,20 +340,20 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                       <label className="form-label">Contacts</label>
                       <Form.Select
                         size="lg"
-                        name="CustomerId"
+                        name="ContactId"
                         onChange={handleInputChange}
                         value={SRData.ServiceRequestData.CustomerId || ""}
                         aria-label="Default select example"
                         id="inputState"
                         className="bg-white"
                       >
-                        <option value="">Customer</option>{" "}
-                        {customers.map((customer) => (
+                        <option value="">contacts</option>{" "}
+                        {contactList.map((customer) => (
                           <option
-                            key={customer.CustomerId}
-                            value={customer.CustomerId}
+                            key={customer.ContactId}
+                            value={customer.ContactId}
                           >
-                            {customer.CustomerName}
+                            {customer.FirstName}
                           </option>
                         ))}
                       </Form.Select>
@@ -478,24 +511,22 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                             />
                           </div>
                         </div>
-                        
 
                         <div className="mb-3 row">
                           <label className="col-sm-3 col-form-label">
                             Staff
                           </label>
                           <div className="col-sm-9">
-                          <Form.Select
-                        name="Assign"
-                        size="md"
-                        className="bg-white"
-                       
-                      >
-                        <option value={null}>Choose...</option>
-                        <option value="option 1">option 1</option>
-                        <option value="option 2">option 2</option>
-                        <option value="option 3">option 3</option>
-                      </Form.Select>
+                            <Form.Select
+                              name="Assign"
+                              size="md"
+                              className="bg-white"
+                            >
+                              <option value={null}>Choose...</option>
+                              <option value="option 1">option 1</option>
+                              <option value="option 2">option 2</option>
+                              <option value="option 3">option 3</option>
+                            </Form.Select>
                           </div>
                         </div>
 
@@ -561,42 +592,41 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                         </div>
 
                         <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Tax
-                          </label>
+                          <label className="col-sm-3 col-form-label">Tax</label>
                           <div className="col-sm-9">
-                          <Form.Select
-                        name="Tax"
-                        size="md"
-                        className="bg-white"
-                       
-                      >
-                        
-                        <option value="option 1">Non (Non-Taxable Sales)</option>
-                        <option value="option 2">Tax (Taxable Sales)</option>
-                        <option value="option 3">LBR (Non-Taxable Labour)</option>
-                      </Form.Select>
+                            <Form.Select
+                              name="Tax"
+                              size="md"
+                              className="bg-white"
+                            >
+                              <option value="option 1">
+                                Non (Non-Taxable Sales)
+                              </option>
+                              <option value="option 2">
+                                Tax (Taxable Sales)
+                              </option>
+                              <option value="option 3">
+                                LBR (Non-Taxable Labour)
+                              </option>
+                            </Form.Select>
                           </div>
                         </div>
                         <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            
-                          </label>
+                          <label className="col-sm-3 col-form-label"></label>
                           <div className="col-sm-9">
-                          <input
-                            type="checkbox"
-                            name="isPrimary"
-                            className="form-check-input"
-                            id="customCheckBox"
-                            
-                          />
+                            <input
+                              type="checkbox"
+                              name="isPrimary"
+                              className="form-check-input"
+                              id="customCheckBox"
+                            />
 
-                          <label
-                            className="form-check-label"
-                            htmlFor="customCheckBox"
-                          >
-                           Billable
-                          </label>
+                            <label
+                              className="form-check-label"
+                              htmlFor="customCheckBox"
+                            >
+                              Billable
+                            </label>
                           </div>
                         </div>
 
@@ -608,8 +638,9 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent }) => {
                             className="col-sm-9"
                             style={{ display: "flex", alignItems: "center" }}
                           >
-                            <h5 style={{ margin: "0" }}>{itemInput.Rate * itemInput.Qty}</h5>
-
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.Rate * itemInput.Qty}
+                            </h5>
                           </div>
                         </div>
                       </form>
