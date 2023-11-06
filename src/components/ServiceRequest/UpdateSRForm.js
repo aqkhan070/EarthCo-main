@@ -145,12 +145,34 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
     handleInputChange(simulatedEvent);
   };
 
+  const handleSLAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ServiceLocationId",
+        value: newValue ? newValue.ServiceLocationId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleContactAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ContactId",
+        value: newValue ? newValue.ContactId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
   const handleStaffAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
     const simulatedEvent = {
       target: {
         name: "Assign",
-        value: newValue ? newValue.UserId : null,
+        value: newValue ? newValue.Assign : null,
       },
     };
 
@@ -168,7 +190,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
           name === "UserId" ||
           name === "ServiceLocationId" ||
           name === "ContactId" ||
-          name === "Assign"||
+          name === "Assign" ||
           name === "SRTypeId"
             ? Number(value)
             : value,
@@ -430,7 +452,35 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                     </div>
                     <div className="col-xl-3 mb-2 col-md-9 ">
                       <label className="form-label">Servive Locations</label>
-                      <Form.Select
+
+                      <Autocomplete
+                        id="inputState19"
+                        size="small"
+                        options={sLList}
+                        getOptionLabel={(option) => option.Name || ""}
+                        value={
+                          customers.find(
+                            (customer) =>
+                              customer.ServiceLocationId ===
+                              SRData.ServiceRequestData.ServiceLocationId
+                          ) || null
+                        }
+                        onChange={handleSLAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.ServiceLocationId === value.ServiceLocationId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label=""
+                            placeholder="Service Locations"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Default select example"
+                      />
+
+                      {/* <Form.Select
                         size="lg"
                         name="ServiceLocationId"
                         onChange={handleInputChange}
@@ -448,7 +498,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                             {sr.Name}
                           </option>
                         ))}
-                      </Form.Select>
+                      </Form.Select> */}
                     </div>
                     {/* <div className="mb-3 col-md-4">
                       <label className="form-label">Service Location</label>
@@ -463,7 +513,35 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                     </div> */}
                     <div className="col-xl-3 mb-2 col-md-9 ">
                       <label className="form-label">Contacts</label>
-                      <Form.Select
+
+                      <Autocomplete
+                        id="inputState299"
+                        size="small"
+                        options={contactList}
+                        getOptionLabel={(option) => option.FirstName || ""}
+                        value={
+                          contactList.find(
+                            (contact) =>
+                              contact.ContactId ===
+                              SRData.ServiceRequestData.ContactId
+                          ) || null
+                        }
+                        onChange={handleContactAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.ContactId === value.ContactId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label=""
+                            placeholder="Contacts"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Contact select"
+                      />
+
+                      {/* <Form.Select
                         size="lg"
                         name="ContactId"
                         onChange={handleInputChange}
@@ -481,7 +559,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                             {customer.FirstName}
                           </option>
                         ))}
-                      </Form.Select>
+                      </Form.Select> */}
                     </div>
                     {/* <div className="mb-3 col-md-4">
                       <label>Contact</label>
@@ -877,7 +955,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                           </tr>
                         ))}
                         <tr>
-                        <td>
+                          <td>
                             <input
                               type="text"
                               name="Name"
@@ -922,7 +1000,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                               placeholder="Quantity"
                             />
                           </td>
-                          
+
                           <td>
                             <div className="col-sm-9">
                               <input
