@@ -5,6 +5,45 @@ import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 import { Create, Delete, Update } from "@mui/icons-material";
 import Alert from '@mui/material/Alert';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 
 const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fetchCustomers }) => {
   const navigate = useNavigate();
@@ -48,6 +87,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
   const [addSLSuccess, setAddSLSuccess] = useState(false)
+
+  // tabs
+  const [value, setValue] = React.useState(0);
 
 
 
@@ -339,6 +381,13 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     );
     setSlForm(updatedSlForm);
   };
+
+  // tabs
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
 
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
@@ -817,85 +866,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
         <div>
           {/* Contacts Table */}
 
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <div className="card">
-              <div className="">  
-                <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
-                  Contacts
-                </h4>
-              </div>
-              <div className="card-body">
-                {contactAddSuccess && <Alert severity="success">Contact Added/Updated Successfuly</Alert>}
-              
-                <button
-                  className="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#basicModal"
-                  style={{ margin: "12px 20px" }}
-                >
-                  + Add Contacts
-                </button>
-
-                <div className="col-xl-12">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="estDataBox">
-                        <div className="table-responsive active-projects style-1">
-                          <table id="empoloyees-tblwrapper" className="table">
-                            <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Address</th>
-
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {contactDataList.map((contact, index) => (
-                                <tr key={index}>
-                                  <td>{contact.ContactId}</td>
-                                  <td>{contact.FirstName}</td>
-                                  <td>{contact.LastName}</td>
-                                  <td>{contact.Email}</td>
-                                  <td>{contact.Phone}</td>
-                                  <td>{contact.Address}</td>
-                                  <td style={{ cursor: "pointer" }}>
-                                    <Create
-                                      className="custom-create-icon"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#basicModal"
-                                      onClick={() => {
-                                        setContactData(contact);
-                                        updateContact(contact.ContactId);
-                                      }}
-                                    ></Create>
-                                    <Delete
-                                      color="error"
-                                      onClick={() =>
-                                        deleteContact(contact.ContactId)
-                                      }
-                                    ></Delete>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
+          
 
           {/* servive location form */}
 
@@ -1042,7 +1013,98 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
             </div>
           </div>
 
-          <form>
+          
+<Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Contacts" {...a11yProps(0)} />
+          <Tab label="Service Locations" {...a11yProps(1)} />
+          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+        </Tabs>
+      </Box>
+      <CustomTabPanel value={value} index={0}>
+      <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <div className="card">
+              <div className="">  
+                <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
+                  Contacts
+                </h4>
+              </div>
+              <div className="card-body">
+                {contactAddSuccess && <Alert severity="success">Contact Added/Updated Successfuly</Alert>}
+              
+                <button
+                  className="btn btn-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#basicModal"
+                  style={{ margin: "12px 20px" }}
+                >
+                  + Add Contacts
+                </button>
+
+                <div className="col-xl-12">
+                  <div className="card">
+                    <div className="card-body p-0">
+                      <div className="estDataBox">
+                        <div className="table-responsive active-projects style-1">
+                          <table id="empoloyees-tblwrapper" className="table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {contactDataList.map((contact, index) => (
+                                <tr key={index}>
+                                  <td>{contact.ContactId}</td>
+                                  <td>{contact.FirstName}</td>
+                                  <td>{contact.LastName}</td>
+                                  <td>{contact.Email}</td>
+                                  <td>{contact.Phone}</td>
+                                  <td>{contact.Address}</td>
+                                  <td style={{ cursor: "pointer" }}>
+                                    <Create
+                                      className="custom-create-icon"
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#basicModal"
+                                      onClick={() => {
+                                        setContactData(contact);
+                                        updateContact(contact.ContactId);
+                                      }}
+                                    ></Create>
+                                    <Delete
+                                      color="error"
+                                      onClick={() =>
+                                        deleteContact(contact.ContactId)
+                                      }
+                                    ></Delete>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={1}>
+      <form>
             <div className="card">
               <div className="">
                 <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
@@ -1124,8 +1186,16 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
               </div>
             </div>
           </form>
+      </CustomTabPanel>
+      {/* <CustomTabPanel value={value} index={2}>
+        Item Three
+      </CustomTabPanel> */}
+    </Box>
         </div>
       )}
+
+
+
     </div>
   );
 };
