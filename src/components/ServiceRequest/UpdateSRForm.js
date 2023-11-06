@@ -433,7 +433,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         )}
                         aria-label="Default select example"
                       />
-                      {/* <Form.Select
+                      {/* <Form.Select 
                         size="lg"
                         name="UserId"
                         onChange={handleInputChange}
@@ -666,12 +666,12 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         value={
                           staffData.find(
                             (staff) =>
-                              staff.UserId === SRData.ServiceRequestData.Assign
+                              staff.Assign === SRData.ServiceRequestData.Assign
                           ) || null
                         }
                         onChange={handleStaffAutocompleteChange}
                         isOptionEqualToValue={(option, value) =>
-                          option.UserId === value.UserId
+                          option.Assign === value.Assign
                         }
                         renderInput={(params) => (
                           <TextField
