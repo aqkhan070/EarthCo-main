@@ -5,6 +5,8 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 // import { Autocomplete, TextField } from '@mui/material';
 
 const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
@@ -126,6 +128,19 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent,setShowCards }) => {
       console.log("error fetching SR types", error);
     }
 
+  };
+
+  const handleAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    const simulatedEvent = {
+      target: {
+        name: "UserId",
+        value: newValue ? newValue.UserId : '',
+      }
+    };
+
+    // Call handleInputChange with the simulated event
+    handleInputChange(simulatedEvent);
   };
 
 
@@ -357,7 +372,25 @@ if(name === "UserId" && value !=0)
                   <div className="row">
                     <div className="col-xl-3 mb-2 col-md-9 ">
                       <label className="form-label">Customers</label>
-                      <Form.Select
+
+                      <Autocomplete
+      id="inputState"
+      size="large"
+      options={customers}
+      getOptionLabel={(option) => option.CompanyName || ''}
+      value={customers.find(customer => customer.UserId === SRData.ServiceRequestData.UserId) || null}
+      onChange={handleAutocompleteChange}
+      isOptionEqualToValue={(option, value) => option.UserId === value.UserId}
+      renderInput={(params) => (
+        <TextField 
+          {...params} 
+          label="Customer" 
+          className="bg-white" 
+        />
+      )}
+      aria-label="Default select example"
+    />
+                      {/* <Form.Select
                         size="lg"
                         name="UserId"
                         onChange={handleInputChange}
@@ -372,7 +405,7 @@ if(name === "UserId" && value !=0)
                             {customer.CompanyName}
                           </option>
                         ))}
-                      </Form.Select>
+                      </Form.Select> */}
                     </div>
                     <div className="col-xl-3 mb-2 col-md-9 ">
                       <label className="form-label">Servive Locations</label>
