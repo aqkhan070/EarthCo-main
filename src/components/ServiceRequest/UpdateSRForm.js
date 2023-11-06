@@ -118,6 +118,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
     }
   };
 
+
   const fetchSRTypes = async () => {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -143,7 +144,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
     };
 
     handleInputChange(simulatedEvent);
-  };
+  }; 
 
   const handleSLAutocompleteChange = (event, newValue) => {
     const simulatedEvent = {
@@ -172,7 +173,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
     const simulatedEvent = {
       target: {
         name: "Assign",
-        value: newValue ? newValue.Assign : null,
+        value: newValue ? newValue.UserId : null,
       },
     };
 
@@ -223,14 +224,17 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       formData.append("Files", fileObj);
     });
 
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data', // Important for multipart/form-data requests
+    };
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/ServiceRequest/AddServiceRequest",
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers
         }
       );
       console.log(response.data);
@@ -459,12 +463,12 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         options={sLList}
                         getOptionLabel={(option) => option.Name || ""}
                         value={
-                          customers.find(
+                          sLList.find(
                             (customer) =>
                               customer.ServiceLocationId ===
                               SRData.ServiceRequestData.ServiceLocationId
                           ) || null
-                        }
+                        } 
                         onChange={handleSLAutocompleteChange}
                         isOptionEqualToValue={(option, value) =>
                           option.ServiceLocationId === value.ServiceLocationId
@@ -523,7 +527,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                           contactList.find(
                             (contact) =>
                               contact.ContactId ===
-                              SRData.ServiceRequestData.ContactId
+                              SRData.ServiceRequestData.ContactId 
                           ) || null
                         }
                         onChange={handleContactAutocompleteChange}
@@ -666,12 +670,12 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                         value={
                           staffData.find(
                             (staff) =>
-                              staff.Assign === SRData.ServiceRequestData.Assign
+                              staff.UserId === SRData.ServiceRequestData.Assign
                           ) || null
                         }
                         onChange={handleStaffAutocompleteChange}
                         isOptionEqualToValue={(option, value) =>
-                          option.Assign === value.Assign
+                          option.UserId === value.Assign
                         }
                         renderInput={(params) => (
                           <TextField
