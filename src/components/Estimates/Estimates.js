@@ -30,6 +30,7 @@ const Estimates = () => {
   const [locations, setLocations] = useState(["Select Customer First"]);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [showStatusCards, setShowStatusCards] = useState(true)
 
 
   const navigate = useNavigate();
@@ -53,12 +54,9 @@ const Estimates = () => {
     };
 
     getEstimate();
+    setShowStatusCards(true)
   }, []);
 
-  useEffect(() => {
-    // getUsers();
-    $("#estimateTbl2").DataTable();
-  }, []);
 
   useEffect(() => {
     if (customer !== "" && serviceLocation !== "Select Customer First") {
@@ -145,7 +143,8 @@ const Estimates = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-      <StatusCards />
+        {showStatusCards && <StatusCards />}
+      
         {/* <StatusCardsEst
           drafts={28102}
           sent={7089}
@@ -164,7 +163,7 @@ const Estimates = () => {
               ) : (
                 <div>
                  
-                    <EstimateTR estimates={estimates} />
+                    <EstimateTR estimates={estimates} setShowStatusCards={setShowStatusCards} />
                  
                 </div>
               )}

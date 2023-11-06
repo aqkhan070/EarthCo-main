@@ -916,15 +916,15 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                   <div className="itemtitleBar">
                     <h4>Items</h4>
                   </div>
-                  <NavLink
+                  {/* <NavLink
                     className="btn btn-primary btn-sm"
                     data-bs-toggle="modal"
                     data-bs-target="#basicModal"
                     style={{ margin: "12px 20px" }}
                   >
                     + Add Items
-                  </NavLink>
-                  <div className="table-responsive active-projects style-1">
+                  </NavLink> */}
+                  <div className="table-responsive active-projects style-1 mt-2 ">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
                         <tr>

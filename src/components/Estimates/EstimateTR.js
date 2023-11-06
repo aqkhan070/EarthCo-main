@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import {
   Table,
@@ -42,7 +42,7 @@ const theme = createTheme({
   },
 });
 
-const EstimateTR = ({ estimates }) => {
+const EstimateTR = ({ estimates , setShowStatusCards }) => {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
   const [filtering, setFiltering] = useState("");
@@ -90,6 +90,8 @@ const EstimateTR = ({ estimates }) => {
     setOrderBy(actualProperty);
     
   };
+
+  
 
   function filterByDate(dateString, filterType) {
     const date = new Date(dateString);
@@ -323,6 +325,7 @@ const EstimateTR = ({ estimates }) => {
         <UpdateEstimateForm
           setShowContent={setShowContent}
           estimateId={selectedItem}
+          setShowStatusCards={setShowStatusCards}
         />
       )}
     </>

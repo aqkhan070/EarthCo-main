@@ -8,7 +8,7 @@ import { Print, Email, Download } from "@mui/icons-material";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
-const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
+const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) => {
   const [estimates, setEstimates] = useState({});
 
   const [formData, setFormData] = useState({
@@ -92,7 +92,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     }
   };
 
-
   const fetchCustomers = async () => {
     try {
       const response = await axios.get(
@@ -164,7 +163,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
     };
 
     handleInputChange(simulatedEvent);
-  }; 
+  };
 
   const handleSLAutocompleteChange = (event, newValue) => {
     const simulatedEvent = {
@@ -187,12 +186,12 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
 
     handleInputChange(simulatedEvent);
   };
-
+  
   const handleInputChange = (e, newValue) => {
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
-    setSelectedSL(newValue)
+    setSelectedSL(newValue);
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
     const adjustedValue = [
@@ -287,6 +286,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
   useEffect(() => {
     fetchEstimates();
     fetchCustomers();
+    setShowStatusCards(false)
   }, []);
 
   const addItem = (e) => {
@@ -424,61 +424,58 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
           <div className="col-xl-4">
             <label className="form-label">Customer</label>
             <Autocomplete
-                        id="inputEstmState1"
-                        size="small"
-                        options={customers}
-                        getOptionLabel={(option) => option.CompanyName || ""}
-                        value={
-                          customers.find(
-                            (customer) =>
-                              customer.UserId ===
-                              formData.UserId
-                          ) || null
-                        }
-                        onChange={handleAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.UserId === value.UserId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Customer"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
-                      />
+              id="inputEstmState1"
+              size="small"
+              options={customers}
+              getOptionLabel={(option) => option.CompanyName || ""}
+              value={
+                customers.find(
+                  (customer) => customer.UserId === formData.UserId
+                ) || null
+              }
+              onChange={handleAutocompleteChange}
+              isOptionEqualToValue={(option, value) =>
+                option.UserId === value.UserId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label=""
+                  placeholder="Customer"
+                  className="bg-white"
+                />
+              )}
+              aria-label="Default select example"
+            />
           </div>
           <div className="col-xl-4">
             <label className="form-label">Service location</label>
             <Autocomplete
-                        id="inputState19"
-                        size="small"
-                        options={sLList}
-                        getOptionLabel={(option) => option.Name || ""}
-                        value={
-                          sLList.find(
-                            (customer) =>
-                              customer.ServiceLocationId ===
-                              formData.ServiceLocationId
-                          ) || null
-                        } 
-                        onChange={handleSLAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.ServiceLocationId === value.ServiceLocationId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Service Locations"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
-                      />
-            
+              id="inputState19"
+              size="small"
+              options={sLList}
+              getOptionLabel={(option) => option.Name || ""}
+              value={
+                sLList.find(
+                  (customer) =>
+                    customer.ServiceLocationId === formData.ServiceLocationId
+                ) || null
+              }
+              onChange={handleSLAutocompleteChange}
+              isOptionEqualToValue={(option, value) =>
+                option.ServiceLocationId === value.ServiceLocationId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label=""
+                  placeholder="Service Locations"
+                  className="bg-white"
+                />
+              )}
+              aria-label="Default select example"
+            />
+
             {/* <Form.Select
               value={formData.CustomerId || 0}
               name="CustomerId"
@@ -503,33 +500,29 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
             <label className="form-label">Contact</label>
 
             <Autocomplete
-                        id="inputState299"
-                        size="small"
-                        options={contactList}
-                        getOptionLabel={(option) => option.FirstName || ""}
-                        value={
-                          contactList.find(
-                            (contact) =>
-                              contact.ContactId ===
-                              formData.ContactId 
-                          ) || null
-                        }
-                        onChange={handleContactAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.ContactId === value.ContactId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Contacts"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Contact select"
-                      />
-
-
+              id="inputState299"
+              size="small"
+              options={contactList}
+              getOptionLabel={(option) => option.FirstName || ""}
+              value={
+                contactList.find(
+                  (contact) => contact.ContactId === formData.ContactId
+                ) || null
+              }
+              onChange={handleContactAutocompleteChange}
+              isOptionEqualToValue={(option, value) =>
+                option.ContactId === value.ContactId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label=""
+                  placeholder="Contacts"
+                  className="bg-white"
+                />
+              )}
+              aria-label="Contact select"
+            />
 
             {/* <Form.Select
               value={formData.CustomerId || 0}
@@ -717,19 +710,18 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
               <div className="itemtitleBar">
                 <h4>Items</h4>
               </div>
-              <button
+              {/* <button
                 className="btn btn-primary btn-sm"
                 data-bs-toggle="modal"
                 data-bs-target="#basicModal"
                 style={{ margin: "12px 20px" }}
               >
                 + Add Items
-              </button>
-              <div className="table-responsive active-projects style-1">
+              </button> */}
+              <div className="table-responsive active-projects style-1 mt-2">
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
-                      
                       <th>Name</th>
                       <th>Description</th>
                       <th>Qty / Duration</th>
@@ -745,7 +737,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       formData.tblEstimateItems.length > 0 ? (
                         formData.tblEstimateItems.map((item) => (
                           <tr key={item.id}>
-                            
                             <td>{item.Name}</td>
                             <td>{item.Description}</td>
                             <td>{item.Qty}</td>
@@ -775,69 +766,69 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                       ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
                     }
                     <tr>
-                          <td>
+                      <td>
+                        <input
+                          type="text"
+                          value={itemForm.Name}
+                          onChange={handleChange}
+                          name="Name"
+                          className="form-control form-control-sm"
+                          placeholder="Name"
+                          required
+                        />
+                      </td>
+                      <td>
+                        <textarea
+                          className="form-txtarea form-control form-control-sm"
+                          value={itemForm.Description}
+                          onChange={handleChange}
+                          name="Description"
+                          rows="1"
+                          id="comment"
+                        ></textarea>
+                      </td>
+                      <td>
+                        <div className="col-sm-9">
                           <input
-                type="text"
-                value={itemForm.Name}
-                onChange={handleChange}
-                name="Name"
-                className="form-control form-control-sm"
-                placeholder="Name"
-                required
-              />
-                          </td>
-                          <td>
-                          <textarea
-                className="form-txtarea form-control form-control-sm"
-                value={itemForm.Description}
-                onChange={handleChange}
-                name="Description"
-                rows="1"
-                id="comment"
-              ></textarea>
-                          </td>
-                          <td>
-                          <div className="col-sm-9">
-              <input
-                type="number"
-                value={itemForm.Qty}
-                onChange={handleChange}
-                name="Qty"
-                className="form-control form-control-sm"
-                placeholder="Quantity"
-                required
-              />
-            </div>
-                          </td>
+                            type="number"
+                            value={itemForm.Qty}
+                            onChange={handleChange}
+                            name="Qty"
+                            className="form-control form-control-sm"
+                            placeholder="Quantity"
+                            required
+                          />
+                        </div>
+                      </td>
 
-                          <td>
-                            <div className="col-sm-9">
-                            <input
-                type="number"
-                value={itemForm.Rate}
-                onChange={handleChange}
-                name="Rate"
-                className="form-control form-control-sm"
-                placeholder="Rate"
-                required
-              />
-                            </div>
-                          </td>
-                          <td>
-                            <h5 style={{ margin: "0" }}>
-                            {itemForm.Rate * itemForm.Qty}
-                            </h5>
-                          </td>
-                          <td></td>
-                          <td>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={addItem}                              
-                            >
-                              Add
-                            </button>
-                          </td>
-                        </tr>
+                      <td>
+                        <div className="col-sm-9">
+                          <input
+                            type="number"
+                            value={itemForm.Rate}
+                            onChange={handleChange}
+                            name="Rate"
+                            className="form-control form-control-sm"
+                            placeholder="Rate"
+                            required
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <h5 style={{ margin: "0" }}>
+                          {itemForm.Rate * itemForm.Qty}
+                        </h5>
+                      </td>
+                      <td></td>
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={addItem}
+                        >
+                          Add
+                        </button>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -1021,6 +1012,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId }) => {
                 className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
+                  setShowStatusCards(true)
                 }}
               >
                 Cancel
