@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddInvioces from "./AddInvioces";
 
 const Invoices = () => {
-  const [showContent, setShowContent] = useState(false)
+  const [showContent, setShowContent] = useState(true)
 
   return (
     <>
@@ -136,13 +136,12 @@ const Invoices = () => {
               <div className="card-header flex-wrap d-flex justify-content-between  border-0">
                 <h4 className="heading mb-0">Invoices</h4>
                 <div>
-                  <a
+                  <button
                     className="btn btn-primary btn-sm"
-                    role="button"
-                    aria-controls="offcanvasExample"
+                   onClick={() => {setShowContent(false)}}
                   >
                     + Add New Invoice
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -347,7 +346,7 @@ const Invoices = () => {
           </div>
         </div>
       </div>
-    </> : <AddInvioces /> }
+    </> : <AddInvioces setShowContent={setShowContent}/> }
     </>
    
     

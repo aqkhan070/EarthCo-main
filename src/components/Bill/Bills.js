@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AddBill from "./AddBill";
 
 const Bills = () => {
-  const [showContent, setshowContent] = useState(false)
+  const [showContent, setshowContent] = useState(true)
   return (
     <>
     {showContent ? 
@@ -44,16 +44,7 @@ const Bills = () => {
             <h5 className="bc-title">Bills</h5>
           </li>
         </ol>
-        <a
-          className="text-primary fs-13"
-          data-bs-toggle="offcanvas"
-          href="#offcanvasExample1"
-          role="button"
-          aria-controls="offcanvasExample1"
-        >
-          + Add Task
-        </a>
-        *@
+        
       </div>
       <div className="container-fluid">
         <div className="row">
@@ -62,14 +53,13 @@ const Bills = () => {
               <div className="card-header flex-wrap d-flex justify-content-between  border-0">
                 <h4 className="heading mb-0">Bills</h4>
                 <div>
-                  <a
+                  <button
                     className="btn btn-primary btn-sm"
-                    href=""
-                    role="button"
-                    aria-controls="offcanvasExample"
+                   onClick={() => {setshowContent(false)}}
+
                   >
                     + Add New Bill
-                  </a>
+                  </button>
                 </div>
               </div>
 
@@ -261,7 +251,7 @@ const Bills = () => {
         </div>
       </div>
     
-    </> : <AddBill/> }
+    </> : <AddBill setshowContent={setshowContent}/> }
     
     </>
   );

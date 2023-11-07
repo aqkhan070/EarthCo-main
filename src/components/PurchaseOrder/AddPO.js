@@ -645,10 +645,10 @@ export const AddPO = ({setShowContent}) => {
                     Save
                   </button>
                 </a>
-                <a href="">
-                  {" "}
-                  <button className="btn btn-danger light ms-1" onClick={setShowContent(true)}>Cancel</button>
-                </a>
+               
+             
+                  <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
+                
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-const AddBill = () => {
+const AddBill = ({setshowContent}) => {
   return (
     <>
       <div className="page-titles">
@@ -43,7 +43,7 @@ const AddBill = () => {
       </div>
 
       <div className="add-item">
-        <div className="tabSwitch">
+        {/* <div className="tabSwitch">
           <button type="button" className="btn btn-secondary btn-sm">
             Estimate
           </button>
@@ -53,7 +53,7 @@ const AddBill = () => {
           <button type="button" className="btn btn-secondary btn-sm">
             + Add Invoice
           </button>
-        </div>
+        </div> */}
 
         <div className="card">
           <div className="card-body">
@@ -542,7 +542,7 @@ const AddBill = () => {
                 </a>
                 <a>
                   {" "}
-                  <button className="btn btn-danger light ms-1">Cancel</button>
+                  <button className="btn btn-danger light ms-1" onClick={() => {setshowContent(true)}}>Cancel</button>
                 </a>
               </div>
             </div>

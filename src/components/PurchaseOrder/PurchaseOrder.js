@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { AddPO } from "./AddPO";
 
 const PurchaseOrder = () => {
-  const [showContent, setShowContent] = useState(false);
+  const [showContent, setShowContent] = useState(true);
 
   return (
     <>
@@ -154,12 +154,12 @@ const PurchaseOrder = () => {
                     <div>
                       <button
                         className="btn btn-primary btn-sm"
-                        onClick={(e) => {
-                          e.preventDefault();
+                        onClick={() => {
+                         
                           setShowContent(false);
                         }}
                       >
-                        + Add New Purchase Orders
+                        + Add New Purchase Order
                       </button>
                     </div>
                   </div>
