@@ -763,7 +763,7 @@ const UpdateCustomer = ({
           </div>
           <div className="text-end">
             <button
-              className="btn btn-primary me-1"
+              className="btn btn-primary m-3"
               onClick={handleSubmit}
               disabled={disableButton}
             >
@@ -771,7 +771,7 @@ const UpdateCustomer = ({
             </button>
             <NavLink to="/Dashboard/Customers">
               <button
-                className="btn btn-danger light ms-1"
+                className="btn btn-danger light  m-3 "
                 onClick={() => {
                   setShowContent(true);
                 }}
@@ -908,6 +908,7 @@ const UpdateCustomer = ({
                   id="closer"
                   className="btn btn-danger light"
                   data-bs-dismiss="modal"
+                  onClick={() => {getCustomerData()}}
                 >
                   Close
                 </button>
@@ -1057,6 +1058,7 @@ const UpdateCustomer = ({
                       id="closer"
                       className="btn btn-danger light"
                       data-bs-dismiss="modal"
+                      onClick={() => {getCustomerData()}}
                     >
                       Close
                     </button>

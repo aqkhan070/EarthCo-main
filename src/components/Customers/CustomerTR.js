@@ -15,6 +15,7 @@ import {
   Checkbox,
 } from "@mui/material";
 import { Create, Delete, Update } from "@mui/icons-material";
+import Alert from '@mui/material/Alert';
 
 const theme = createTheme({
   palette: {
@@ -44,8 +45,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
   const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  
+  const [deleteSuccess, setDeleteSuccess] = useState(false)
 
   // Sorting logic here...
   const sortedCustomers = [...customers].sort((a, b) => {
@@ -81,59 +81,53 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
       const data = await response.json();
 
       // Handle the response. For example, you can reload the customers or show a success message
+      setDeleteSuccess(true)
+      setTimeout(() => {
+        setDeleteSuccess(false)
+      }, 4000);
       console.log("Customer deleted successfully:", data);
-      window.location.reload();
+      fetchCustomers()
+      // window.location.reload();
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
     }
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      deleteCustomer(id);
-    }
+    deleteCustomer(id);
   };
 
   return (
     <ThemeProvider theme={theme}>
       {showContent ? (
         <div className="">
+          {deleteSuccess && <Alert severity="success">Successfully deleted Company</Alert>}
           
-        
-
-
           <div className="search-row">
-  <div className="search-container tblsearch-input">
-    <TextField
-      className="tblsearch-input"
-      variant="standard"
-      size="small"
-      label="Search"
-      value={filtering}
-      onChange={(e) => setFiltering(e.target.value)}
-    />
-  </div>
-  <div className="add-customer-btn">
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={() => {
-        setSelectedItem(0);
-        console.log(",,,,,,,,,,", selectedItem);
-        setShowContent(false);
-      }}
-    >
-      + Add Customer
-    </Button>
-  </div>
-</div>
-
-
-
-
-
-
-
+            <div className="search-container tblsearch-input">
+              <TextField
+                className="tblsearch-input"
+                variant="standard"
+                size="small"
+                label="Search"
+                value={filtering}
+                onChange={(e) => setFiltering(e.target.value)}
+              />
+            </div>
+            <div className="add-customer-btn">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setSelectedItem(0);
+                  console.log(",,,,,,,,,,", selectedItem);
+                  setShowContent(false);
+                }}
+              >
+                + Add Customer
+              </Button>
+            </div>
+          </div>
 
           <br />
           <div className="text-center">
@@ -188,7 +182,9 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                 </TableCell>*/}
                       <TableCell>{customer.UserId}</TableCell>
                       <TableCell>{customer.CompanyName}</TableCell>
-                      <TableCell>{customer.FirstName} {customer.LastName}</TableCell>
+                      <TableCell>
+                        {customer.FirstName} {customer.LastName}
+                      </TableCell>
                       <TableCell>{customer.Address}</TableCell>
                       <TableCell>{customer.Email}</TableCell>
                       <TableCell>
@@ -209,11 +205,54 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                         <Button
                           color="error"
                           className="delete-button"
-                          onClick={() => handleDelete(customer.UserId)}
+                          data-bs-toggle="modal"
+                          data-bs-target={`#deleteModal${customer.UserId}`}
                         >
                           <Delete />
                         </Button>
                       </TableCell>
+                      <div
+                        className="modal fade"
+                        id={`deleteModal${customer.UserId}`}
+                        tabIndex="-1"
+                        aria-labelledby="deleteModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div className="modal-dialog" role="document">
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title">
+                                Are you sure you want to delete{" "}
+                                {customer.CompanyName}
+                              </h5>
+                              <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                              ></button>
+                            </div>
+                            <div className="modal-body">
+                              <div className="basic-form text-center">
+                                <button
+                                  type="button"
+                                  id="closer"
+                                  className="btn btn-danger light m-3"
+                                  data-bs-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                                <button
+                                  className="btn btn-primary m-3"
+                                  data-bs-dismiss="modal"
+                                  onClick={() => handleDelete(customer.UserId)}
+                                >
+                                  Yes
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </TableRow>
                   ))}
               </TableBody>
@@ -233,11 +272,10 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
         </div>
       ) : (
         <UpdateCustomer
-        setCustomerAddSuccess={setCustomerAddSuccess}
+          setCustomerAddSuccess={setCustomerAddSuccess}
           selectedItem={selectedItem}
           setShowContent={setShowContent}
           fetchCustomers={fetchCustomers}
-
         />
       )}
     </ThemeProvider>
