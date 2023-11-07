@@ -4,12 +4,12 @@ import axios from "axios";
 import AdressModal from "../Modals/AdressModal";
 import { Form } from "react-bootstrap";
 import { Create, Delete, Update } from "@mui/icons-material";
-import Alert from '@mui/material/Alert';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import Alert from "@mui/material/Alert";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -40,12 +40,16 @@ CustomTabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
-
-const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fetchCustomers }) => {
+const UpdateCustomer = ({
+  selectedItem,
+  setShowContent,
+  setCustomerAddSuccess,
+  fetchCustomers,
+}) => {
   const navigate = useNavigate();
 
   const [customerData, setCustomerData] = useState({});
@@ -71,30 +75,27 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     Fax: "",
     CustomerTypeId: "",
     Notes: "",
-    username: '',
-  Password: '',
+    username: "",
+    Password: "",
     ConfirmPassword: "",
   });
   const [customerType, setCustomerType] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState({});
   const [responseid, setresponseid] = useState(0);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const [disableButton, setDisableButton] = useState(false)
-  const [error, setError] = useState(false)
+  const [disableButton, setDisableButton] = useState(false);
+  const [error, setError] = useState(false);
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
-  const [contactAddSuccess, setContactAddSuccess] = useState(false)
+  const [contactAddSuccess, setContactAddSuccess] = useState(false);
   // service Locations
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
-  const [addSLSuccess, setAddSLSuccess] = useState(false)
-
+  const [addSLSuccess, setAddSLSuccess] = useState(false);
 
   // tabs
   const [value, setValue] = useState(0);
-
-
 
   const getCustomerData = async () => {
     if (selectedItem === 0) {
@@ -121,11 +122,38 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       console.error("There was an error updating the customer:", error);
     }
   };
-  useEffect(() => {    
+  useEffect(() => {
     getCustomerData();
     getCustomerType();
   }, []);
-  
+
+  useEffect(() => {
+    // Check if allowLogin is true
+    if (allowLogin) {
+      // Check if username is not null and passwords match
+      if (
+        companyData.username &&
+        companyData.Password &&
+        companyData.Password === companyData.ConfirmPassword
+      ) {
+        setDisableButton(false);
+      } else {
+        setDisableButton(true);
+      }
+    } else {
+      // Check if company name, first name, last name, and email are not empty
+      if (
+        companyData.CompanyName &&
+        companyData.FirstName &&
+        companyData.LastName &&
+        companyData.Email
+      ) {
+        setDisableButton(false);
+      } else {
+        setDisableButton(true);
+      }
+    }
+  }, [companyData, allowLogin]);
 
   // company logic
   const getCustomerType = async () => {
@@ -141,7 +169,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     }
   };
   const handleSubmit = async () => {
-    setDisableButton(true)
+    setDisableButton(true);
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
@@ -156,51 +184,62 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       // console.log("postData,,,,,,,,,:", postData);
 
       setTimeout(() => {
-        setCustomerAddSuccess(false)
-        
+        setCustomerAddSuccess(false);
       }, 4000);
       setCustomerAddSuccess(true);
       fetchCustomers();
       // navigate("/Dashboard/Customers");
       setShowContent(true);
-      setDisableButton(false)
+      setDisableButton(false);
       // window.location.reload();
     } catch (error) {
-      setDisableButton(false)
-      setError(true)
+      setDisableButton(false);
+      setError(true);
       console.error("Error submitting data:", error);
-      console.log("customer payload is",companyData);
+      console.log("customer payload is", companyData);
     }
   };
   const handleCompanyChange = (e) => {
     const { name, value } = e.target;
   
     setCompanyData((prevFormData) => {
-      // Update the form data with the new value
       const updatedFormData = {
         ...prevFormData,
         [name]: value,
-        isLoginAllow: allowLogin
       };
   
-      // Determine whether to enable or disable the submit button
-      const shouldDisable = !updatedFormData.username || !updatedFormData.Password;
-      setDisableButton(shouldDisable);
-      setError(false)
+      // Additional checks for the username and password fields
+      if (name === 'Password' || name === 'ConfirmPassword') {
+        // Check if the passwords match
+        const isMatching = name === 'Password' 
+          ? value === prevFormData.ConfirmPassword 
+          : prevFormData.Password === value;
+        
+        setPasswordsMatch(isMatching);
   
-      // Return the updated form data to update the state
+        // Disable button if passwords don't match when allowLogin is true
+        if (allowLogin && !isMatching) {
+          setDisableButton(true);
+        }
+      } else if (allowLogin && name === 'username' && !value) {
+        // Disable button if username is empty when allowLogin is true
+        setDisableButton(true);
+      }
+  
+      setError(false);
+      console.log("company data is", updatedFormData);
+  
       return updatedFormData;
     });
   };
-  
-  
 
   //  Contacts logic
   const handleContactChange = (e) => {
     const { name, value, type } = e.target;
 
     // Check if the input type is "number" and convert the value to a number
-    // const parsedValue = type === 'number' ? parseFloat(value) : value;
+    // const parsedValue = type === 'number' ? parseFloat(value) : valu
+
     setContactData({
       ...contactData,
       [name]: value,
@@ -258,9 +297,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       setresponseid(response.data.Id);
       getCustomerData();
       setTimeout(() => {
-        setContactAddSuccess(false)
+        setContactAddSuccess(false);
       }, 3000);
-      setContactAddSuccess(true)
+      setContactAddSuccess(true);
       // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
     } catch (error) {
       console.log("api call error", error);
@@ -336,8 +375,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       const serviceLocationWithId = {
         ...serviceLocations, // spread the existing serviceLocations fields
         ServiceLocationId: response.data.Id, // add the new ID from the response
-        
-        
       };
       console.log("New service location to add:", serviceLocationWithId);
       // Update your form state with the new service location object that includes the response ID
@@ -357,10 +394,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       });
       getCustomerData();
       setTimeout(() => {
-        setAddSLSuccess(false)
+        setAddSLSuccess(false);
       }, 3000);
-      setAddSLSuccess(true)
-
+      setAddSLSuccess(true);
 
       console.log("successfully sent service locations", response.data.Id);
     } catch (error) {
@@ -403,7 +439,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     setValue(newValue);
   };
 
-
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
   return (
@@ -436,7 +471,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                 </div>
               )} */}
 
-{error && <Alert severity="error">An error occured while adding/Updating customer</Alert>}
+            {error && (
+              <Alert severity="error">
+                An error occured while adding/Updating customer
+              </Alert>
+            )}
 
             <div className="row">
               <div className="col-9">
@@ -465,7 +504,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                       htmlFor="exampleFormControlInput1"
                       className="form-label"
                     >
-                      First Name
+                      First Name <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -482,7 +521,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                       htmlFor="exampleFormControlInput1"
                       className="form-label"
                     >
-                      Last Name
+                      Last Name <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -499,7 +538,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                       htmlFor="exampleFormControlInput1"
                       className="form-label"
                     >
-                      Email
+                      Email <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
@@ -649,7 +688,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
                         onChange={() => {
                           setAllowLogin(false);
-                          setDisableButton(false)
+                          setDisableButton(false);
                         }}
                       />
                       <label
@@ -691,7 +730,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         type="password"
                         className="form-control form-control-sm"
                         name="Password"
-                        
                         onChange={handleCompanyChange}
                         placeholder="Password"
                         required
@@ -708,7 +746,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         type="password"
                         className="form-control form-control-sm"
                         name="ConfirmPassword"
-                       
                         onChange={handleCompanyChange}
                         placeholder="Confirm Password"
                         required
@@ -725,7 +762,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
             </div>
           </div>
           <div className="text-end">
-            <button className="btn btn-primary me-1" onClick={handleSubmit} disabled={disableButton}>
+            <button
+              className="btn btn-primary me-1"
+              onClick={handleSubmit}
+              disabled={disableButton}
+            >
               Submit
             </button>
             <NavLink to="/Dashboard/Customers">
@@ -887,8 +928,6 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
         <div>
           {/* Contacts Table */}
 
-          
-
           {/* servive location form */}
 
           <div className="modal fade" id="basicModal2">
@@ -1034,189 +1073,211 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
             </div>
           </div>
 
-          
-<Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Contacts" {...a11yProps(0)} />
-          <Tab label="Service Locations" {...a11yProps(1)} />
-          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
-        </Tabs>
-      </Box>
-      <CustomTabPanel value={value} index={0}>
-      <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <div className="card">
-              <div className="">  
-                <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
-                  Contacts
-                </h4>
-              </div>
-              <div className="card-body">
-                {contactAddSuccess && <Alert severity="success">Contact Added/Updated Successfuly</Alert>}
-              
-                <button
-                  className="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#basicModal"
-                  style={{ margin: "12px 20px" }}
-                >
-                  + Add Contacts
-                </button>
+          <Box sx={{ width: "100%" }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={value}
+                onChange={handleChange}
+                aria-label="basic tabs example"
+              >
+                <Tab label="Contacts" {...a11yProps(0)} />
+                <Tab label="Service Locations" {...a11yProps(1)} />
+                {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+              </Tabs>
+            </Box>
+            <CustomTabPanel value={value} index={0}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <div className="card">
+                  <div className="">
+                    <h4
+                      className="modal-title itemtitleBar"
+                      id="#gridSystemModal1"
+                    >
+                      Contacts
+                    </h4>
+                  </div>
+                  <div className="card-body">
+                    {contactAddSuccess && (
+                      <Alert severity="success">
+                        Contact Added/Updated Successfuly
+                      </Alert>
+                    )}
 
-                <div className="col-xl-12">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="estDataBox">
-                        <div className="table-responsive active-projects style-1">
-                          <table id="empoloyees-tblwrapper" className="table">
-                            <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Address</th>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#basicModal"
+                      style={{ margin: "12px 20px" }}
+                    >
+                      + Add Contacts
+                    </button>
 
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {contactDataList.map((contact, index) => (
-                                <tr key={index}>
-                                  <td>{contact.ContactId}</td>
-                                  <td>{contact.FirstName}</td>
-                                  <td>{contact.LastName}</td>
-                                  <td>{contact.Email}</td>
-                                  <td>{contact.Phone}</td>
-                                  <td>{contact.Address}</td>
-                                  <td style={{ cursor: "pointer" }}>
-                                    <Create
-                                      className="custom-create-icon"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#basicModal"
-                                      onClick={() => {
-                                        setContactData(contact);
-                                        updateContact(contact.ContactId);
-                                      }}
-                                    ></Create>
-                                    <Delete
-                                      color="error"
-                                      onClick={() =>
-                                        deleteContact(contact.ContactId)
-                                      }
-                                    ></Delete>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                    <div className="col-xl-12">
+                      <div className="card">
+                        <div className="card-body p-0">
+                          <div className="estDataBox">
+                            <div className="table-responsive active-projects style-1">
+                              <table
+                                id="empoloyees-tblwrapper"
+                                className="table"
+                              >
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Address</th>
+
+                                    <th>Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {contactDataList.map((contact, index) => (
+                                    <tr key={index}>
+                                      <td>{contact.ContactId}</td>
+                                      <td>{contact.FirstName}</td>
+                                      <td>{contact.LastName}</td>
+                                      <td>{contact.Email}</td>
+                                      <td>{contact.Phone}</td>
+                                      <td>{contact.Address}</td>
+                                      <td style={{ cursor: "pointer" }}>
+                                        <Create
+                                          className="custom-create-icon"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#basicModal"
+                                          onClick={() => {
+                                            setContactData(contact);
+                                            updateContact(contact.ContactId);
+                                          }}
+                                        ></Create>
+                                        <Delete
+                                          color="error"
+                                          onClick={() =>
+                                            deleteContact(contact.ContactId)
+                                          }
+                                        ></Delete>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </form>
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-      <form>
-            <div className="card">
-              <div className="">
-                <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
-                  Service Locations
-                </h4>
-              </div>
-              <div className="card-body">
-                {addSLSuccess && <Alert severity="success">Service Location Added/Updated Successfuly</Alert>}
-              
-                <button
-                  className="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#basicModal2"
-                  style={{ margin: "12px 20px" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  + Add Service Locations
-                </button>
+              </form>
+            </CustomTabPanel>
+            <CustomTabPanel value={value} index={1}>
+              <form>
+                <div className="card">
+                  <div className="">
+                    <h4
+                      className="modal-title itemtitleBar"
+                      id="#gridSystemModal"
+                    >
+                      Service Locations
+                    </h4>
+                  </div>
+                  <div className="card-body">
+                    {addSLSuccess && (
+                      <Alert severity="success">
+                        Service Location Added/Updated Successfuly
+                      </Alert>
+                    )}
 
-                <div className="col-xl-12">
-                  <div className="card">
-                    <div className="card-body p-0">
-                      <div className="estDataBox">
-                        <div className="table-responsive active-projects style-1">
-                          <table id="empoloyees-tblwrapper" className="table">
-                            <thead>
-                              <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>Phone</th>
-                                <th>Alt Phone</th>
-                                <th>Bill to Customer</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {slForm.map((slData, index) => (
-                                <tr key={slData.ServiceLocationId}>
-                                  <td>{slData.ServiceLocationId}</td>
-                                  <td>{slData.Name}</td>
-                                  <td>{slData.Address}</td>
-                                  <td>{slData.Phone}</td>
-                                  <td>{slData.AltPhone}</td>
-                                  <td>
-                                    {slData.isBilltoCustomer
-                                      ? "Customer"
-                                      : "Service Location"}
-                                  </td>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      data-bs-toggle="modal"
+                      data-bs-target="#basicModal2"
+                      style={{ margin: "12px 20px" }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                      }}
+                    >
+                      + Add Service Locations
+                    </button>
 
-                                  <td style={{ cursor: "pointer" }}>
-                                    <Create
-                                    className="custom-create-icon"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#basicModal2"
-                                      onClick={() => {
-                                        setServiceLocations(slData);
-                                        updateSL(slData.ServiceLocationId);
-                                      }}
-                                    ></Create>
-                                    <Delete
-                                      color="error"
-                                      onClick={() =>
-                                        handleDelete(slData.ServiceLocationId)
-                                      }
-                                    ></Delete>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                    <div className="col-xl-12">
+                      <div className="card">
+                        <div className="card-body p-0">
+                          <div className="estDataBox">
+                            <div className="table-responsive active-projects style-1">
+                              <table
+                                id="empoloyees-tblwrapper"
+                                className="table"
+                              >
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th>Phone</th>
+                                    <th>Alt Phone</th>
+                                    <th>Bill to Customer</th>
+                                    <th>Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {slForm.map((slData, index) => (
+                                    <tr key={slData.ServiceLocationId}>
+                                      <td>{slData.ServiceLocationId}</td>
+                                      <td>{slData.Name}</td>
+                                      <td>{slData.Address}</td>
+                                      <td>{slData.Phone}</td>
+                                      <td>{slData.AltPhone}</td>
+                                      <td>
+                                        {slData.isBilltoCustomer
+                                          ? "Customer"
+                                          : "Service Location"}
+                                      </td>
+
+                                      <td style={{ cursor: "pointer" }}>
+                                        <Create
+                                          className="custom-create-icon"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#basicModal2"
+                                          onClick={() => {
+                                            setServiceLocations(slData);
+                                            updateSL(slData.ServiceLocationId);
+                                          }}
+                                        ></Create>
+                                        <Delete
+                                          color="error"
+                                          onClick={() =>
+                                            handleDelete(
+                                              slData.ServiceLocationId
+                                            )
+                                          }
+                                        ></Delete>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </form>
-      </CustomTabPanel>
-      {/* <CustomTabPanel value={value} index={2}>
+              </form>
+            </CustomTabPanel>
+            {/* <CustomTabPanel value={value} index={2}>
         Item Three
       </CustomTabPanel> */}
-    </Box>
+          </Box>
         </div>
       )}
-
-
-
     </div>
   );
 };
