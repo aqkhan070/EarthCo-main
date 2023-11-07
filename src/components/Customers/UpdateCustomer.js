@@ -80,6 +80,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
   const [responseid, setresponseid] = useState(0);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [disableButton, setDisableButton] = useState(false)
+  const [error, setError] = useState(false)
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
@@ -89,8 +90,9 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
   const [slForm, setSlForm] = useState([]);
   const [addSLSuccess, setAddSLSuccess] = useState(false)
 
+
   // tabs
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
 
 
@@ -139,6 +141,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
     }
   };
   const handleSubmit = async () => {
+    setDisableButton(true)
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
@@ -160,8 +163,11 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       fetchCustomers();
       // navigate("/Dashboard/Customers");
       setShowContent(true);
+      setDisableButton(false)
       // window.location.reload();
     } catch (error) {
+      setDisableButton(false)
+      setError(true)
       console.error("Error submitting data:", error);
     }
   };
@@ -178,6 +184,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       // Determine whether to enable or disable the submit button
       const shouldDisable = !updatedFormData.username || !updatedFormData.Password;
       setDisableButton(shouldDisable);
+      setError(false)
   
       // Return the updated form data to update the state
       return updatedFormData;
@@ -426,6 +433,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                   </div>
                 </div>
               )} */}
+
+{error && <Alert severity="error">An error occured while adding/Updating customer</Alert>}
 
             <div className="row">
               <div className="col-9">
