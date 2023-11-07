@@ -7,9 +7,15 @@ import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 
-const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchServiceRequest, setSuccessAlert }) => {
+const UpdateSRForm = ({
+  serviceRequestId,
+  setShowContent,
+  setShowCards,
+  fetchServiceRequest,
+  setSuccessAlert,
+}) => {
   const [customers, setCustomers] = useState([]);
 
   const [sRList, setSRList] = useState({});
@@ -35,7 +41,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
 
   const [itemInput, setItemInput] = useState({
     Name: "",
-    Qty: null,
+    Qty: 1,
     Description: "",
     Rate: null,
   });
@@ -48,8 +54,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
   const [staffData, setStaffData] = useState([]);
   const [sRTypes, setSRTypes] = useState([]);
 
-  const [btnDisable, setBtnDisable] = useState(false)
-  const [error, setError] = useState(false)
+  const [btnDisable, setBtnDisable] = useState(false);
+  const [error, setError] = useState(false);
   const token = Cookies.get("token");
 
   const inputFile = useRef(null);
@@ -210,7 +216,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
   };
 
   const submitHandler = async () => {
-    setBtnDisable(true)
+    setBtnDisable(true);
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
@@ -246,12 +252,12 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
       console.log("sussessfully posted service request");
 
       setTimeout(() => {
-        setSuccessAlert(false)
+        setSuccessAlert(false);
       }, 4000);
-      setSuccessAlert(true)
+      setSuccessAlert(true);
       setShowContent(true);
       setShowCards(true);
-      setBtnDisable(false)
+      setBtnDisable(false);
       fetchServiceRequest();
 
       // Handle successful submission
@@ -259,8 +265,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
       setShowCards(true);
     } catch (error) {
       console.error("API Call Error:", error);
-      setBtnDisable(false)
-      setError(true)
+      setBtnDisable(false);
+      setError(true);
     }
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
@@ -341,6 +347,59 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
     fetchCustomers();
   }, [serviceRequestId]);
 
+  // items..........
+
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showItem, setShowItem] = useState(true)
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (searchText) {
+      // Make an API request when the search text changes
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      axios
+        .get(
+          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+          { headers }
+        )
+        .then((response) => {
+          setSearchResults(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching itemss data:", error);
+        });
+    } else {
+      setSearchResults([]); // Clear the search results when input is empty
+    }
+  }, [searchText]);
+
+  const handleItemChange = (event) => {
+    setShowItem(true)
+    setSearchText(event.target.value);
+
+    // setSelectedItem(null); // Clear selected item when input changes
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    setSearchText(item.ItemName); // Set the input text to the selected item's name
+    setItemInput({
+      ...itemInput,
+     Name: item.ItemName,
+     Description : item.SaleDescription,
+     Rate: item.SalePrice,
+
+    })
+    setShowItem(false)
+    setSearchResults([]); // Clear the search results
+
+    console.log("selected item is", itemInput);
+  };
+
   useEffect(() => {
     setShowCards(false);
     fetchSRTypes();
@@ -386,7 +445,6 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
       <div className="">
         <div className="">
           <div className="card-body">
-          
             {/* Add service form */}
             <div className="row mb-3">
               <div className="col-lg-12 col-md-12 mb-2">
@@ -423,8 +481,11 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                 </button>
               </div>
             </div>
-            {error && <Alert className="mb-3" severity="error">Adding/Updating Service request Failed</Alert> }
-            
+            {error && (
+              <Alert className="mb-3" severity="error">
+                Adding/Updating Service request Failed
+              </Alert>
+            )}
             <div className="card">
               <div className="card-body p-0">
                 <div className="itemtitleBar">
@@ -579,7 +640,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                   </div>
 
                   <div className="row  mt-2 mb-2">
-                  <div className="col-xl-3 col-md-3">
+                    <div className="col-xl-3 col-md-3">
                       <label className="form-label">Type:</label>
                       <Form.Select
                         name="SRTypeId"
@@ -608,7 +669,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                         placeholder={sRList.DueDate || " "}
                       />
                     </div>
-                    
+
                     {/* <div className="col-xl-3 ">
                       <label className="form-label">Notes</label>
                       <textarea
@@ -886,7 +947,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                         setTblSRItems([...tblSRItems, itemInput]);
                         setItemInput({
                           Name: "",
-                          Qty: 0,
+                          Qty: 1,
                           Description: "",
                           Rate: 0,
                         }); // Reset the modal input fields
@@ -920,8 +981,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                         <tr>
                           <th>Name</th>
                           <th>Description</th>
-                          <th>Qty / Duration</th>
                           <th>Rate</th>
+                          <th>Qty / Duration</th>
                           <th>Amount</th>
                           <th>Actions</th>
                         </tr>
@@ -931,8 +992,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                           <tr key={index}>
                             <td>{item.Name}</td>
                             <td>{item.Description}</td>
-                            <td>{item.Qty}</td>
                             <td>{item.Rate}</td>
+                            <td>{item.Qty}</td>
                             <td>{item.Qty * item.Rate}</td>
                             <td>
                               <div className="badgeBox">
@@ -950,37 +1011,59 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                         ))}
                         <tr>
                           <td>
-                            <input
-                              type="text"
-                              name="Name"
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Name: e.target.value,
-                                })
-                              }
-                              className="form-control form-control-sm"
-                              placeholder="Name"
-                            />
+                            <div>
+                              <input
+                                type="text"
+                                placeholder="Search for items..."
+                                className="form-control form-control-sm"
+                                name="Name"
+                                value={searchText}
+                                onChange={handleItemChange}
+                                ref={inputRef}
+                              />
+                              {searchResults.length > 0 &&  (
+                                <ul>
+                                  {searchResults.map((item) => (
+                                    <li
+                                      style={{cursor:'pointer'}}
+                                      key={item.ItemId}
+                                      onClick={() => handleItemClick(item)}
+                                    >
+                                      {showItem && item.ItemName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
                           </td>
                           <td>
                             <textarea
                               name="Description"
                               className="form-txtarea form-control form-control-sm"
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Description: e.target.value,
-                                })
-                              }
-                              rows="1"
+                              value={selectedItem?.SaleDescription ||  " "}
+                              rows="2"
                               id="comment"
+                              disabled
                             ></textarea>
                           </td>
+
+                          <td>
+                            <div className="col-sm-9">
+                              <input
+                                name="Rate"
+                                value={selectedItem?.SalePrice || itemInput.Rate || " "}
+                                className="form-control form-control-sm"
+                                placeholder="Rate"
+                                disabled
+                              />
+                            </div>
+                          </td>
+
                           <td>
                             <input
                               type="number"
                               name="Qty"
+                              value={itemInput.Qty }
                               onChange={(e) =>
                                 setItemInput({
                                   ...itemInput,
@@ -990,23 +1073,6 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                               className="form-control form-control-sm"
                               placeholder="Quantity"
                             />
-                          </td>
-
-                          <td>
-                            <div className="col-sm-9">
-                              <input
-                                name="Rate"
-                                type="number"
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Rate: Number(e.target.value),
-                                  })
-                                }
-                                className="form-control form-control-sm"
-                                placeholder="Rate"
-                              />
-                            </div>
                           </td>
                           <td>
                             <h5 style={{ margin: "0" }}>
@@ -1020,7 +1086,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchSer
                                 setTblSRItems([...tblSRItems, itemInput]);
                                 setItemInput({
                                   Name: "",
-                                  Qty: 0,
+                                  Qty: 1,
                                   Description: "",
                                   Rate: 0,
                                 }); // Reset the modal input fields
