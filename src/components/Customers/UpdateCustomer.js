@@ -343,6 +343,16 @@ const UpdateCustomer = ({
     }
   }, [loginState]);
 
+  const isSaveDisabled = () => {
+    return !contactData.FirstName || 
+           !contactData.LastName || 
+           !contactData.Phone || 
+           !contactData.Email || 
+           !contactData.Address || 
+           // Check for other fields if they are required as well
+           false; // This false is just to avoid ending the statement with ||
+  };
+
   // service locations logic
 
   const handleSLChange = (e) => {
@@ -431,6 +441,12 @@ const UpdateCustomer = ({
       (sl) => sl.ServiceLocationId !== serviceLocationId
     );
     setSlForm(updatedSlForm);
+  };
+  const isFormInvalid = () => {
+    // Check if any of these fields are empty or in the case of isBilltoCustomer, undefined
+    return !serviceLocations.Name || !serviceLocations.Address || 
+           !serviceLocations.Phone || !serviceLocations.AltPhone ||
+           serviceLocations.isBilltoCustomer === undefined; // Explicitly check for undefined
   };
 
   // tabs
@@ -916,6 +932,7 @@ const UpdateCustomer = ({
                   className="btn btn-primary"
                   data-bs-dismiss="modal"
                   onClick={handleContactSave}
+                  disabled={isSaveDisabled()}
                 >
                   Save
                 </button>
@@ -1066,6 +1083,7 @@ const UpdateCustomer = ({
                       className="btn btn-primary"
                       data-bs-dismiss="modal"
                       onClick={addServiceLocation}
+                      disabled={isFormInvalid()}
                     >
                       Save
                     </button>
