@@ -16,6 +16,7 @@ const ServiceRequests = () => {
   const token = Cookies.get("token");
   const userdata = Cookies.get('userData');
   const [showCards, setShowCards] = useState(true)
+ 
   
   // const [locationOptions, setLocationOptions] = useState();
 
@@ -62,6 +63,8 @@ const ServiceRequests = () => {
         <div className="col-xl-12">
           <div className="card">
             <div className="card-body">
+             
+          
               {/* <div className="tbl-caption"> */}
               {/* <div className="row p-3 "> */}
               {/* <div className="col-md-3">
@@ -99,7 +102,7 @@ const ServiceRequests = () => {
               ) : (
                 <div>
                   
-                    <ServiceRequestTR serviceRequest={serviceRequest } setShowCards={setShowCards} />
+                    <ServiceRequestTR serviceRequest={serviceRequest } setShowCards={setShowCards} fetchServiceRequest={fetchServiceRequest} />
                  
                 </div>
               )}

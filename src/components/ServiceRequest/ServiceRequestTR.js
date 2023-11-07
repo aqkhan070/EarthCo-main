@@ -20,6 +20,8 @@ import {
 import { Create, Delete  } from "@mui/icons-material";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Alert from '@mui/material/Alert';
+
 
 
 const theme = createTheme({
@@ -42,7 +44,7 @@ const theme = createTheme({
   },
 });
 
-const ServiceRequestTR = ({ serviceRequest = [], setShowCards }) => {
+const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceRequest }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -51,7 +53,9 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards }) => {
   const [search, setSearch] = useState("");
 
   const [serviceRequestId, setServiceRequestId] = useState(0);
+
   const [showContent, setShowContent] = useState(true);
+  const [successAlert, setSuccessAlert] = useState(false)
   const token = Cookies.get("token");
 
 
@@ -173,6 +177,7 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards }) => {
       {showContent ? (
         <ThemeProvider theme={theme}>
           <div className="">
+          {successAlert && <Alert className="mb-3" severity="success">This is a success alert — check it out!</Alert> }
             <div className=" text-center">
               <div className="row ">
                 <div className="col-md-12">
@@ -316,6 +321,8 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards }) => {
           serviceRequestId={serviceRequestId}
           setShowContent={setShowContent}
           setShowCards={setShowCards}
+          setSuccessAlert={setSuccessAlert}
+          fetchServiceRequest={fetchServiceRequest}
         />
       )}
     </>

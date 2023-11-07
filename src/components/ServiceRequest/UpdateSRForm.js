@@ -7,9 +7,9 @@ import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-// import { Autocomplete, TextField } from '@mui/material';
+import Alert from '@mui/material/Alert';
 
-const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
+const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards, fetchServiceRequest, setSuccessAlert }) => {
   const [customers, setCustomers] = useState([]);
 
   const [sRList, setSRList] = useState({});
@@ -47,6 +47,9 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
   const [contactList, setContactList] = useState([]);
   const [staffData, setStaffData] = useState([]);
   const [sRTypes, setSRTypes] = useState([]);
+
+  const [btnDisable, setBtnDisable] = useState(false)
+  const [error, setError] = useState(false)
   const token = Cookies.get("token");
 
   const inputFile = useRef(null);
@@ -207,6 +210,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
   };
 
   const submitHandler = async () => {
+    setBtnDisable(true)
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
@@ -240,11 +244,23 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       console.log(response.data);
       console.log("payload izzzzzzz", formData);
       console.log("sussessfully posted service request");
+
+      setTimeout(() => {
+        setSuccessAlert(false)
+      }, 4000);
+      setSuccessAlert(true)
+      setShowContent(true);
+      setShowCards(true);
+      setBtnDisable(false)
+      fetchServiceRequest();
+
       // Handle successful submission
       // window.location.reload();
       setShowCards(true);
     } catch (error) {
       console.error("API Call Error:", error);
+      setBtnDisable(false)
+      setError(true)
     }
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
@@ -370,6 +386,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       <div className="">
         <div className="">
           <div className="card-body">
+          
             {/* Add service form */}
             <div className="row mb-3">
               <div className="col-lg-12 col-md-12 mb-2">
@@ -406,6 +423,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                 </button>
               </div>
             </div>
+            {error && <Alert className="mb-3" severity="error">Adding/Updating Service request Failed</Alert> }
+            
             <div className="card">
               <div className="card-body p-0">
                 <div className="itemtitleBar">
@@ -1154,6 +1173,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
               <button
                 type="button"
                 className="btn btn-primary me-1"
+                disabled={btnDisable}
                 onClick={submitHandler}
               >
                 Submit
