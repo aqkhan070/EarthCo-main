@@ -169,6 +169,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       setDisableButton(false)
       setError(true)
       console.error("Error submitting data:", error);
+      console.log("customer payload is",companyData);
     }
   };
   const handleCompanyChange = (e) => {
@@ -178,7 +179,8 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
       // Update the form data with the new value
       const updatedFormData = {
         ...prevFormData,
-        [name]: value
+        [name]: value,
+        isLoginAllow: allowLogin
       };
   
       // Determine whether to enable or disable the submit button
@@ -622,6 +624,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         className="form-check-input ml-2 pl-2"
                         type="radio"
                         id="inlineRadio1"
+                        name="isLoginAllow"
                         value="Customer"
                         checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
                         onChange={() => {
@@ -641,6 +644,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         className="form-check-input"
                         type="radio"
                         id="inlineRadio2"
+                        name="isLoginAllow"
                         value="BillToServiceLocation"
                         checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
                         onChange={() => {

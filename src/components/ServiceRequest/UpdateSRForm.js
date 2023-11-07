@@ -20,6 +20,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
 
       UserId: 0,
       ServiceLocation: "",
+      ServiceRequestNumber : "",
       Contact: "",
       JobName: "",
       DueDate: "",
@@ -192,7 +193,8 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
           name === "ServiceLocationId" ||
           name === "ContactId" ||
           name === "Assign" ||
-          name === "SRTypeId"
+          name === "SRTypeId" || 
+          name === "SRStatusId"
             ? Number(value)
             : value,
       },
@@ -211,6 +213,7 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
 
+    console.log("servise request data before", SRData);
     formData.append(
       "ServiceRequestData",
       JSON.stringify(SRData.ServiceRequestData)
@@ -1119,6 +1122,19 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
                 <br />
                 <div className="basic-form">
                   <div className="row">
+                  <div className="col-md-4">
+                      {" "}
+                      {/* Adjust the column size as needed */}
+                      <label className="form-label">Service Request Number</label>
+                      <input
+                        name="ServiceRequestNumber"
+                        value={SRData.ServiceRequestData.ServiceRequestNumber || ""}
+                        onChange={handleInputChange}
+                        className="form-txtarea form-control form-control-sm"
+                        placeholder={sRList.ServiceRequestNumber || " "}
+                        rows="2"
+                      />
+                    </div>
                     <div className="col-md-4">
                       {" "}
                       {/* Adjust the column size as needed */}
