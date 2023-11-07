@@ -242,8 +242,9 @@ const UpdateSRForm = ({ serviceRequestId, setShowContent, setShowCards }) => {
       );
       console.log(response.data);
       console.log("payload izzzzzzz", formData);
+      console.log("sussessfully posted service request")
       // Handle successful submission
-      window.location.reload();
+      // window.location.reload();
       setShowCards(true);
     } catch (error) {
       console.error("API Call Error:", error);

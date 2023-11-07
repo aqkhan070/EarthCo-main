@@ -23,10 +23,13 @@ const LoginPage = () => {
   const [reTypePass, setReTypePass] = useState("");
   const [signError, setSignError] = useState("");
 
+  const [btndisable, setBtndisable] = useState(false)
+
   const navigate = useNavigate();
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
+    setBtndisable(true)
 
     try {
       const response = await axios.post(
@@ -45,6 +48,7 @@ const LoginPage = () => {
       if (response.data.status === "success") {
         // if (response.status === 200){
           sessionStorage.setItem("userEmail", email);
+          setBtndisable(false)
         setError("");
         const token = response.data.token.data;
         Cookies.set('token', token, { expires: 7 });
@@ -56,10 +60,12 @@ const LoginPage = () => {
         navigate("/Dashboard"); 
       } else {
         setError("Invalid email or password. Please try again.");
+        setBtndisable(false)
       }
     } catch (error) {
       console.log("Error logging in:", error);
       setError("An error occurred while logging in. Please try again later.");
+      setBtndisable(false)
     }
   };
 
@@ -273,6 +279,7 @@ const LoginPage = () => {
                           <button
                             className="btn btn-primary button-md btn-block"
                             type="submit"
+                            disabled ={btndisable}
                           >
                             Sign Me In
                           </button>
