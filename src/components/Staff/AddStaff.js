@@ -207,7 +207,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
                   className="form-control"
                   onChange={handleCustomerInfo}
                   name="Password"
-                  value={customerInfo.Password}
+                  
                   id="exampleFormControlInput3"
                   placeholder="Password"
                   required
@@ -221,7 +221,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
                   type="password"
                   className="form-control"
                   id="exampleFormControlInput3"
-                  value={customerInfo.Password}
+                  
                   placeholder="Confirm Password"
                   required
                 />

@@ -246,7 +246,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
         "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
         contactData
       );
-      console.log("successful contact api call", response.data.Id);
+      console.log("successful contact api", response.data.Id);
 
       // Update the contactData with the response id, then add to list
       setContactData((prevState) => ({
@@ -691,7 +691,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         type="password"
                         className="form-control form-control-sm"
                         name="Password"
-                        value={companyData.Password}
+                        
                         onChange={handleCompanyChange}
                         placeholder="Password"
                         required
@@ -708,7 +708,7 @@ const UpdateCustomer = ({ selectedItem, setShowContent, setCustomerAddSuccess,fe
                         type="password"
                         className="form-control form-control-sm"
                         name="ConfirmPassword"
-                        value={companyData.ConfirmPassword}
+                       
                         onChange={handleCompanyChange}
                         placeholder="Confirm Password"
                         required

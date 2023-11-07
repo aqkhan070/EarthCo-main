@@ -54,6 +54,7 @@ const StaffList = () => {
       console.log("staff list iss", response.data);
     } catch (error) {
       console.log("error getting staff list", error);
+      setIsLoading(false);
     }
   };
   useEffect(() => {
