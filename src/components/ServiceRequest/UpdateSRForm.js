@@ -113,6 +113,12 @@ const UpdateSRForm = ({
   useEffect(() => {
     fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
     fetctContacts(SRData.ServiceRequestData.CustomerId);
+    SRData.ServiceRequestData.ServiceRequestNumber &&
+    SRData.ServiceRequestData.ContactId &&
+    SRData.ServiceRequestData.ServiceLocationId &&
+    SRData.ServiceRequestData.Assign
+      ? setDisableSubmit(false)
+      : setDisableSubmit(true);
   }, [SRData]);
 
   const fetchStaffList = async () => {
@@ -144,18 +150,12 @@ const UpdateSRForm = ({
     }
   };
 
-  // const handleAutocompleteChange = (event, newValue) => {
-  //   const simulatedEvent = {
-  //     target: {
-  //       name: "CustomerId", // This is for setting in SRData
-  //       value: newValue ? newValue.UserId : "", // Keep UserId here
-  //     },
-  //   };
-  //   handleInputChange(simulatedEvent);
-  // };
   const [showCustomersList, setShowCustomersList] = useState(true);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [disableSubmit, setDisableSubmit] = useState(true);
+
   const handleAutocompleteChange = async (e) => {
+    inputValue ? setDisableSubmit(false) : setBtnDisable(true);
     setInputValue(e.target.value);
     try {
       setShowCustomersList(true); // Show the list when typing
@@ -167,10 +167,15 @@ const UpdateSRForm = ({
     } catch (error) {
       console.log("customer search api error", error);
     }
-  }; 
+  };
   const selectCustomer = (customer) => {
     // setSRData({ ...SRData, CustomerId: customer.UserId });
-    setSRData((prevData) => ({ ServiceRequestData: {...prevData.ServiceRequestData,CustomerId: customer.UserId }}));
+    setSRData((prevData) => ({
+      ServiceRequestData: {
+        ...prevData.ServiceRequestData,
+        CustomerId: customer.UserId,
+      },
+    }));
 
     setCustomer(customer);
     setInputValue(customer.CompanyName); // Add this line to update the input value
@@ -316,20 +321,6 @@ const UpdateSRForm = ({
     setFiles(updatedFiles);
   };
 
-  // const fetchCustomers = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-  //     );
-  //     setCustomers(response.data);
-  //     console.log("customers list iss", response.data);
-  //   } catch (error) {
-  //     console.error("API Call Error:", error);
-  //   }
-  // };
-
-
-
   useEffect(() => {
     const fetchSR = async () => {
       if (serviceRequestId === 0) {
@@ -344,7 +335,7 @@ const UpdateSRForm = ({
         { headers }
       );
       try {
-        setInputValue(response.data.CompanyName)
+        setInputValue(response.data.CompanyName);
         setSRList(response.data);
         setSRData((prevData) => ({
           ServiceRequestData: {
@@ -370,11 +361,7 @@ const UpdateSRForm = ({
     };
 
     fetchSR();
-
-    
   }, [serviceRequestId]);
-
-  
 
   // items..........
 
@@ -433,38 +420,6 @@ const UpdateSRForm = ({
     fetchSRTypes();
     fetchStaffList();
   }, []);
-
-  const icon = (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M6.64111 13.5497L9.38482 9.9837L12.5145 12.4421L15.1995 8.97684"
-        stroke="#888888"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <ellipse
-        cx="18.3291"
-        cy="3.85021"
-        rx="1.76201"
-        ry="1.76201"
-        stroke="#888888"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M13.6808 2.86012H7.01867C4.25818 2.86012 2.54651 4.81512 2.54651 7.57561V14.9845C2.54651 17.7449 4.22462 19.6915 7.01867 19.6915H14.9058C17.6663 19.6915 19.3779 17.7449 19.3779 14.9845V8.53213"
-        stroke="#888888"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 
   // fileAdd
 
@@ -526,52 +481,28 @@ const UpdateSRForm = ({
                       <label className="form-label">Customers</label>
 
                       <input
-  type="text"
-  name="CustomerId"
-  value={inputValue} // Bind the input value state to the value of the input
-  onChange={handleAutocompleteChange}
-  className="form-control form-control-sm"
-/>
+                        type="text"
+                        name="CustomerId"
+                        value={inputValue} // Bind the input value state to the value of the input
+                        onChange={handleAutocompleteChange}
+                        placeholder="Customers"
+                        className="form-control form-control-sm"
+                      />
                       {showCustomersList && customersList && (
                         <ul className="search-results-container">
                           {customersList.map((customer) => (
                             <li
                               style={{ cursor: "pointer" }}
                               key={customer.UserId}
-                              onClick={() => {selectCustomer(customer)}} // Use the selectCustomer function
+                              onClick={() => {
+                                selectCustomer(customer);
+                              }} // Use the selectCustomer function
                             >
                               {customer.CompanyName}
                             </li>
                           ))}
                         </ul>
                       )}
-
-                      {/* <Autocomplete
-                        id="inputState1" 
-                        size="small"
-                        options={customers}
-                        getOptionLabel={(option) => option.CompanyName || ""}
-                        value={
-                          customers.find(
-                            (customer) =>
-                              customer.UserId === // Keep UserId here
-                              SRData.ServiceRequestData.CustomerId // Use CustomerId here
-                          ) || null
-                        }
-                        onChange={handleAutocompleteChange}
-                        isOptionEqualToValue={
-                          (option, value) => option.UserId === value.CustomerId // option.UserId compares with value.CustomerId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Customer"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
-                      /> */}
                     </div>
                     <div className="col-xl-4 mb-2 col-md-9 ">
                       <label className="form-label">Servive Locations</label>
@@ -602,26 +533,6 @@ const UpdateSRForm = ({
                         )}
                         aria-label="Default select example"
                       />
-
-                      {/* <Form.Select
-                        size="lg"
-                        name="ServiceLocationId"
-                        onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.ServiceLocationId || ""}
-                        aria-label="Default select example"
-                        id="inputState3"
-                        className="bg-white"
-                      >
-                        <option value="">Service Location</option>{" "}
-                        {sLList.map((sr) => (
-                          <option
-                            key={sr.ServiceLocationId}
-                            value={sr.ServiceLocationId}
-                          >
-                            {sr.Name}
-                          </option>
-                        ))}
-                      </Form.Select> */}
                     </div>
 
                     <div className="col-xl-4 mb-2 col-md-9 ">
@@ -653,39 +564,7 @@ const UpdateSRForm = ({
                         )}
                         aria-label="Contact select"
                       />
-
-                      {/* <Form.Select
-                        size="lg"
-                        name="ContactId"
-                        onChange={handleInputChange}
-                        value={SRData.ServiceRequestData.ContactId || ""}
-                        aria-label="Default select example"
-                        id="inputState2"
-                        className="bg-white"
-                      >
-                        <option value="">contacts</option>{" "}
-                        {contactList.map((customer) => (
-                          <option
-                            key={customer.ContactId}
-                            value={customer.ContactId}
-                          >
-                            {customer.FirstName}
-                          </option>
-                        ))}
-                      </Form.Select> */}
                     </div>
-
-                    {/* <div className="col-xl-3">
-                      <label className="form-label">Job Name:</label>
-                      <input
-                        type="text"
-                        name="JobName"
-                        value={SRData.ServiceRequestData.JobName || ""}
-                        onChange={handleInputChange}
-                        className="form-control form-control-sm"
-                        placeholder={sRList.JobName || " "}
-                      />
-                    </div> */}
                   </div>
 
                   <div className="row  mt-2 mb-2">
@@ -1297,7 +1176,7 @@ const UpdateSRForm = ({
               <button
                 type="button"
                 className="btn btn-primary me-1"
-                disabled={btnDisable}
+                disabled={disableSubmit}
                 onClick={submitHandler}
               >
                 Submit
