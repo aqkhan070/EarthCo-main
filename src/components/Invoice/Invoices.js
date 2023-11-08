@@ -105,7 +105,7 @@ const Invoices = () => {
               <div className="col-xl-2  ">
                 <div className="widget-stat card">
                   <div className="card-body  p-3">
-                    <div className="media ai-icon">
+                    <div className="media ai-icon smaller-widget">
                       <span className=" bgl-success text-success smaller-widget">
                         <i className="la la-thumbs-up"></i>
                       </span>
@@ -120,7 +120,7 @@ const Invoices = () => {
               <div className="col-xl-2  ">
                 <div className="widget-stat card">
                   <div className="card-body  p-3">
-                    <div className="media ai-icon">
+                    <div className="media ai-icon smaller-widget">
                       <span className=" bgl-secondary text-secondary smaller-widget">
                         <i className="la la-dollar-sign"></i>
                       </span>

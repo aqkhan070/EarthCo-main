@@ -1011,7 +1011,7 @@ const UpdateSRForm = ({
                         ))}
                         <tr>
                           <td>
-                            <div>
+                            <div >
                               <input
                                 type="text"
                                 placeholder="Search for items..."
@@ -1022,7 +1022,7 @@ const UpdateSRForm = ({
                                 ref={inputRef}
                               />
                               {searchResults.length > 0 &&  (
-                                <ul>
+                                <ul className="search-results-container">
                                   {searchResults.map((item) => (
                                     <li
                                       style={{cursor:'pointer'}}

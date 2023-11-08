@@ -53665,3 +53665,11 @@ cursor: pointer;
   .smaller-widget {
     transform: scale(0.9); /* Scale down to 70% of its original size */
   }
+  .search-results-container {
+    position: absolute;
+    top:140px;
+    z-index: 1;
+    background-color: #fff;   
+    max-height: 150px;
+    overflow-y: scroll; /* Add a vertical scrollbar if necessary */
+  }
