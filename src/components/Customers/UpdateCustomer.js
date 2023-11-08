@@ -10,6 +10,9 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import {
+  Button, 
+} from "@mui/material";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -89,6 +92,7 @@ const UpdateCustomer = ({
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
   const [contactAddSuccess, setContactAddSuccess] = useState(false);
+  const [contactDelSuccess, setContactDelSuccess] = useState(false);
   // service Locations
   const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
@@ -201,34 +205,35 @@ const UpdateCustomer = ({
   };
   const handleCompanyChange = (e) => {
     const { name, value } = e.target;
-  
+
     setCompanyData((prevFormData) => {
       const updatedFormData = {
         ...prevFormData,
         [name]: value,
       };
-  
+
       // Additional checks for the username and password fields
-      if (name === 'Password' || name === 'ConfirmPassword') {
+      if (name === "Password" || name === "ConfirmPassword") {
         // Check if the passwords match
-        const isMatching = name === 'Password' 
-          ? value === prevFormData.ConfirmPassword 
-          : prevFormData.Password === value;
-        
+        const isMatching =
+          name === "Password"
+            ? value === prevFormData.ConfirmPassword
+            : prevFormData.Password === value;
+
         setPasswordsMatch(isMatching);
-  
+
         // Disable button if passwords don't match when allowLogin is true
         if (allowLogin && !isMatching) {
           setDisableButton(true);
         }
-      } else if (allowLogin && name === 'username' && !value) {
+      } else if (allowLogin && name === "username" && !value) {
         // Disable button if username is empty when allowLogin is true
         setDisableButton(true);
       }
-  
+
       setError(false);
       console.log("company data is", updatedFormData);
-  
+
       return updatedFormData;
     });
   };
@@ -275,11 +280,7 @@ const UpdateCustomer = ({
 
   const handleContactSave = async (e) => {
     e.preventDefault();
-    if (Object.keys(contactData).length === 0) {
-      alert("contactc data is empty");
-      return;
-    }
-
+   
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
@@ -316,6 +317,10 @@ const UpdateCustomer = ({
         (contact) => contact.ContactId !== id
       );
       setContactDataList(updatedContacts);
+      setContactDelSuccess(true)
+      setTimeout(() => {
+        setContactDelSuccess(false)
+      }, 4000);
       console.log("contact deleted sussessfully", id, response);
     } catch (error) {
       console.log("error deleting contact", error);
@@ -323,9 +328,9 @@ const UpdateCustomer = ({
   };
 
   const deleteContact = (id) => {
-    if (window.confirm("Are you sure you want to delete this Contact?")) {
+    
       delContact(id);
-    }
+    
   };
 
   const updateContact = (id) => {
@@ -344,13 +349,15 @@ const UpdateCustomer = ({
   }, [loginState]);
 
   const isSaveDisabled = () => {
-    return !contactData.FirstName || 
-           !contactData.LastName || 
-           !contactData.Phone || 
-           !contactData.Email || 
-           !contactData.Address || 
-           // Check for other fields if they are required as well
-           false; // This false is just to avoid ending the statement with ||
+    return (
+      !contactData.FirstName ||
+      !contactData.LastName ||
+      !contactData.Phone ||
+      !contactData.Email ||
+      !contactData.Address ||
+      // Check for other fields if they are required as well
+      false
+    ); // This false is just to avoid ending the statement with ||
   };
 
   // service locations logic
@@ -415,14 +422,7 @@ const UpdateCustomer = ({
   };
 
   const handleDelete = async (serviceLocationId) => {
-    const shouldDelete = window.confirm(
-      "Are you sure you want to delete this Service Location?"
-    );
-
-    if (shouldDelete) {
-      // Filter out the slForm item with the matching ServiceLocationId
-      // Update the state with the modified array
-    }
+    
     try {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`
@@ -444,9 +444,12 @@ const UpdateCustomer = ({
   };
   const isFormInvalid = () => {
     // Check if any of these fields are empty or in the case of isBilltoCustomer, undefined
-    return !serviceLocations.Name || !serviceLocations.Address || 
-           !serviceLocations.Phone || !serviceLocations.AltPhone ||
-           serviceLocations.isBilltoCustomer === undefined; // Explicitly check for undefined
+    return (
+      !serviceLocations.Name ||
+      !serviceLocations.Address ||
+      !serviceLocations.Phone ||      
+      serviceLocations.isBilltoCustomer === undefined
+    ); // Explicitly check for undefined
   };
 
   // tabs
@@ -924,7 +927,18 @@ const UpdateCustomer = ({
                   id="closer"
                   className="btn btn-danger light"
                   data-bs-dismiss="modal"
-                  onClick={() => {getCustomerData()}}
+                  onClick={() => {
+                    getCustomerData();
+                    setContactData({
+                      FirstName: "",
+                      LastName: "",
+                      Phone: "",
+                      AltPhone: "",
+                      Email: "",
+                      Address: "",
+                      Comments: "",
+                    });
+                  }}
                 >
                   Close
                 </button>
@@ -1075,7 +1089,16 @@ const UpdateCustomer = ({
                       id="closer"
                       className="btn btn-danger light"
                       data-bs-dismiss="modal"
-                      onClick={() => {getCustomerData()}}
+                      onClick={() => {
+                        getCustomerData();
+                        setServiceLocations({
+                          Name: "",
+                          Address: "",
+                          Phone: "",
+                          AltPhone: "",
+                          isBilltoCustomer: null,
+                        });
+                      }}
                     >
                       Close
                     </button>
@@ -1092,7 +1115,7 @@ const UpdateCustomer = ({
               </div>
             </div>
           </div>
-
+                        {/* service location table */}
           <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs
@@ -1126,6 +1149,8 @@ const UpdateCustomer = ({
                         Contact Added/Updated Successfuly
                       </Alert>
                     )}
+                    {contactDelSuccess && <Alert severity="success">Contact Deleted Successfuly</Alert>}
+                   
 
                     <button
                       className="btn btn-primary btn-sm"
@@ -1139,6 +1164,7 @@ const UpdateCustomer = ({
                     <div className="col-xl-12">
                       <div className="card">
                         <div className="card-body p-0">
+                        
                           <div className="estDataBox">
                             <div className="table-responsive active-projects style-1">
                               <table
@@ -1176,13 +1202,70 @@ const UpdateCustomer = ({
                                             updateContact(contact.ContactId);
                                           }}
                                         ></Create>
-                                        <Delete
+                                        <Button
                                           color="error"
-                                          onClick={() =>
-                                            deleteContact(contact.ContactId)
-                                          }
-                                        ></Delete>
+                                          className="delete-button"
+                                          data-bs-toggle="modal"
+                                          data-bs-target={`#contactDeleteModal${contact.ContactId}`}
+                                        >
+                                          <Delete />
+                                        </Button>
+
+                                        {/* <Delete
+                                          color="error" 
+
+                                           onClick={() =>
+                                           deleteContact(contact.ContactId)
+                                           }
+                                        ></Delete>*/}
                                       </td>
+                                      <div
+                                        className="modal fade"
+                                        id={`contactDeleteModal${contact.ContactId}`}
+                                        tabIndex="-1"
+                                        aria-labelledby="deleteModalLabel"
+                                        aria-hidden="true"
+                                      >
+                                        <div
+                                          className="modal-dialog"
+                                          role="document"
+                                        >
+                                          <div className="modal-content">
+                                            <div className="modal-header">
+                                              <h5 className="modal-title">
+                                                Are you sure you want to delete{" "}
+                                                {contact.FirstName}?
+                                              </h5>
+                                              <button
+                                                type="button"
+                                                className="btn-close"
+                                                data-bs-dismiss="modal"
+                                              ></button>
+                                            </div>
+                                            <div className="modal-body">
+                                              <div className="basic-form text-center">
+                                                <button
+                                                  type="button"
+                                                  id="closer"
+                                                  className="btn btn-danger light m-3"
+                                                  data-bs-dismiss="modal"
+                                                >
+                                                  Close
+                                                </button>
+                                                <button
+                                                  className="btn btn-primary m-3"
+                                                  data-bs-dismiss="modal"
+                                                  onClick={() =>
+                                                    deleteContact(contact.ContactId)
+                                                    }
+                                                >
+                                                  Yes
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -1270,15 +1353,76 @@ const UpdateCustomer = ({
                                             updateSL(slData.ServiceLocationId);
                                           }}
                                         ></Create>
-                                        <Delete
+                                        {/* <Delete
                                           color="error"
                                           onClick={() =>
                                             handleDelete(
                                               slData.ServiceLocationId
                                             )
                                           }
-                                        ></Delete>
+                                        ></Delete> */}
+                                     <Button
+                                          color="error"
+                                          className="delete-button"
+                                          data-bs-toggle="modal"
+                                          data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
+                                        >
+                                          <Delete />
+                                        </Button>
+
+                                       
                                       </td>
+                                      <div
+                                        className="modal fade"
+                                        id={`sLDeleteModal${slData.ServiceLocationId}`}
+                                        tabIndex="-1"
+                                        aria-labelledby="deleteModalLabel"
+                                        aria-hidden="true"
+                                      >
+                                        <div
+                                          className="modal-dialog"
+                                          role="document"
+                                        >
+                                          <div className="modal-content">
+                                            <div className="modal-header">
+                                              <h5 className="modal-title">
+                                                Are you sure you want to delete{" "}
+                                                {slData.Name}?
+                                              </h5>
+                                              <button
+                                                type="button"
+                                                className="btn-close"
+                                                data-bs-dismiss="modal"
+                                              ></button>
+                                            </div>
+                                            <div className="modal-body">
+                                              <div className="basic-form text-center">
+                                                <button
+                                                  type="button"
+                                                  id="closer"
+                                                  className="btn btn-danger light m-3"
+                                                  data-bs-dismiss="modal"
+                                                >
+                                                  Close
+                                                </button>
+                                                <button
+                                                  className="btn btn-primary m-3"
+                                                  data-bs-dismiss="modal"
+                                                  onClick={(e) =>{
+                                                    e.preventDefault()
+                                                    handleDelete(
+                                                      slData.ServiceLocationId
+                                                    );
+                                                  }
+                                                  }
+                                                >
+                                                  Yes
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </tr>
                                   ))}
                                 </tbody>
