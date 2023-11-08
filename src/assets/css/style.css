@@ -53673,3 +53673,21 @@ cursor: pointer;
     max-height: 150px;
     overflow-y: scroll; /* Add a vertical scrollbar if necessary */
   }
+  .estm-search-results-container {
+    position: absolute;
+    top:165px;
+    padding : 0.5em 1em ;
+    z-index: 1;
+    background-color: #fff;   
+    max-height: 150px;
+    overflow-y: scroll; /* Add a vertical scrollbar if necessary */
+  }
+  .estm-items-search-results-container {
+    position: absolute;
+    top:33em;
+    padding : 0.5em 1em ;
+    z-index: 1;
+    background-color: #fff;   
+    max-height: 150px;
+    overflow-y: scroll; /* Add a vertical scrollbar if necessary */
+  }

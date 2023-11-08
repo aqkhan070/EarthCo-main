@@ -155,7 +155,7 @@ const UpdateSRForm = ({
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   const handleAutocompleteChange = async (e) => {
-    inputValue ? setDisableSubmit(false) : setBtnDisable(true);
+    inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
     setInputValue(e.target.value);
     try {
       setShowCustomersList(true); // Show the list when typing
@@ -177,7 +177,7 @@ const UpdateSRForm = ({
       },
     }));
 
-    setCustomer(customer);
+    
     setInputValue(customer.CompanyName); // Add this line to update the input value
     setShowCustomersList(false);
   };
@@ -598,17 +598,7 @@ const UpdateSRForm = ({
                       />
                     </div>
 
-                    {/* <div className="col-xl-3 ">
-                      <label className="form-label">Notes</label>
-                      <textarea
-                        name="WorkRequest"
-                        value={SRData.ServiceRequestData.WorkRequest || ""}
-                        onChange={handleInputChange}
-                        className="form-txtarea form-control form-control-sm"
-                        placeholder={sRList.WorkRequest || " "}
-                        rows="2"
-                      ></textarea>
-                    </div> */}
+                   
                     <div className="col-lg-2 col-md-2 ">
                       <label className="form-label">Status:</label>
                       <Form.Select
@@ -690,204 +680,7 @@ const UpdateSRForm = ({
                 </div>
               </div>
             </div>
-            {/* modal */}
-            <div className="modal fade" id="basicModal">
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Add Item</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      data-bs-dismiss="modal"
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="basic-form">
-                      <form>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Name
-                          </label>
-                          <div className="col-sm-9">
-                            <input
-                              type="text"
-                              name="Name"
-                              value={itemInput.Name}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Name: e.target.value,
-                                })
-                              }
-                              className="form-control form-control-sm"
-                              placeholder="Name"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Staff
-                          </label>
-                          <div className="col-sm-9">
-                            <Form.Select
-                              name="Assign"
-                              size="md"
-                              className="bg-white"
-                            >
-                              <option value={null}>Choose...</option>
-                              <option value="option 1">option 1</option>
-                              <option value="option 2">option 2</option>
-                              <option value="option 3">option 3</option>
-                            </Form.Select>
-                          </div>
-                        </div>
-
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Quantity
-                          </label>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              name="Qty"
-                              value={itemInput.Qty}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Qty: Number(e.target.value),
-                                })
-                              }
-                              className="form-control form-control-sm"
-                              placeholder="Quantity"
-                            />
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Description
-                          </label>
-                          <div className="col-sm-9">
-                            <textarea
-                              name="Description"
-                              className="form-txtarea form-control form-control-sm"
-                              value={itemInput.Description}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Description: e.target.value,
-                                })
-                              }
-                              rows="3"
-                              id="comment"
-                            ></textarea>
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Rate
-                          </label>
-                          <div className="col-sm-9">
-                            <input
-                              name="Rate"
-                              type="number"
-                              value={itemInput.Rate}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Rate: Number(e.target.value),
-                                })
-                              }
-                              className="form-control form-control-sm"
-                              placeholder="Rate"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">Tax</label>
-                          <div className="col-sm-9">
-                            <Form.Select
-                              name="Tax"
-                              size="md"
-                              className="bg-white"
-                            >
-                              <option value="option 1">
-                                Non (Non-Taxable Sales)
-                              </option>
-                              <option value="option 2">
-                                Tax (Taxable Sales)
-                              </option>
-                              <option value="option 3">
-                                LBR (Non-Taxable Labour)
-                              </option>
-                            </Form.Select>
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label"></label>
-                          <div className="col-sm-9">
-                            <input
-                              type="checkbox"
-                              name="isPrimary"
-                              className="form-check-input"
-                              id="customCheckBox"
-                            />
-
-                            <label
-                              className="form-check-label"
-                              htmlFor="customCheckBox"
-                            >
-                              Billable
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="row">
-                          <label className="col-sm-3 col-form-label">
-                            Item Total
-                          </label>
-                          <div
-                            className="col-sm-9"
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
-                            <h5 style={{ margin: "0" }}>
-                              {itemInput.Rate * itemInput.Qty}
-                            </h5>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-danger light"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setTblSRItems([...tblSRItems, itemInput]);
-                        setItemInput({
-                          Name: "",
-                          Qty: 1,
-                          Description: "",
-                          Rate: 0,
-                        }); // Reset the modal input fields
-                      }}
-                      data-bs-dismiss="modal"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+           
             {/* item table */}
             <div className="card">
               <div className="card-body p-0">
@@ -895,14 +688,7 @@ const UpdateSRForm = ({
                   <div className="itemtitleBar">
                     <h4>Items</h4>
                   </div>
-                  {/* <NavLink
-                    className="btn btn-primary btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#basicModal"
-                    style={{ margin: "12px 20px" }}
-                  >
-                    + Add Items
-                  </NavLink> */}
+                 
                   <div className="table-responsive active-projects style-1 mt-2 ">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
@@ -1194,7 +980,7 @@ const UpdateSRForm = ({
             </div>
           </div>
         </div>
-        {/* <div>{sRList}</div> */}
+        
       </div>
     </>
   );

@@ -9,7 +9,11 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Cookies from "js-cookie";
 
-const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) => {
+const UpdateEstimateForm = ({
+  setShowContent,
+  estimateId,
+  setShowStatusCards,
+}) => {
   const [estimates, setEstimates] = useState({});
 
   const [formData, setFormData] = useState({
@@ -44,7 +48,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSL, setSelectedSL] = useState(null);
-  
+
   const token = Cookies.get("token");
 
   // const fetchCustomers = async () => {
@@ -157,15 +161,30 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
     // }
   };
 
-  const handleAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "UserId",
-        value: newValue ? newValue.UserId : "",
-      },
-    };
+  const [customersList, setCustomersList] = useState([]);
+  const [showCustomersList, setShowCustomersList] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const [disableSubmit, setDisableSubmit] = useState(true);
 
-    handleInputChange(simulatedEvent);
+  const handleAutocompleteChange = async (e) => {
+    inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
+    setInputValue(e.target.value);
+    try {
+      setShowCustomersList(true); // Show the list when typing
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`
+      );
+      console.log("customers search list", res.data);
+      setCustomersList(res.data);
+    } catch (error) {
+      console.log("customer search api error", error);
+    }
+  };
+  const selectCustomer = (customer) => {
+    setFormData({ ...formData, CustomerId: customer.UserId });
+
+    setInputValue(customer.CompanyName); // Add this line to update the input value
+    setShowCustomersList(false);
   };
 
   const handleSLAutocompleteChange = (event, newValue) => {
@@ -189,7 +208,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
 
     handleInputChange(simulatedEvent);
   };
-  
+
   const handleInputChange = (e, newValue) => {
     const { name, value } = e.target;
 
@@ -210,12 +229,12 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
 
     setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
 
-    if (name === "UserId" && value != 0) {
-      console.log(value);
-      fetchServiceLocations(value);
-      fetctContacts(value);
-    }
-    console.log("opopopopopop", formData);
+    // if (name === "UserId" && value != 0) {
+    //   console.log(value);
+    //   fetchServiceLocations(value);
+    //   fetctContacts(value);
+    // }
+    // console.log("opopopopopop", formData);
   };
 
   const handleSubmit = () => {
@@ -258,15 +277,15 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
 
   const submitData = async (postData) => {
     const headers = {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data', // Important for multipart/form-data requests
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data", // Important for multipart/form-data requests
     };
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Estimate/AddEstimate",
         postData,
         {
-          headers
+          headers,
         }
       );
 
@@ -291,8 +310,13 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
   useEffect(() => {
     fetchEstimates();
     fetchCustomers();
-    setShowStatusCards(false)
+    setShowStatusCards(false);
   }, []);
+  useEffect(() => {
+    fetchServiceLocations(formData.CustomerId);
+    fetctContacts(formData.CustomerId);
+    console.log("main payload isss", formData);
+  }, [formData]);
 
   const addItem = (e) => {
     e.preventDefault();
@@ -349,6 +373,65 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
     }));
   };
 
+  // new items
+  const [itemInput, setItemInput] = useState({
+    Name: "",
+    Qty: 1,
+    Description: "",
+    Rate: null,
+  });
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showItem, setShowItem] = useState(true);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (searchText) {
+      // Make an API request when the search text changes
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      axios
+        .get(
+          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+          { headers }
+        )
+        .then((response) => {
+          setSearchResults(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching itemss data:", error);
+        });
+    } else {
+      setSearchResults([]); // Clear the search results when input is empty
+    }
+  }, [searchText]);
+
+  const handleItemChange = (event) => {
+    setShowItem(true);
+    setSearchText(event.target.value);
+
+    setSelectedItem(null); // Clear selected item when input changes
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    setSearchText(item.ItemName); // Set the input text to the selected item's name
+    setItemInput({
+      ...itemInput,
+      Name: item.ItemName,
+      Description: item.SaleDescription,
+      Rate: item.SalePrice,      
+    });
+    setShowItem(false);
+    setSearchResults([]); // Clear the search results
+
+    console.log("selected item is", itemInput);
+  };
+
+  // filesss........
+
   const handleDeleteFile = (index) => {
     // Create a copy of the Files array without the file to be deleted
     const updatedFiles = [...Files];
@@ -374,6 +457,8 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
     }
   };
 
+  
+
   // useEffect(() => {
   // console.log("Updated formData is:", formData);
   // }, [formData]);
@@ -383,6 +468,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
       <div className="card-body">
         <div className="row">
           <div className="col-xl-3 mt-2">
+            <label className="form-label">Status</label>
             <Form.Select
               aria-label="Default select example"
               value={formData.EstimateStatusId}
@@ -428,31 +514,31 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
         <div className="row mt-3">
           <div className="col-xl-4">
             <label className="form-label">Customer</label>
-            <Autocomplete
-              id="inputEstmState1"
-              size="small"
-              options={customers}
-              getOptionLabel={(option) => option.CompanyName || ""}
-              value={
-                customers.find(
-                  (customer) => customer.UserId === formData.UserId
-                ) || null
-              }
+            <input
+              type="text"
+              name="CustomerId"
+              value={inputValue} // Bind the input value state to the value of the input
               onChange={handleAutocompleteChange}
-              isOptionEqualToValue={(option, value) =>
-                option.UserId === value.UserId
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label=""
-                  placeholder="Customer"
-                  className="bg-white"
-                />
-              )}
-              aria-label="Default select example"
+              placeholder="Customers"
+              className="form-control form-control-sm"
             />
+            {showCustomersList && customersList && (
+              <ul className="estm-search-results-container">
+                {customersList.map((customer) => (
+                  <li
+                    style={{ cursor: "pointer" }}
+                    key={customer.UserId}
+                    onClick={() => {
+                      selectCustomer(customer);
+                    }} // Use the selectCustomer function
+                  >
+                    {customer.CompanyName}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
           <div className="col-xl-4">
             <label className="form-label">Service location</label>
             <Autocomplete
@@ -480,26 +566,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
               )}
               aria-label="Default select example"
             />
-
-            {/* <Form.Select
-              value={formData.CustomerId || 0}
-              name="CustomerId"
-              size="md"
-              onChange={handleInputChange}
-              aria-label="Default select example"
-              id="inputState"
-              className="bg-white"
-            >
-              {" "}
-              <option value="" selected>
-                Contacts
-              </option>
-              {customers.map((customer) => (
-                <option key={customer.CustomerId} value={customer.CustomerId}>
-                  {customer.CustomerName}
-                </option>
-              ))}
-            </Form.Select> */}
           </div>
           <div className="col-xl-4">
             <label className="form-label">Contact</label>
@@ -528,26 +594,6 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
               )}
               aria-label="Contact select"
             />
-
-            {/* <Form.Select
-              value={formData.CustomerId || 0}
-              name="CustomerId"
-              size="md"
-              onChange={handleInputChange}
-              aria-label="Default select example"
-              id="inputState"
-              className="bg-white"
-            >
-              {" "}
-              <option value="" selected>
-                Contacts
-              </option>
-              {customers.map((customer) => (
-                <option key={customer.CustomerId} value={customer.CustomerId}>
-                  {customer.CustomerName}
-                </option>
-              ))}
-            </Form.Select> */}
           </div>
         </div>
 
@@ -587,126 +633,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
           </div>
         </div>
 
-        {/* add item modal */}
-        <div className="modal fade" id="basicModal">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <form onSubmit={addItem}>
-                <div className="modal-header">
-                  <h5 className="modal-title">Add Item</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <div className="basic-form">
-                    <div className="mb-3 row">
-                      <label className="col-sm-3 col-form-label">Name</label>
-                      <div className="col-sm-9">
-                        <input
-                          type="text"
-                          value={itemForm.Name}
-                          onChange={handleChange}
-                          name="Name"
-                          className="form-control form-control-sm"
-                          placeholder="Name"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-3 row">
-                      <label className="col-sm-3 col-form-label">
-                        Quantity
-                      </label>
-                      <div className="col-sm-9">
-                        <input
-                          type="number"
-                          value={itemForm.Qty}
-                          onChange={handleChange}
-                          name="Qty"
-                          className="form-control form-control-sm"
-                          placeholder="Quantity"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-3 row">
-                      <label className="col-sm-3 col-form-label">
-                        Description
-                      </label>
-                      <div className="col-sm-9">
-                        <textarea
-                          className="form-txtarea form-control form-control-sm"
-                          value={itemForm.Description}
-                          onChange={handleChange}
-                          name="Description"
-                          rows="3"
-                          id="comment"
-                        ></textarea>
-                      </div>
-                    </div>
-                    <div className="mb-3 row">
-                      <label className="col-sm-3 col-form-label">Rate</label>
-                      <div className="col-sm-9">
-                        <input
-                          type="number"
-                          value={itemForm.Rate}
-                          onChange={handleChange}
-                          name="Rate"
-                          className="form-control form-control-sm"
-                          placeholder="Rate"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="mb-3 row">
-                      <label className="col-sm-3 col-form-label">Tax</label>
-                      <div className="col-sm-9">
-                        <Form.Select name="Tax" size="md" className="bg-white">
-                          <option value="option 1">
-                            Non (Non-Taxable Sales)
-                          </option>
-                          <option value="option 2">Tax (Taxable Sales)</option>
-                          <option value="option 3">
-                            LBR (Non-Taxable Labour)
-                          </option>
-                        </Form.Select>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <label className="col-sm-3 col-form-label">
-                        Item Total
-                      </label>
-                      <div
-                        className="col-sm-9"
-                        style={{ display: "flex", alignItems: "center" }}
-                      >
-                        <h5 style={{ margin: "0" }}>
-                          {itemForm.Rate * itemForm.Qty}
-                        </h5>{" "}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    id="closer"
-                    className="btn btn-danger light"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                  <button type="submit" className="btn btn-primary">
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
+        
 
         {/* item table */}
         <div className="">
@@ -714,25 +641,16 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
             <div className="estDataBox">
               <div className="itemtitleBar">
                 <h4>Items</h4>
-              </div>
-              {/* <button
-                className="btn btn-primary btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#basicModal"
-                style={{ margin: "12px 20px" }}
-              >
-                + Add Items
-              </button> */}
+              </div>              
               <div className="table-responsive active-projects style-1 mt-2">
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
                     <tr>
                       <th>Name</th>
                       <th>Description</th>
-                      <th>Qty / Duration</th>
                       <th>Rate</th>
-                      <th>Amount</th>
-                      <th>Approved</th>
+                      <th>Qty / Duration</th>
+                      <th>Amount</th>                      
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -744,10 +662,9 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
                           <tr key={item.id}>
                             <td>{item.Name}</td>
                             <td>{item.Description}</td>
-                            <td>{item.Qty}</td>
                             <td>{item.Rate}</td>
-                            <td>{item.Amount}</td>
-                            <td>{item.Approved ? "Yes" : "No"}</td>
+                            <td>{item.Qty}</td>
+                            <td>{item.Amount}</td>                         
                             <td>
                               <div className="badgeBox">
                                 <span
@@ -770,7 +687,114 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
                         </tr>
                       ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
                     }
-                    <tr>
+
+<tr>
+                          <td>
+                            <>
+                              <input
+                                type="text"
+                                placeholder="Search for items..."
+                                className="form-control form-control-sm"
+                                name="Name"
+                                value={searchText}
+                                onChange={handleItemChange}
+                                ref={inputRef}
+                              />
+                              {searchResults.length > 0 && (
+                                <ul className="estm-items-search-results-container">
+                                  {searchResults.map((item) => (
+                                    <li
+                                      style={{ cursor: "pointer" }}
+                                      key={item.ItemId}
+                                      onClick={() => handleItemClick(item)}
+                                    >
+                                      {showItem && item.ItemName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </>
+                          </td>
+                          <td>
+                            <textarea
+                              name="Description"
+                              className="form-txtarea form-control form-control-sm"
+                              value={selectedItem?.SaleDescription || " "}
+                              rows="2"
+                              id="comment"
+                              disabled
+                            ></textarea>
+                          </td>
+
+                          <td>
+                            <div className="col-sm-9">
+                              <input
+                                name="Rate"
+                                value={
+                                  selectedItem?.SalePrice ||
+                                  itemInput.Rate ||
+                                  " "
+                                }
+                                className="form-control form-control-sm"
+                                placeholder="Rate"
+                                disabled
+                              />
+                            </div>
+                          </td>
+
+                          <td>
+                            <input
+                              type="number"
+                              name="Qty"
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
+                              className="form-control form-control-sm"
+                              placeholder="Quantity"
+                            />
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.Rate * itemInput.Qty}
+                            </h5>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                // setTblSRItems([...tblSRItems, itemInput]);
+                                setFormData((prevData) => ({
+                                  ...prevData,
+                                  tblEstimateItems: [...prevData.tblEstimateItems, itemInput , ],
+                                }));
+                                setSearchText("");
+                                setSelectedItem({
+                                  SalePrice: "",
+                                  SaleDescription: "",
+                                });
+                                setItemInput({
+                                  Name: "",
+                                  Qty: 1,
+                                  Description: "",
+                                  Rate: 0,
+                                }); // Reset the modal input field
+                                console.log("new items aree",formData)
+                                
+                              }}
+                            >
+                              Add
+                            </button>
+                          </td>
+                        </tr>
+
+
+
+
+                    {/* <tr>
                       <td>
                         <input
                           type="text"
@@ -824,7 +848,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
                           {itemForm.Rate * itemForm.Qty}
                         </h5>
                       </td>
-                      <td></td>
+                     
                       <td>
                         <button
                           className="btn btn-primary btn-sm"
@@ -833,7 +857,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
                           Add
                         </button>
                       </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </table>
               </div>
@@ -1017,7 +1041,7 @@ const UpdateEstimateForm = ({ setShowContent, estimateId, setShowStatusCards }) 
                 className="btn btn-danger light ms-1"
                 onClick={() => {
                   setShowContent(true);
-                  setShowStatusCards(true)
+                  setShowStatusCards(true);
                 }}
               >
                 Cancel

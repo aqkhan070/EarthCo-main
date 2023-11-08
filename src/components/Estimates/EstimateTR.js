@@ -239,13 +239,16 @@ const EstimateTR = ({ estimates , setShowStatusCards }) => {
                     {[
                       "#",
                       "Customer Name",
-                      "Assign to",
-                      "Estimate Number",
-                      "Estimate Amount",
-                      "Description Of Work",
+                      "Regional Manager",
                       "Date Created",
                       "Status",
-                      "QBStatus",
+                      "Estimate #",
+                      "Description Of Work",
+                      "PO#",
+                      "Bill#",
+                      "Invoice#",                      
+                      "Profit %",
+                      "Estimate Amount",
                       "Actions",
                     ].map((headCell) => (
                       <TableCell
@@ -274,11 +277,11 @@ const EstimateTR = ({ estimates , setShowStatusCards }) => {
                         <TableCell>{estimate.EstimateId}</TableCell>
                         <TableCell>{estimate.CustomerName}</TableCell>
                         <TableCell>{estimate.CustomerName}</TableCell>
+                        <TableCell>{estimate.DateCreated}</TableCell>
+                        <TableCell></TableCell>
                         <TableCell>{estimate.EstimateNumber}</TableCell>
                         <TableCell>{estimate.EstimateAmount}</TableCell>
                         <TableCell>{estimate.DescriptionofWork}</TableCell>
-                        <TableCell>{estimate.DateCreated}</TableCell>
-                        <TableCell></TableCell>
                         <TableCell></TableCell>
                         <TableCell>
                           <div className="button-container">
