@@ -16,7 +16,8 @@ const UpdateSRForm = ({
   fetchServiceRequest,
   setSuccessAlert,
 }) => {
-  const [customers, setCustomers] = useState([]);
+  const [customersList, setCustomersList] = useState([]);
+  const [customer, setCustomer] = useState();
 
   const [sRList, setSRList] = useState({});
 
@@ -37,7 +38,7 @@ const UpdateSRForm = ({
       CompletedDate: "",
       tblSRItems: [],
     },
-  });
+  }); // payload
 
   const [itemInput, setItemInput] = useState({
     Name: "",
@@ -109,10 +110,10 @@ const UpdateSRForm = ({
     //   console.log("contacts data fetch error", error);
     // }
   };
-  // useEffect(() => {
-  //   fetchServiceLocations(SRData.ServiceRequestData.UserId);
-  //   fetctContacts(SRData.ServiceRequestData.UserId);
-  // }, [SRData]);
+  useEffect(() => {
+    fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
+    fetctContacts(SRData.ServiceRequestData.CustomerId);
+  }, [SRData]);
 
   const fetchStaffList = async () => {
     try {
@@ -143,14 +144,37 @@ const UpdateSRForm = ({
     }
   };
 
-  const handleAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "CustomerId", // This is for setting in SRData
-        value: newValue ? newValue.UserId : "", // Keep UserId here
-      },
-    };
-    handleInputChange(simulatedEvent);
+  // const handleAutocompleteChange = (event, newValue) => {
+  //   const simulatedEvent = {
+  //     target: {
+  //       name: "CustomerId", // This is for setting in SRData
+  //       value: newValue ? newValue.UserId : "", // Keep UserId here
+  //     },
+  //   };
+  //   handleInputChange(simulatedEvent);
+  // };
+  const [showCustomersList, setShowCustomersList] = useState(true);
+  const [inputValue, setInputValue] = useState('');
+  const handleAutocompleteChange = async (e) => {
+    setInputValue(e.target.value);
+    try {
+      setShowCustomersList(true); // Show the list when typing
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`
+      );
+      console.log("customers search list", res.data);
+      setCustomersList(res.data);
+    } catch (error) {
+      console.log("customer search api error", error);
+    }
+  }; 
+  const selectCustomer = (customer) => {
+    // setSRData({ ...SRData, CustomerId: customer.UserId });
+    setSRData((prevData) => ({ ServiceRequestData: {...prevData.ServiceRequestData,CustomerId: customer.UserId }}));
+
+    setCustomer(customer);
+    setInputValue(customer.CompanyName); // Add this line to update the input value
+    setShowCustomersList(false);
   };
 
   const handleSLAutocompleteChange = (event, newValue) => {
@@ -292,17 +316,19 @@ const UpdateSRForm = ({
     setFiles(updatedFiles);
   };
 
-  const fetchCustomers = async () => {
-    try {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-      );
-      setCustomers(response.data);
-      console.log("customers list iss", response.data);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
+  // const fetchCustomers = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+  //     );
+  //     setCustomers(response.data);
+  //     console.log("customers list iss", response.data);
+  //   } catch (error) {
+  //     console.error("API Call Error:", error);
+  //   }
+  // };
+
+
 
   useEffect(() => {
     const fetchSR = async () => {
@@ -318,6 +344,7 @@ const UpdateSRForm = ({
         { headers }
       );
       try {
+        setInputValue(response.data.CompanyName)
         setSRList(response.data);
         setSRData((prevData) => ({
           ServiceRequestData: {
@@ -344,15 +371,17 @@ const UpdateSRForm = ({
 
     fetchSR();
 
-    fetchCustomers();
+    
   }, [serviceRequestId]);
+
+  
 
   // items..........
 
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [showItem, setShowItem] = useState(true)
+  const [showItem, setShowItem] = useState(true);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -378,10 +407,10 @@ const UpdateSRForm = ({
   }, [searchText]);
 
   const handleItemChange = (event) => {
-    setShowItem(true)
+    setShowItem(true);
     setSearchText(event.target.value);
 
-    // setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem(null); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -389,12 +418,11 @@ const UpdateSRForm = ({
     setSearchText(item.ItemName); // Set the input text to the selected item's name
     setItemInput({
       ...itemInput,
-     Name: item.ItemName,
-     Description : item.SaleDescription,
-     Rate: item.SalePrice,
-
-    })
-    setShowItem(false)
+      Name: item.ItemName,
+      Description: item.SaleDescription,
+      Rate: item.SalePrice,
+    });
+    setShowItem(false);
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", itemInput);
@@ -497,8 +525,29 @@ const UpdateSRForm = ({
                     <div className="col-xl-4 mb-2 col-md-9 ">
                       <label className="form-label">Customers</label>
 
-                      <Autocomplete
-                        id="inputState1"
+                      <input
+  type="text"
+  name="CustomerId"
+  value={inputValue} // Bind the input value state to the value of the input
+  onChange={handleAutocompleteChange}
+  className="form-control form-control-sm"
+/>
+                      {showCustomersList && customersList && (
+                        <ul className="search-results-container">
+                          {customersList.map((customer) => (
+                            <li
+                              style={{ cursor: "pointer" }}
+                              key={customer.UserId}
+                              onClick={() => {selectCustomer(customer)}} // Use the selectCustomer function
+                            >
+                              {customer.CompanyName}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+
+                      {/* <Autocomplete
+                        id="inputState1" 
                         size="small"
                         options={customers}
                         getOptionLabel={(option) => option.CompanyName || ""}
@@ -522,7 +571,7 @@ const UpdateSRForm = ({
                           />
                         )}
                         aria-label="Default select example"
-                      />
+                      /> */}
                     </div>
                     <div className="col-xl-4 mb-2 col-md-9 ">
                       <label className="form-label">Servive Locations</label>
@@ -1011,7 +1060,7 @@ const UpdateSRForm = ({
                         ))}
                         <tr>
                           <td>
-                            <div >
+                            <>
                               <input
                                 type="text"
                                 placeholder="Search for items..."
@@ -1021,11 +1070,11 @@ const UpdateSRForm = ({
                                 onChange={handleItemChange}
                                 ref={inputRef}
                               />
-                              {searchResults.length > 0 &&  (
+                              {searchResults.length > 0 && (
                                 <ul className="search-results-container">
                                   {searchResults.map((item) => (
                                     <li
-                                      style={{cursor:'pointer'}}
+                                      style={{ cursor: "pointer" }}
                                       key={item.ItemId}
                                       onClick={() => handleItemClick(item)}
                                     >
@@ -1034,13 +1083,13 @@ const UpdateSRForm = ({
                                   ))}
                                 </ul>
                               )}
-                            </div>
+                            </>
                           </td>
                           <td>
                             <textarea
                               name="Description"
                               className="form-txtarea form-control form-control-sm"
-                              value={selectedItem?.SaleDescription ||  " "}
+                              value={selectedItem?.SaleDescription || " "}
                               rows="2"
                               id="comment"
                               disabled
@@ -1051,7 +1100,11 @@ const UpdateSRForm = ({
                             <div className="col-sm-9">
                               <input
                                 name="Rate"
-                                value={selectedItem?.SalePrice || itemInput.Rate || " "}
+                                value={
+                                  selectedItem?.SalePrice ||
+                                  itemInput.Rate ||
+                                  " "
+                                }
                                 className="form-control form-control-sm"
                                 placeholder="Rate"
                                 disabled
@@ -1063,7 +1116,7 @@ const UpdateSRForm = ({
                             <input
                               type="number"
                               name="Qty"
-                              value={itemInput.Qty }
+                              value={itemInput.Qty}
                               onChange={(e) =>
                                 setItemInput({
                                   ...itemInput,
@@ -1084,12 +1137,17 @@ const UpdateSRForm = ({
                               className="btn btn-primary btn-sm"
                               onClick={() => {
                                 setTblSRItems([...tblSRItems, itemInput]);
+                                setSearchText("");
+                                setSelectedItem({
+                                  SalePrice: "",
+                                  SaleDescription: "",
+                                });
                                 setItemInput({
                                   Name: "",
                                   Qty: 1,
                                   Description: "",
                                   Rate: 0,
-                                }); // Reset the modal input fields
+                                }); // Reset the modal input field
                               }}
                             >
                               Add
