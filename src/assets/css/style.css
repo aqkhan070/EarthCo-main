@@ -53662,4 +53662,6 @@ cursor: pointer;
   .add-customer-btn {
     width: auto; /* Adjust this as needed */
   }
-  
+  .smaller-widget {
+    transform: scale(0.9); /* Scale down to 70% of its original size */
+  }
