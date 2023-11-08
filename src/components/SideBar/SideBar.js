@@ -536,8 +536,8 @@ const SideBar = () => {
                   </span>
                 </span>
               </a>
-              <ul className="subMenu">
                 {showSubMenu && (
+              <ul className="subMenu">
                   <>
                     {subMenu.map((link, index) => {
                       let activeClass = "";
@@ -572,8 +572,8 @@ const SideBar = () => {
                       );
                     })}
                   </>
-                )}
               </ul>
+                )}
             </li>
           </ul>
         </div>

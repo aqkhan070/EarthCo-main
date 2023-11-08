@@ -44,6 +44,11 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
   const [alert, setAlert] = useState(false)
   const [alertSuccess, setAlertSuccess] = useState(false)
 
+  const [formValid, setFormValid] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+
 
   const token = Cookies.get("token");
 
@@ -69,6 +74,25 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
     getRoles();
   }, []);
 
+  const validateForm = () => {
+    // check if any of the required fields are empty
+    const requiredFieldsNotEmpty =
+      customerInfo.FirstName &&
+      customerInfo.LastName &&
+      customerInfo.Email &&
+      password &&
+      customerInfo.Phone &&
+      customerInfo.Address &&
+      customerInfo.RoleId;
+    
+    // check if passwords match
+    const passwordsMatch = password === confirmPassword;
+
+    // set the form as valid only if all required fields are not empty and passwords match
+    setFormValid(requiredFieldsNotEmpty && passwordsMatch);
+  };
+
+
   const handleCustomerInfo = (event) => {
     const { name, value } = event.target;
     const newValue = name === "RoleId" ? parseInt(value, 10) : value;
@@ -83,7 +107,34 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
       [name]: newValue,
     });
     setAlert(false)
+
+    validateForm();
   };
+
+  const validatePasswords = () => {
+    if (password && confirmPassword && password === confirmPassword) {
+      setPasswordMismatch(false);
+    } else {
+      setPasswordMismatch(true);
+     
+    }
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+    validateForm();
+    validatePasswords()
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
+    validateForm();
+    validatePasswords()
+  };
+
+  useEffect(() => {
+    validateForm(); // re-validate form when component mounts or updates
+  }, [customerInfo, password, confirmPassword]);
 
   const addStaff = async () => {
     try {
@@ -205,10 +256,9 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
                 <input
                   type="password"
                   className="form-control"
-                  onChange={handleCustomerInfo}
+                  onChange={handlePasswordChange}
                   name="Password"
-                  
-                  id="exampleFormControlInput3"
+                  id="passwordInput"
                   placeholder="Password"
                   required
                 />
@@ -220,11 +270,17 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
                 <input
                   type="password"
                   className="form-control"
-                  id="exampleFormControlInput3"
+                  onChange={handleConfirmPasswordChange}
+                  id="confirmPasswordInput"
                   
                   placeholder="Confirm Password"
                   required
                 />
+                {passwordMismatch && (
+        <div style={{ color: 'red' }}>
+          Passwords do not match.
+        </div>
+      )}
               </div>
               <div className="col-xl-6 mb-3">
                 <label
@@ -312,7 +368,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
               </div>
               <div className=" mt-4 col-xl-6 text-end">
           <NavLink>
-            <button className="btn btn-primary me-1" onClick={addStaff}>
+            <button className="btn btn-primary me-1" onClick={addStaff} disabled={!formValid}>
               Submit
             </button>
           </NavLink>
