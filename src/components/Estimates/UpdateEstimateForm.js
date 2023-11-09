@@ -29,20 +29,10 @@ const UpdateEstimateForm = ({
     EstimateStatusId: 0,
     tblEstimateItems: [],
   });
-  const [itemForm, setItemForm] = useState({
-    Name: "",
-    Qty: null,
-    Description: "",
-    Address: "12345",
-    Rate: null,
-    isActive: true,
-    CreatedBy: 2,
-  });
 
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
 
-  const [customers, setCustomers] = useState([]);
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
 
@@ -50,18 +40,6 @@ const UpdateEstimateForm = ({
   const [selectedSL, setSelectedSL] = useState(null);
 
   const token = Cookies.get("token");
-
-  // const fetchCustomers = async () => {
-  //   const response = await axios.get(
-  //     "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-  //   );
-  //   try {
-  //     setCustomers(response.data);
-  //     //   console.log("Custommer list is", customers[1].CustomerName);
-  //   } catch (error) {
-  //     console.error("API Call Error:", error);
-  //   }
-  // };
 
   const fetchEstimates = async () => {
     if (estimateId === 0) {
@@ -99,18 +77,6 @@ const UpdateEstimateForm = ({
     }
   };
 
-  const fetchCustomers = async () => {
-    try {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
-      );
-      setCustomers(response.data);
-      console.log("customers list iss", response.data);
-    } catch (error) {
-      console.error("API Call Error:", error);
-    }
-  };
-
   const fetchServiceLocations = async (id) => {
     axios
       .get(
@@ -124,17 +90,6 @@ const UpdateEstimateForm = ({
         setSLList([]);
         console.log("service locations fetch error", error);
       });
-
-    // try {
-    //   const res = await axios.get(
-    //     `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
-    //   );
-    //   setSLList(res.data);
-    //   console.log("service locations are", res.data);
-    // } catch (error) {
-    //   setSLList([]);
-    //   console.log("service locations fetch error", error);
-    // }
   };
 
   const fetctContacts = async (id) => {
@@ -150,15 +105,6 @@ const UpdateEstimateForm = ({
         setContactList([]);
         console.log("contacts data fetch error", error);
       });
-
-    // try {
-    //   const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`);
-    //   console.log("contacts data isss", res.data);
-    //   setContactList(res.data)
-    // } catch (error) {
-    //   setContactList([])
-    //   console.log("contacts data fetch error", error);
-    // }
   };
 
   const [customersList, setCustomersList] = useState([]);
@@ -240,12 +186,6 @@ const UpdateEstimateForm = ({
   const handleSubmit = () => {
     const postData = new FormData();
 
-    // Before merging, filter out the unnecessary fields from each item in tblEstimateItems
-    const filteredItems = formData.tblEstimateItems.map((item) => {
-      const { id, Amount, Approved, ...rest } = item;
-      return rest;
-    });
-
     // Merge the current items with the new items for EstimateData
     const mergedEstimateData = {
       ...formData,
@@ -253,7 +193,6 @@ const UpdateEstimateForm = ({
       CreatedBy: 2,
       EditBy: 2,
       isActive: true,
-      tblEstimateItems: [...filteredItems, itemForm], // using the filteredItems here
     };
 
     console.log("mergedEstimateData:", mergedEstimateData);
@@ -309,7 +248,7 @@ const UpdateEstimateForm = ({
 
   useEffect(() => {
     fetchEstimates();
-    fetchCustomers();
+
     setShowStatusCards(false);
   }, []);
   useEffect(() => {
@@ -318,31 +257,6 @@ const UpdateEstimateForm = ({
     console.log("main payload isss", formData);
   }, [formData]);
 
-  const addItem = (e) => {
-    e.preventDefault();
-    const newItem = {
-      id: formData.tblEstimateItems.length + 1,
-      ...itemForm,
-      Amount: Number(itemForm.Qty) * Number(itemForm.Rate),
-      Approved: false,
-    };
-
-    // Clear itemForm fields after adding the new item
-    setFormData((prevData) => ({
-      ...prevData,
-      tblEstimateItems: [...prevData.tblEstimateItems, newItem],
-    }));
-    setItemForm({
-      Name: "",
-      Qty: 0,
-      Description: "",
-      Address: "12345",
-      Rate: 0,
-      isActive: true,
-      CreatedBy: 2,
-    });
-  };
-
   const handleStatusChange = (e) => {
     const value = parseInt(e.target.value, 10); // This converts the string to an integer
 
@@ -350,17 +264,6 @@ const UpdateEstimateForm = ({
       ...prevData,
       EstimateStatusId: value,
     }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Convert to number if the field is Qty or Rate
-    const adjustedValue = ["Qty", "Rate", "EstimateStatusId"].includes(name)
-      ? Number(value)
-      : value;
-
-    setItemForm((prevState) => ({ ...prevState, [name]: adjustedValue }));
   };
 
   const deleteItem = (id) => {
@@ -422,7 +325,7 @@ const UpdateEstimateForm = ({
       ...itemInput,
       Name: item.ItemName,
       Description: item.SaleDescription,
-      Rate: item.SalePrice,      
+      Rate: item.SalePrice,
     });
     setShowItem(false);
     setSearchResults([]); // Clear the search results
@@ -457,20 +360,19 @@ const UpdateEstimateForm = ({
     }
   };
 
-  
-
   // useEffect(() => {
   // console.log("Updated formData is:", formData);
   // }, [formData]);
 
   return (
-    <div className="card">
-      <div className="card-body">
+    <div className="">
+      <div className="">
         <div className="row">
           <div className="col-xl-3 mt-2">
             <label className="form-label">Status</label>
             <Form.Select
               aria-label="Default select example"
+              className=" form-control-sm bg-white"
               value={formData.EstimateStatusId}
               onChange={handleStatusChange}
               name="Status"
@@ -478,9 +380,33 @@ const UpdateEstimateForm = ({
               id="inlineFormCustomSelect"
             >
               <option value={null}>Select</option>
-              <option value={1}>Open</option>
+              <option value={1}>Accepted</option>
+              <option value={2}>Closed</option>
+              <option value={3}>Converted</option>
+              <option value={4}>Pending</option>
+              <option value={5}>Rejected</option>
+             
+            </Form.Select>
+          </div>
+          <div className="col-xl-3 mt-2">
+            <label className="form-label">Tags</label>
+            <Form.Select
+              aria-label="Default select example"
+              className=" form-control-sm bg-white"
+              // value={formData.EstimateStatusId}
+              // onChange={handleStatusChange}
+              name="Tags"
+              size="md"
+              
+            >
+              <option value={null}>Select</option>
+              <option value={1}>Needs PO</option>
+              <option value={2}>Pending Approval</option>
+              <option value={3}>Ready to Invoice</option>
+
+              {/* <option value={1}>Open</option>
               <option value={2}>Approved</option>
-              <option value={3}>Closed Billed</option>
+              <option value={3}>Closed Billed</option> */}
             </Form.Select>
           </div>
           <div className="col-xl-4">
@@ -488,7 +414,7 @@ const UpdateEstimateForm = ({
               className="col-lg-4 col-md-12 mb-2"
               style={{ minWidth: "150px" }}
             ></div>
-            <div className="col-lg-8 col-md-12 ">
+            <div style={{ marginTop: "2.9em" }} className="col-lg-8 col-md-12 ">
               <button
                 type="button"
                 className="btn btn-sm btn-outline-primary estm-action-btn"
@@ -633,15 +559,13 @@ const UpdateEstimateForm = ({
           </div>
         </div>
 
-        
-
         {/* item table */}
         <div className="">
           <div className="card-body p-0">
             <div className="estDataBox">
               <div className="itemtitleBar">
                 <h4>Items</h4>
-              </div>              
+              </div>
               <div className="table-responsive active-projects style-1 mt-2">
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead>
@@ -650,7 +574,8 @@ const UpdateEstimateForm = ({
                       <th>Description</th>
                       <th>Rate</th>
                       <th>Qty / Duration</th>
-                      <th>Amount</th>                      
+                      <th>Tax</th>
+                      <th>Amount</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -664,7 +589,8 @@ const UpdateEstimateForm = ({
                             <td>{item.Description}</td>
                             <td>{item.Rate}</td>
                             <td>{item.Qty}</td>
-                            <td>{item.Amount}</td>                         
+                            <td></td>
+                            <td>{item.Rate * item.Qty}</td>
                             <td>
                               <div className="badgeBox">
                                 <span
@@ -688,176 +614,123 @@ const UpdateEstimateForm = ({
                       ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
                     }
 
-<tr>
-                          <td>
-                            <>
-                              <input
-                                type="text"
-                                placeholder="Search for items..."
-                                className="form-control form-control-sm"
-                                name="Name"
-                                value={searchText}
-                                onChange={handleItemChange}
-                                ref={inputRef}
-                              />
-                              {searchResults.length > 0 && (
-                                <ul className="estm-items-search-results-container">
-                                  {searchResults.map((item) => (
-                                    <li
-                                      style={{ cursor: "pointer" }}
-                                      key={item.ItemId}
-                                      onClick={() => handleItemClick(item)}
-                                    >
-                                      {showItem && item.ItemName}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </>
-                          </td>
-                          <td>
-                            <textarea
-                              name="Description"
-                              className="form-txtarea form-control form-control-sm"
-                              value={selectedItem?.SaleDescription || " "}
-                              rows="2"
-                              id="comment"
-                              disabled
-                            ></textarea>
-                          </td>
-
-                          <td>
-                            <div className="col-sm-9">
-                              <input
-                                name="Rate"
-                                value={
-                                  selectedItem?.SalePrice ||
-                                  itemInput.Rate ||
-                                  " "
-                                }
-                                className="form-control form-control-sm"
-                                placeholder="Rate"
-                                disabled
-                              />
-                            </div>
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              name="Qty"
-                              value={itemInput.Qty}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Qty: Number(e.target.value),
-                                })
-                              }
-                              className="form-control form-control-sm"
-                              placeholder="Quantity"
-                            />
-                          </td>
-                          <td>
-                            <h5 style={{ margin: "0" }}>
-                              {itemInput.Rate * itemInput.Qty}
-                            </h5>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={() => {
-                                // setTblSRItems([...tblSRItems, itemInput]);
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  tblEstimateItems: [...prevData.tblEstimateItems, itemInput , ],
-                                }));
-                                setSearchText("");
-                                setSelectedItem({
-                                  SalePrice: "",
-                                  SaleDescription: "",
-                                });
-                                setItemInput({
-                                  Name: "",
-                                  Qty: 1,
-                                  Description: "",
-                                  Rate: 0,
-                                }); // Reset the modal input field
-                                console.log("new items aree",formData)
-                                
-                              }}
-                            >
-                              Add
-                            </button>
-                          </td>
-                        </tr>
-
-
-
-
-                    {/* <tr>
+                    <tr>
                       <td>
-                        <input
-                          type="text"
-                          value={itemForm.Name}
-                          onChange={handleChange}
-                          name="Name"
-                          className="form-control form-control-sm"
-                          placeholder="Name"
-                          required
-                        />
+                        <>
+                          <input
+                            type="text"
+                            placeholder="Search for items..."
+                            className="form-control form-control-sm"
+                            name="Name"
+                            value={searchText}
+                            onChange={handleItemChange}
+                            ref={inputRef}
+                          />
+                          {searchResults.length > 0 && (
+                            <ul className="estm-items-search-results-container">
+                              {searchResults.map((item) => (
+                                <li
+                                  style={{ cursor: "pointer" }}
+                                  key={item.ItemId}
+                                  onClick={() => handleItemClick(item)}
+                                >
+                                  {showItem && item.ItemName}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </>
                       </td>
                       <td>
                         <textarea
-                          className="form-txtarea form-control form-control-sm"
-                          value={itemForm.Description}
-                          onChange={handleChange}
                           name="Description"
+                          className="form-txtarea form-control form-control-sm"
+                          value={selectedItem?.SaleDescription || " "}
                           rows="1"
-                          id="comment"
+                          disabled
                         ></textarea>
-                      </td>
-                      <td>
-                        <div className="col-sm-9">
-                          <input
-                            type="number"
-                            value={itemForm.Qty}
-                            onChange={handleChange}
-                            name="Qty"
-                            className="form-control form-control-sm"
-                            placeholder="Quantity"
-                            required
-                          />
-                        </div>
                       </td>
 
                       <td>
                         <div className="col-sm-9">
                           <input
-                            type="number"
-                            value={itemForm.Rate}
-                            onChange={handleChange}
                             name="Rate"
+                            value={
+                              selectedItem?.SalePrice || itemInput.Rate || " "
+                            }
                             className="form-control form-control-sm"
                             placeholder="Rate"
-                            required
+                            disabled
                           />
                         </div>
                       </td>
+
+                      <td>
+                        <input
+                          type="number"
+                          name="Qty"
+                          value={itemInput.Qty}
+                          onChange={(e) =>
+                            setItemInput({
+                              ...itemInput,
+                              Qty: Number(e.target.value),
+                            })
+                          }
+                          className="form-control form-control-sm"
+                          placeholder="Quantity"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          name="Tax"
+                          // value={itemInput.Qty}
+                          // onChange={(e) =>
+                          //   setItemInput({
+                          //     ...itemInput,
+                          //     Qty: Number(e.target.value),
+                          //   })
+                          // }
+                          className="form-control form-control-sm"
+                          placeholder="Tax"
+                          disabled
+                        />
+                      </td>
                       <td>
                         <h5 style={{ margin: "0" }}>
-                          {itemForm.Rate * itemForm.Qty}
+                          {itemInput.Rate * itemInput.Qty}
                         </h5>
                       </td>
-                     
                       <td>
                         <button
                           className="btn btn-primary btn-sm"
-                          onClick={addItem}
+                          onClick={() => {
+                            // setTblSRItems([...tblSRItems, itemInput]);
+                            setFormData((prevData) => ({
+                              ...prevData,
+                              tblEstimateItems: [
+                                ...prevData.tblEstimateItems,
+                                itemInput,
+                              ],
+                            }));
+                            setSearchText("");
+                            setSelectedItem({
+                              SalePrice: "",
+                              SaleDescription: "",
+                            });
+                            setItemInput({
+                              Name: "",
+                              Qty: 1,
+                              Description: "",
+                              Rate: 0,
+                            }); // Reset the modal input field
+                            console.log("new items aree", formData);
+                          }}
                         >
                           Add
                         </button>
                       </td>
-                    </tr> */}
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -934,7 +807,8 @@ const UpdateEstimateForm = ({
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
                     <form>
-                      <h4 className="card-title">Estimate Notes</h4>
+                      {/* <h4 className="card-title">Estimate Notes</h4> */}
+                      <label className="form-label">Estimate Notes</label>
                       <div className="mb-3">
                         <textarea
                           placeholder={estimates.EstimateNotes || ""}
@@ -951,7 +825,10 @@ const UpdateEstimateForm = ({
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
                     <form>
-                      <h4 className="card-title">Service Location Notes</h4>
+                      {/* <h4 className="card-title">Service Location Notes</h4> */}
+                      <label className="form-label">
+                        Service Location Notes
+                      </label>
                       <div className="mb-3">
                         <textarea
                           placeholder={estimates.ServiceLocationNotes || ""}
@@ -968,7 +845,8 @@ const UpdateEstimateForm = ({
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
                     <form>
-                      <h4 className="card-title">Private Notes</h4>
+                      {/* <h4 className="card-title">Private Notes</h4> */}
+                      <label className="form-label">Private Notes</label>
                       <div className="mb-3">
                         <textarea
                           placeholder={estimates.PrivateNotes || ""}

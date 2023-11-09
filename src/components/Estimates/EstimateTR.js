@@ -238,17 +238,17 @@ const EstimateTR = ({ estimates , setShowStatusCards }) => {
                     </TableCell>
                     {[
                       "#",
-                      "Customer Name",
+                      "Customer",
                       "Regional Manager",
-                      "Date Created",
+                      "Date",
                       "Status",
-                      "Estimate #",
+                      "Estimate#",
                       "Description Of Work",
                       "PO#",
                       "Bill#",
                       "Invoice#",                      
-                      "Profit %",
-                      "Estimate Amount",
+                      "Profit%",
+                      "Amount",
                       "Actions",
                     ].map((headCell) => (
                       <TableCell

@@ -427,9 +427,9 @@ const UpdateSRForm = ({
     <>
       <div className="">
         <div className="">
-          <div className="card-body">
+          <div className="card-body p-0">
             {/* Add service form */}
-            <div className="row mb-3">
+            <div className="row ">
               <div className="col-lg-12 col-md-12 mb-2">
                 <NavLink to="/Dashboard/Estimates">
                   {" "}
@@ -697,6 +697,7 @@ const UpdateSRForm = ({
                           <th>Description</th>
                           <th>Rate</th>
                           <th>Qty / Duration</th>
+                          <th>Tax</th>
                           <th>Amount</th>
                           <th>Actions</th>
                         </tr>
@@ -708,6 +709,7 @@ const UpdateSRForm = ({
                             <td>{item.Description}</td>
                             <td>{item.Rate}</td>
                             <td>{item.Qty}</td>
+                            <td></td>
                             <td>{item.Qty * item.Rate}</td>
                             <td>
                               <div className="badgeBox">
@@ -755,7 +757,7 @@ const UpdateSRForm = ({
                               name="Description"
                               className="form-txtarea form-control form-control-sm"
                               value={selectedItem?.SaleDescription || " "}
-                              rows="2"
+                              rows="1"
                               id="comment"
                               disabled
                             ></textarea>
@@ -790,6 +792,22 @@ const UpdateSRForm = ({
                               }
                               className="form-control form-control-sm"
                               placeholder="Quantity"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="Tax"
+                              // value={itemInput.Qty}
+                              // onChange={(e) =>
+                              //   setItemInput({
+                              //     ...itemInput,
+                              //     Qty: Number(e.target.value),
+                              //   })
+                              // }
+                              className="form-control form-control-sm"
+                              placeholder="Tax"
+                              disabled
                             />
                           </td>
                           <td>
@@ -894,7 +912,7 @@ const UpdateSRForm = ({
                 <br />
                 <div className="basic-form">
                   <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       {" "}
                       {/* Adjust the column size as needed */}
                       <label className="form-label">
@@ -911,7 +929,7 @@ const UpdateSRForm = ({
                         rows="2"
                       />
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       {" "}
                       {/* Adjust the column size as needed */}
                       <label className="form-label">Work Requested:</label>
@@ -924,7 +942,7 @@ const UpdateSRForm = ({
                         rows="2"
                       ></textarea>
                     </div>
-                    <div className="col-md-4 ">
+                    <div className="col-md-3 ">
                       {" "}
                       <label className="form-label">Action Taken:</label>
                       {/* Adjust the column size as needed */}
@@ -938,7 +956,7 @@ const UpdateSRForm = ({
                       ></textarea>
                     </div>
 
-                    <div className=" col-md-4">
+                    <div className=" col-md-3">
                       <label className="form-label">Date Completed:</label>
 
                       <input
