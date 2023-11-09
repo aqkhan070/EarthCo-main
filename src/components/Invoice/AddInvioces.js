@@ -1,6 +1,118 @@
-import React from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { Form } from "react-bootstrap";
+import axios from "axios";
+const AddInvioces = ({ setShowContent }) => {
+  const [formData, setFormData] = useState({});
+  const [customersList, setCustomersList] = useState([]);
+  const [showCustomersList, setShowCustomersList] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [sLList, setSLList] = useState([]);
+  const [contactList, setContactList] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedSL, setSelectedSL] = useState(null);
 
-const AddInvioces = ({setShowContent}) => {
+  const handleAutocompleteChange = async (e) => {
+    // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
+    setInputValue(e.target.value);
+    if (!e.target.value) {
+      return;
+    }
+    try {
+      setShowCustomersList(true); // Show the list when typing
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`
+      );
+      console.log("customers search list", res.data);
+      setCustomersList(res.data);
+    } catch (error) {
+      console.log("customer search api error", error);
+    }
+  };
+  const selectCustomer = (customer) => {
+    setFormData({ ...formData, CustomerId: customer.UserId });
+
+    setInputValue(customer.CompanyName); // Add this line to update the input value
+    setShowCustomersList(false);
+  };
+
+  const fetchServiceLocations = async (id) => {
+    if (!id) {
+      return;
+    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+      )
+      .then((res) => {
+        setSLList(res.data);
+        console.log("service locations are", res.data);
+      })
+      .catch((error) => {
+        setSLList([]);
+        console.log("service locations fetch error", error);
+      });
+  };
+
+  const fetctContacts = async (id) => {
+    if (!id) {
+      return;
+    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
+      )
+      .then((res) => {
+        console.log("contacts data isss", res.data);
+        setContactList(res.data);
+      })
+      .catch((error) => {
+        setContactList([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+
+  const handleSLAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ServiceLocationId",
+        value: newValue ? newValue.ServiceLocationId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleContactAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ContactId",
+        value: newValue ? newValue.ContactId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleInputChange = (e, newValue) => {
+    const { name, value } = e.target;
+
+    setSelectedCustomer(newValue);
+    setSelectedSL(newValue);
+
+    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
+
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  useEffect(() => {
+    fetchServiceLocations(formData.CustomerId);
+    fetctContacts(formData.CustomerId);
+    console.log("main payload isss", formData);
+  }, [formData]);
+
   return (
     <>
       <div className="page-titles">
@@ -40,92 +152,149 @@ const AddInvioces = ({setShowContent}) => {
       <div className="add-item">
         <div className="card">
           <div className="card-body">
-            <div className="row">
-              <div className="mb-3 col-md-4">
-                <div className="row">
-                  <div className="col-md-12">
-                    <label className="form-label">Customer</label>
-                    <select
-                      id="inputState"
-                      className="default-select form-control wide"
-                    >
-                      <option selected>Crest DeVille</option>
-                      <option>Option 1</option>
-                      <option>Option 2</option>
-                      <option>Option 3</option>
-                    </select>
-                  </div>
-                  <div className="col-md-12">
-                    <div className="c-details">
-                      <ul>
-                        <li>
-                          <span>Type</span>
-                        </li>
-                        <li>
-                          <span>Term </span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+            <div className="row mb-2 ">
+              <div className="col-xl-3">
+                <label className="form-label">Customer</label>
+                <input
+                  type="text"
+                  name="CustomerId"
+                  value={inputValue} // Bind the input value state to the value of the input
+                  onChange={handleAutocompleteChange}
+                  placeholder="Customers"
+                  className="form-control form-control-sm"
+                />
+                {showCustomersList && customersList && (
+                  <ul
+                    style={{ top: "83px" }}
+                    className="search-results-container"
+                  >
+                    {customersList.map((customer) => (
+                      <li
+                        style={{ cursor: "pointer" }}
+                        key={customer.UserId}
+                        onClick={() => {
+                          selectCustomer(customer);
+                        }} // Use the selectCustomer function
+                      >
+                        {customer.CompanyName}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="col-xl-3">
+                <label className="form-label">Service location</label>
+                <Autocomplete
+                  id="inputState19"
+                  size="small"
+                  options={sLList}
+                  getOptionLabel={(option) => option.Name || ""}
+                  value={
+                    sLList.find(
+                      (customer) =>
+                        customer.ServiceLocationId ===
+                        formData.ServiceLocationId
+                    ) || null
+                  }
+                  onChange={handleSLAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ServiceLocationId === value.ServiceLocationId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Service Locations"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Default select example"
+                />
+              </div>
+              <div className="col-xl-3">
+                <label className="form-label">Contact</label>
+
+                <Autocomplete
+                  id="inputState299"
+                  size="small"
+                  options={contactList}
+                  getOptionLabel={(option) => option.FirstName || ""}
+                  value={
+                    contactList.find(
+                      (contact) => contact.ContactId === formData.ContactId
+                    ) || null
+                  }
+                  onChange={handleContactAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ContactId === value.ContactId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Contacts"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Contact select"
+                />
+              </div>
+
+              <div className="col-xl-3">
+                <div className="c-details">
+                  <ul>
+                    <li>
+                      <span>Type</span>
+                    </li>
+                    <li>
+                      <span>Term </span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <div className="mb-3 col-md-4">
-                <div className="row">
-                  <div className="col-md-12">
-                    <label className="form-label">Service Location</label>
-                    <select
-                      id="inputState"
-                      className="default-select form-control wide"
-                    >
-                      <option selected>1025 Sunrise</option>
-                      <option>Option 1</option>
-                      <option>Option 2</option>
-                      <option>Option 3</option>
-                    </select>
-                  </div>
-                  <div className="col-md-12">
-                    <div className="c-details">
-                      <ul>
-                        <li>
-                          <span>Address</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+
+              <div className="col-xl-3">
+                <div className="c-details">
+                  <ul>
+                    <li className="d-flex">
+                      <span>
+                        <b>Email:</b> email@gmail.com
+                      </span>
+                    </li>
+                    
+                  </ul>
                 </div>
               </div>
-              <div className="mb-3 col-md-4">
-                <div className="row">
-                  <div className="col-md-12">
-                    <label className="form-label">Contact</label>
-                    <select
-                      id="inputState"
-                      className="default-select form-control wide"
-                    >
-                      <option selected>Mark</option>
-                      <option>Option 1</option>
-                      <option>Option 2</option>
-                      <option>Option 3</option>
-                    </select>
-                  </div>
-                  <div className="col-md-12">
-                    <div className="c-details">
-                      <ul>
-                        <li className="d-flex">
-                          <span>
-                            <b>Email:</b> email@gmail.com
-                          </span>
-                        </li>
-                        <li className="d-flex">
-                          <span>
-                            <b>Phone:</b> +92-000-999-8888
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
+
+              
+              <div className="col-xl-3">
+                <div className="c-details">
+                  <ul>
+                    
+                    <li className="d-flex">
+                      <span>
+                        <b>Phone:</b> +92-000-999-8888
+                      </span>
+                    </li>
+                    
+                  </ul>
                 </div>
               </div>
+
+              
+              <div className="col-xl-3">
+                <div className="c-details">
+                  <ul>                    
+                    <li className="d-flex">
+                      <span>
+                        <b>Address</b>
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -152,7 +321,7 @@ const AddInvioces = ({setShowContent}) => {
                       data-bs-toggle="tab"
                       href="#profile1"
                       aria-selected="false"
-                      tabindex="-1"
+                      tabIndex="-1"
                       role="tab"
                     >
                       <i className="la la-paypal me-2"></i> Payment
@@ -407,56 +576,54 @@ const AddInvioces = ({setShowContent}) => {
                             </div>
                             <div className="col-xl-12 col-lg-12">
                               <div className="basic-form">
-                                <form>
-                                  <h4 className="card-title">Attachments</h4>
-                                  <div className="dz-default dlab-message upload-img mb-3">
-                                    <form action="#" className="dropzone">
-                                      <svg
-                                        width="41"
-                                        height="40"
-                                        viewBox="0 0 41 40"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path
-                                          d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                          stroke="#DADADA"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                        ></path>
-                                        <path
-                                          d="M20.5 20V35"
-                                          stroke="#DADADA"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                        ></path>
-                                        <path
-                                          d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                          stroke="#DADADA"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                        ></path>
-                                        <path
-                                          d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                          stroke="#DADADA"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                        ></path>
-                                      </svg>
-                                      <div className="fallback">
-                                        <input
-                                          name="file"
-                                          type="file"
-                                          multiple=""
-                                        />
-                                      </div>
-                                    </form>
-                                  </div>
-                                </form>
+                                <h4 className="card-title">Attachments</h4>
+                                <div className="dz-default dlab-message upload-img mb-3">
+                                  <form action="#" className="dropzone">
+                                    <svg
+                                      width="41"
+                                      height="40"
+                                      viewBox="0 0 41 40"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                        stroke="#DADADA"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      ></path>
+                                      <path
+                                        d="M20.5 20V35"
+                                        stroke="#DADADA"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      ></path>
+                                      <path
+                                        d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                        stroke="#DADADA"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      ></path>
+                                      <path
+                                        d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                        stroke="#DADADA"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      ></path>
+                                    </svg>
+                                    <div className="fallback">
+                                      <input
+                                        name="file"
+                                        type="file"
+                                        multiple=""
+                                      />
+                                    </div>
+                                  </form>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -511,7 +678,12 @@ const AddInvioces = ({setShowContent}) => {
                         </a>
                         <a>
                           {" "}
-                          <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>
+                          <button
+                            className="btn btn-danger light ms-1"
+                            onClick={() => {
+                              setShowContent(true);
+                            }}
+                          >
                             Cancel
                           </button>
                         </a>

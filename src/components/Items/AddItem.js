@@ -19,8 +19,8 @@ const AddItem = ({setShowContent}) => {
                       className="form-control"
                       id="firstName"
                       placeholder=""
-                      value=""
-                      required=""
+                      
+                      
                     />
                     <div className="invalid-feedback">
                       Valid first name is required.
@@ -35,8 +35,8 @@ const AddItem = ({setShowContent}) => {
                       className="form-control"
                       id="lastName"
                       placeholder=""
-                      value=""
-                      required=""
+                      
+                      
                     />
                     <div className="invalid-feedback">
                       Valid last name is required.
@@ -48,7 +48,7 @@ const AddItem = ({setShowContent}) => {
                     </label>
                     <div className="dropdown bootstrap-select default-select form-control wide w-100">
                       <select className="default-select form-control wide w-100">
-                        <option selected="">Choose...</option>
+                        <option defaultValue >Choose...</option>
                         <option value="1">United States</option>
                       </select>
                     </div>
@@ -89,8 +89,8 @@ const AddItem = ({setShowContent}) => {
                         className="form-control"
                         id="firstName"
                         placeholder=""
-                        value=""
-                        required=""
+                        
+                        
                       />
                     </div>
                     <div className="col-md-12 mb-3">
@@ -102,8 +102,8 @@ const AddItem = ({setShowContent}) => {
                         className="form-control"
                         id="firstName"
                         placeholder=""
-                        value=""
-                        required=""
+                        
+                        
                       />
                     </div>
                   </div>
@@ -138,8 +138,8 @@ const AddItem = ({setShowContent}) => {
                         className="form-control"
                         id="firstName"
                         placeholder=""
-                        value=""
-                        required=""
+                        
+                        
                       />
                     </div>
                     <div className="col-md-12 mb-3">
@@ -151,8 +151,8 @@ const AddItem = ({setShowContent}) => {
                         className="form-control"
                         id="firstName"
                         placeholder=""
-                        value=""
-                        required=""
+                        
+                        
                       />
                     </div>
                   </div>

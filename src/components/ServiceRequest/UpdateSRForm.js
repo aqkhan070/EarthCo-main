@@ -489,7 +489,7 @@ const UpdateSRForm = ({
                         className="form-control form-control-sm"
                       />
                       {showCustomersList && customersList && (
-                        <ul className="search-results-container">
+                        <ul style={{top: "140px" }} className="search-results-container">
                           {customersList.map((customer) => (
                             <li
                               style={{ cursor: "pointer" }}
@@ -505,7 +505,7 @@ const UpdateSRForm = ({
                       )}
                     </div>
                     <div className="col-xl-4 mb-2 col-md-9 ">
-                      <label className="form-label">Servive Locations</label>
+                      <label className="form-label">Service Locations</label>
 
                       <Autocomplete
                         id="inputState19"

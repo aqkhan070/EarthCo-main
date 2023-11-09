@@ -463,7 +463,7 @@ const UpdateEstimateForm = ({
               className="form-control form-control-sm"
             />
             {showCustomersList && customersList && (
-              <ul className="estm-search-results-container">
+              <ul style={{top: "165px" }} className="search-results-container">
                 {customersList.map((customer) => (
                   <li
                     style={{ cursor: "pointer" }}

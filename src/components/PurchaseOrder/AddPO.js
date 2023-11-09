@@ -20,6 +20,9 @@ export const AddPO = ({setShowContent}) => {
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
     setInputValue(e.target.value);
+    if(!e.target.value){
+      return
+    }
     try {
       setShowCustomersList(true); // Show the list when typing
       const res = await axios.get(
@@ -39,6 +42,9 @@ export const AddPO = ({setShowContent}) => {
   };
 
   const fetchServiceLocations = async (id) => {
+    if(!id){
+      return
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
@@ -54,6 +60,9 @@ export const AddPO = ({setShowContent}) => {
   };
 
   const fetctContacts = async (id) => {
+    if(!id){
+      return
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
@@ -164,7 +173,7 @@ export const AddPO = ({setShowContent}) => {
               className="form-control form-control-sm"
             />
             {showCustomersList && customersList && (
-              <ul className="po-search-results-container">
+              <ul style={{top: "83px" }} className="search-results-container">
                 {customersList.map((customer) => (
                   <li
                     style={{ cursor: "pointer" }}

@@ -156,7 +156,7 @@ const Invoices = () => {
                       >
                         <thead>
                           <tr>
-                            <th style={{ width: "50px;" }}>
+                            <th style={{ width: "50px" }}>
                               <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                 <input
                                   type="checkbox"
