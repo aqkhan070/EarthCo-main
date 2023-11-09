@@ -148,7 +148,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                       {index < 5 ? (
                         <TableSortLabel
                           active={sorting.field === column}
-                          direction={sorting.order}
+                           direction={["asc", "desc"].includes(sorting.order) ? sorting.order : "asc"}
                           onClick={() =>
                             setSorting({
                               field: column,
@@ -210,7 +210,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                         >
                           <Delete />
                         </Button>
-                      </TableCell>
+                      
                       <div
                         className="modal fade"
                         id={`deleteModal${customer.UserId}`}
@@ -253,6 +253,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                           </div>
                         </div>
                       </div>
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>

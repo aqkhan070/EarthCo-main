@@ -76,7 +76,7 @@ const Items = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="checkAll"
+                                  htmlFor="checkAll"
                                 ></label>
                               </div>
                             </th>
@@ -106,7 +106,7 @@ const Items = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>

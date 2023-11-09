@@ -11,7 +11,7 @@ const AddItem = ({setShowContent}) => {
               <div className="col-lg-8">
                 <div className="row">
                   <div className="col-md-6 mb-3">
-                    <label for="firstName" className="form-label">
+                    <label htmlFor="firstName" className="form-label">
                       Name / Number
                     </label>
                     <input
@@ -27,7 +27,7 @@ const AddItem = ({setShowContent}) => {
                     </div>
                   </div>
                   <div className="col-md-6 mb-3">
-                    <label for="lastName" className="form-label">
+                    <label htmlFor="lastName" className="form-label">
                       SKU
                     </label>
                     <input
@@ -43,7 +43,7 @@ const AddItem = ({setShowContent}) => {
                     </div>
                   </div>
                   <div className="mb-3">
-                    <label for="username" className="form-label">
+                    <label htmlFor="username" className="form-label">
                       Income Account
                     </label>
                     <div className="dropdown bootstrap-select default-select form-control wide w-100">
@@ -66,12 +66,12 @@ const AddItem = ({setShowContent}) => {
                         className="form-check-input"
                         id="same-address"
                       />
-                      <label className="form-check-label" for="same-address">
+                      <label className="form-check-label" htmlFor="same-address">
                         Used for Sales Transactions
                       </label>
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Sales Description
                       </label>
                       <textarea
@@ -81,7 +81,7 @@ const AddItem = ({setShowContent}) => {
                       ></textarea>
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Sale Price
                       </label>
                       <input
@@ -94,7 +94,7 @@ const AddItem = ({setShowContent}) => {
                       />
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Tax Code
                       </label>
                       <input
@@ -115,12 +115,12 @@ const AddItem = ({setShowContent}) => {
                         className="form-check-input"
                         id="save-info"
                       />
-                      <label className="form-check-label" for="save-info">
+                      <label className="form-check-label" htmlFor="save-info">
                         Used for Purchase Transactions
                       </label>
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Purchase Description
                       </label>
                       <textarea
@@ -130,7 +130,7 @@ const AddItem = ({setShowContent}) => {
                       ></textarea>
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Cost
                       </label>
                       <input
@@ -143,7 +143,7 @@ const AddItem = ({setShowContent}) => {
                       />
                     </div>
                     <div className="col-md-12 mb-3">
-                      <label for="firstName" className="form-label">
+                      <label htmlFor="firstName" className="form-label">
                         Purchase Tax Code
                       </label>
                       <input

@@ -65,7 +65,7 @@ const PurchaseOrder = () => {
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="2"
+                          strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           className="feather feather-user"
@@ -95,7 +95,7 @@ const PurchaseOrder = () => {
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="2"
+                          strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           className="feather feather-file-text"
@@ -128,7 +128,7 @@ const PurchaseOrder = () => {
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
-                          stroke-width="2"
+                          strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           className="feather feather-dollar-sign"
@@ -178,7 +178,7 @@ const PurchaseOrder = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="checkAll"
+                                  htmlFor="checkAll"
                                 ></label>
                               </div>
                             </th>
@@ -225,7 +225,7 @@ const PurchaseOrder = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
@@ -275,7 +275,7 @@ const PurchaseOrder = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
@@ -326,7 +326,7 @@ const PurchaseOrder = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
@@ -377,7 +377,7 @@ const PurchaseOrder = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>

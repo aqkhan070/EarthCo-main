@@ -81,7 +81,7 @@ const Bills = () => {
                             />
                             <label
                               className="form-check-label"
-                              for="checkAll"
+                              htmlFor="checkAll"
                             ></label>
                           </div>
                         </th>
@@ -121,7 +121,7 @@ const Bills = () => {
                             />
                             <label
                               className="form-check-label"
-                              for="customCheckBox2"
+                              htmlFor="customCheckBox2"
                             ></label>
                           </div>
                         </td>
@@ -165,7 +165,7 @@ const Bills = () => {
                             />
                             <label
                               className="form-check-label"
-                              for="customCheckBox2"
+                              htmlFor="customCheckBox2"
                             ></label>
                           </div>
                         </td>
@@ -209,7 +209,7 @@ const Bills = () => {
                             />
                             <label
                               className="form-check-label"
-                              for="customCheckBox2"
+                              htmlFor="customCheckBox2"
                             ></label>
                           </div>
                         </td>

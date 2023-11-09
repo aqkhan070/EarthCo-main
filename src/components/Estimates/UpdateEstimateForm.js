@@ -113,7 +113,7 @@ const UpdateEstimateForm = ({
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   const handleAutocompleteChange = async (e) => {
-    inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
+    // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
     setInputValue(e.target.value);
     try {
       setShowCustomersList(true); // Show the list when typing
@@ -360,9 +360,14 @@ const UpdateEstimateForm = ({
     }
   };
 
-  // useEffect(() => {
-  // console.log("Updated formData is:", formData);
-  // }, [formData]);
+  useEffect(() => {
+    formData.CustomerId &&
+    formData.ServiceLocationId &&
+    formData.ContactId &&
+    formData.EstimateNumber
+      ? setDisableSubmit(false)
+      : setDisableSubmit(true);
+  }, [formData]);
 
   return (
     <div className="">
@@ -385,7 +390,6 @@ const UpdateEstimateForm = ({
               <option value={3}>Converted</option>
               <option value={4}>Pending</option>
               <option value={5}>Rejected</option>
-             
             </Form.Select>
           </div>
           <div className="col-xl-3 mt-2">
@@ -397,7 +401,6 @@ const UpdateEstimateForm = ({
               // onChange={handleStatusChange}
               name="Tags"
               size="md"
-              
             >
               <option value={null}>Select</option>
               <option value={1}>Needs PO</option>
@@ -409,7 +412,18 @@ const UpdateEstimateForm = ({
               <option value={3}>Closed Billed</option> */}
             </Form.Select>
           </div>
-          <div className="col-xl-4">
+          <div className="col-xl-3 mt-2">
+            <label className="form-label">Estimate No.</label>
+            <input
+              value={formData.EstimateNumber}
+              name="EstimateNumber"
+              onChange={handleInputChange}
+              type="text"
+              className="form-control form-control-sm"
+              placeholder={estimates.EstimateNumber || "Estimate Number"}
+            />
+          </div>
+          <div className="col-xl-3">
             <div
               className="col-lg-4 col-md-12 mb-2"
               style={{ minWidth: "150px" }}
@@ -438,7 +452,7 @@ const UpdateEstimateForm = ({
           </div>
         </div>
         <div className="row mt-3">
-          <div className="col-xl-4">
+          <div className="col-xl-3">
             <label className="form-label">Customer</label>
             <input
               type="text"
@@ -465,7 +479,7 @@ const UpdateEstimateForm = ({
             )}
           </div>
 
-          <div className="col-xl-4">
+          <div className="col-xl-3">
             <label className="form-label">Service location</label>
             <Autocomplete
               id="inputState19"
@@ -493,7 +507,7 @@ const UpdateEstimateForm = ({
               aria-label="Default select example"
             />
           </div>
-          <div className="col-xl-4">
+          <div className="col-xl-3">
             <label className="form-label">Contact</label>
 
             <Autocomplete
@@ -521,9 +535,6 @@ const UpdateEstimateForm = ({
               aria-label="Contact select"
             />
           </div>
-        </div>
-
-        <div className="row mt-3 mb-3">
           <div className="col-xl-3">
             <label className="form-label">Email</label>
             <input
@@ -535,17 +546,11 @@ const UpdateEstimateForm = ({
               placeholder={estimates.Email || "Email"}
             />
           </div>
-          <div className="col-xl-3">
-            <label className="form-label">Estimate No.</label>
-            <input
-              value={formData.EstimateNumber}
-              name="EstimateNumber"
-              onChange={handleInputChange}
-              type="text"
-              className="form-control form-control-sm"
-              placeholder={estimates.EstimateNumber || "Estimate Number"}
-            />
-          </div>
+        </div>
+
+        <div className="row mt-3 mb-3">
+          
+          
           <div className=" col-xl-3">
             <label className="form-label">Issued Date</label>
             <input
@@ -911,6 +916,7 @@ const UpdateEstimateForm = ({
               type="button"
               className="btn btn-primary me-1"
               onClick={handleSubmit}
+              disabled={disableSubmit}
             >
               Submit
             </button>

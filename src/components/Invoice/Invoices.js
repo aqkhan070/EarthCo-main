@@ -166,7 +166,7 @@ const Invoices = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="checkAll"
+                                  htmlFor="checkAll"
                                 ></label>
                               </div>
                             </th>
@@ -208,7 +208,7 @@ const Invoices = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
@@ -256,7 +256,7 @@ const Invoices = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
@@ -304,7 +304,7 @@ const Invoices = () => {
                                 />
                                 <label
                                   className="form-check-label"
-                                  for="customCheckBox2"
+                                  htmlFor="customCheckBox2"
                                 ></label>
                               </div>
                             </td>
