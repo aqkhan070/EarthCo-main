@@ -1,6 +1,117 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { Form } from "react-bootstrap";
+import axios from "axios";
+
 
 export const AddPO = ({setShowContent}) => {
+
+  const [formData, setFormData] = useState({});
+  const [customersList, setCustomersList] = useState([]);
+  const [showCustomersList, setShowCustomersList] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [sLList, setSLList] = useState([]);
+  const [contactList, setContactList] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedSL, setSelectedSL] = useState(null);
+
+  const handleAutocompleteChange = async (e) => {
+    // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
+    setInputValue(e.target.value);
+    try {
+      setShowCustomersList(true); // Show the list when typing
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`
+      );
+      console.log("customers search list", res.data);
+      setCustomersList(res.data);
+    } catch (error) {
+      console.log("customer search api error", error);
+    }
+  };
+  const selectCustomer = (customer) => {
+    setFormData({ ...formData, CustomerId: customer.UserId });
+
+    setInputValue(customer.CompanyName); // Add this line to update the input value
+    setShowCustomersList(false);
+  };
+
+  const fetchServiceLocations = async (id) => {
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+      )
+      .then((res) => {
+        setSLList(res.data);
+        console.log("service locations are", res.data);
+      })
+      .catch((error) => {
+        setSLList([]);
+        console.log("service locations fetch error", error);
+      });
+  };
+
+  const fetctContacts = async (id) => {
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
+      )
+      .then((res) => {
+        console.log("contacts data isss", res.data);
+        setContactList(res.data);
+      })
+      .catch((error) => {
+        setContactList([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+
+  const handleSLAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ServiceLocationId",
+        value: newValue ? newValue.ServiceLocationId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleContactAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ContactId",
+        value: newValue ? newValue.ContactId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleInputChange = (e, newValue) => {
+    const { name, value } = e.target;
+
+    setSelectedCustomer(newValue);
+    setSelectedSL(newValue);
+
+    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
+    
+
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    
+  };
+
+  useEffect(() => {
+    fetchServiceLocations(formData.CustomerId);
+    fetctContacts(formData.CustomerId);
+    console.log("main payload isss", formData);
+  }, [formData]);
+
+ 
+
   return (
     <>
       <div className="page-titles">
@@ -41,6 +152,92 @@ export const AddPO = ({setShowContent}) => {
 
         <div className="card">
           <div className="card-body">
+          <div className="row mb-2 mx-1">
+          <div className="col-xl-3">
+            <label className="form-label">Customer</label>
+            <input
+              type="text"
+              name="CustomerId"
+              value={inputValue} // Bind the input value state to the value of the input
+              onChange={handleAutocompleteChange}
+              placeholder="Customers"
+              className="form-control form-control-sm"
+            />
+            {showCustomersList && customersList && (
+              <ul className="po-search-results-container">
+                {customersList.map((customer) => (
+                  <li
+                    style={{ cursor: "pointer" }}
+                    key={customer.UserId}
+                    onClick={() => {
+                      selectCustomer(customer);
+                    }} // Use the selectCustomer function
+                  >
+                    {customer.CompanyName}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="col-xl-3">
+            <label className="form-label">Service location</label>
+            <Autocomplete
+              id="inputState19"
+              size="small"
+              options={sLList}
+              getOptionLabel={(option) => option.Name || ""}
+              value={
+                sLList.find(
+                  (customer) =>
+                    customer.ServiceLocationId === formData.ServiceLocationId
+                ) || null
+              }
+              onChange={handleSLAutocompleteChange}
+              isOptionEqualToValue={(option, value) =>
+                option.ServiceLocationId === value.ServiceLocationId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label=""
+                  placeholder="Service Locations"
+                  className="bg-white"
+                />
+              )}
+              aria-label="Default select example"
+            />
+          </div>
+          <div className="col-xl-3">
+            <label className="form-label">Contact</label>
+
+            <Autocomplete
+              id="inputState299"
+              size="small"
+              options={contactList}
+              getOptionLabel={(option) => option.FirstName || ""}
+              value={
+                contactList.find(
+                  (contact) => contact.ContactId === formData.ContactId
+                ) || null
+              }
+              onChange={handleContactAutocompleteChange}
+              isOptionEqualToValue={(option, value) =>
+                option.ContactId === value.ContactId
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label=""
+                  placeholder="Contacts"
+                  className="bg-white"
+                />
+              )}
+              aria-label="Contact select"
+            />
+          </div>
+          
+        </div>
             <div className="row">
               <div className="basic-form ">
                 <form>

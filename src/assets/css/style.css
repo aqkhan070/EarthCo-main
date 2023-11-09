@@ -53691,6 +53691,14 @@ cursor: pointer;
     max-height: 150px;
     overflow-y: scroll; /* Add a vertical scrollbar if necessary */
   }
+  .po-search-results-container{
+    position: absolute;
+    top:83px;    
+    z-index: 1;
+    background-color: #fff;   
+    max-height: 150px;
+    overflow-y: scroll;
+  }
 
   .contact-actions{
     padding-right: 0px !important;
