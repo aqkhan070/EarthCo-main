@@ -3,6 +3,8 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { Form } from "react-bootstrap";
 import axios from "axios";
+import Cookies from "js-cookie";
+
 const AddInvioces = ({ setShowContent }) => {
   const [formData, setFormData] = useState({});
   const [customersList, setCustomersList] = useState([]);
@@ -112,6 +114,73 @@ const AddInvioces = ({ setShowContent }) => {
     fetctContacts(formData.CustomerId);
     console.log("main payload isss", formData);
   }, [formData]);
+
+  // items 
+
+   // items 
+   const [itemsList, setItemsList] = useState([]);
+   const [itemInput, setItemInput] = useState({
+     Name: "",
+     Qty: 1,
+     Description: "",
+     Rate: null,
+   });
+   const [searchText, setSearchText] = useState("");
+   const [searchResults, setSearchResults] = useState([]);
+   const [selectedItem, setSelectedItem] = useState(null);
+   const [showItem, setShowItem] = useState(true);
+   const inputRef = useRef(null);
+   const token = Cookies.get("token");
+ 
+   useEffect(() => {
+     if (searchText) {
+       // Make an API request when the search text changes
+       const headers = {
+         Authorization: `Bearer ${token}`,
+       };
+       axios
+         .get(
+           `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+           { headers }
+         )
+         .then((response) => {
+           setSearchResults(response.data);
+         })
+         .catch((error) => {
+           console.error("Error fetching itemss data:", error);
+         });
+     } else {
+       setSearchResults([]); // Clear the search results when input is empty
+     }
+   }, [searchText]);
+ 
+   const handleItemChange = (event) => {
+     setShowItem(true);
+     setSearchText(event.target.value);
+ 
+     setSelectedItem(null); // Clear selected item when input changes
+   };
+ 
+   const handleItemClick = (item) => {
+     setSelectedItem(item);
+     setSearchText(item.ItemName); // Set the input text to the selected item's name
+     setItemInput({
+       ...itemInput,
+       Name: item.ItemName,
+       Description: item.SaleDescription,
+       Rate: item.SalePrice,
+     });
+     setShowItem(false);
+     setSearchResults([]); // Clear the search results
+ 
+     console.log("selected item is", itemInput);
+   };
+ 
+   const deleteItem = (id) => {
+     const updatedItemsList = itemsList.filter((item) => item.id !== id);
+     setItemsList(updatedItemsList);
+   };
+ 
 
   return (
     <>
@@ -404,138 +473,165 @@ const AddInvioces = ({ setShowContent }) => {
                           <div className="itemtitleBar">
                             <h4>Items</h4>
                           </div>
-                          <a
-                            className="btn btn-primary btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#basicModal"
-                            style={{ margin: "12px 20px" }}
-                          >
-                            + Add Items
-                          </a>
-                          <div className="table-responsive active-projects style-1">
-                            <table id="empoloyees-tblwrapper" className="table">
-                              <thead>
-                                <tr>
-                                  <th>Qty / Duration</th>
-                                  <th>Name</th>
-                                  <th>Description</th>
-                                  <th>Rate</th>
-                                  <th>Amount</th>
-                                  <th>Approved</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td>
-                                    <span>1001</span>
-                                  </td>
-                                  <td>
-                                    <div className="products">
-                                      <div>
-                                        <h6>Liam Antony</h6>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <span>Computer Science</span>
-                                  </td>
-                                  <td>
-                                    <span className="text-primary">20</span>
-                                  </td>
-                                  <td>
-                                    <span>20</span>
-                                  </td>
-
-                                  <td>
-                                    <span className="badge badge-success light border-0">
-                                      Active
+                          
+                          <div className="table-responsive active-projects style-1 mt-2">
+                    <table id="empoloyees-tblwrapper" className="table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Description</th>
+                          <th>Rate</th>
+                          <th>Qty / Duration</th>
+                          <th>Tax</th>
+                          <th>Amount</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          itemsList && itemsList.length > 0 ? (
+                            itemsList.map((item, index) => (
+                              <tr key={item.id || index}>
+                                {" "}
+                                {/* Make sure item has a unique 'id' or use index as a fallback */}
+                                <td>{item.Name}</td>
+                                <td>{item.Description}</td>
+                                <td>{item.Rate}</td>
+                                <td>{item.Qty}</td>
+                                <td></td>
+                                <td>{item.Rate * item.Qty}</td>
+                                <td>
+                                  <div className="badgeBox">
+                                    <span
+                                      className="actionBadge badge-danger light border-0 badgebox-size"
+                                      onClick={() => {
+                                        deleteItem(item.id);
+                                      }}
+                                    >
+                                      <span className="material-symbols-outlined badgebox-size">
+                                        delete
+                                      </span>
                                     </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <span>1001</span>
-                                  </td>
-                                  <td>
-                                    <div className="products">
-                                      <div>
-                                        <h6>Noah Oliver</h6>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <span>Computer Science</span>
-                                  </td>
-                                  <td>
-                                    <span className="text-primary">20</span>
-                                  </td>
-                                  <td>
-                                    <span>20</span>
-                                  </td>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="8">No items available</td>
+                            </tr>
+                          ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
+                        }
 
-                                  <td>
-                                    <span className="badge badge-danger light border-0">
-                                      Active
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <span>1001</span>
-                                  </td>
-                                  <td>
-                                    <div className="products">
-                                      <div>
-                                        <h6>Elijah James</h6>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <span>Computer Science</span>
-                                  </td>
-                                  <td>
-                                    <span className="text-primary">20</span>
-                                  </td>
-                                  <td>
-                                    <span>20</span>
-                                  </td>
+                        <tr>
+                          <td>
+                            <>
+                              <input
+                                type="text"
+                                placeholder="Search for items..."
+                                className="form-control form-control-sm"
+                                name="Name"
+                                value={searchText}
+                                onChange={handleItemChange}
+                                ref={inputRef}
+                              />
+                              {searchResults.length > 0 && (
+                                <ul style={{top : "13.1"}} className="items-search-results-container">
+                                  {searchResults.map((item) => (
+                                    <li
+                                      style={{ cursor: "pointer" }}
+                                      key={item.ItemId}
+                                      onClick={() => handleItemClick(item)}
+                                    >
+                                      {showItem && item.ItemName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </>
+                          </td>
+                          <td>
+                            <textarea
+                              name="Description"
+                              className="form-txtarea form-control form-control-sm"
+                              value={selectedItem?.SaleDescription || " "}
+                              rows="1"
+                              disabled
+                            ></textarea>
+                          </td>
 
-                                  <td>
-                                    <span className="badge badge-success light border-0">
-                                      Active
-                                    </span>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>
-                                    <span>1001</span>
-                                  </td>
-                                  <td>
-                                    <div className="products">
-                                      <div>
-                                        <h6>Liam Antony</h6>
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <span>Computer Science</span>
-                                  </td>
-                                  <td>
-                                    <span className="text-primary">20</span>
-                                  </td>
-                                  <td>
-                                    <span>20</span>
-                                  </td>
+                          <td>
+                            <div className="col-sm-9">
+                              <input
+                                name="Rate"
+                                value={
+                                  selectedItem?.SalePrice ||
+                                  itemInput.Rate ||
+                                  " "
+                                }
+                                className="form-control form-control-sm"
+                                placeholder="Rate"
+                                disabled
+                              />
+                            </div>
+                          </td>
 
-                                  <td>
-                                    <span className="badge badge-success light border-0">
-                                      Active
-                                    </span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
+                          <td>
+                            <input
+                              type="number"
+                              name="Qty"
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
+                              className="form-control form-control-sm"
+                              placeholder="Quantity"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="Tax"
+                              className="form-control form-control-sm"
+                              placeholder="Tax"
+                              disabled
+                            />
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.Rate * itemInput.Qty}
+                            </h5>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                // Adding the new item to the itemsList
+                                setItemsList((prevItems) => [
+                                  ...prevItems,
+                                  { ...itemInput, id: Date.now() }, // Ensure each item has a unique 'id'
+                                ]);
+                                // Reset the input fields
+                                setSearchText("");
+                                setSelectedItem(null);
+                                setItemInput({
+                                  Name: "",
+                                  Qty: 1,
+                                  Description: "",
+                                  Rate: null,
+                                });
+                              }}
+                            >
+                              Add
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                         </div>
                       </div>
                     </div>

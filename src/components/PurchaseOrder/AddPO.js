@@ -3,10 +3,9 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { Form } from "react-bootstrap";
 import axios from "axios";
+import Cookies from "js-cookie";
 
-
-export const AddPO = ({setShowContent}) => {
-
+export const AddPO = ({ setShowContent }) => {
   const [formData, setFormData] = useState({});
   const [customersList, setCustomersList] = useState([]);
   const [showCustomersList, setShowCustomersList] = useState(true);
@@ -20,8 +19,8 @@ export const AddPO = ({setShowContent}) => {
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
     setInputValue(e.target.value);
-    if(!e.target.value){
-      return
+    if (!e.target.value) {
+      return;
     }
     try {
       setShowCustomersList(true); // Show the list when typing
@@ -42,8 +41,8 @@ export const AddPO = ({setShowContent}) => {
   };
 
   const fetchServiceLocations = async (id) => {
-    if(!id){
-      return
+    if (!id) {
+      return;
     }
     axios
       .get(
@@ -60,8 +59,8 @@ export const AddPO = ({setShowContent}) => {
   };
 
   const fetctContacts = async (id) => {
-    if(!id){
-      return
+    if (!id) {
+      return;
     }
     axios
       .get(
@@ -106,11 +105,8 @@ export const AddPO = ({setShowContent}) => {
     setSelectedSL(newValue);
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
-    
 
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-
-    
   };
 
   useEffect(() => {
@@ -119,7 +115,70 @@ export const AddPO = ({setShowContent}) => {
     console.log("main payload isss", formData);
   }, [formData]);
 
- 
+  // items
+
+  const [itemsList, setItemsList] = useState([]);
+  const [itemInput, setItemInput] = useState({
+    Name: "",
+    Qty: 1,
+    Description: "",
+    Rate: null,
+  });
+  const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showItem, setShowItem] = useState(true);
+  const inputRef = useRef(null);
+  const token = Cookies.get("token");
+
+  useEffect(() => {
+    if (searchText) {
+      // Make an API request when the search text changes
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      axios
+        .get(
+          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+          { headers }
+        )
+        .then((response) => {
+          setSearchResults(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching itemss data:", error);
+        });
+    } else {
+      setSearchResults([]); // Clear the search results when input is empty
+    }
+  }, [searchText]);
+
+  const handleItemChange = (event) => {
+    setShowItem(true);
+    setSearchText(event.target.value);
+
+    setSelectedItem(null); // Clear selected item when input changes
+  };
+
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    setSearchText(item.ItemName); // Set the input text to the selected item's name
+    setItemInput({
+      ...itemInput,
+      Name: item.ItemName,
+      Description: item.SaleDescription,
+      Rate: item.SalePrice,
+    });
+    setShowItem(false);
+    setSearchResults([]); // Clear the search results
+
+    console.log("selected item is", itemInput);
+  };
+
+  const deleteItem = (id) => {
+    const updatedItemsList = itemsList.filter((item) => item.id !== id);
+    setItemsList(updatedItemsList);
+  };
 
   return (
     <>
@@ -157,96 +216,98 @@ export const AddPO = ({setShowContent}) => {
         </ol>
       </div>
 
-      <div className="add-item">        
-
+      <div className="add-item">
         <div className="card">
           <div className="card-body">
-          <div className="row mb-2 mx-1">
-          <div className="col-xl-3">
-            <label className="form-label">Customer</label>
-            <input
-              type="text"
-              name="CustomerId"
-              value={inputValue} // Bind the input value state to the value of the input
-              onChange={handleAutocompleteChange}
-              placeholder="Customers"
-              className="form-control form-control-sm"
-            />
-            {showCustomersList && customersList && (
-              <ul style={{top: "83px" }} className="search-results-container">
-                {customersList.map((customer) => (
-                  <li
-                    style={{ cursor: "pointer" }}
-                    key={customer.UserId}
-                    onClick={() => {
-                      selectCustomer(customer);
-                    }} // Use the selectCustomer function
+            <div className="row mb-2 mx-1">
+              <div className="col-xl-3">
+                <label className="form-label">Customer</label>
+                <input
+                  type="text"
+                  name="CustomerId"
+                  value={inputValue} // Bind the input value state to the value of the input
+                  onChange={handleAutocompleteChange}
+                  placeholder="Customers"
+                  className="form-control form-control-sm"
+                />
+                {showCustomersList && customersList && (
+                  <ul
+                    style={{ top: "83px" }}
+                    className="search-results-container"
                   >
-                    {customer.CompanyName}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    {customersList.map((customer) => (
+                      <li
+                        style={{ cursor: "pointer" }}
+                        key={customer.UserId}
+                        onClick={() => {
+                          selectCustomer(customer);
+                        }} // Use the selectCustomer function
+                      >
+                        {customer.CompanyName}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-          <div className="col-xl-3">
-            <label className="form-label">Service location</label>
-            <Autocomplete
-              id="inputState19"
-              size="small"
-              options={sLList}
-              getOptionLabel={(option) => option.Name || ""}
-              value={
-                sLList.find(
-                  (customer) =>
-                    customer.ServiceLocationId === formData.ServiceLocationId
-                ) || null
-              }
-              onChange={handleSLAutocompleteChange}
-              isOptionEqualToValue={(option, value) =>
-                option.ServiceLocationId === value.ServiceLocationId
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label=""
-                  placeholder="Service Locations"
-                  className="bg-white"
+              <div className="col-xl-3">
+                <label className="form-label">Service location</label>
+                <Autocomplete
+                  id="inputState19"
+                  size="small"
+                  options={sLList}
+                  getOptionLabel={(option) => option.Name || ""}
+                  value={
+                    sLList.find(
+                      (customer) =>
+                        customer.ServiceLocationId ===
+                        formData.ServiceLocationId
+                    ) || null
+                  }
+                  onChange={handleSLAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ServiceLocationId === value.ServiceLocationId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Service Locations"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Default select example"
                 />
-              )}
-              aria-label="Default select example"
-            />
-          </div>
-          <div className="col-xl-3">
-            <label className="form-label">Contact</label>
+              </div>
+              <div className="col-xl-3">
+                <label className="form-label">Contact</label>
 
-            <Autocomplete
-              id="inputState299"
-              size="small"
-              options={contactList}
-              getOptionLabel={(option) => option.FirstName || ""}
-              value={
-                contactList.find(
-                  (contact) => contact.ContactId === formData.ContactId
-                ) || null
-              }
-              onChange={handleContactAutocompleteChange}
-              isOptionEqualToValue={(option, value) =>
-                option.ContactId === value.ContactId
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label=""
-                  placeholder="Contacts"
-                  className="bg-white"
+                <Autocomplete
+                  id="inputState299"
+                  size="small"
+                  options={contactList}
+                  getOptionLabel={(option) => option.FirstName || ""}
+                  value={
+                    contactList.find(
+                      (contact) => contact.ContactId === formData.ContactId
+                    ) || null
+                  }
+                  onChange={handleContactAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ContactId === value.ContactId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Contacts"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Contact select"
                 />
-              )}
-              aria-label="Contact select"
-            />
-          </div>
-          
-        </div>
+              </div>
+            </div>
             <div className="row">
               <div className="basic-form ">
                 <form>
@@ -258,7 +319,7 @@ export const AddPO = ({setShowContent}) => {
                           id="inputState"
                           className="default-select form-control wide"
                         >
-                          <option defaultValue >Crest DeVille</option>
+                          <option defaultValue>Crest DeVille</option>
                           <option>Option 1</option>
                           <option>Option 2</option>
                           <option>Option 3</option>
@@ -324,7 +385,7 @@ export const AddPO = ({setShowContent}) => {
                             id="inputState"
                             className="default-select form-control wide"
                           >
-                            <option defaultValue >RM 1</option>
+                            <option defaultValue>RM 1</option>
                             <option>RM 2</option>
                             <option>RM 3</option>
                           </select>
@@ -378,263 +439,172 @@ export const AddPO = ({setShowContent}) => {
               </div>
             </div>
 
-            <div className="modal fade" id="basicModal">
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Add Item</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      data-bs-dismiss="modal"
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="basic-form">
-                      <form>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">Name</label>
-                          <div className="col-sm-9">
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Name"
-                            />
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Quantity
-                          </label>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              className="form-control"
-                              placeholder="Quantity"
-                            />
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">
-                            Description
-                          </label>
-                          <div className="col-sm-9">
-                            <textarea
-                              className="form-txtarea form-control"
-                              rows="3"
-                              id="comment"
-                            ></textarea>
-                          </div>
-                        </div>
-                        <div className="mb-3 row">
-                          <label className="col-sm-3 col-form-label">Rate</label>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              className="form-control"
-                              placeholder="Rate"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="row">
-                          <label className="col-sm-3 col-form-label">
-                            Item Total
-                          </label>
-                          <div className="col-sm-9">
-                            <h5>$100.00</h5>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-md light"
-                      data-bs-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                    <button type="button" className="btn btn-primary btn-md">
-                      Save
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
                   <div className="itemtitleBar">
                     <h4>Items</h4>
                   </div>
-                  <a
-                    className="btn btn-primary btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#basicModal"
-                    style={{margin: '12px 20px'}}
-                  >
-                    + Add Items
-                  </a>
-                  <div className="table-responsive active-projects style-1">
+
+                  <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
                         <tr>
-                          <th>Qty / Duration</th>
                           <th>Name</th>
                           <th>Description</th>
                           <th>Rate</th>
+                          <th>Qty / Duration</th>
+                          <th>Tax</th>
                           <th>Amount</th>
-                          <th>Approved</th>
-                          <th></th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
+                        {
+                          itemsList && itemsList.length > 0 ? (
+                            itemsList.map((item, index) => (
+                              <tr key={item.id || index}>
+                                {" "}
+                                {/* Make sure item has a unique 'id' or use index as a fallback */}
+                                <td>{item.Name}</td>
+                                <td>{item.Description}</td>
+                                <td>{item.Rate}</td>
+                                <td>{item.Qty}</td>
+                                <td></td>
+                                <td>{item.Rate * item.Qty}</td>
+                                <td>
+                                  <div className="badgeBox">
+                                    <span
+                                      className="actionBadge badge-danger light border-0 badgebox-size"
+                                      onClick={() => {
+                                        deleteItem(item.id);
+                                      }}
+                                    >
+                                      <span className="material-symbols-outlined badgebox-size">
+                                        delete
+                                      </span>
+                                    </span>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="8">No items available</td>
+                            </tr>
+                          ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
+                        }
+
                         <tr>
                           <td>
-                            <span>1001</span>
+                            <>
+                              <input
+                                type="text"
+                                placeholder="Search for items..."
+                                className="form-control form-control-sm"
+                                name="Name"
+                                value={searchText}
+                                onChange={handleItemChange}
+                                ref={inputRef}
+                              />
+                              {searchResults.length > 0 && (
+                                <ul style={{top : "13.1"}} className="items-search-results-container">
+                                  {searchResults.map((item) => (
+                                    <li
+                                      style={{ cursor: "pointer" }}
+                                      key={item.ItemId}
+                                      onClick={() => handleItemClick(item)}
+                                    >
+                                      {showItem && item.ItemName}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </>
                           </td>
                           <td>
-                            <div className="products">
-                              <div>
-                                <h6>Liam Antony</h6>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span>Computer Science</span>
-                          </td>
-                          <td>
-                            <span className="text-primary">20</span>
-                          </td>
-                          <td>
-                            <span>20</span>
+                            <textarea
+                              name="Description"
+                              className="form-txtarea form-control form-control-sm"
+                              value={selectedItem?.SaleDescription || " "}
+                              rows="1"
+                              disabled
+                            ></textarea>
                           </td>
 
                           <td>
-                            <span className="badge badge-success light border-0">
-                              Active
-                            </span>
-                          </td>
-                          <td>
-                            <a
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
-                            >
-                              <i className="fa fa-trash"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span>1001</span>
-                          </td>
-                          <td>
-                            <div className="products">
-                              <div>
-                                <h6>Noah Oliver</h6>
-                              </div>
+                            <div className="col-sm-9">
+                              <input
+                                name="Rate"
+                                value={
+                                  selectedItem?.SalePrice ||
+                                  itemInput.Rate ||
+                                  " "
+                                }
+                                className="form-control form-control-sm"
+                                placeholder="Rate"
+                                disabled
+                              />
                             </div>
-                          </td>
-                          <td>
-                            <span>Computer Science</span>
-                          </td>
-                          <td>
-                            <span className="text-primary">20</span>
-                          </td>
-                          <td>
-                            <span>20</span>
                           </td>
 
                           <td>
-                            <span className="badge badge-danger light border-0">
-                              Active
-                            </span>
+                            <input
+                              type="number"
+                              name="Qty"
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
+                              className="form-control form-control-sm"
+                              placeholder="Quantity"
+                            />
                           </td>
                           <td>
-                            <a
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
+                            <input
+                              type="number"
+                              name="Tax"
+                              className="form-control form-control-sm"
+                              placeholder="Tax"
+                              disabled
+                            />
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.Rate * itemInput.Qty}
+                            </h5>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                // Adding the new item to the itemsList
+                                setItemsList((prevItems) => [
+                                  ...prevItems,
+                                  { ...itemInput, id: Date.now() }, // Ensure each item has a unique 'id'
+                                ]);
+                                // Reset the input fields
+                                setSearchText("");
+                                setSelectedItem(null);
+                                setItemInput({
+                                  Name: "",
+                                  Qty: 1,
+                                  Description: "",
+                                  Rate: null,
+                                });
+                              }}
                             >
-                              <i className="fa fa-trash"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span>1001</span>
-                          </td>
-                          <td>
-                            <div className="products">
-                              <div>
-                                <h6>Elijah James</h6>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span>Computer Science</span>
-                          </td>
-                          <td>
-                            <span className="text-primary">20</span>
-                          </td>
-                          <td>
-                            <span>20</span>
-                          </td>
-
-                          <td>
-                            <span className="badge badge-success light border-0">
-                              Active
-                            </span>
-                          </td>
-                          <td>
-                            <a
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
-                            >
-                              <i className="fa fa-trash"></i>
-                            </a>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span>1001</span>
-                          </td>
-                          <td>
-                            <div className="products">
-                              <div>
-                                <h6>Liam Antony</h6>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <span>Computer Science</span>
-                          </td>
-                          <td>
-                            <span className="text-primary">20</span>
-                          </td>
-                          <td>
-                            <span>20</span>
-                          </td>
-
-                          <td>
-                            <span className="badge badge-success light border-0">
-                              Active
-                            </span>
-                          </td>
-                          <td>
-                            <a
-                              href="#"
-                              className="btn btn-danger shadow btn-xs sharp"
-                            >
-                              <i className="fa fa-trash"></i>
-                            </a>
+                              Add
+                            </button>
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -644,14 +614,9 @@ export const AddPO = ({setShowContent}) => {
                   <div className="itemtitleBar">
                     <h4>Add lines</h4>
                   </div>
-                  <a
-                    className="btn btn-primary btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#basicModal"
-                    style={{margin: '12px 20px'}}
-                  >
+                  <button className="btn btn-primary btn-sm m-4">
                     + Add Items
-                  </a>
+                  </button>
                   <div className="table-responsive active-projects style-1">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
@@ -742,52 +707,50 @@ export const AddPO = ({setShowContent}) => {
                     </div>
                     <div className="col-xl-12 col-lg-12">
                       <div className="basic-form">
-                       
-                          <h4 className="card-title">Attachments</h4>
-                          <div className="dz-default dlab-message upload-img mb-3">
-                            <form action="#" className="dropzone">
-                              <svg
-                                width="41"
-                                height="40"
-                                viewBox="0 0 41 40"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M20.5 20V35"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                              </svg>
-                              <div className="fallback">
-                                <input name="file" type="file" multiple="" />
-                              </div>
-                            </form>
-                          </div>
-                       
+                        <h4 className="card-title">Attachments</h4>
+                        <div className="dz-default dlab-message upload-img mb-3">
+                          <form action="#" className="dropzone">
+                            <svg
+                              width="41"
+                              height="40"
+                              viewBox="0 0 41 40"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M20.5 20V35"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="fallback">
+                              <input name="file" type="file" multiple="" />
+                            </div>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -851,10 +814,15 @@ export const AddPO = ({setShowContent}) => {
                     Save
                   </button>
                 </a>
-               
-             
-                  <button className="btn btn-danger light ms-1" onClick={() => {setShowContent(true)}}>Cancel</button>
-                
+
+                <button
+                  className="btn btn-danger light ms-1"
+                  onClick={() => {
+                    setShowContent(true);
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
