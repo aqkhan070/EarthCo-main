@@ -494,13 +494,13 @@ const HeaderExp = () => {
                       </svg>
                     </NavLink>
                   </li>
-                  <NavLink to="/" style={{ display: "contents" }}>
                     <li className="nav-item align-items-center header-border">
+                  <NavLink to="/" style={{ display: "contents" }}>
                       <button href="/" className="btn btn-primary btn-sm">
                         Logout
                       </button>
-                    </li>
                   </NavLink>
+                    </li>
                   <li className="nav-item ps-3">
                     <div className="dropdown header-profile2">
                       <NavLink
@@ -678,25 +678,27 @@ const HeaderExp = () => {
 
                               <span className="ms-2">Settings </span>
                             </li>
-                            <NavLink to="/">
-                              <li className="dropdown-item ai-icon ">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="var(--primary)"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                  <polyline points="16 17 21 12 16 7"></polyline>
-                                  <line x1="21" y1="12" x2="9" y2="12"></line>
-                                </svg>
-                                <span className="ms-2">Logout </span>
-                              </li>
+                              <NavLink to="/">
+                            <ul>
+                                <li className="dropdown-item ai-icon ">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="var(--primary)"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                  </svg>
+                                  <span className="ms-2">Logout </span>
+                                </li>
+                            </ul>
                             </NavLink>
                           </div>
                         </div>

@@ -580,7 +580,7 @@ const UpdateSRForm = ({
                         <option value={null}>Choose types...</option>
                         {sRTypes.map((type) => {
                           return (
-                            <option value={type.SRTypeId}>{type.Type}</option>
+                            <option key={type.SRTypeId} value={type.SRTypeId}>{type.Type}</option>
                           );
                         })}
                       </Form.Select>
@@ -655,22 +655,7 @@ const UpdateSRForm = ({
                           />
                         )}
                       />
-                      {/* <Form.Select
-                        name="Assign"
-                        size="lg"
-                        className="bg-white"
-                        value={SRData.ServiceRequestData.Assign || ""}
-                      >
-                        <option value={null}>Choose...</option>
-                        {staffData.map((staff) => {
-                          return (
-                            <option key={staff.UserId} value={staff.UserId}>
-                              {staff.FirstName}
-                            </option>
-                          );
-                        })}
-                      </Form.Select> */}
-                    </div>
+                                         </div>
                     <div className="col-md-6 pt-4">
                       {" "}
                       {/* Adjust the column size as needed */}

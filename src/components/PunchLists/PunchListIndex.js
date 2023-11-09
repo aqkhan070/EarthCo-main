@@ -130,17 +130,17 @@ const PunchListIndex = () => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
         stroke="#888888"
-        strokeLinejoin="round"
+        strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
       <path
         d="M5.85754 12.2577H13.8646"
         stroke="#888888"
-        strokeLinejoin="round"
+        strokeLinecap="round"
         strokeLinejoin="round"
       ></path>
     </svg>
@@ -186,7 +186,7 @@ const PunchListIndex = () => {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
-                      strokeLinejoin="round"
+                      strokeLinecap="round"
                       strokeLinejoin="round"
                       className="feather feather-file-text"
                     >
@@ -220,7 +220,7 @@ const PunchListIndex = () => {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
-                      strokeLinejoin="round"
+                      strokeLinecap="round"
                       strokeLinejoin="round"
                       className="feather feather-database"
                     >

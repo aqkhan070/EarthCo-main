@@ -1180,7 +1180,7 @@ const UpdateCustomer = ({
                                     <th>Phone</th>
                                     <th>Address</th>
 
-                                    <th>Actions</th>
+                                    <th className="actions-head " >Actions</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -1192,7 +1192,7 @@ const UpdateCustomer = ({
                                       <td>{contact.Email}</td>
                                       <td>{contact.Phone}</td>
                                       <td>{contact.Address}</td>
-                                      <td style={{ cursor: "pointer" }}>
+                                      <td className="contact-actions" style={{ cursor: "pointer" }}>
                                         <Create
                                           className="custom-create-icon"
                                           data-bs-toggle="modal"
@@ -1326,7 +1326,7 @@ const UpdateCustomer = ({
                                     <th>Phone</th>
                                     <th>Alt Phone</th>
                                     <th>Bill to Customer</th>
-                                    <th>Actions</th>
+                                    <th className="actions-head">Actions</th>
                                   </tr>
                                 </thead>
                                 <tbody>
