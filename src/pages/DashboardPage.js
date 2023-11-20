@@ -42,13 +42,18 @@ import PurchaseOrder from "../components/PurchaseOrder/PurchaseOrder";
 import Bills from "../components/Bill/Bills";
 import Invoices from "../components/Invoice/Invoices";
 import Items from "../components/Items/Items";
+import Cookies from "js-cookie";
 
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
+  const token = Cookies.get("token");
+
 
   return (
     <>
-      <HeaderExp />
+    {token ?
+    <>
+    <HeaderExp />
       <SideBar />
 
       <div className="content-body" id="contentBody">
@@ -110,6 +115,10 @@ const DashboardPage = () => {
           <Route path="Landscape/PunchList-Report" element={<Landscape />} />
         </Routes>
       </div>
+    </>: <div><h1>Access is denied</h1></div>
+    }
+      
+
       <Footer />
     </>
   );

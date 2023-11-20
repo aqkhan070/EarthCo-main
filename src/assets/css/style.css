@@ -38839,7 +38839,12 @@ body>* {
     margin: 0;
     font-size: 17px;
     margin-right: 2rem;
+    /* margin-left: 0.5em; */
     color: var(--secondary);
+}
+.bc-title-mergin{
+    margin-left: 0.5em !important;
+
 }
 
 @media only screen and (max-width: 35.9375rem) {
@@ -39103,9 +39108,9 @@ button:focus {
 }
 
 .light.btn-danger {
-    background-color: #ffdede;
-    border-color: #ffdede;
-    color: #FF5E5E;
+    background-color: #ff1a1a;
+    border-color: #ff1a1a;
+    color: #fff;
 }
 
 .light.btn-danger g [fill] {
@@ -39118,8 +39123,8 @@ button:focus {
 }
 
 .light.btn-danger:hover {
-    background-color: #FF5E5E;
-    border-color: #FF5E5E;
+    background-color: #D71313;
+    border-color: #b30000;
     color: #fff;
 }
 
@@ -53518,6 +53523,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
 .add-customer-btn{
     padding-top: 20px;
     padding-left: -10px !important;    
+    margin-right: 2em;
 }
 .search-wrap{
     margin-bottom: 2em;
@@ -53676,20 +53682,32 @@ cursor: pointer;
   
   .estm-items-search-results-container {
     position: absolute;
-    top:33em;
-    padding : 0.5em 1em ;
+    top:33.5em;
+    /* padding : 0.5em 1em ; */
     z-index: 1;
     background-color: #fff;   
     max-height: 150px;
     overflow-y: scroll; /* Add a vertical scrollbar if necessary */
   }  
 
+  .estm-AC-search-results-container {
+    position: absolute;
+    top:46.3em;
+    /* padding : 0.5em 1em ; */
+    z-index: 1;
+    background-color: #fff;   
+    max-height: 150px;
+    overflow-y: scroll; /* Add a vertical scrollbar if necessary */
+  } 
+
   .contact-actions{
     padding-right: 0px !important;
+    margin-left: 5em !important;
   }
 
   .actions-head{
     padding-right: 4em !important;
+    max-width: 3em;
   }
   .items-search-results-container{
     position: absolute;   
@@ -53699,3 +53717,60 @@ cursor: pointer;
     max-height: 150px;
     overflow-y: scroll; /* Add a vertical scrollbar if necessary */
   }  
+
+  .custom-table-row {
+  height: 30px; /* Adjust the height as needed */
+}
+
+/* Apply the class to table rows and inputs */
+.custom-table-row tr,
+.custom-table-row input {
+  height:50%; 
+}
+
+.custom-table {
+    border-collapse: collapse;
+    border-spacing: 0; /* Set spacing between rows to 0 */
+  }
+  
+  .custom-table tr {
+    border: none !important; /* Remove bottom border on each table row */
+  }
+
+  .css-19kzrtu{
+    padding: 1em 0em 1em 0em!important;
+  }
+
+  .image-container {
+    position: relative;
+  }
+  
+  .file-delete-button {
+    cursor: pointer;
+
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    visibility: hidden; /* Initially hidden */
+  }
+  
+  .image-container:hover .file-delete-button {
+    visibility: visible; /* Show on hover */
+  }
+
+  .sr-item-input{
+    width: 15em !important;
+    
+  }
+
+  .css-4b67si-MuiSvgIcon-root{
+    color : #7c9c3d !important;
+  }
+  .css-1t257uo-MuiButtonBase-root-MuiButton-root{
+    padding: 0px !important;
+    min-width: 0px !important;
+  }
+  .SRmap{
+    width: 40em;
+    height: 30em;
+  }

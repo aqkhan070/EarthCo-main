@@ -1,12 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Form } from "react-bootstrap";
 import axios from "axios";
 import Cookies from "js-cookie";
+import BillTitle from "./BillTitle";
+import formatDate from "../../custom/FormatDate";
+import Alert from "@mui/material/Alert";
 
 
-const AddBill = ({ setshowContent }) => {
+const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess }) => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
   const [formData, setFormData] = useState({});
   const [customersList, setCustomersList] = useState([]);
@@ -17,17 +23,43 @@ const AddBill = ({ setshowContent }) => {
   const [contactList, setContactList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSL, setSelectedSL] = useState(null);
+  const [billNumber, setBillNumber] = useState(0);
+
+  const [vendorList, setVendorList] = useState([]);
+  const [supplierAddress, setSupplierAddress] = useState("");
+  const [tags, setTags] = useState([]);
+  const [terms, setTerms] = useState([]);
+
+
+
+  const getBill = async () => {
+    try {
+      const res = await axios.get( `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${selectedBill}`,{headers})
+      setFormData(res.data.Data)
+      setItemsList(res.data.ItemData)
+      setFormData((prevData) => ({ ...prevData, BillId: selectedBill }));
+      console.log("selected bill is",res.data)
+    } catch (error) {
+      console.log("api call error", error)
+    }
+  };
+  useEffect(() => {
+    
+    getBill()
+    console.log("selectedBill izzzz", selectedBill )
+  },[selectedBill])
 
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
     setInputValue(e.target.value);
-    if(!e.target.value){
-      return
+    if (!e.target.value) {
+      return;
     }
     try {
       setShowCustomersList(true); // Show the list when typing
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`,
+        { headers }
       );
       console.log("customers search list", res.data);
       setCustomersList(res.data);
@@ -43,12 +75,13 @@ const AddBill = ({ setshowContent }) => {
   };
 
   const fetchServiceLocations = async (id) => {
-    if(!id){
-      return
+    if (!id) {
+      return;
     }
     axios
       .get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`,
+        { headers }
       )
       .then((res) => {
         setSLList(res.data);
@@ -61,12 +94,13 @@ const AddBill = ({ setshowContent }) => {
   };
 
   const fetctContacts = async (id) => {
-    if(!id){
-      return
+    if (!id) {
+      return;
     }
     axios
       .get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
+        { headers }
       )
       .then((res) => {
         console.log("contacts data isss", res.data);
@@ -100,6 +134,91 @@ const AddBill = ({ setshowContent }) => {
     handleInputChange(simulatedEvent);
   };
 
+  const fetchVendors = async () => {
+    axios
+      .get(`https://earthcoapi.yehtohoga.com/api/Supplier/GetSupplierList`, {
+        headers,
+      })
+      .then((res) => {
+        console.log("tags are ", res.data);
+        setVendorList(res.data);
+      })
+      .catch((error) => {
+        setVendorList([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+  const handleVendorAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "SupplierId",
+        value: newValue ? newValue.SupplierId : "",
+      },
+    };
+    if (newValue) {
+      setSupplierAddress(newValue.Address);
+      handleInputChange(simulatedEvent);
+    } else {
+      // Handle the case where newValue is null or undefined
+      setSupplierAddress(""); // Set the supplierAddress to an appropriate default value
+      // Optionally, you can call handleInputChange with an appropriate event object
+      // handleInputChange(simulatedEvent);
+    }
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const fetchTags = async () => {
+    axios
+      .get(`https://earthcoapi.yehtohoga.com/api/Estimate/GetTagList`, {
+        headers,
+      })
+      .then((res) => {
+        console.log("tags are ", res.data);
+        setTags(res.data);
+      })
+      .catch((error) => {
+        setTags([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+
+  const handleTagAutocompleteChange = (event, newValues) => {
+    const tagString = newValues.map((tag) => tag.Tag).join(", ");
+
+    setFormData((prevData) => ({
+      ...prevData,
+      Tags: tagString,
+    }));
+  };
+
+  const fetchTerms = async () => {
+    axios
+      .get(`https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetTermList`, {
+        headers,
+      })
+      .then((res) => {
+        console.log("tags are ", res.data);
+        setTerms(res.data);
+      })
+      .catch((error) => {
+        setTerms([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+  const handleTermsAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    const simulatedEvent = {
+      target: {
+        name: "TermId",
+        value: newValue ? newValue.TermId : "",
+      },
+    };
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
+    handleInputChange(simulatedEvent);
+  };
+
   const handleInputChange = (e, newValue) => {
     const { name, value } = e.target;
 
@@ -107,11 +226,25 @@ const AddBill = ({ setshowContent }) => {
     setSelectedSL(newValue);
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
-    
 
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value, BillId: selectedBill, }));
+  };
+  const handleChange = (e) => {
+    // Extract the name and value from the event target
+    const { name, value } = e.target;
 
-    
+    // Create a new copy of formData with the updated key-value pair
+    const updatedFormData = {
+      ...formData,
+      [name]: value,
+      PurchaseOrderId: 1,
+      Amount: 0.0,
+      Currency: "usd",
+      BillId: selectedBill,
+    };
+
+    // Update the formData state
+    setFormData(updatedFormData);
   };
 
   useEffect(() => {
@@ -119,8 +252,13 @@ const AddBill = ({ setshowContent }) => {
     fetctContacts(formData.CustomerId);
     console.log("main payload isss", formData);
   }, [formData]);
+  useEffect(() => {
+    fetchVendors();
+    fetchTags();
+    fetchTerms();
+  }, []);
 
-  // items 
+  // items
   const [itemsList, setItemsList] = useState([]);
   const [itemInput, setItemInput] = useState({
     Name: "",
@@ -132,15 +270,11 @@ const AddBill = ({ setshowContent }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showItem, setShowItem] = useState(true);
+  const [totalAmount, setTotalAmount] = useState(0);
   const inputRef = useRef(null);
-  const token = Cookies.get("token");
 
   useEffect(() => {
     if (searchText) {
-      // Make an API request when the search text changes
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
       axios
         .get(
           `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
@@ -169,6 +303,7 @@ const AddBill = ({ setshowContent }) => {
     setSearchText(item.ItemName); // Set the input text to the selected item's name
     setItemInput({
       ...itemInput,
+      ItemId: item.ItemId,
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
@@ -180,52 +315,127 @@ const AddBill = ({ setshowContent }) => {
   };
 
   const deleteItem = (id) => {
-    const updatedItemsList = itemsList.filter((item) => item.id !== id);
+    const updatedItemsList = itemsList.filter((item) => item.ItemId !== id);
     setItemsList(updatedItemsList);
   };
 
+  const calculateTotalAmount = () => {
+    const total = itemsList.reduce((acc, item) => {
+      return acc + item.Rate * item.Qty;
+    }, 0);
+    return total;
+  };
+  useEffect(() => {
+    // Calculate the total amount and update the state
+    const total = calculateTotalAmount();
+    setTotalAmount(total);
+  }, [itemsList]);
 
+  // files
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    const newFileObjects = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileObject = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+      newFileObjects.push(fileObject);
+    }
+
+    setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    console.log("Added files:", newFileObjects);
+  };
+
+  // submit handler
+  const [emptyFieldsError, setEmptyFieldsError] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitClicked(true);
+
+    
+    const postData = new FormData();
+
+    // Merge the current items with the new items for EstimateData
+    const BillData = {
+      ...formData,
+      BillId: selectedBill,
+      tblBillItems: itemsList,
+
+      // CreatedBy: 2,
+      // EditBy: 2,
+      // isActive: true,
+    };
+
+    console.log("BillData:", BillData);
+    // console.log("data:", data);
+
+    postData.append("BillData", JSON.stringify(BillData));
+    console.log(JSON.stringify(BillData));
+    // Appending files to postData
+    selectedFiles.forEach((fileObj) => {
+      postData.append("Files", fileObj);
+    });
+
+    submitData(postData);
+  };
+
+  // const appendFilesToFormData = (formData) => {
+  //   Files.forEach((fileObj) => {
+  //     formData.append("Files", fileObj.actualFile);
+  //   });
+  // };
+
+  const submitData = async (postData) => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data", // Important for multipart/form-data requests
+    };
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Bill/AddBill",
+        postData,
+        {
+          headers,
+        }
+      );
+      fetchBills();
+      setshowContent(true);
+      setSubmitSuccess(response.data.Message)
+      setTimeout(() => {
+      setSubmitSuccess("")
+        
+      }, 4000);
+
+      console.log("Data submitted successfully:", response.data.Message);
+    } catch (error) {
+      
+      setErrorMessage(error.message);
+      console.error("API Call Error:", error);
+    }
+
+    // Logging FormData contents (for debugging purposes)
+    for (let [key, value] of postData.entries()) {
+      console.log("fpayload....", key, value);
+    }
+    // window.location.reload();
+
+    // console.log("post data izzz",postData);
+  };
 
   return (
     <>
-      <div className="page-titles">
-        <ol className="breadcrumb">
-          <div className="menu-icon">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.64111 13.5497L9.38482 9.9837L12.5145 12.4421L15.1995 8.97684"
-                stroke="#888888"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <ellipse
-                cx="18.3291"
-                cy="3.85021"
-                rx="1.76201"
-                ry="1.76201"
-                stroke="#888888"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M13.6808 2.86012H7.01867C4.25818 2.86012 2.54651 4.81512 2.54651 7.57561V14.9845C2.54651 17.7449 4.22462 19.6915 7.01867 19.6915H14.9058C17.6663 19.6915 19.3779 17.7449 19.3779 14.9845V8.53213"
-                stroke="#888888"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <li>
-            <h5 className="bc-title">Bill # 1001</h5>
-          </li>
-        </ol>
-      </div>
+      <BillTitle billNumber={billNumber} />
 
       <div className="add-item">
         {/* <div className="tabSwitch">
@@ -240,119 +450,144 @@ const AddBill = ({ setshowContent }) => {
           </button>
         </div> */}
 
-        <div className="card">
-          <div className="card-body">
-          <div className="row mb-2 mx-1">
-          <div className="col-xl-3">
-            <label className="form-label">Customer</label>
-            <input
-              type="text"
-              name="CustomerId"
-              value={inputValue} // Bind the input value state to the value of the input
-              onChange={handleAutocompleteChange}
-              placeholder="Customers"
-              className="form-control form-control-sm"
-            />
-            {showCustomersList && customersList && (
-              <ul style={{top: "83px" }} className="search-results-container">
-                {customersList.map((customer) => (
-                  <li
-                    style={{ cursor: "pointer" }}
-                    key={customer.UserId}
-                    onClick={() => {
-                      selectCustomer(customer);
-                    }} // Use the selectCustomer function
+        <div className="card"><div className="itemtitleBar ">
+              <h4>Bill Details</h4>
+            </div>
+          <div className="">
+          {errorMessage && (
+                    <Alert severity="error">
+                      {errorMessage? errorMessage: "Error Submitting Bill Data"}
+                    </Alert>
+                  )}
+            
+            {/* <div className="row mb-2 mx-1">
+              <div className="col-xl-3">
+                <label className="form-label">Customer</label>
+                <input
+                  type="text"
+                  name="CustomerId"
+                  value={inputValue} // Bind the input value state to the value of the input
+                  onChange={handleAutocompleteChange}
+                  placeholder="Customers"
+                  className="form-control form-control-sm"
+                />
+                {showCustomersList && customersList && (
+                  <ul
+                    style={{ top: "83px" }}
+                    className="search-results-container"
                   >
-                    {customer.CompanyName}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    {customersList.map((customer) => (
+                      <li
+                        style={{ cursor: "pointer" }}
+                        key={customer.UserId}
+                        onClick={() => {
+                          selectCustomer(customer);
+                        }} // Use the selectCustomer function
+                      >
+                        {customer.CompanyName}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
 
-          <div className="col-xl-3">
-            <label className="form-label">Service location</label>
-            <Autocomplete
-              id="inputState19"
-              size="small"
-              options={sLList}
-              getOptionLabel={(option) => option.Name || ""}
-              value={
-                sLList.find(
-                  (customer) =>
-                    customer.ServiceLocationId === formData.ServiceLocationId
-                ) || null
-              }
-              onChange={handleSLAutocompleteChange}
-              isOptionEqualToValue={(option, value) =>
-                option.ServiceLocationId === value.ServiceLocationId
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label=""
-                  placeholder="Service Locations"
-                  className="bg-white"
+              <div className="col-xl-3">
+                <label className="form-label">Service location</label>
+                <Autocomplete
+                  id="inputState19"
+                  size="small"
+                  options={sLList}
+                  getOptionLabel={(option) => option.Name || ""}
+                  value={
+                    sLList.find(
+                      (customer) =>
+                        customer.ServiceLocationId ===
+                        formData.ServiceLocationId
+                    ) || null
+                  }
+                  onChange={handleSLAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ServiceLocationId === value.ServiceLocationId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Service Locations"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Default select example"
                 />
-              )}
-              aria-label="Default select example"
-            />
-          </div>
-          <div className="col-xl-3">
-            <label className="form-label">Contact</label>
+              </div>
+              <div className="col-xl-3">
+                <label className="form-label">Contact</label>
 
-            <Autocomplete
-              id="inputState299"
-              size="small"
-              options={contactList}
-              getOptionLabel={(option) => option.FirstName || ""}
-              value={
-                contactList.find(
-                  (contact) => contact.ContactId === formData.ContactId
-                ) || null
-              }
-              onChange={handleContactAutocompleteChange}
-              isOptionEqualToValue={(option, value) =>
-                option.ContactId === value.ContactId
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label=""
-                  placeholder="Contacts"
-                  className="bg-white"
+                <Autocomplete
+                  id="inputState299"
+                  size="small"
+                  options={contactList}
+                  getOptionLabel={(option) => option.FirstName || ""}
+                  value={
+                    contactList.find(
+                      (contact) => contact.ContactId === formData.ContactId
+                    ) || null
+                  }
+                  onChange={handleContactAutocompleteChange}
+                  isOptionEqualToValue={(option, value) =>
+                    option.ContactId === value.ContactId
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label=""
+                      placeholder="Contacts"
+                      className="bg-white"
+                    />
+                  )}
+                  aria-label="Contact select"
                 />
-              )}
-              aria-label="Contact select"
-            />
-          </div>
-          
-        </div>
-            <div className="row">
+              </div>
+            </div> */}
+            <div className="row mt-2">
               <div className="basic-form ">
                 <form>
                   <div className="row">
                     <div className="mb-3 col-md-3">
                       <div className="col-md-12">
                         <label className="form-label">Vendor</label>
-                        <select
-                          id="inputState"
-                          className="default-select form-control wide"
-                        >
-                          <option defaultValue>Crest DeVille</option>
-                          <option>Option 1</option>
-                          <option>Option 2</option>
-                          <option>Option 3</option>
-                        </select>
+                        <Autocomplete
+                          id="inputState19"
+                          size="small"
+                          options={vendorList}
+                          getOptionLabel={(option) => option.SupplierName || ""}
+                          value={
+                            vendorList.find(
+                              (customer) =>
+                                customer.SupplierId === formData.SupplierId
+                            ) || null
+                          }
+                          onChange={handleVendorAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.SupplierId === value.SupplierId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Vendors"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Default select example"
+                        />
                       </div>
                       <div className="col-md-12">
                         <div className="c-details">
                           <ul>
                             <li>
                               <span>Vendor Address</span>
-                              <p>1225 E.Wakeham</p>
-                              <p>Santa Ana, CA 92705</p>
-                              <p>USA</p>
+                              <p>{supplierAddress}</p>
                             </li>
                             <li>
                               <span>Sipping </span>
@@ -369,9 +604,11 @@ const AddBill = ({ setshowContent }) => {
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Bill #</label>
                           <div className="input-group mb-2">
-                            <div className="input-group-text">#</div>{" "}
                             <input
                               type="text"
+                              name="BillNumber"
+                              value={formData.BillNumber}
+                              onChange={handleChange}
                               className="form-control"
                               placeholder="Leave blank to auto complete"
                             />
@@ -379,36 +616,97 @@ const AddBill = ({ setshowContent }) => {
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Tags</label>
-                          <input type="text" className="form-control" />
+                          <Autocomplete
+                            id="inputState19"
+                            size="small"
+                            multiple
+                            options={tags}
+                            getOptionLabel={(option) => option.Tag || ""}
+                            value={tags.filter((tag) =>
+                              (formData.Tags
+                                ? formData.Tags.split(", ")
+                                : []
+                              ).includes(tag.Tag)
+                            )}
+                            onChange={handleTagAutocompleteChange}
+                            isOptionEqualToValue={(option, value) =>
+                              option.Tag === value.Tag
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label=""
+                                placeholder="Tags"
+                                className="bg-white"
+                              />
+                            )}
+                            aria-label="Default select example"
+                          />
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Date</label>
                           <div className="input-group mb-2">
-                            <div className="input-group-text">
-                              <i className="fa fa-calendar "></i>
-                            </div>
-                            <input type="date" className="form-control" />
+                            <input
+                              type="date"
+                              className="form-control"
+                              name="BillDate"
+                              value={formatDate(formData.BillDate)}
+                              onChange={handleChange}
+                            />
                           </div>
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Due</label>
                           <div className="input-group mb-2">
-                            <div className="input-group-text">
-                              <i className="fa fa-calendar "></i>
-                            </div>
-                            <input type="date" className="form-control" />
+                            <input
+                              type="date"
+                              className="form-control"
+                              name="DueDate"
+                              value={formatDate(formData.DueDate)}
+                              onChange={handleChange}
+                            />
                           </div>
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Purchase Order</label>
                           <div className="input-group mb-2">
-                            <div className="input-group-text">#</div>
-                            <input type="text" className="form-control" />
+                            <input
+                              type="text"
+                              name="PurchaseOrderNumber"
+                              value={formData.PurchaseOrderNumber}
+                              onChange={handleChange}
+                              className="form-control"
+                              placeholder="Purchase Order Number"
+                            />
                           </div>
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Terms</label>
-                          <input type="text" className="form-control" />
+                          <Autocomplete
+                            id="inputState19"
+                            size="small"
+                            options={terms}
+                            getOptionLabel={(option) => option.Term || ""}
+                            value={
+                              terms.find(
+                                (customer) =>
+                                  customer.TermId === formData.TermId
+                              ) || null
+                            }
+                            onChange={handleTermsAutocompleteChange}
+                            isOptionEqualToValue={(option, value) =>
+                              option.TermId === value.TermId
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label=""
+                                placeholder="Terms"
+                                className="bg-white"
+                              />
+                            )}
+                            aria-label="Default select example"
+                          />
                         </div>
                       </div>
                     </div>
@@ -417,15 +715,13 @@ const AddBill = ({ setshowContent }) => {
               </div>
             </div>
 
-           
-
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
                   <div className="itemtitleBar">
                     <h4>Items</h4>
                   </div>
-                  
+
                   <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
@@ -443,21 +739,21 @@ const AddBill = ({ setshowContent }) => {
                         {
                           itemsList && itemsList.length > 0 ? (
                             itemsList.map((item, index) => (
-                              <tr key={item.id || index}>
+                              <tr key={item.ItemId}>
                                 {" "}
                                 {/* Make sure item has a unique 'id' or use index as a fallback */}
                                 <td>{item.Name}</td>
                                 <td>{item.Description}</td>
                                 <td>{item.Rate}</td>
                                 <td>{item.Qty}</td>
-                                <td></td>
+                                <td>NaN</td>
                                 <td>{item.Rate * item.Qty}</td>
                                 <td>
                                   <div className="badgeBox">
                                     <span
                                       className="actionBadge badge-danger light border-0 badgebox-size"
                                       onClick={() => {
-                                        deleteItem(item.id);
+                                        deleteItem(item.ItemId);
                                       }}
                                     >
                                       <span className="material-symbols-outlined badgebox-size">
@@ -469,62 +765,63 @@ const AddBill = ({ setshowContent }) => {
                               </tr>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="8">No items available</td>
-                            </tr>
+                            <></>
                           ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
                         }
 
                         <tr>
                           <td>
                             <>
-                              <input
-                                type="text"
-                                placeholder="Search for items..."
-                                className="form-control form-control-sm"
-                                name="Name"
-                                value={searchText}
-                                onChange={handleItemChange}
-                                ref={inputRef}
+                              <Autocomplete
+                                id="search-items"
+                                options={searchResults}
+                                getOptionLabel={(item) => item.ItemName}
+                                value={selectedItem}
+                                onChange={(event, newValue) => {
+                                  if (newValue) {
+                                    handleItemClick(newValue);
+                                  } else {
+                                    setSelectedItem(null);
+                                  }
+                                }}
+                                inputValue={searchText}
+                                onInputChange={(_, newInputValue) => {
+                                  setShowItem(true);
+                                  setSearchText(newInputValue);
+                                  setSelectedItem(null); // Clear selected item when input changes
+                                }}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Search for items..."
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                  />
+                                )}
+                                renderOption={(props, item) => (
+                                  <li
+                                    style={{ cursor: "pointer" }}
+                                    {...props}
+                                    onClick={() => handleItemClick(item)}
+                                  >
+                                    {item.ItemName}
+                                  </li>
+                                )}
                               />
-                              {searchResults.length > 0 && (
-                                <ul style={{top : "13.1"}} className="items-search-results-container">
-                                  {searchResults.map((item) => (
-                                    <li
-                                      style={{ cursor: "pointer" }}
-                                      key={item.ItemId}
-                                      onClick={() => handleItemClick(item)}
-                                    >
-                                      {showItem && item.ItemName}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
                             </>
                           </td>
                           <td>
-                            <textarea
-                              name="Description"
-                              className="form-txtarea form-control form-control-sm"
-                              value={selectedItem?.SaleDescription || " "}
-                              rows="1"
-                              disabled
-                            ></textarea>
+                            <p>{selectedItem?.SaleDescription || " "}</p>
                           </td>
 
                           <td>
                             <div className="col-sm-9">
-                              <input
-                                name="Rate"
-                                value={
-                                  selectedItem?.SalePrice ||
+                              <p>
+                                {selectedItem?.SalePrice ||
                                   itemInput.Rate ||
-                                  " "
-                                }
-                                className="form-control form-control-sm"
-                                placeholder="Rate"
-                                disabled
-                              />
+                                  " "}
+                              </p>
                             </div>
                           </td>
 
@@ -539,17 +836,19 @@ const AddBill = ({ setshowContent }) => {
                                   Qty: Number(e.target.value),
                                 })
                               }
+                              style={{ width: "7em" }}
                               className="form-control form-control-sm"
                               placeholder="Quantity"
                             />
                           </td>
                           <td>
                             <input
-                              type="number"
-                              name="Tax"
+                              type="text"
+                              name="tax"
+                              disabled
+                              style={{ width: "7em" }}
                               className="form-control form-control-sm"
                               placeholder="Tax"
-                              disabled
                             />
                           </td>
                           <td>
@@ -564,7 +863,7 @@ const AddBill = ({ setshowContent }) => {
                                 // Adding the new item to the itemsList
                                 setItemsList((prevItems) => [
                                   ...prevItems,
-                                  { ...itemInput, id: Date.now() }, // Ensure each item has a unique 'id'
+                                  { ...itemInput }, // Ensure each item has a unique 'id'
                                 ]);
                                 // Reset the input fields
                                 setSearchText("");
@@ -601,6 +900,9 @@ const AddBill = ({ setshowContent }) => {
                               className="form-txtarea form-control"
                               rows="2"
                               id="comment"
+                              name="Memo"
+                              value={formData.Memo}
+                              onChange={handleChange}
                             ></textarea>
                           </div>
                         </form>
@@ -608,52 +910,54 @@ const AddBill = ({ setshowContent }) => {
                     </div>
                     <div className="col-xl-12 col-lg-12">
                       <div className="basic-form">
-                        
-                          <h4 className="card-title">Attachments</h4>
-                          <div className="dz-default dlab-message upload-img mb-3">
-                            <form action="#" className="dropzone">
-                              <svg
-                                width="41"
-                                height="40"
-                                viewBox="0 0 41 40"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M20.5 20V35"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                              </svg>
-                              <div className="fallback">
-                                <input name="file" type="file" multiple="" />
-                              </div>
-                            </form>
-                          </div>
-                        
+                        <h4 className="card-title">Attachments</h4>
+                        <div className="dz-default dlab-message upload-img mb-3">
+                          <form action="#" className="dropzone">
+                            <svg
+                              width="41"
+                              height="40"
+                              viewBox="0 0 41 40"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M20.5 20V35"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="fallback">
+                              <input
+                                name="file"
+                                type="file"
+                                onChange={handleFileChange}
+                              />
+                            </div>
+                          </form>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -666,28 +970,26 @@ const AddBill = ({ setshowContent }) => {
                         <td className="left">
                           <strong>Subtotal</strong>
                         </td>
-                        <td className="right">$8.497,00</td>
+                        <td className="right">${totalAmount}</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>Discount (20%)</strong>
                         </td>
-                        <td className="right">$1,699,40</td>
+                        <td className="right">$00</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>VAT (10%)</strong>
                         </td>
-                        <td className="right">$679,76</td>
+                        <td className="right">$00</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>Total</strong>
                         </td>
                         <td className="right">
-                          <strong>$7.477,36</strong>
-                          <br />
-                          <strong>0.15050000 BTC</strong>
+                          <strong>${totalAmount}</strong>
                         </td>
                       </tr>
                     </tbody>
@@ -713,7 +1015,7 @@ const AddBill = ({ setshowContent }) => {
                   <i className="fa fa-envelope m-0"></i>{" "}
                 </a>
                 <a href="#">
-                  <button type="button" className="btn btn-primary me-1">
+                  <button type="button" className="btn btn-primary me-1" onClick={handleSubmit}>
                     Save
                   </button>
                 </a>

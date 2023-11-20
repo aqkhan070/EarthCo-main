@@ -10,9 +10,15 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import {
-  Button, 
-} from "@mui/material";
+import { Button } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import validator from "validator";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddressInputs from "../Modals/AddressInputs";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -48,9 +54,11 @@ function a11yProps(index) {
 }
 
 const UpdateCustomer = ({
+  headers,
   selectedItem,
   setShowContent,
   setCustomerAddSuccess,
+  setCustomerUpdateSuccess,
   fetchCustomers,
 }) => {
   const navigate = useNavigate();
@@ -88,6 +96,9 @@ const UpdateCustomer = ({
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState(false);
+  const [emailError, setEmailError] = useState("");
+  const [loading, setLoading] = useState(true);
+
   // updated contacts
   const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
@@ -103,26 +114,27 @@ const UpdateCustomer = ({
 
   const getCustomerData = async () => {
     if (selectedItem === 0) {
+      setLoading(false);
       return;
     }
     try {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomer?id=${selectedItem}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
         }
       );
+      setLoading(false);
 
       // Handle the response. For example, you can reload the customers or show a success message
       console.log("Customer zzzzzzzz:", response.data);
       setSelectedCompany(response.data);
       setAllowLogin(response.data.isLoginAllow);
-      setCompanyData(response.data);
-      setContactDataList(response.data.tblContacts);
-      setSlForm(response.data.tblServiceLocations);
+      setCompanyData(response.data.Data);
+      setContactDataList(response.data.ContactData);
+      setSlForm(response.data.ServiceLocationData);
     } catch (error) {
+      setLoading(false);
       console.error("There was an error updating the customer:", error);
     }
   };
@@ -131,6 +143,7 @@ const UpdateCustomer = ({
     getCustomerType();
   }, []);
 
+  // validation logic
   useEffect(() => {
     // Check if allowLogin is true
     if (allowLogin) {
@@ -140,9 +153,7 @@ const UpdateCustomer = ({
         companyData.Password &&
         companyData.Password === companyData.ConfirmPassword
       ) {
-        setDisableButton(false);
       } else {
-        setDisableButton(true);
       }
     } else {
       // Check if company name, first name, last name, and email are not empty
@@ -152,9 +163,7 @@ const UpdateCustomer = ({
         companyData.LastName &&
         companyData.Email
       ) {
-        setDisableButton(false);
       } else {
-        setDisableButton(true);
       }
     }
   }, [companyData, allowLogin]);
@@ -163,7 +172,8 @@ const UpdateCustomer = ({
   const getCustomerType = async () => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerTypes`
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerTypes`,
+        { headers }
       );
       console.log("getCustomerType", response.data);
       setCustomerType(response.data);
@@ -172,25 +182,100 @@ const UpdateCustomer = ({
       console.log("getCustomerType api call error", error);
     }
   };
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [emptyFieldError, setEmptyFieldError] = useState(false);
+  const [emailValidError, setemailValidError] = useState(false);
+  const [companyNameError, setCompanyNameError] = useState(false);
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+
   const handleSubmit = async () => {
     setDisableButton(true);
+    console.log("check1");
+    setSubmitClicked(true);
+    if (
+      !companyData.CompanyName ||
+      !companyData.FirstName ||
+      !companyData.LastName ||
+      !companyData.Email
+    ) {
+      console.log("check2 ");
+
+      setEmptyFieldError(true);
+
+      return; // Return early if any required field is empty
+    }
+
+    if (
+      allowLogin &&
+      (!companyData.username ||
+        !companyData.Password ||
+        !companyData.ConfirmPassword)
+    ) {
+      console.log("check3");
+
+      return; // Return early if login fields are empty
+    }
+    if (allowLogin && companyData.Password !== companyData.ConfirmPassword) {
+      console.log("check4");
+      return; // Return early if passwords do not match
+    }
+
+    if (!validator.isLength(companyData.CompanyName, { min: 3, max: 30 })) {
+      setCompanyNameError(true);
+      console.log("Company name should be between 3 and 30 characters");
+      return;
+    }
+
+    // Validate first name length
+    if (!validator.isLength(companyData.FirstName, { min: 3, max: 30 })) {
+      setFirstNameError(true);
+      console.log("First name should be between 3 and 30 characters");
+      return;
+    }
+
+    // Validate last name length
+    if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
+      setLastNameError(true);
+      console.log("Last name should be between 3 and 30 characters");
+      return;
+    }
+
+    if (!validator.isEmail(companyData.Email)) {
+      setemailValidError(true);
+      console.log("Email must contain the @ symbol");
+      return;
+    }
+    if (
+      companyData.Phone &&
+      !validator.isMobilePhone(companyData.Phone, "any", { max: 20 })
+    ) {
+      setPhoneError(true);
+      console.log("Phone number is not valid");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
         companyData,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
         }
       );
 
       // console.log("postData,,,,,,,,,:", postData);
+      setEmptyFieldError(false);
 
       setTimeout(() => {
+        setCustomerUpdateSuccess(false);
         setCustomerAddSuccess(false);
       }, 4000);
-      setCustomerAddSuccess(true);
+      selectedItem === 0
+        ? setCustomerAddSuccess(true)
+        : setCustomerUpdateSuccess(true);
+
       fetchCustomers();
       // navigate("/Dashboard/Customers");
       setShowContent(true);
@@ -199,17 +284,27 @@ const UpdateCustomer = ({
     } catch (error) {
       setDisableButton(false);
       setError(true);
-      console.error("Error submitting data:", error);
-      console.log("customer payload is", companyData);
+      setEmptyFieldError(false);
+      setEmailError(error.response.data);
+      console.error("Error submitting data:", error.response.data);
+      // console.log("customer payload is", companyData);
     }
   };
   const handleCompanyChange = (e) => {
+    setemailValidError(false);
+    setEmptyFieldError(false);
+    setDisableButton(false);
+    setLastNameError(false);
+    setFirstNameError(false);
+    setCompanyNameError(false);
+    setPhoneError(false);
     const { name, value } = e.target;
 
     setCompanyData((prevFormData) => {
       const updatedFormData = {
         ...prevFormData,
         [name]: value,
+        isLoginAllow: allowLogin,
       };
 
       // Additional checks for the username and password fields
@@ -239,6 +334,7 @@ const UpdateCustomer = ({
   };
 
   //  Contacts logic
+
   const handleContactChange = (e) => {
     const { name, value, type } = e.target;
 
@@ -274,19 +370,20 @@ const UpdateCustomer = ({
       Address: "",
       Comments: "",
     });
-
-    // Resetting the contactData should probably not be in this useEffect if you want to ensure it's not reset before being added to the list.
   }, [responseid]); // Depends on when responseid is set
 
+  const [shouldCloseModal, setShouldCloseModal] = useState(false); // close modal
   const handleContactSave = async (e) => {
     e.preventDefault();
-   
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
-        contactData
+        contactData,
+        { headers }
       );
       console.log("successful contact api", response.data.Id);
+      setShouldCloseModal(true);
 
       // Update the contactData with the response id, then add to list
       setContactData((prevState) => ({
@@ -310,16 +407,17 @@ const UpdateCustomer = ({
   const delContact = async (id) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`
+        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`,
+        { headers }
       );
 
       const updatedContacts = contactDataList.filter(
         (contact) => contact.ContactId !== id
       );
       setContactDataList(updatedContacts);
-      setContactDelSuccess(true)
+      setContactDelSuccess(true);
       setTimeout(() => {
-        setContactDelSuccess(false)
+        setContactDelSuccess(false);
       }, 4000);
       console.log("contact deleted sussessfully", id, response);
     } catch (error) {
@@ -328,9 +426,7 @@ const UpdateCustomer = ({
   };
 
   const deleteContact = (id) => {
-    
-      delContact(id);
-    
+    delContact(id);
   };
 
   const updateContact = (id) => {
@@ -385,7 +481,8 @@ const UpdateCustomer = ({
     try {
       const response = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`,
-        serviceLocations
+        serviceLocations,
+        { headers }
       );
 
       // Assuming that the response data has an ID that you want to append
@@ -422,10 +519,10 @@ const UpdateCustomer = ({
   };
 
   const handleDelete = async (serviceLocationId) => {
-    
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`
+        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`,
+        { headers }
       );
       const updatedSlForm = slForm.filter(
         (sl) => sl.ServiceLocationId !== serviceLocationId
@@ -447,7 +544,7 @@ const UpdateCustomer = ({
     return (
       !serviceLocations.Name ||
       !serviceLocations.Address ||
-      !serviceLocations.Phone ||      
+      !serviceLocations.Phone ||
       serviceLocations.isBilltoCustomer === undefined
     ); // Explicitly check for undefined
   };
@@ -461,16 +558,22 @@ const UpdateCustomer = ({
   // useEffect(() => {console.log("././././.", adress2)},[adress2])
 
   return (
-    <div className="">
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div className="card mt-3">
-          <div className="">
-            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
-              Customer Info
-            </h4>
-          </div>
-          <div className="card-body">
-            {/* {formData.CustomerData.CustomerName && (
+    <>
+      {loading ? (
+        <div className="center-loader">
+          <CircularProgress style={{ color: "#789a3d" }} />
+        </div>
+      ) : (
+        <div className="">
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="card ">
+              <div className="">
+                <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
+                  Customer Info
+                </h4>
+              </div>
+              <div className="card-body">
+                {/* {formData.CustomerData.CustomerName && (
                 <div className="col-xl-4 mb-3">
                   <div className="form-check custom-checkbox form-check-inline message-customer">
                     <input
@@ -490,479 +593,388 @@ const UpdateCustomer = ({
                 </div>
               )} */}
 
-            {error && (
-              <Alert severity="error">
-                An error occured while adding/Updating customer
-              </Alert>
-            )}
-
-            <div className="row">
-              <div className="col-9">
                 <div className="row">
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Company Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="CompanyName"
-                      value={companyData.CompanyName}
-                      onChange={handleCompanyChange}
-                      placeholder="Company Name"
-                      required
-                    />
+                  <div className="col-9">
+                    <div className="row">
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Company Name <span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="CompanyName"
+                          variant="outlined"
+                          size="small"
+                          error={submitClicked && !companyData.CompanyName}
+                          value={companyData?.CompanyName || ""}
+                          onChange={handleCompanyChange}
+                          placeholder="Company Name"
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          First Name <span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="FirstName"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.FirstName}
+                          error={submitClicked && !companyData.FirstName}
+                          onChange={handleCompanyChange}
+                          placeholder="First Name"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Last Name <span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="LastName"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.LastName}
+                          onChange={handleCompanyChange}
+                          error={submitClicked && !companyData.LastName}
+                          placeholder="Last Name"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Email <span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="Email"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.Email}
+                          error={submitClicked && !companyData.Email}
+                          onChange={handleCompanyChange}
+                          placeholder="Email"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Address
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="Address"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.Address}
+                          onChange={handleCompanyChange}
+                          placeholder="Address"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Phone
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="Phone"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.Phone}
+                          error={phoneError}
+                          onChange={handleCompanyChange}
+                          placeholder="Phone"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          AltPhone
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="AltPhone"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.AltPhone}
+                          onChange={handleCompanyChange}
+                          placeholder="Alternate Phone"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Customer Fax
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control form-control-sm"
+                          name="Fax"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.Fax}
+                          onChange={handleCompanyChange}
+                          placeholder="Customer Fax"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <FormControl fullWidth variant="outlined">
+                          <label
+                            htmlFor="exampleFormControlInput1"
+                            className="form-label"
+                          >
+                            Customer Type
+                          </label>
+                          <Select
+                            labelId="customer-type-label"
+                            id="customer-type-select"
+                            variant="outlined"
+                            name="CustomerTypeId"
+                            value={companyData.CustomerTypeId}
+                            onChange={handleCompanyChange}
+                            size="small"
+                          >
+                            {customerType.map((customer, index) => (
+                              <MenuItem
+                                key={customer.CustomerTypeId}
+                                value={customer.CustomerTypeId}
+                              >
+                                {customer.CustomerType}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </div>
+
+                      <div className="col-xl-4 mb-3">
+                        <label className="form-label">Notes</label>
+                        <textarea
+                          name="Notes"
+                          value={companyData.Notes}
+                          onChange={handleCompanyChange}
+                          className="form-txtarea form-control form-control-sm"
+                          rows="2"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-3">
+                    <div className="col-xl-12 mb-3 ">
+                      <div className="form-check form-check-inline radio-margin">
+                        <label
+                          className="form-check-label "
+                          htmlFor="inlineRadio1"
+                        >
+                          Allow Login:
+                        </label>
+                        <div className="form-check form-check-inline radio-margin-div">
+                          <input
+                            className="form-check-input ml-2 pl-2"
+                            type="radio"
+                            id="inlineRadio1"
+                            name="isLoginAllow"
+                            value="Customer"
+                            checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
+                            onChange={() => {
+                              setAllowLogin(true);
+                              setDisableButton(true);
+                            }}
+                          />
+                          <label
+                            className="form-check-label allow-customer-login"
+                            htmlFor="inlineRadio1"
+                          >
+                            yes
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="inlineRadio2"
+                            name="isLoginAllow"
+                            value="BillToServiceLocation"
+                            checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
+                            onChange={() => {
+                              setAllowLogin(false);
+                            }}
+                          />
+                          <label
+                            className="form-check-label allow-customer-login"
+                            htmlFor="inlineRadio2"
+                          >
+                            no
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    {allowLogin && (
+                      <div className="row">
+                        <div className="col-xl-12 mb-3">
+                          <label
+                            htmlFor="exampleFormControlInput1"
+                            className="form-label"
+                          >
+                            Username <span className="text-danger">*</span>
+                          </label>
+                          <TextField
+                            type="text"
+                            className="form-control form-control-sm"
+                            name="username"
+                            variant="outlined"
+                            size="small"
+                            error={submitClicked && !companyData.username}
+                            value={companyData.username}
+                            onChange={handleCompanyChange}
+                            placeholder="User Name"
+                          />
+                        </div>
+                        <div className="col-xl-12 mb-3">
+                          <label
+                            htmlFor="exampleFormControlInput1"
+                            className="form-label"
+                          >
+                            Password <span className="text-danger">*</span>
+                          </label>
+                          <TextField
+                            type="password"
+                            className="form-control form-control-sm"
+                            name="Password"
+                            variant="outlined"
+                            size="small"
+                            error={submitClicked && !companyData.Password}
+                            onChange={handleCompanyChange}
+                            placeholder="Password"
+                          />
+                        </div>
+                        <div className="col-xl-12 mb-3">
+                          <label
+                            htmlFor="exampleFormControlInput1"
+                            className="form-label"
+                          >
+                            Confirm Password{" "}
+                            <span className="text-danger">*</span>
+                          </label>
+                          <TextField
+                            type="password"
+                            className="form-control form-control-sm"
+                            name="ConfirmPassword"
+                            variant="outlined"
+                            size="small"
+                            error={
+                              submitClicked && !companyData.ConfirmPassword
+                            }
+                            onChange={handleCompanyChange}
+                            placeholder="Confirm Password"
+                          />
+                          {!passwordsMatch && (
+                            <div className="text-danger">
+                              Passwords do not match.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      First Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="FirstName"
-                      value={companyData.FirstName}
-                      onChange={handleCompanyChange}
-                      placeholder="First Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Last Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="LastName"
-                      value={companyData.LastName}
-                      onChange={handleCompanyChange}
-                      placeholder="Last Name"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Email <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Email"
-                      value={companyData.Email}
-                      onChange={handleCompanyChange}
-                      placeholder="Email"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Address
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Address"
-                      value={companyData.Address}
-                      onChange={handleCompanyChange}
-                      placeholder="Address"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Phone
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Phone"
-                      value={companyData.Phone}
-                      onChange={handleCompanyChange}
-                      placeholder="Phone"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      AltPhone
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="AltPhone"
-                      value={companyData.AltPhone}
-                      onChange={handleCompanyChange}
-                      placeholder="Alternate Phone"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label
-                      htmlFor="exampleFormControlInput1"
-                      className="form-label"
-                    >
-                      Customer Fax
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      name="Fax"
-                      value={companyData.Fax}
-                      onChange={handleCompanyChange}
-                      placeholder="Customer Fax"
-                      required
-                    />
-                  </div>
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">Customer Type</label>
-                    <Form.Select
-                      size="md"
-                      name="CustomerTypeId"
-                      aria-label="Default select example"
-                      id="inputState"
-                      className="bg-white"
-                    >
-                      {customerType.map((customer, index) => {
-                        return (
-                          <option
-                            key={customer.CustomerTypeId}
-                            value={customer.CustomerTypeId}
-                          >
-                            {customer.CustomerType}
-                          </option>
-                        );
-                      })}
-                    </Form.Select>
-                  </div>
-
-                  <div className="col-xl-4 mb-3">
-                    <label className="form-label">Notes</label>
-                    <textarea
-                      name="Notes"
-                      value={companyData.Notes}
-                      onChange={handleCompanyChange}
-                      className="form-txtarea form-control form-control-sm"
-                      rows="2"
-                    ></textarea>
-                  </div>
+                <div className="col-md-6">
+                  <label className="col-sm-4 col-form-label">
+                    Address<span className="text-danger">*</span>
+                  </label>
+                  <AddressInputs />
                 </div>
               </div>
-              <div className="col-3">
-                <div className="col-xl-12 mb-3 ">
-                  <div className="form-check form-check-inline radio-margin">
-                    <label className="form-check-label " htmlFor="inlineRadio1">
-                      Allow Login:
-                    </label>
-                    <div className="form-check form-check-inline radio-margin-div">
-                      <input
-                        className="form-check-input ml-2 pl-2"
-                        type="radio"
-                        id="inlineRadio1"
-                        name="isLoginAllow"
-                        value="Customer"
-                        checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
-                        onChange={() => {
-                          setAllowLogin(true);
-                          setDisableButton(true);
-                        }}
-                      />
-                      <label
-                        className="form-check-label allow-customer-login"
-                        htmlFor="inlineRadio1"
-                      >
-                        yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="inlineRadio2"
-                        name="isLoginAllow"
-                        value="BillToServiceLocation"
-                        checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
-                        onChange={() => {
-                          setAllowLogin(false);
-                          setDisableButton(false);
-                        }}
-                      />
-                      <label
-                        className="form-check-label allow-customer-login"
-                        htmlFor="inlineRadio2"
-                      >
-                        no
-                      </label>
-                    </div>
-                  </div>
+              <div className="row">
+                <div className="col-md-9">
+                  {error && (
+                    <Alert severity="error">
+                      {emailError
+                        ? emailError
+                        : "An error occured while adding/Updating customer"}
+                    </Alert>
+                  )}
+                  {emptyFieldError && (
+                    <Alert severity="error">
+                      Please Fill all required fields
+                    </Alert>
+                  )}
+                  {emailValidError && (
+                    <Alert severity="error">Please enter valid email</Alert>
+                  )}
+                  {lastNameError && (
+                    <Alert severity="error">Please enter valid Last Name</Alert>
+                  )}
+                  {firstNameError && (
+                    <Alert severity="error">
+                      Please enter valid First Name
+                    </Alert>
+                  )}
+                  {companyNameError && (
+                    <Alert severity="error">
+                      Please enter valid Company name
+                    </Alert>
+                  )}
+                  {phoneError && (
+                    <Alert severity="error">
+                      Please enter valid Phone Number
+                    </Alert>
+                  )}
                 </div>
-                {allowLogin && (
-                  <div className="row">
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Username <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        name="username"
-                        value={companyData.username}
-                        onChange={handleCompanyChange}
-                        placeholder="User Name"
-                        required
-                      />
-                    </div>
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Password <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control form-control-sm"
-                        name="Password"
-                        onChange={handleCompanyChange}
-                        placeholder="Password"
-                        required
-                      />
-                    </div>
-                    <div className="col-xl-12 mb-3">
-                      <label
-                        htmlFor="exampleFormControlInput1"
-                        className="form-label"
-                      >
-                        Confirm Password <span className="text-danger">*</span>
-                      </label>
-                      <input
-                        type="password"
-                        className="form-control form-control-sm"
-                        name="ConfirmPassword"
-                        onChange={handleCompanyChange}
-                        placeholder="Confirm Password"
-                        required
-                      />
-                      {!passwordsMatch && (
-                        <div className="text-danger">
-                          Passwords do not match.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <div className="col-md-3 text-end">
+                  <button
+                    className="btn btn-primary m-1"
+                    onClick={handleSubmit}
+                    disabled={disableButton}
+                  >
+                    Submit
+                  </button>
+                  <NavLink to="/Dashboard/Customers">
+                    <button
+                      className="btn btn-danger light  m-1 "
+                      onClick={() => {
+                        setShowContent(true);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </NavLink>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="text-end">
-            <button
-              className="btn btn-primary m-3"
-              onClick={handleSubmit}
-              disabled={disableButton}
-            >
-              Submit
-            </button>
-            <NavLink to="/Dashboard/Customers">
-              <button
-                className="btn btn-danger light  m-3 "
-                onClick={() => {
-                  setShowContent(true);
-                }}
-              >
-                Cancel
-              </button>
-            </NavLink>
-          </div>
-        </div>
-      </form>
+          </form>
 
-      {/* contact modal */}
-      <div className="modal fade" id="basicModal">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <div className="modal-header">
-                <h5 className="modal-title">Add Contact</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="basic-form">
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">FirstName</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="text"
-                        name="FirstName"
-                        className="form-control form-control-sm"
-                        placeholder="First Name"
-                        onChange={handleContactChange}
-                        value={contactData.FirstName}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">Last Name</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="text"
-                        name="LastName"
-                        className="form-control form-control-sm"
-                        placeholder="Last Name"
-                        onChange={handleContactChange}
-                        value={contactData.LastName}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">Phone</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="number"
-                        id="contactInp3"
-                        name="Phone"
-                        className="form-control form-control-sm"
-                        placeholder="Phone"
-                        onChange={handleContactChange}
-                        value={contactData.Phone}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">Alt Phone</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="number"
-                        id="contactInp3"
-                        name="AltPhone"
-                        className="form-control form-control-sm"
-                        placeholder=" Alt Phone"
-                        onChange={handleContactChange}
-                        value={contactData.AltPhone}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-3 col-form-label">Email</label>
-                    <div className="col-sm-9">
-                      <input
-                        type="email"
-                        id="contactInp2"
-                        className="form-control form-control-sm"
-                        name="Email"
-                        placeholder="Email"
-                        onChange={handleContactChange}
-                        value={contactData.Email}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className=" mb-3 row">
-                    <label className="col-sm-3 col-form-label">Address</label>
-                    <div className="col-sm-9">
-                      <input
-                        name="Address"
-                        className="form-control form-control-sm"
-                        placeholder="Address"
-                        onChange={handleContactChange}
-                        value={contactData.Address}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className=" mb-3 row">
-                    <label className="col-sm-3 col-form-label">Comments</label>
-                    <div className="col-sm-9">
-                      <textarea
-                        name="Comments"
-                        className="form-txtarea form-control form-control-sm"
-                        onChange={handleContactChange}
-                        value={contactData.Comments}
-                        rows="2"
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  id="closer"
-                  className="btn btn-danger light"
-                  data-bs-dismiss="modal"
-                  onClick={() => {
-                    getCustomerData();
-                    setContactData({
-                      FirstName: "",
-                      LastName: "",
-                      Phone: "",
-                      AltPhone: "",
-                      Email: "",
-                      Address: "",
-                      Comments: "",
-                    });
-                  }}
-                >
-                  Close
-                </button>
-                <button
-                  className="btn btn-primary"
-                  data-bs-dismiss="modal"
-                  onClick={handleContactSave}
-                  disabled={isSaveDisabled()}
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {selectedItem === 0 ? null : (
-        <div>
-          {/* Contacts Table */}
-
-          {/* servive location form */}
-
-          <div className="modal fade" id="basicModal2">
+          {/* contact modal */}
+          <div className="modal fade" id="basicModal">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <form
@@ -971,114 +983,141 @@ const UpdateCustomer = ({
                   }}
                 >
                   <div className="modal-header">
-                    <h5 className="modal-title">Add Service location</h5>
+                    <h5 className="modal-title">Add Contact</h5>
                     <button
                       type="button"
                       className="btn-close"
                       data-bs-dismiss="modal"
                     ></button>
                   </div>
-                  <div className="modal-body">
+                  <div style={{ paddingLeft: "0.5em" }} className="modal-body">
                     <div className="basic-form">
                       <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">Name</label>
-                        <div className="col-sm-9">
+                        <label className="col-sm-4 col-form-label">
+                          Contact Company<span className="text-danger">*</span>
+                        </label>
+                        <div className="col-sm-8">
                           <input
                             type="text"
-                            name="Name"
-                            onChange={handleSLChange}
+                            name="CompanyName"
                             className="form-control form-control-sm"
-                            placeholder="Name"
-                            value={serviceLocations.Name}
+                            placeholder="Contact Company"
+                            onChange={handleContactChange}
+                            value={contactData.CompanyName}
                             required
                           />
                         </div>
                       </div>
                       <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">
-                          Bill To
+                        <label className="col-sm-4 col-form-label">
+                          FirstName<span className="text-danger">*</span>
                         </label>
-                        <div className="col-sm-9">
-                          <div className="row">
-                            <div className="col-5">
-                              <input
-                                className="form-check-input radio-margin-top"
-                                type="radio"
-                                name="isBilltoCustomer"
-                                id="inlineRadio11"
-                                onChange={handleSLChange}
-                                value={true}
-                                // checked={serviceLocations.isBilltoCustomer === true}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio11"
-                              >
-                                Customer
-                              </label>
-                            </div>
-                            <div className="col-7">
-                              <input
-                                className="form-check-input radio-margin-top"
-                                type="radio"
-                                name="isBilltoCustomer"
-                                id="inlineRadio22"
-                                onChange={handleSLChange}
-                                value={false}
-                                // checked={serviceLocations.isBilltoCustomer === false}
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="inlineRadio22"
-                              >
-                                This service Location
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">
-                          Address
-                        </label>
-                        <div className="col-sm-9">
+                        <div className="col-sm-8">
                           <input
                             type="text"
-                            onChange={handleSLChange}
-                            name="Address"
-                            value={serviceLocations.Address}
+                            name="FirstName"
                             className="form-control form-control-sm"
-                            placeholder="Address"
+                            placeholder="First Name"
+                            onChange={handleContactChange}
+                            value={contactData.FirstName}
+                            required
                           />
                         </div>
                       </div>
                       <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">Phone</label>
-                        <div className="col-sm-9">
+                        <label className="col-sm-4 col-form-label">
+                          Last Name<span className="text-danger">*</span>
+                        </label>
+                        <div className="col-sm-8">
                           <input
-                            type="number"
-                            onChange={handleSLChange}
-                            value={serviceLocations.Phone}
+                            type="text"
+                            name="LastName"
+                            className="form-control form-control-sm"
+                            placeholder="Last Name"
+                            onChange={handleContactChange}
+                            value={contactData.LastName}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-4 col-form-label">
+                          Phone<span className="text-danger">*</span>
+                        </label>
+                        <div className="col-sm-8">
+                          <input
+                            type="text"
+                            id="contactInp3"
                             name="Phone"
                             className="form-control form-control-sm"
                             placeholder="Phone"
+                            onChange={handleContactChange}
+                            value={contactData.Phone}
+                            required
                           />
                         </div>
                       </div>
                       <div className="mb-3 row">
-                        <label className="col-sm-3 col-form-label">
+                        <label className="col-sm-4 col-form-label">
                           Alt Phone
                         </label>
-                        <div className="col-sm-9">
+                        <div className="col-sm-8">
                           <input
-                            type="number"
+                            type="text"
+                            id="contactInp3"
                             name="AltPhone"
-                            onChange={handleSLChange}
-                            value={serviceLocations.AltPhone}
                             className="form-control form-control-sm"
-                            placeholder="Alt Phone"
+                            placeholder=" Alt Phone"
+                            onChange={handleContactChange}
+                            value={contactData.AltPhone}
                             required
                           />
+                        </div>
+                      </div>
+                      <div className="mb-3 row">
+                        <label className="col-sm-4 col-form-label">
+                          Email<span className="text-danger">*</span>
+                        </label>
+                        <div className="col-sm-8">
+                          <input
+                            type="email"
+                            id="contactInp2"
+                            className="form-control form-control-sm"
+                            name="Email"
+                            placeholder="Email"
+                            onChange={handleContactChange}
+                            value={contactData.Email}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" mb-3 row">
+                        <label className="col-sm-4 col-form-label">
+                          Address<span className="text-danger">*</span>
+                        </label>
+                        <div className="col-sm-8">
+                          <input
+                            name="Address"
+                            className="form-control form-control-sm"
+                            placeholder="Address"
+                            onChange={handleContactChange}
+                            value={contactData.Address}
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div className=" mb-3 row">
+                        <label className="col-sm-4 col-form-label">
+                          Comments
+                        </label>
+                        <div className="col-sm-8">
+                          <textarea
+                            name="Comments"
+                            className="form-txtarea form-control form-control-sm"
+                            onChange={handleContactChange}
+                            value={contactData.Comments}
+                            rows="2"
+                          ></textarea>
                         </div>
                       </div>
                     </div>
@@ -1091,12 +1130,14 @@ const UpdateCustomer = ({
                       data-bs-dismiss="modal"
                       onClick={() => {
                         getCustomerData();
-                        setServiceLocations({
-                          Name: "",
-                          Address: "",
+                        setContactData({
+                          FirstName: "",
+                          LastName: "",
                           Phone: "",
                           AltPhone: "",
-                          isBilltoCustomer: null,
+                          Email: "",
+                          Address: "",
+                          Comments: "",
                         });
                       }}
                     >
@@ -1105,8 +1146,8 @@ const UpdateCustomer = ({
                     <button
                       className="btn btn-primary"
                       data-bs-dismiss="modal"
-                      onClick={addServiceLocation}
-                      disabled={isFormInvalid()}
+                      onClick={handleContactSave}
+                      disabled={isSaveDisabled()}
                     >
                       Save
                     </button>
@@ -1115,245 +1156,428 @@ const UpdateCustomer = ({
               </div>
             </div>
           </div>
-                        {/* service location table */}
-          <Box sx={{ width: "100%" }}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                aria-label="basic tabs example"
-              >
-                <Tab label="Contacts" {...a11yProps(0)} />
-                <Tab label="Service Locations" {...a11yProps(1)} />
-                {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
-              </Tabs>
-            </Box>
-            <CustomTabPanel value={value} index={0}>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <div className="card">
-                  <div className="">
-                    <h4
-                      className="modal-title itemtitleBar"
-                      id="#gridSystemModal1"
+
+          {selectedItem === 0 ? null : (
+            <div>
+              {/* Contacts Table */}
+
+              {/* servive location form */}
+
+              <div className="modal fade" id="basicModal2">
+                <div className="modal-dialog" role="document">
+                  <div className="modal-content">
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                      }}
                     >
-                      Contacts
-                    </h4>
+                      <div className="modal-header">
+                        <h5 className="modal-title">Add Service location</h5>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                        ></button>
+                      </div>
+                      <div className="modal-body">
+                        <div className="basic-form">
+                          <div className="mb-3 row">
+                            <label className="col-sm-3 col-form-label">
+                              Name<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-9">
+                              <input
+                                type="text"
+                                name="Name"
+                                onChange={handleSLChange}
+                                className="form-control form-control-sm"
+                                placeholder="Name"
+                                value={serviceLocations.Name}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 row">
+                            <label className="col-sm-3 col-form-label">
+                              Bill To<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-9">
+                              <div className="row">
+                                <div className="col-5">
+                                  <input
+                                    className="form-check-input radio-margin-top"
+                                    type="radio"
+                                    name="isBilltoCustomer"
+                                    id="inlineRadio11"
+                                    onChange={handleSLChange}
+                                    value={true}
+                                    // checked={serviceLocations.isBilltoCustomer === true}
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="inlineRadio11"
+                                  >
+                                    Customer
+                                  </label>
+                                </div>
+                                <div className="col-7">
+                                  <input
+                                    className="form-check-input radio-margin-top"
+                                    type="radio"
+                                    name="isBilltoCustomer"
+                                    id="inlineRadio22"
+                                    onChange={handleSLChange}
+                                    value={false}
+                                    // checked={serviceLocations.isBilltoCustomer === false}
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="inlineRadio22"
+                                  >
+                                    This service Location
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mb-3 row">
+                            <label className="col-sm-3 col-form-label">
+                              Address<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-9">
+                              <input
+                                type="text"
+                                onChange={handleSLChange}
+                                name="Address"
+                                value={serviceLocations.Address}
+                                className="form-control form-control-sm"
+                                placeholder="Address"
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 row">
+                            <label className="col-sm-3 col-form-label">
+                              Phone<span className="text-danger">*</span>
+                            </label>
+                            <div className="col-sm-9">
+                              <input
+                                type="text"
+                                onChange={handleSLChange}
+                                value={serviceLocations.Phone}
+                                name="Phone"
+                                className="form-control form-control-sm"
+                                placeholder="Phone"
+                              />
+                            </div>
+                          </div>
+                          <div className="mb-3 row">
+                            <label className="col-sm-3 col-form-label">
+                              Alt Phone
+                            </label>
+                            <div className="col-sm-9">
+                              <input
+                                type="text"
+                                name="AltPhone"
+                                onChange={handleSLChange}
+                                value={serviceLocations.AltPhone}
+                                className="form-control form-control-sm"
+                                placeholder="Alt Phone"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="modal-footer">
+                        <button
+                          type="button"
+                          id="closer"
+                          className="btn btn-danger light"
+                          data-bs-dismiss="modal"
+                          onClick={() => {
+                            getCustomerData();
+                            setServiceLocations({
+                              Name: "",
+                              Address: "",
+                              Phone: "",
+                              AltPhone: "",
+                              isBilltoCustomer: null,
+                            });
+                          }}
+                        >
+                          Close
+                        </button>
+                        <button
+                          className="btn btn-primary"
+                          data-bs-dismiss="modal"
+                          onClick={addServiceLocation}
+                          disabled={isFormInvalid()}
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                  <div className="card-body">
-                    {contactAddSuccess && (
-                      <Alert severity="success">
-                        Contact Added/Updated Successfuly
-                      </Alert>
-                    )}
-                    {contactDelSuccess && <Alert severity="success">Contact Deleted Successfuly</Alert>}
-                   
+                </div>
+              </div>
+              {/* service location table */}
+              <Box sx={{ width: "100%" }}>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="basic tabs example"
+                  >
+                    <Tab label="Contacts" {...a11yProps(0)} />
+                    <Tab label="Service Locations" {...a11yProps(1)} />
+                    {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+                  </Tabs>
+                </Box>
+                <CustomTabPanel value={value} index={0}>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                    }}
+                  >
+                    <div className="card">
+                      <div className="">
+                        <h4
+                          className="modal-title itemtitleBar"
+                          id="#gridSystemModal1"
+                        >
+                          Contacts
+                        </h4>
+                      </div>
+                      <div className="card-body">
+                        {contactAddSuccess && (
+                          <Alert severity="success">
+                            Contact Added/Updated Successfuly
+                          </Alert>
+                        )}
+                        {contactDelSuccess && (
+                          <Alert severity="success">
+                            Contact Deleted Successfuly
+                          </Alert>
+                        )}
 
-                    <button
-                      className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal"
-                      style={{ margin: "12px 20px" }}
-                    >
-                      + Add Contacts
-                    </button>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#basicModal"
+                          style={{ margin: "0px 20px 12px" }}
+                        >
+                          + Add Contacts
+                        </button>
 
-                    <div className="col-xl-12">
-                      <div className="card">
-                        <div className="card-body p-0">
-                        
-                          <div className="estDataBox">
-                            <div className="table-responsive active-projects style-1">
-                              <table
-                                id="empoloyees-tblwrapper"
-                                className="table"
-                              >
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Address</th>
+                        <div className="col-xl-12">
+                          <div className="card">
+                            <div className="card-body p-0">
+                              <div className="estDataBox">
+                                <div className="table-responsive active-projects style-1">
+                                  <table
+                                    id="empoloyees-tblwrapper"
+                                    className="table"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th style={{ maxWidth: "20px" }}>
+                                          Address
+                                        </th>
 
-                                    <th className="actions-head " >Actions</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {contactDataList.map((contact, index) => (
-                                    <tr key={index}>
-                                      <td>{contact.ContactId}</td>
-                                      <td>{contact.FirstName}</td>
-                                      <td>{contact.LastName}</td>
-                                      <td>{contact.Email}</td>
-                                      <td>{contact.Phone}</td>
-                                      <td>{contact.Address}</td>
-                                      <td className="contact-actions" style={{ cursor: "pointer" }}>
-                                        <Create
-                                          className="custom-create-icon"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#basicModal"
-                                          onClick={() => {
-                                            setContactData(contact);
-                                            updateContact(contact.ContactId);
-                                          }}
-                                        ></Create>
-                                        <Button
-                                          color="error"
-                                          className="delete-button"
-                                          data-bs-toggle="modal"
-                                          data-bs-target={`#contactDeleteModal${contact.ContactId}`}
-                                        >
-                                          <Delete />
-                                        </Button>
+                                        <th className="actions-head ">
+                                          Actions
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {contactDataList.map((contact, index) => (
+                                        <tr key={index}>
+                                          <td>{contact.ContactId}</td>
+                                          <td>{contact.FirstName}</td>
+                                          <td>{contact.LastName}</td>
+                                          <td>{contact.Email}</td>
+                                          <td>{contact.Phone}</td>
+                                          <td>{contact.Address}</td>
+                                          <td
+                                            className="contact-actions"
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            <Create
+                                              className="custom-create-icon"
+                                              data-bs-toggle="modal"
+                                              data-bs-target="#basicModal"
+                                              onClick={() => {
+                                                setContactData(contact);
+                                                updateContact(
+                                                  contact.ContactId
+                                                );
+                                              }}
+                                            ></Create>
+                                            <Button
+                                              color="error"
+                                              className="delete-button"
+                                              data-bs-toggle="modal"
+                                              data-bs-target={`#contactDeleteModal${contact.ContactId}`}
+                                            >
+                                              <Delete />
+                                            </Button>
 
-                                        {/* <Delete
+                                            {/* <Delete
                                           color="error" 
 
                                            onClick={() =>
                                            deleteContact(contact.ContactId)
                                            }
                                         ></Delete>*/}
-                                      </td>
-                                      <div
-                                        className="modal fade"
-                                        id={`contactDeleteModal${contact.ContactId}`}
-                                        tabIndex="-1"
-                                        aria-labelledby="deleteModalLabel"
-                                        aria-hidden="true"
-                                      >
-                                        <div
-                                          className="modal-dialog"
-                                          role="document"
-                                        >
-                                          <div className="modal-content">
-                                            <div className="modal-header">
-                                              <h5 className="modal-title">
-                                                Are you sure you want to delete{" "}
-                                                {contact.FirstName}?
-                                              </h5>
-                                              <button
-                                                type="button"
-                                                className="btn-close"
-                                                data-bs-dismiss="modal"
-                                              ></button>
-                                            </div>
-                                            <div className="modal-body">
-                                              <div className="basic-form text-center">
-                                                <button
-                                                  type="button"
-                                                  id="closer"
-                                                  className="btn btn-danger light m-3"
-                                                  data-bs-dismiss="modal"
-                                                >
-                                                  Close
-                                                </button>
-                                                <button
-                                                  className="btn btn-primary m-3"
-                                                  data-bs-dismiss="modal"
-                                                  onClick={() =>
-                                                    deleteContact(contact.ContactId)
-                                                    }
-                                                >
-                                                  Yes
-                                                </button>
+                                          </td>
+                                          <div
+                                            className="modal fade"
+                                            id={`contactDeleteModal${contact.ContactId}`}
+                                            tabIndex="-1"
+                                            aria-labelledby="deleteModalLabel"
+                                            aria-hidden="true"
+                                          >
+                                            <div
+                                              className="modal-dialog"
+                                              role="document"
+                                            >
+                                              <div className="modal-content">
+                                                <div className="modal-header">
+                                                  <h5 className="modal-title">
+                                                    Are you sure you want to
+                                                    delete {contact.FirstName}?
+                                                  </h5>
+                                                  <button
+                                                    type="button"
+                                                    className="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                  ></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                  <div className="basic-form text-center">
+                                                    <button
+                                                      type="button"
+                                                      id="closer"
+                                                      className="btn btn-danger light m-3"
+                                                      data-bs-dismiss="modal"
+                                                    >
+                                                      Close
+                                                    </button>
+                                                    <button
+                                                      className="btn btn-primary m-3"
+                                                      data-bs-dismiss="modal"
+                                                      onClick={() =>
+                                                        deleteContact(
+                                                          contact.ContactId
+                                                        )
+                                                      }
+                                                    >
+                                                      Yes
+                                                    </button>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      </div>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </form>
-            </CustomTabPanel>
-            <CustomTabPanel value={value} index={1}>
-              <form>
-                <div className="card">
-                  <div className="">
-                    <h4
-                      className="modal-title itemtitleBar"
-                      id="#gridSystemModal"
-                    >
-                      Service Locations
-                    </h4>
-                  </div>
-                  <div className="card-body">
-                    {addSLSuccess && (
-                      <Alert severity="success">
-                        Service Location Added/Updated Successfuly
-                      </Alert>
-                    )}
+                  </form>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={1}>
+                  <form>
+                    <div className="card">
+                      <div className="">
+                        <h4
+                          className="modal-title itemtitleBar"
+                          id="#gridSystemModal"
+                        >
+                          Service Locations
+                        </h4>
+                      </div>
+                      <div className="card-body">
+                        {addSLSuccess && (
+                          <Alert severity="success">
+                            Service Location Added/Updated Successfuly
+                          </Alert>
+                        )}
 
-                    <button
-                      className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal2"
-                      style={{ margin: "12px 20px" }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      + Add Service Locations
-                    </button>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          data-bs-toggle="modal"
+                          data-bs-target="#basicModal2"
+                          style={{ margin: "0px 20px 12px" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                        >
+                          + Add Service Locations
+                        </button>
 
-                    <div className="col-xl-12">
-                      <div className="card">
-                        <div className="card-body p-0">
-                          <div className="estDataBox">
-                            <div className="table-responsive active-projects style-1">
-                              <table
-                                id="empoloyees-tblwrapper"
-                                className="table"
-                              >
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Address</th>
-                                    <th>Phone</th>
-                                    <th>Alt Phone</th>
-                                    <th>Bill to Customer</th>
-                                    <th className="actions-head">Actions</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {slForm.map((slData, index) => (
-                                    <tr key={slData.ServiceLocationId}>
-                                      <td>{slData.ServiceLocationId}</td>
-                                      <td>{slData.Name}</td>
-                                      <td>{slData.Address}</td>
-                                      <td>{slData.Phone}</td>
-                                      <td>{slData.AltPhone}</td>
-                                      <td>
-                                        {slData.isBilltoCustomer
-                                          ? "Customer"
-                                          : "Service Location"}
-                                      </td>
+                        <div className="col-xl-12">
+                          <div className="card">
+                            <div className="card-body p-0">
+                              <div className="estDataBox">
+                                <div className="table-responsive active-projects style-1">
+                                  <table
+                                    id="empoloyees-tblwrapper"
+                                    className="table"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Address</th>
+                                        <th>Phone</th>
+                                        <th>Alt Phone</th>
+                                        <th>Bill to Customer</th>
+                                        <th className="actions-head">
+                                          Actions
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {slForm.map((slData, index) => (
+                                        <tr key={slData.ServiceLocationId}>
+                                          <td>{slData.ServiceLocationId}</td>
+                                          <td>{slData.Name}</td>
+                                          <td>{slData.Address}</td>
+                                          <td>{slData.Phone}</td>
+                                          <td>{slData.AltPhone}</td>
+                                          <td>
+                                            {slData.isBilltoCustomer
+                                              ? "Customer"
+                                              : "Service Location"}
+                                          </td>
 
-                                      <td style={{ cursor: "pointer" }}>
-                                        <Create
-                                          className="custom-create-icon"
-                                          data-bs-toggle="modal"
-                                          data-bs-target="#basicModal2"
-                                          onClick={() => {
-                                            setServiceLocations(slData);
-                                            updateSL(slData.ServiceLocationId);
-                                          }}
-                                        ></Create>
-                                        {/* <Delete
+                                          <td
+                                            className="contact-actions"
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            <Create
+                                              className="custom-create-icon"
+                                              data-bs-toggle="modal"
+                                              data-bs-target="#basicModal2"
+                                              onClick={() => {
+                                                setServiceLocations(slData);
+                                                updateSL(
+                                                  slData.ServiceLocationId
+                                                );
+                                              }}
+                                            ></Create>
+                                            {/* <Delete
                                           color="error"
                                           onClick={() =>
                                             handleDelete(
@@ -1361,88 +1585,87 @@ const UpdateCustomer = ({
                                             )
                                           }
                                         ></Delete> */}
-                                     <Button
-                                          color="error"
-                                          className="delete-button"
-                                          data-bs-toggle="modal"
-                                          data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
-                                        >
-                                          <Delete />
-                                        </Button>
-
-                                       
-                                      </td>
-                                      <div
-                                        className="modal fade"
-                                        id={`sLDeleteModal${slData.ServiceLocationId}`}
-                                        tabIndex="-1"
-                                        aria-labelledby="deleteModalLabel"
-                                        aria-hidden="true"
-                                      >
-                                        <div
-                                          className="modal-dialog"
-                                          role="document"
-                                        >
-                                          <div className="modal-content">
-                                            <div className="modal-header">
-                                              <h5 className="modal-title">
-                                                Are you sure you want to delete{" "}
-                                                {slData.Name}?
-                                              </h5>
-                                              <button
-                                                type="button"
-                                                className="btn-close"
-                                                data-bs-dismiss="modal"
-                                              ></button>
-                                            </div>
-                                            <div className="modal-body">
-                                              <div className="basic-form text-center">
-                                                <button
-                                                  type="button"
-                                                  id="closer"
-                                                  className="btn btn-danger light m-3"
-                                                  data-bs-dismiss="modal"
-                                                >
-                                                  Close
-                                                </button>
-                                                <button
-                                                  className="btn btn-primary m-3"
-                                                  data-bs-dismiss="modal"
-                                                  onClick={(e) =>{
-                                                    e.preventDefault()
-                                                    handleDelete(
-                                                      slData.ServiceLocationId
-                                                    );
-                                                  }
-                                                  }
-                                                >
-                                                  Yes
-                                                </button>
+                                            <Button
+                                              color="error"
+                                              className="delete-button"
+                                              data-bs-toggle="modal"
+                                              data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
+                                            >
+                                              <Delete />
+                                            </Button>
+                                          </td>
+                                          <div
+                                            className="modal fade"
+                                            id={`sLDeleteModal${slData.ServiceLocationId}`}
+                                            tabIndex="-1"
+                                            aria-labelledby="deleteModalLabel"
+                                            aria-hidden="true"
+                                          >
+                                            <div
+                                              className="modal-dialog"
+                                              role="document"
+                                            >
+                                              <div className="modal-content">
+                                                <div className="modal-header">
+                                                  <h5 className="modal-title">
+                                                    Are you sure you want to
+                                                    delete {slData.Name}?
+                                                  </h5>
+                                                  <button
+                                                    type="button"
+                                                    className="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                  ></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                  <div className="basic-form text-center">
+                                                    <button
+                                                      type="button"
+                                                      id="closer"
+                                                      className="btn btn-danger light m-3"
+                                                      data-bs-dismiss="modal"
+                                                    >
+                                                      Close
+                                                    </button>
+                                                    <button
+                                                      className="btn btn-primary m-3"
+                                                      data-bs-dismiss="modal"
+                                                      onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleDelete(
+                                                          slData.ServiceLocationId
+                                                        );
+                                                      }}
+                                                    >
+                                                      Yes
+                                                    </button>
+                                                  </div>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      </div>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </form>
-            </CustomTabPanel>
-            {/* <CustomTabPanel value={value} index={2}>
+                  </form>
+                </CustomTabPanel>
+                {/* <CustomTabPanel value={value} index={2}>
         Item Three
       </CustomTabPanel> */}
-          </Box>
+              </Box>
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

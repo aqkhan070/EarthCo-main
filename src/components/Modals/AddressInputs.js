@@ -1,43 +1,44 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import parse from 'autosuggest-highlight/parse';
-import { debounce } from '@mui/material/utils';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import parse from "autosuggest-highlight/parse";
+import { debounce } from "@mui/material/utils";
+import { useState, useRef, useEffect } from "react";
 
-// This key was created specifically for the demo in mui.com.
-// You need to create a new one for your application.
-const GOOGLE_MAPS_API_KEY = 'AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE';
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE";
 
 function loadScript(src, position, id) {
   if (!position) {
     return;
   }
 
-  const script = document.createElement('script');
-  script.setAttribute('async', '');
-  script.setAttribute('id', id);
+  const script = document.createElement("script");
+  script.setAttribute("async", "");
+  script.setAttribute("id", id);
   script.src = src;
   position.appendChild(script);
 }
-
 const autocompleteService = { current: null };
 
-export default function GoogleMaps() {
-  const [value, setValue] = React.useState(null);
-  const [inputValue, setInputValue] = React.useState('');
-  const [options, setOptions] = React.useState([]);
-  const loaded = React.useRef(false);
+const AddressInputs = () => {
+  const [value, setValue] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [options, setOptions] = useState([]);
+  const loaded = useRef(false);
 
-  if (typeof window !== 'undefined' && !loaded.current) {
-    if (!document.querySelector('#google-maps')) {
+  useEffect(() => {console.log("address iss",value )},[value])
+
+  if (typeof window !== "undefined" && !loaded.current) {
+    if (!document.querySelector("#google-maps")) {
       loadScript(
         `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`,
-        document.querySelector('head'),
-        'google-maps',
+        document.querySelector("head"),
+        "google-maps"
       );
     }
 
@@ -49,7 +50,7 @@ export default function GoogleMaps() {
       debounce((request, callback) => {
         autocompleteService.current.getPlacePredictions(request, callback);
       }, 400),
-    [],
+    []
   );
 
   React.useEffect(() => {
@@ -63,7 +64,7 @@ export default function GoogleMaps() {
       return undefined;
     }
 
-    if (inputValue === '') {
+    if (inputValue === "") {
       setOptions(value ? [value] : []);
       return undefined;
     }
@@ -94,7 +95,7 @@ export default function GoogleMaps() {
       id="google-map-demo"
       sx={{ width: 300 }}
       getOptionLabel={(option) =>
-        typeof option === 'string' ? option : option.description
+        typeof option === "string" ? option : option.description
       }
       filterOptions={(x) => x}
       options={options}
@@ -111,7 +112,7 @@ export default function GoogleMaps() {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" fullWidth />
+        <TextField {...params} size="small" multiline placeholder="Address" fullWidth />
       )}
       renderOption={(props, option) => {
         const matches =
@@ -119,21 +120,24 @@ export default function GoogleMaps() {
 
         const parts = parse(
           option.structured_formatting.main_text,
-          matches.map((match) => [match.offset, match.offset + match.length]),
+          matches.map((match) => [match.offset, match.offset + match.length])
         );
 
         return (
           <li {...props}>
             <Grid container alignItems="center">
-              <Grid item sx={{ display: 'flex', width: 44 }}>
-                <LocationOnIcon sx={{ color: 'text.secondary' }} />
+              <Grid item sx={{ display: "flex", width: 44 }}>
+                <LocationOnIcon sx={{ color: "text.secondary" }} />
               </Grid>
-              <Grid item sx={{ width: 'calc(100% - 44px)', wordWrap: 'break-word' }}>
+              <Grid
+                item
+                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
+              >
                 {parts.map((part, index) => (
                   <Box
                     key={index}
                     component="span"
-                    sx={{ fontWeight: part.highlight ? 'bold' : 'regular' }}
+                    sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
                   >
                     {part.text}
                   </Box>
@@ -148,4 +152,6 @@ export default function GoogleMaps() {
       }}
     />
   );
-}
+};
+
+export default AddressInputs;

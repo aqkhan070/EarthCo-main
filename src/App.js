@@ -41,6 +41,7 @@ import StaffList from "./components/Staff/StaffList";
 import AddStaff from "./components/Staff/AddStaff";
 import ErrorPage from "./pages/ErrorPage";
 import ResetPassword from "./pages/ResetPassword";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 
 function App() {

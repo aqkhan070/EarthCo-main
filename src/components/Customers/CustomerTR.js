@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { Create, Delete, Update } from "@mui/icons-material";
 import Alert from '@mui/material/Alert';
+import axios from "axios";
+
 
 const theme = createTheme({
   palette: {
@@ -37,7 +39,7 @@ const theme = createTheme({
   },
 });
 
-const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
+const CustomerTR = ({ customers, setCustomerAddSuccess, setCustomerUpdateSuccess, fetchCustomers,headers }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showContent, setShowContent] = useState(true);
 
@@ -64,28 +66,20 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
 
   const deleteCustomer = async (id) => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Customer/DeleteCustomer?id=${id}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+         headers
+          
         }
       );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete customer");
-      }
-
-      const data = await response.json();
+      
 
       // Handle the response. For example, you can reload the customers or show a success message
       setDeleteSuccess(true)
       setTimeout(() => {
         setDeleteSuccess(false)
-      }, 4000);
-      console.log("Customer deleted successfully:", data);
+      }, 4000);      
       fetchCustomers()
       // window.location.reload();
     } catch (error) {
@@ -100,7 +94,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
   return (
     <ThemeProvider theme={theme}>
       {showContent ? (
-        <div className="">
+        <div className="card">
           {deleteSuccess && <Alert severity="success">Successfully deleted Company</Alert>}
           
           <div className="search-row">
@@ -130,18 +124,18 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
           </div>
 
           <br />
-          <div className="text-center">
+          <div className="text-center m-3">
             <Table>
               <TableHead>
                 <TableRow className="table-header">
                   {/* Map through columns here */}
                   {[
                     // "Select",
-                    "CustomerId",
-                    "CustomerName",
-                    "ContactName",
-                    "ContactCompany",
-                    "ContactEmail",
+                    "Customer Id",
+                    "Customer Name",
+                    "Contact Name",
+                    "Contact Company",
+                    "Contact Email",
                     "Actions",
                   ].map((column, index) => (
                     <TableCell key={index}>
@@ -180,10 +174,10 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                     onChange={() => setSelectedItem(customer.CustomerId)}
                   /> 
                 </TableCell>*/}
-                      <TableCell>{customer.UserId}</TableCell>
+                      <TableCell>{customer.CustomerId}</TableCell>
                       <TableCell>{customer.CompanyName}</TableCell>
                       <TableCell>
-                        {customer.FirstName} {customer.LastName}
+                        {customer.CustomerName}
                       </TableCell>
                       <TableCell>{customer.Address}</TableCell>
                       <TableCell>{customer.Email}</TableCell>
@@ -194,7 +188,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                           <Button
                             className="delete-button"
                             onClick={() => {
-                              setSelectedItem(customer.UserId);
+                              setSelectedItem(customer.CustomerId);
                               console.log(",,,,,,,,,,", selectedItem);
                               setShowContent(false);
                             }}
@@ -206,14 +200,14 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                           color="error"
                           className="delete-button"
                           data-bs-toggle="modal"
-                          data-bs-target={`#deleteModal${customer.UserId}`}
+                          data-bs-target={`#deleteModal${customer.CustomerId}`}
                         >
                           <Delete />
                         </Button>
                       
                       <div
                         className="modal fade"
-                        id={`deleteModal${customer.UserId}`}
+                        id={`deleteModal${customer.CustomerId}`}
                         tabIndex="-1"
                         aria-labelledby="deleteModalLabel"
                         aria-hidden="true"
@@ -244,7 +238,7 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
                                 <button
                                   className="btn btn-primary m-3"
                                   data-bs-dismiss="modal"
-                                  onClick={() => handleDelete(customer.UserId)}
+                                  onClick={() => handleDelete(customer.CustomerId)}
                                 >
                                   Yes
                                 </button>
@@ -273,10 +267,13 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, fetchCustomers }) => {
         </div>
       ) : (
         <UpdateCustomer
+        headers={headers}
           setCustomerAddSuccess={setCustomerAddSuccess}
+          setCustomerUpdateSuccess={setCustomerUpdateSuccess}
           selectedItem={selectedItem}
           setShowContent={setShowContent}
           fetchCustomers={fetchCustomers}
+
         />
       )}
     </ThemeProvider>

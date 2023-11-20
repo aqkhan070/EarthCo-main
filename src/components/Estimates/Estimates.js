@@ -12,15 +12,23 @@ import "datatables.net";
 import { Autocomplete, TextField } from "@mui/material";
 import StatusCards from "./StatusCards";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import Cookies from "js-cookie";
+import Alert from "@mui/material/Alert";
+import useGetEstimate from "../Hooks/useGetEstimate";
 
 const Estimates = () => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const activeRef = useRef(null);
+
+  const { estimates, isLoading, tableError, getEstimate } = useGetEstimate();
 
   // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
 
-  const [estimates, setEstimates] = useState([]);
+ 
   const [selectedCustomer, setSelectCustomer] = useState({});
 
   const [customer, setCustomer] = useState("");
@@ -29,34 +37,17 @@ const Estimates = () => {
 
   const [locations, setLocations] = useState(["Select Customer First"]);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [showStatusCards, setShowStatusCards] = useState(true)
-
+ 
+  const [showStatusCards, setShowStatusCards] = useState(true);
+ 
 
   const navigate = useNavigate();
 
  
-
   useEffect(() => {
-    const getEstimate = async () => {
-      try {
-        const response = await axios.get(
-          "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateList"
-        );
-        // console.log("estimate response is", response.data);
-        setEstimates(response.data);
-        if (response.data != null) {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
-    };
-
     getEstimate();
-    setShowStatusCards(true)
+    setShowStatusCards(true);
   }, []);
-
 
   useEffect(() => {
     if (customer !== "" && serviceLocation !== "Select Customer First") {
@@ -138,13 +129,11 @@ const Estimates = () => {
 
   const saveAddEstPop = () => {};
 
- 
-
   return (
     <div className="container-fluid">
       <div className="row">
         {showStatusCards && <StatusCards />}
-      
+
         {/* <StatusCardsEst
           drafts={28102}
           sent={7089}
@@ -153,24 +142,26 @@ const Estimates = () => {
           total={39912}
         /> */}
         <div className="col-xl-12">
-          <div className="card">
-            <div className="card-body">
-              
-            {isLoading ? (
+          <div className="">
+            <div className="">
+              {tableError && (
+                <Alert severity="error">Error Loading Estimates!</Alert>
+              )}
+
+              {isLoading ? (
                 <div className="center-loader">
-                <CircularProgress style={{ color: "#789a3d" }} />
-              </div>
+                  <CircularProgress style={{ color: "#789a3d" }} />
+                </div>
               ) : (
                 <div>
-                 
-                    <EstimateTR estimates={estimates} setShowStatusCards={setShowStatusCards} />
-                 
+                  <EstimateTR
+                    headers={headers}
+                    getEstimate={getEstimate}
+                    estimates={estimates}
+                    setShowStatusCards={setShowStatusCards}
+                  />
                 </div>
               )}
-              
-                
-                
-              
             </div>
           </div>
         </div>
@@ -212,9 +203,7 @@ const Estimates = () => {
                     </div>
                   </div>
                   <div className="mb-4 row">
-                    <label className="col-sm-4 col-form-label">
-                      Quantity
-                    </label>
+                    <label className="col-sm-4 col-form-label">Quantity</label>
                     <div className="col-sm-8">
                       <Autocomplete
                         disablePortal
@@ -245,16 +234,17 @@ const Estimates = () => {
                 >
                   Close
                 </button>
-               
+
                 <button
                   type="button"
-                  onClick={() => {navigate("/Dashboard/Estimates/Add-Estimate")}}
+                  onClick={() => {
+                    navigate("/Dashboard/Estimates/Add-Estimate");
+                  }}
                   style={{ opacity: opacity }}
                   className="btn btn-primary"
                 >
                   Save
                 </button>
-               
               </div>
             </form>
           </div>

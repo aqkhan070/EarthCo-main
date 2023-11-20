@@ -44,7 +44,7 @@ const theme = createTheme({
   },
 });
 
-const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceRequest }) => {
+const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceRequest }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -55,7 +55,8 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
   const [serviceRequestId, setServiceRequestId] = useState(0);
 
   const [showContent, setShowContent] = useState(true);
-  const [successAlert, setSuccessAlert] = useState(false)
+  const [successAlert, setSuccessAlert] = useState('')
+  const [deleteSuccess, setDeleteSuccess] = useState(false)
   const token = Cookies.get("token");
 
 
@@ -63,7 +64,7 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
     "Service Request #": "ServiceRequestNumber",
     "Customer Name": "CustomerId",
     "Assigned to": "Assign",
-    Status: "SRStatusId",
+    "Status": "SRStatusId",
     "Work Requested": "WorkRequest",
     "Date Created": "CreatedDate",
   };
@@ -71,33 +72,30 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
   //
 
   const deleteServiceRequest = async (id) => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+    
     try {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`,{headers}        
        
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete ServiceRequest");
-      }
-
-      const data = await response.json();
+      );   
+      setDeleteSuccess(true)
+      setTimeout(() => {
+      setDeleteSuccess(false)
+        
+      }, 4000);
 
       // Handle the response. For example, you can reload the customers or show a success message
-      console.log("ServiceRequest deleted successfully:", data);
-      window.location.reload();
+      console.log("ServiceRequest deleted successfully:",);
+      fetchServiceRequest()
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
     }
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
+   
       deleteServiceRequest(id);
-    }
+    
   };
 
   useEffect(() => {
@@ -176,8 +174,9 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-          <div className="">
-          {successAlert && <Alert className="mb-3" severity="success">This is a success alert — check it out!</Alert> }
+          <div className="card-body">
+          {successAlert && <Alert className="mb-3" severity="success">{successAlert?successAlert:"Successfuly Added/Updated Service request"}</Alert> }
+          {deleteSuccess && <Alert className="mb-3" severity="success">Successfuly Deleted Service request</Alert> }
             <div className=" text-center">
               <div className="row ">
                 <div className="col-md-12">
@@ -289,12 +288,57 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
                             <Button
                               color="error"
                               className="delete-button"
-                              onClick={() =>
-                                handleDelete(customer.ServiceRequestId)
-                              }
+                              data-bs-toggle="modal"
+                              data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
+                              
                             >
                               <Delete />
                             </Button>
+                            <div
+                        className="modal fade"
+                        id={`deleteModal${customer.ServiceRequestId}`}
+                        tabIndex="-1"
+                        aria-labelledby="deleteModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div className="modal-dialog" role="document">
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title">
+                                Are you sure you want to delete{" "}
+                                {customer.ServiceRequestNumber}
+                              </h5>
+                              <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                              ></button>
+                            </div>
+                            <div className="modal-body">
+                              <div className="basic-form text-center">
+                                <button
+                                  type="button"
+                                  id="closer"
+                                  className="btn btn-danger light m-3"
+                                  data-bs-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                                <button
+                                  className="btn btn-primary m-3"
+                                  data-bs-dismiss="modal"
+                                  onClick={() =>{
+                                    handleDelete(customer.ServiceRequestId);
+                                    console.log("delete id", customer.ServiceRequestId)}
+                                  }
+                                >
+                                  Yes
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -318,6 +362,7 @@ const ServiceRequestTR = ({ serviceRequest = [], setShowCards, fetchServiceReque
         </ThemeProvider>
       ) : (
         <UpdateSRForm
+        headers={headers}
           serviceRequestId={serviceRequestId}
           setShowContent={setShowContent}
           setShowCards={setShowCards}

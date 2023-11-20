@@ -14,96 +14,65 @@ const ServiceRequests = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const token = Cookies.get("token");
-  const userdata = Cookies.get('userData');
-  const [showCards, setShowCards] = useState(true)
- 
-  
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  const userdata = Cookies.get("userData");
+  const [showCards, setShowCards] = useState(true);
+
   // const [locationOptions, setLocationOptions] = useState();
 
-
   const fetchServiceRequest = async () => {
-    
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
 
     try {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",{headers}
-    );
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",
+        { headers }
+      );
       if (response.data != null) {
         setIsLoading(false);
       }
       setserviceRequest(response.data);
       console.log("zzzzzzzzzzzzzzz", response.data);
-    } catch(error){
-      console.log("EEEEEEEEEEEEEEEEE",error);
-      if(error.response.status === 404){
+    } catch (error) {
+      console.log("EEEEEEEEEEEEEEEEE", error);
+      
         setIsLoading(false);
-
-      }
-      else{
-        console.error("API Call Error:", error);
-
-      }
-
+     
     }
   };
 
   useEffect(() => {
     fetchServiceRequest();
-    console.log("cookies user data is",userdata.Firstname);
+    console.log("cookies user data is", userdata.Firstname);
   }, []);
 
   return (
     <div className="container-fluid">
-    
       <div className="row">
-        {showCards && <StatusCards newData={1178} open={5142} closed={71858} total={78178} />}
+        {showCards && (
+          <StatusCards
+            newData={1178}
+            open={5142}
+            closed={71858}
+            total={78178}
+          />
+        )}
         <div className="col-xl-12">
           <div className="card">
-            <div className="card-body">
-             
-          
-              {/* <div className="tbl-caption"> */}
-              {/* <div className="row p-3 "> */}
-              {/* <div className="col-md-3">
-                    <a
-                      href="/"
-                      className="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal"
-                    >
-                      + Add Service Request
-                    </a>
-                  </div> */}
-              {/* <div className="col-md-7"></div> */}
-              {/* <div
-                    className="col-md-2"
-                    style={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <div className="col-md-12">
-                      <Form.Select
-                        aria-label="Default select example"
-                        size="md"
-                      >
-                        <option selected>All</option>
-                        <option value="1">Current Month</option>
-                        <option value="2">Previous Month</option>
-                      </Form.Select>
-                    </div>
-                  </div> */}
-              {/* </div> */}
-              {/* </div> */}
+            <div className="">
               {isLoading ? (
                 <div className="center-loader">
-                <CircularProgress style={{ color: "#789a3d" }} />
-              </div>
+                  <CircularProgress style={{ color: "#789a3d" }} />
+                </div>
               ) : (
                 <div>
-                  
-                    <ServiceRequestTR serviceRequest={serviceRequest } setShowCards={setShowCards} fetchServiceRequest={fetchServiceRequest} />
-                 
+                  <ServiceRequestTR
+                  headers={headers}
+                    serviceRequest={serviceRequest}
+                    setShowCards={setShowCards}
+                    fetchServiceRequest={fetchServiceRequest}
+                  />
                 </div>
               )}
             </div>

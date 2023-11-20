@@ -4,11 +4,23 @@ import TitleBar from "../TitleBar";
 import { Form } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
+import { TextField } from "@mui/material";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import validator from 'validator';
+import CircularProgress from "@mui/material/CircularProgress";
 
 
-const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaffList}) => {
+const AddStaff = ({
+  headers,
+  selectedStaff,
+  settoggleAddStaff,
+  setAddStaffSuccess,
+  setUpdateStaffSuccess,
+  getStaffList,
+}) => {
   const icon = (
     <svg
       width="22"
@@ -36,29 +48,28 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
     </svg>
   );
 
-  //   const [showPop1, setShowPop1] = useState(true);
-  //   const [adress1, setAdress1] = useState("");
-  //   const [customerAdress, setCustomerAdress] = useState({});
   const [customerInfo, setCustomerInfo] = useState({});
   const [userRoles, setUserRoles] = useState([]);
-  const [alert, setAlert] = useState(false)
-  const [alertSuccess, setAlertSuccess] = useState(false)
+  const [alert, setAlert] = useState(false);
+  const [alertSuccess, setAlertSuccess] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   const [formValid, setFormValid] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMismatch, setPasswordMismatch] = useState(false);
 
-
-  const token = Cookies.get("token");
+  const [passwordMatch, setPasswordMatch] = useState(false);
+  
+  const [emptyFieldsError, setEmptyFieldsError] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [emailError, setEmailError] = useState(false)
+  const [phoneError, setPhoneError] = useState(false)
+  const [firstNameError, setFirstNameError] = useState(false)
+  const [lastNameError, setLastNameError] = useState(false)
+ 
 
   const getRoles = async () => {
-    console.log("token izzz", token);
     try {
       // Set up the headers with the token
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/UserManagement/Roles`,
         { headers }
@@ -66,7 +77,7 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
       console.log("user roles areee", response.data);
       setUserRoles(response.data);
     } catch (error) {
-        console.log("erroor ", error)
+      console.log("erroor ", error);
     }
   };
 
@@ -80,259 +91,356 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
       customerInfo.FirstName &&
       customerInfo.LastName &&
       customerInfo.Email &&
-      password &&
+      customerInfo.Password &&
       customerInfo.Phone &&
       customerInfo.Address &&
-      customerInfo.RoleId;
-    
+      customerInfo.RoleId &&
+      customerInfo.Password === customerInfo.ConfirmPassword;
+
     // check if passwords match
-    const passwordsMatch = password === confirmPassword;
 
     // set the form as valid only if all required fields are not empty and passwords match
-    setFormValid(requiredFieldsNotEmpty && passwordsMatch);
+    setFormValid(requiredFieldsNotEmpty);
   };
-
 
   const handleCustomerInfo = (event) => {
+    setEmptyFieldsError(false);
+    setEmailError(false)
+    setPhoneError(false)
+    setFirstNameError(false)
+    setLastNameError(false)
     const { name, value } = event.target;
+
     const newValue = name === "RoleId" ? parseInt(value, 10) : value;
 
-    setCustomerInfo({
-      ...customerInfo,
-      [name]: newValue,
+    setCustomerInfo((prevData) => {
+      const updatedData = {
+        ...prevData,
+        [name]: newValue,
+      };
+
+      if (name === "Password" || name === "ConfirmPassword") {
+        // Check if the passwords match
+        const isMatching =
+          name === "Password"
+            ? value === updatedData.ConfirmPassword
+            : updatedData.Password === value;
+
+        setPasswordMatch(!isMatching);
+      }
+
+      return updatedData; // Return the updated state
     });
 
-    console.log("customer info", {
-      ...customerInfo,
-      [name]: newValue,
-    });
-    setAlert(false)
+    console.log("customer info", customerInfo);
+    setAlert(false);
 
     validateForm();
-  };
-
-  const validatePasswords = () => {
-    if (password && confirmPassword && password === confirmPassword) {
-      setPasswordMismatch(false);
-    } else {
-      setPasswordMismatch(true);
-     
-    }
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    validateForm();
-    validatePasswords()
-  };
-
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-    validateForm();
-    validatePasswords()
   };
 
   useEffect(() => {
     validateForm(); // re-validate form when component mounts or updates
-  }, [customerInfo, password, confirmPassword]);
+  }, [customerInfo]);
 
   const addStaff = async () => {
+    setSubmitClicked(true)
+    if (
+      !customerInfo.FirstName ||
+      !customerInfo.LastName ||
+      !customerInfo.Email ||
+      !customerInfo.Password ||      
+      !customerInfo.RoleId ||
+      !customerInfo.ConfirmPassword
+    ) {
+      setEmptyFieldsError(true);
+      console.log("Required fields are empty");
+      return;
+    }
+
+    if (customerInfo.Password !== customerInfo.ConfirmPassword) {
+      return;
+    }
+    if (
+      !validator.isLength(customerInfo.FirstName, { min: 3, max: 30 })
+    ) {
+      setFirstNameError(true);
+      console.log("First name should be between 3 and 30 characters");
+      return;
+    }
+  
+    // Validate last name length
+    if (
+      !validator.isLength(customerInfo.LastName, { min: 3, max: 30 })
+    ) {
+      setLastNameError(true);
+      console.log("Last name should be between 3 and 30 characters");
+      return;
+    }
+    if (!validator.isEmail(customerInfo.Email)) {
+      setEmailError(true)
+      console.log("Email must contain the @ symbol");
+      return;
+    }
+    if (customerInfo.Phone && !validator.isMobilePhone(customerInfo.Phone, 'any', { max: 20 })) {
+      setPhoneError(true);
+      console.log("Phone number is not valid");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
-        customerInfo
+        customerInfo,
+        { headers }
       );
       // window.location.reload();
       setTimeout(() => {
-        setAlertSuccess(false)
+        setAlertSuccess(false);
       }, 3000);
-      
+
       setTimeout(() => {
-        setAddStaffSuccess(false)
-        
+        setAddStaffSuccess(false);
+        setUpdateStaffSuccess(false);
       }, 4000);
-      setAddStaffSuccess(true)
-      setAlertSuccess(true)
+      selectedStaff !== 0
+        ? setUpdateStaffSuccess(true)
+        : setAddStaffSuccess(true);
+      setAlertSuccess(true);
       getStaffList();
-      settoggleAddStaff(true)
+      settoggleAddStaff(true);
 
       console.log("staff added successfully", customerInfo);
     } catch (error) {
-
       if (error.response.status === 409) {
-            setAlert(true)
-        }
+        setAlert(true);
+      }
       console.log("roles api call error", error.response.status);
     }
   };
 
   const getStaffData = async () => {
+    if (selectedStaff === 0) {
+      setLoading(false)
+      return
+    }
     try {
-      const response = await axios.get(`https://earthcoapi.yehtohoga.com/api/Staff/GetStaff?id=${selectedStaff}`);
-      console.log("staffdata izzzzzz",response.data)
-      setCustomerInfo(response.data)
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaff?id=${selectedStaff}`,
+        { headers }
+      );
+
+      console.log("staffdata izzzzzz", response.data);
+      setCustomerInfo(response.data.Data);
+      setLoading(false);
     } catch (error) {
-      console.log("error fetching staff data", error)
+      console.log("error fetching staff data", error);
+      setLoading(false);
     }
   };
   useEffect(() => {
     getStaffData();
-  },[selectedStaff])
+  }, [selectedStaff]);
 
   return (
     <>
       <TitleBar icon={icon} title="Add Staff" />
-      <div className="container-fluid">
+      {loading? <div className="center-loader">
+                  <CircularProgress style={{ color: "#789a3d" }} />
+                </div>: <div className="container-fluid">
         <div className="card">
-          <div className="card-header">
-            <h4 className="modal-title" id="#gridSystemModal">
-              User Info
-            </h4>
+          <div className="itemtitleBar">
+            <h4>User Info</h4>
           </div>
-          <div className="card-body">
-            {alert && 
-              <Alert severity="error">
-                The Email/User already exists
-              </Alert>
-           }
-           {alertSuccess && <Alert severity="success">Successfuly Added/Updated staff</Alert>}
-            
-            <div className="row">
-              <div className="col-xl-6 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput1"
-                  className="form-label"
-                >
-                  First Name <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="FirstName"
-                  id="exampleFormControlInput1"
-                  onChange={handleCustomerInfo}
-                  value={customerInfo.FirstName}
-                  placeholder="First Name"
-                  required
-                />
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput4"
-                  className="form-label"
-                >
-                  Last Name<span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  onChange={handleCustomerInfo}
-                  name="LastName"
-                  value={customerInfo.LastName}
-                  id="exampleFormControlInput4"
-                  placeholder="Last Name"
-                  required
-                />
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label className="form-label">
-                  Email / User Name<span className="text-danger">*</span>
-                </label>
-                <input
-                  type="email"
-                  className="form-control"
-                  onChange={handleCustomerInfo}
-                  name="Email"
-                  value={customerInfo.Email}
-                  id="exampleFormControlInput3"
-                  placeholder="Email / User Name Name"
-                  required
-                />
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label className="form-label">
-                  Password<span className="text-danger">*</span>
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  onChange={handlePasswordChange}
-                  name="Password"
-                  id="passwordInput"
-                  placeholder="Password"
-                  required
-                />
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label className="form-label">
-                  Confirm Password<span className="text-danger">*</span>
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  onChange={handleConfirmPasswordChange}
-                  id="confirmPasswordInput"
-                  
-                  placeholder="Confirm Password"
-                  required
-                />
-                {passwordMismatch && (
-        <div style={{ color: 'red' }}>
-          Passwords do not match.
-        </div>
-      )}
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput4"
-                  className="form-label"
-                >
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  className="form-control"
-                  onChange={handleCustomerInfo}
-                  name="Phone"
-                  value={customerInfo.Phone}
-                  id="exampleFormControlInput4"
-                  placeholder="Phone 1"
-                  required
-                />
-              </div>
-              <div className="col-xl-6 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput4"
-                  className="form-label"
-                >
-                  Alt Phone
-                </label>
-                <input
-                  type="tel"
-                  className="form-control"
-                  onChange={handleCustomerInfo}
-                  name="AltPhone"
-                  value={customerInfo.AltPhone}
-                  id="exampleFormControlInput4"
-                  placeholder="Alt Phone"
-                  required
-                />
-              </div>
-              <div className="col-xl-6" style={{ position: "relative" }}>
-                <label className="form-label">
-                  Adress<span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  onChange={handleCustomerInfo}
-                  className="form-control"
-                  name="Address"
-                  value={customerInfo.Address}
-                  id="exampleFormControlInput3"
-                  placeholder="Address"
-                  required
-                />
-                {/* {showPop1 || (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput1"
+                    className="form-label"
+                  >
+                    First Name <span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                    type="text"
+                    className="form-control"
+                    name="FirstName"
+                    id="exampleFormControlInput1"
+                    variant="outlined"
+                    size="small"
+                    onChange={handleCustomerInfo}
+                    value={customerInfo.FirstName}
+                    error={submitClicked && !customerInfo.FirstName}
+                    placeholder="First Name"
+                    
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput4"
+                    className="form-label"
+                  >
+                    Last Name<span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                    type="text"
+                    className="form-control"
+                    variant="outlined"
+                    size="small"
+                    onChange={handleCustomerInfo}
+                    name="LastName"
+                    value={customerInfo.LastName}
+                    error={submitClicked && !customerInfo.LastName}
+                    id="exampleFormControlInput4"
+                    placeholder="Last Name"
+                    
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label className="form-label">
+                    Email / User Name<span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                   
+                    className="form-control"
+                    variant="outlined"
+                    size="small"
+                    onChange={handleCustomerInfo}
+                    name="Email"
+                    value={customerInfo.Email}
+                    error={ emailError || submitClicked && !customerInfo.Email}
+                    id="exampleFormControlInput3"
+                    placeholder="Email / User Name"
+                    
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <FormControl fullWidth variant="outlined">
+                    <label
+                      htmlFor="exampleFormControlInput4"
+                      className="form-label"
+                    >
+                      User Role <span className="text-danger">*</span>
+                    </label>
+
+                    <Select
+                      labelId="role-label"
+                      id="role-select"
+                      name="RoleId"
+                      value={customerInfo.RoleId}
+                      error={submitClicked && !customerInfo.RoleId}
+                      onChange={handleCustomerInfo}
+                      label=""
+                      size="small"
+                    >
+                      {userRoles.map((roles) => (
+                        <MenuItem key={roles.RoleId} value={roles.RoleId}>
+                          {roles.Role}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label className="form-label">
+                    Password<span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                    type="password"
+                    className="form-control"
+                    variant="outlined"
+                    size="small"
+                    error={submitClicked && !customerInfo.Password}
+                    onChange={handleCustomerInfo}
+                    name="Password"
+                    id="passwordInput"
+                    placeholder="Password"
+                   
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label className="form-label">
+                    Confirm Password<span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                    type="password"
+                    className="form-control"
+                    variant="outlined"
+                    size="small"
+                    onChange={handleCustomerInfo}
+                    error={submitClicked && !customerInfo.ConfirmPassword}
+                    id="confirmPasswordInput"
+                    name="ConfirmPassword"
+                    placeholder="Confirm Password"
+                    
+                  />
+                  {passwordMatch && (
+                    <div style={{ color: "red" }}>Passwords do not match.</div>
+                  )}
+                  {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput4"
+                    className="form-label"
+                  >
+                    Phone 
+                  </label>
+                  <TextField
+                    type="tel"
+                    className="form-control"
+                    onChange={handleCustomerInfo}
+                    name="Phone"
+                    variant="outlined"
+                    size="small"
+                    error={phoneError}
+                    value={customerInfo.Phone}
+                    id="exampleFormControlInput4"
+                    placeholder="Phone 1"
+                    
+                  />
+                </div>
+                <div className="col-md-3 mb-3">
+                  <label
+                    htmlFor="exampleFormControlInput4"
+                    className="form-label"
+                  >
+                    Alt Phone
+                  </label>
+                  <TextField
+                    type="tel"
+                    className="form-control"
+                    onChange={handleCustomerInfo}
+                    name="AltPhone"
+                    variant="outlined"
+                    size="small"
+                    value={customerInfo.AltPhone}
+                    id="exampleFormControlInput4"
+                    placeholder="Alt Phone"
+                   
+                  />
+                </div>
+                <div className="col-md-6" style={{ position: "relative" }}>
+                  <label className="form-label">
+                    Address
+                  </label>
+                  <TextField
+                    type="text"
+                    onChange={handleCustomerInfo}
+                    className="form-control "
+                    name="Address"
+                    variant="outlined"
+                    size="small"
+                    value={customerInfo.Address}
+                    id="exampleFormControlInput3"
+                    placeholder="Address"
+                    
+                  />
+                  {/* {showPop1 || (
                   <AdressModal
                     topClass="staffAdress"
                     adress={customerAdress}
@@ -341,48 +449,72 @@ const AddStaff = ({selectedStaff, settoggleAddStaff, setAddStaffSuccess,getStaff
                     handleAdress={setAdress1}
                   />
                 )} */}
+                </div>
+                <div className="col-md-9 mt-4">
+                {alert && (
+                    <Alert severity="error">
+                      The Email/User already exists
+                    </Alert>
+                  )}
+                  {alertSuccess && (
+                    <Alert severity="success">
+                      Successfuly Added/Updated staff
+                    </Alert>
+                  )}
+                  {emptyFieldsError && (
+                    <Alert severity="error">
+                      Please fill all required fields
+                    </Alert>
+                  )}
+                  {emailError && (
+                    <Alert severity="error">
+                     Please enter valid email
+                    </Alert>
+                  )}
+                  {phoneError && (
+                    <Alert severity="error">
+                     Please enter valid Phone
+                    </Alert>
+                  )}
+                  {firstNameError && (
+                    <Alert severity="error">
+                     Please enter valid First Name
+                    </Alert>
+                  )}
+                  {lastNameError && (
+                    <Alert severity="error">
+                     Please enter valid Last Name
+                    </Alert>
+                  )}
+                </div>
+                
+                <div className=" mt-4 col-md-3 text-end">
+                  <button className="btn btn-primary me-1" onClick={addStaff}>
+                    Submit
+                  </button>
+
+                  <button
+                    className="btn btn-danger light ms-1"
+                    onClick={() => {
+                      settoggleAddStaff(true);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-              <div className="col-xl-6 mb-3">
-                <label
-                  htmlFor="exampleFormControlInput4"
-                  className="form-label"
-                >
-                  User Role
-                </label>
-                <Form.Select
-                  name="RoleId"
-                  size="lg"
-                  className="bg-white"
-                  value={customerInfo.RoleId}
-                  onChange={handleCustomerInfo}
-                >
-                  <option value="">Select Role ...</option>
-                  {userRoles.map((roles) => {
-                    return (
-                      <option key={roles.RoleId} value={roles.RoleId}>
-                        {roles.Role}
-                      </option>
-                    );
-                  })}
-                </Form.Select>
+              <div className="row">
+                <div className="col-md-12">
+                  
+                </div>
               </div>
-              <div className=" mt-4 col-xl-6 text-end">
-          <NavLink>
-            <button className="btn btn-primary me-1" onClick={addStaff} disabled={!formValid}>
-              Submit
-            </button>
-          </NavLink>
-         
-            <button className="btn btn-danger light ms-1" onClick={() => {settoggleAddStaff(true)}}  >Cancel</button>
-         
-        </div>
             </div>
-            
-          </div>
-          
+          </form>
         </div>
-        
-      </div>
+      </div>}
+
+
+      
     </>
   );
 };

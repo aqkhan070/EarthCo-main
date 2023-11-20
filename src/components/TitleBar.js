@@ -4,10 +4,10 @@ const TitleBar = ({ icon, title }) => {
     return (
         <div className="page-titles">
             <ol className="breadcrumb">
-                <div className="menu-icon">
+                <div className="menu-icon mx-2">
                     {icon}
                 </div>
-                <li><h5 className="bc-title">{title}</h5></li>
+                <li><h5 className="bc-title ml-2">{title}</h5></li>
             </ol>
             {/* <a className="text-primary fs-13" data-bs-toggle="offcanvas" href="#offcanvasExample1" role="button" aria-controls="offcanvasExample1">+ Add Task</a>*/}
         </div> 
