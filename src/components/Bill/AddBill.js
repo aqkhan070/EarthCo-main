@@ -6,6 +6,8 @@ import Cookies from "js-cookie";
 import BillTitle from "./BillTitle";
 import formatDate from "../../custom/FormatDate";
 import Alert from "@mui/material/Alert";
+import useFetchPo from "../Hooks/useFetchPo";
+
 
 
 const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess }) => {
@@ -30,6 +32,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
   const [tags, setTags] = useState([]);
   const [terms, setTerms] = useState([]);
 
+  const { PoList, fetchPo } = useFetchPo();
 
 
   const getBill = async () => {
@@ -219,7 +222,20 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     handleInputChange(simulatedEvent);
   };
 
+  const handlePoAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "PurchaseOrderId",
+        value: newValue ? newValue.PurchaseOrderId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
   const handleInputChange = (e, newValue) => {
+    setSubmitClicked(false)
+    setEmptyFieldsError(false)
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -230,6 +246,9 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     setFormData((prevData) => ({ ...prevData, [name]: value, BillId: selectedBill, }));
   };
   const handleChange = (e) => {
+    setSubmitClicked(false)
+    setEmptyFieldsError(false)
+
     // Extract the name and value from the event target
     const { name, value } = e.target;
 
@@ -256,6 +275,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     fetchVendors();
     fetchTags();
     fetchTerms();
+    fetchPo();
   }, []);
 
   // items
@@ -362,6 +382,11 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+
+    if (!formData.SupplierId ||!formData.BillNumber ) {
+      setEmptyFieldsError(true)
+      return
+    }
 
     
     const postData = new FormData();
@@ -555,7 +580,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                   <div className="row">
                     <div className="mb-3 col-md-3">
                       <div className="col-md-12">
-                        <label className="form-label">Vendor</label>
+                        <label className="form-label">Vendor<span className="text-danger">*</span></label>
                         <Autocomplete
                           id="inputState19"
                           size="small"
@@ -575,6 +600,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                             <TextField
                               {...params}
                               label=""
+                              error={submitClicked && !formData.SupplierId}
                               placeholder="Vendors"
                               className="bg-white"
                             />
@@ -590,10 +616,8 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                               <p>{supplierAddress}</p>
                             </li>
                             <li>
-                              <span>Sipping </span>
-                              <p>1225 E.Wakeham</p>
-                              <p>Santa Ana, CA 92705</p>
-                              <p>USA</p>
+                              <span>Shipping </span>
+                              <p>{supplierAddress}</p>
                             </li>
                           </ul>
                         </div>
@@ -602,15 +626,17 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                     <div className="col-md-9">
                       <div className="row">
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Bill #</label>
+                          <label className="form-label">Bill # <span className="text-danger">*</span></label>
                           <div className="input-group mb-2">
-                            <input
+                            <TextField
                               type="text"
                               name="BillNumber"
                               value={formData.BillNumber}
                               onChange={handleChange}
+                              size="small"
+                              error={submitClicked && !formData.BillNumber}
                               className="form-control"
-                              placeholder="Leave blank to auto complete"
+                              placeholder="Bill No"
                             />
                           </div>
                         </div>
@@ -669,16 +695,30 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Purchase Order</label>
-                          <div className="input-group mb-2">
-                            <input
-                              type="text"
-                              name="PurchaseOrderNumber"
-                              value={formData.PurchaseOrderNumber}
-                              onChange={handleChange}
-                              className="form-control"
-                              placeholder="Purchase Order Number"
-                            />
-                          </div>
+                          <Autocomplete                      
+                      size="small"
+                      options={PoList}
+                      getOptionLabel={(option) => option.PurchaseOrderNumber || ""}
+                      value={
+                        PoList.find(
+                          (po) => po.PurchaseOrderId === formData.PurchaseOrderId
+                        ) || null
+                      }
+                      onChange={handlePoAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.PurchaseOrderId === value.PurchaseOrderId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          
+                          placeholder="Purchase order No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Terms</label>
@@ -996,9 +1036,15 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                   </table>
                 </div>
               </div>
-            </div>
-
-            <div className="mb-2 row text-end">
+              <div className="row mb-3 mx-3">
+                <div className="col-md-9">
+                  {
+                    emptyFieldsError && <Alert severity="error">
+                  please fill all required fields
+                  </Alert>
+                  }
+                </div>
+<div className=" col-md-3 text-end">
               <div>
                 <a
                   href="#"
@@ -1032,6 +1078,10 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                 </a>
               </div>
             </div>
+              </div>
+            
+            </div>
+
           </div>
         </div>
       </div>

@@ -914,7 +914,7 @@ const UpdateCustomer = ({
                   <AddressInputs />
                 </div>
               </div>
-              <div className="row">
+              <div className="row m-3">
                 <div className="col-md-9">
                   {error && (
                     <Alert severity="error">
@@ -974,6 +974,7 @@ const UpdateCustomer = ({
           </form>
 
           {/* contact modal */}
+        
           <div className="modal fade" id="basicModal">
             <div className="modal-dialog" role="document">
               <div className="modal-content">

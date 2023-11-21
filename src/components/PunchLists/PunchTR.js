@@ -3,7 +3,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Form } from "react-bootstrap";
 import punchList from "../../assets/images/1.jpg";
 import axios from "axios";
-
 import { Link } from "react-router-dom";
 import {
   Table,
@@ -26,6 +25,8 @@ import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Add, Delete, Edit } from "@mui/icons-material";
+import Cookies from "js-cookie";
+import PunchListDetailRow from "./PunchListDetailRow";
 
 const theme = createTheme({
   palette: {
@@ -47,7 +48,11 @@ const theme = createTheme({
   },
 });
 
-const PunchTR = ({ punchData }) => {
+const PunchTR = ({ punchData, setselectedPL }) => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -63,30 +68,16 @@ const PunchTR = ({ punchData }) => {
 
   const columnFieldMapping = {
     "#": "PunchlistId",
-    Title: "Title",
+    "Title": "Title",
     "Assigned To": "AssignedTo",
     "Date Created": "CreatedDate",
-    Status: "Status",
-    Reports: "Reports",
+    "Status": "Status",
+    "Reports": "Reports",
   };
 
-  //
-
   const handleSearch = (data) => {
-    return data.filter((item) => {
-      const fieldsToSearch = [
-        // item.PunchlistId?.toString(),
-        item.ContactName?.toString(),
-        // item.Title?.toString(),
-        // item.AssignedTo?.toString(),
-        // item.CreatedDate?.toString(),
-        // item.Reports?.toString(),
-      ];
-
-      return fieldsToSearch.some((field) =>
-        field?.toLowerCase().includes(search.toLowerCase())
-      );
-    });
+    // Always return the original data without filtering
+    return data;
   };
 
   const sortedAndSearchedCustomers = handleSearch([...punchData]).sort(
@@ -110,16 +101,11 @@ const PunchTR = ({ punchData }) => {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlist?id=${id}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete customer");
-      }
+      
 
       const data = await response.json();
 
@@ -148,7 +134,7 @@ const PunchTR = ({ punchData }) => {
                   <TextField
                     label="Search"
                     variant="standard"
-              size="small"
+                    size="small"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -166,12 +152,13 @@ const PunchTR = ({ punchData }) => {
               </div>
             </div>
             <br />
+            
 
             <Table>
               <TableHead>
                 <TableRow className="table-header">
                   {[
-                    "#",
+                    "",
                     "Customer Name",
                     "Title",
                     "Assigned to",
@@ -229,10 +216,10 @@ const PunchTR = ({ punchData }) => {
                             )}
                           </IconButton>
                         </TableCell>
-                        <TableCell>{item.ContactName}</TableCell>
-                        <TableCell>{item.Title}</TableCell>
-                        <TableCell>{item.AssignedTo}</TableCell>
-                        <TableCell>{item.CreatedDate}</TableCell>
+                        <TableCell>{item.CustomerName}</TableCell>
+                        <TableCell>{item.Data.Title}</TableCell>
+                        <TableCell>{item.AssignToName}</TableCell>
+                        <TableCell>{item.Data.CreatedDate}</TableCell>
                         <TableCell>{item.Status}</TableCell>
                         <TableCell>{item.Reports}</TableCell>
 
@@ -241,6 +228,9 @@ const PunchTR = ({ punchData }) => {
                             className="delete-button"
                             data-bs-toggle="modal"
                             data-bs-target="#addPhotos"
+                            onClick={() => {
+                              setselectedPL(item.Data.PunchlistId)
+                            }}
                           >
                             <Add />
                           </Button>
@@ -248,120 +238,29 @@ const PunchTR = ({ punchData }) => {
                             className="delete-button"
                             data-bs-toggle="modal"
                             data-bs-target="#editPunch"
+                            onClick={() => {
+                              setselectedPL(item.Data.PunchlistId)
+                            }}
                           >
                             <Edit />
                           </Button>
 
-                          <Button color="error" className="delete-button" onClick={() => {handleDelete(item.PunchlistId)}}>
+                          <Button
+                            color="error"
+                            className="delete-button"
+                            onClick={() => {
+                              handleDelete(item.Data.PunchlistId);
+                            }}
+                          >
                             <Delete />
                           </Button>
                         </TableCell>
                       </TableRow>
-                      <TableRow>
-                        <TableCell
-                          style={{ paddingBottom: 0, paddingTop: 0 }}
-                          colSpan={8}
-                        >
-                          <Collapse
-                            in={expandedRow === rowIndex}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            <Box sx={{ margin: 1 }}>
-                              <Typography
-                                variant="h6"
-                                gutterBottom
-                                component="div"
-                              >
-                                {/* collapssss */}
-                              </Typography>
-                              <Table size="small" aria-label="purchases">
-                                {/* <TableHead>
-                                    <TableRow>
-                                      <TableCell></TableCell>
-                                      <TableCell></TableCell>
-                                      <TableCell></TableCell>
-                                      <TableCell align="right"></TableCell>
-                                      <TableCell align="left"></TableCell>
-                                    </TableRow>
-                                  </TableHead> */}
-                                <TableBody>
-                                  <TableRow>
-                                    <TableCell></TableCell>
-                                    <TableCell
-                                      rowSpan={2}
-                                      component="th"
-                                      scope="row"
-                                    >
-                                      <div className="products">
-                                        <img
-                                          src={punchList}
-                                          className="avatar avatar-md"
-                                          alt="lazy"
-                                        />
-                                        <div>
-                                          <h6>Keep plants</h6>
-                                          <span>Pool</span>
-                                        </div>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell>
-                                      {" "}
-                                      <div>
-                                        <Checkbox />
-                                        <span>Label 1</span>
-                                      </div>
-                                      <div>
-                                        <Checkbox />
-                                        <span>Label 2</span>
-                                      </div>
-                                      <div>
-                                        <Checkbox />
-                                        <span>Label 3</span>
-                                      </div>
-                                    </TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell rowSpan={2} align="right">
-                                      <Form.Select
-                                        aria-label="Default select example"
-                                        id="inputState"
-                                        className="bg-white"
-                                      >
-                                        <option value="complete">
-                                          Complete
-                                        </option>
-                                        <option value="pending">Pending</option>
-                                        <option value="Estimate">
-                                          Estimate
-                                        </option>
-                                        <option value="Service Request">
-                                          Service Request
-                                        </option>
-                                      </Form.Select>
-                                      <TableCell></TableCell>
-                                    </TableCell>
-                                    <TableCell align="left">
-                                      <Button
-                                        className="delete-button"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editPunch"
-                                      >
-                                        <Edit />
-                                      </Button>
-                                      <Button
-                                        color="error"
-                                        className="delete-button"
-                                      >
-                                        <Delete />
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                </TableBody>
-                              </Table>
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
+
+
+                      <PunchListDetailRow item={item} rowIndex={rowIndex} expandedRow={expandedRow} />
+
+                     
                     </>
                   ))}
               </TableBody>

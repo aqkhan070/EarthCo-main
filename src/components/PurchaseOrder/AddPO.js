@@ -13,6 +13,9 @@ import {
   makeStyles,
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
+import useFetchInvoices from "../Hooks/useFetchInvoices";
+import useFetchBills from "../Hooks/useFetchBills";
+
 
 
 export const AddPO = ({
@@ -20,6 +23,7 @@ export const AddPO = ({
   setShowContent,
   setPostSuccessRes,
   setPostSuccess,
+  fetchPo
 }) => {
   const token = Cookies.get("token");
   const headers = {
@@ -46,6 +50,9 @@ export const AddPO = ({
   const [staffData, setStaffData] = useState([]);
 
   const [loading, setLoading] = useState(false)
+
+  const { invoiceList, fetchInvoices } = useFetchInvoices();
+  const { billList, fetchBills } = useFetchBills();
 
 
   const handleAutocompleteChange = async (e) => {
@@ -314,6 +321,27 @@ export const AddPO = ({
     handleInputChange(simulatedEvent);
   };
 
+  const handleBillAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "BillId",
+        value: newValue ? newValue.BillId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+  const handleInvoiceAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "InvoiceId",
+        value: newValue ? newValue.InvoiceId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
   const handleRBAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
     const simulatedEvent = {
@@ -371,6 +399,8 @@ export const AddPO = ({
     fetchVendors();
     getEstimate();
     fetchpoData();
+    fetchInvoices();
+    fetchBills();
     console.log("selected po is", selectedPo);
   }, []);
 
@@ -479,7 +509,7 @@ export const AddPO = ({
     e.preventDefault();
     setSubmitClicked(true);
 
-    if ( !formData.Date) {
+    if ( !formData.Date || !formData.SupplierId) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
@@ -528,7 +558,7 @@ export const AddPO = ({
         {headers}
       );
      
-
+      fetchPo()
       setPostSuccessRes(response.data.Message);
       setPostSuccess(true);
       setShowContent(true);
@@ -597,7 +627,7 @@ export const AddPO = ({
                 <h4>Purchase Order Details</h4>
               </div>
           <div className="m-3">
-            <div className="row ">
+            <div className="row mb-3">
              
               {/* <div className="col-xl-3">
                 <label className="form-label">Customer<span className="text-danger">*</span></label>
@@ -690,7 +720,7 @@ export const AddPO = ({
               </div> */}
 
               <div className="col-md-3">
-                <label className="form-label">Vendor</label>
+                <label className="form-label">Vendor<span className="text-danger">*</span></label>
                 <Autocomplete
                   id="inputState19"
                   size="small"
@@ -709,6 +739,7 @@ export const AddPO = ({
                     <TextField
                       {...params}
                       label=""
+                      error={submitClicked && !formData.SupplierId}
                       placeholder="Vendors"
                       className="bg-white"
                     />
@@ -720,8 +751,9 @@ export const AddPO = ({
               <div className="col-md-3">
                 <label className="form-label">Purchase Order #</label>
                 <div className="input-group mb-2">
-                  <input
+                  <TextField
                     type="text"
+                    size="small"
                     name="PurchaseOrderNumber"
                     onChange={handleChange}
                     value={formData.PurchaseOrderNumber}
@@ -902,17 +934,33 @@ export const AddPO = ({
                   </div>
                   <div className=" col-md-4 mt-2">
                     <label className="form-label">Invoice Number</label>
-                    <div className="input-group mb-2">
-                      <input
-                        type="text"
-                        disabled
-                        className="form-control"
-                        name="InvoiceNumber"
-                        onChange={handleChange}
-                      />
-                    </div>
+                    
+                    <Autocomplete                      
+                      size="small"
+                      options={invoiceList}
+                      getOptionLabel={(option) => option.InvoiceNumber || ""}
+                      value={
+                        invoiceList.find(
+                          (invoice) => invoice.InvoiceId === formData.InvoiceId
+                        ) || null
+                      }
+                      onChange={handleInvoiceAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.InvoiceId === value.InvoiceId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Invoice No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
+                   
                   </div>
-                  <div className=" col-md-4 mt-2">
+                  {/* <div className=" col-md-4 mt-2">
                     <label className="form-label">Ship to</label>
                     <div className="input-group mb-2">
                       <input
@@ -923,18 +971,35 @@ export const AddPO = ({
                         onChange={handleChange}
                       />
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col-md-4 mt-2">
                     <label className="form-label">Bill Number</label>
-                    <div className="input-group mb-2">
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="BillNumber"
-                        disabled
-                        onChange={handleChange}
-                      />
-                    </div>
+                   
+                    <Autocomplete                      
+                      size="small"
+                      options={billList}
+                      getOptionLabel={(option) => option.BillNumber || ""}
+                      value={
+                        billList.find(
+                          (bill) => bill.BillId === formData.BillId
+                        ) || null
+                      }
+                      onChange={handleBillAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.BillId === value.BillId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          fullWidth
+                          placeholder="Bill No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
+                   
                   </div>
                   {/* <div className="mb-3 col-md-4">
                           <label className="form-label">Estimate No</label>

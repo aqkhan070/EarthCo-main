@@ -20,6 +20,7 @@ const useFetchBills = () => {
       );
       setLoading(false);
       setBillList(res.data);
+      console.log("bill list is",  res.data);
     } catch (error) {
       setLoading(false);
       console.log("api call error", error);

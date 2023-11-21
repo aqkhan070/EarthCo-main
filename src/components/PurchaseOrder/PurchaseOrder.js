@@ -309,6 +309,7 @@ const PurchaseOrder = () => {
           setShowContent={setShowContent}
           setPostSuccessRes={setPostSuccessRes}
           setPostSuccess={setPostSuccess}
+          fetchPo={fetchPo}
         />
       )}
     </>

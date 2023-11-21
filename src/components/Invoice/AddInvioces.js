@@ -7,6 +7,10 @@ import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import formatDate from "../../custom/FormatDate";
+import useGetEstimate from "../Hooks/useGetEstimate";
+import useFetchBills from "../Hooks/useFetchBills";
+
+
 
 const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitRes }) => {
   const token = Cookies.get("token");
@@ -30,6 +34,10 @@ const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitR
   const [estimates, setEstimates] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [customerAddress, setCustomerAddress] = useState('')
+
+
+  // const { estimates, getEstimate } = useGetEstimate(); 
+  const { billList, fetchBills } = useFetchBills();
 
   // const [error, seterror] = useState("")
 
@@ -89,6 +97,8 @@ const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitR
       console.log("API call error", error.message);
     }
   };
+
+
 
   const fetchServiceLocations = async (id) => {
     if (!id) {
@@ -187,8 +197,19 @@ const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitR
     fetchTags();
     getEstimate();
     getInvoice();
+    fetchBills()
   }, []);
 
+  const handleBillAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "BillId",
+        value: newValue ? newValue.BillId : "",
+      },
+    };
+
+    handleChange(simulatedEvent);
+  };
   const handleEstimatesAutocompleteChange = (event, newValue) => {
     if (newValue) {
       // Update the formData with both EstimateId and EstimateNumber
@@ -599,7 +620,7 @@ const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitR
               </div>
             <div className="mx-3 mt-2">
               
-              <div className="row  ">
+              <div className="row mb-3 ">
                 <div className="col-md-3">
                   <label className="form-label">
                     Customer<span className="text-danger">*</span>
@@ -779,14 +800,29 @@ const AddInvioces = ({ setShowContent, selectedInvoice, fetchInvoices,setSubmitR
                     </div>
                     <div className=" col-md-6">
                       <label className="form-label">Related Bills</label>
-                      <div className="input-group mb-2">
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="LinkedEstimate"
-                          disabled
+                      <Autocomplete                      
+                      size="small"
+                      options={billList}
+                      getOptionLabel={(option) => option.BillNumber || ""}
+                      value={
+                        billList.find(
+                          (bill) => bill.BillId === formData.BillId
+                        ) || null
+                      }
+                      onChange={handleBillAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.BillId === value.BillId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Bill No"
+                          className="bg-white"
                         />
-                      </div>
+                      )}
+                      aria-label="Contact select"
+                    />
                     </div>
                     <div className=" col-md-6">
                       <label className="form-label">Tags</label>

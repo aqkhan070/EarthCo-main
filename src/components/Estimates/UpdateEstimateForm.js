@@ -16,6 +16,11 @@ import FormControl from "@mui/material/FormControl";
 import { Delete, Create } from "@mui/icons-material";
 import CircularProgress from "@mui/material/CircularProgress";
 import formatDate from "../../custom/FormatDate";
+import useFetchInvoices from "../Hooks/useFetchInvoices";
+import useFetchBills from "../Hooks/useFetchBills";
+import useFetchPo from "../Hooks/useFetchPo";
+
+
 
 const UpdateEstimateForm = ({
   headers,
@@ -53,6 +58,13 @@ const UpdateEstimateForm = ({
   const [loading, setLoading] = useState(true);
 
   const token = Cookies.get("token");
+
+  const { invoiceList, fetchInvoices } = useFetchInvoices();
+  const { billList, fetchBills } = useFetchBills();
+const { PoList, fetchPo } = useFetchPo();
+
+
+
 
   const fetchEstimates = async () => {
     if (estimateId === 0) {
@@ -183,6 +195,39 @@ const UpdateEstimateForm = ({
 
     handleInputChange(simulatedEvent);
   };
+
+  const handleInvoiceAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "InvoiceId",
+        value: newValue ? newValue.InvoiceId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+  const handleBillAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "BillId",
+        value: newValue ? newValue.BillId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handlePoAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "PurchaseOrderId",
+        value: newValue ? newValue.PurchaseOrderId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
   const handleTagAutocompleteChange = (event, newValues) => {
     const tagString = newValues.map((tag) => tag.Tag).join(", ");
 
@@ -358,6 +403,9 @@ const UpdateEstimateForm = ({
     fetchEstimates();
     fetchStaffList();
     fetchTags();
+    fetchInvoices();
+    fetchBills()
+    fetchPo()
 
     setShowStatusCards(false);
   }, []);
@@ -788,14 +836,28 @@ const UpdateEstimateForm = ({
                   </div>
                   <div className="col-md-3 ">
                     <label className="form-label">Linked Invoice</label>
-                    <TextField
-                      disabled
-                      name="EstimateNumber"
-                      type="text"
-                      variant="outlined"
-                      placeholder="Linked Invoice"
+                    <Autocomplete                      
                       size="small"
-                      fullWidth
+                      options={invoiceList}
+                      getOptionLabel={(option) => option.InvoiceNumber || ""}
+                      value={
+                        invoiceList.find(
+                          (invoice) => invoice.InvoiceId === formData.InvoiceId
+                        ) || null
+                      }
+                      onChange={handleInvoiceAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.InvoiceId === value.InvoiceId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Invoice No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
                     />
                   </div>
                   <div className="col-md-3 mt-2">
@@ -874,28 +936,57 @@ const UpdateEstimateForm = ({
                   </div>
                   <div className="col-md-3 mt-2 ">
                     <label className="form-label">Linked Bill</label>
-                    <TextField
-                      disabled
-                      name="EstimateNumber"
-                      type="text"
-                      variant="outlined"
-                      placeholder="Linked Bill"
+                    <Autocomplete                      
                       size="small"
-                      fullWidth
+                      options={billList}
+                      getOptionLabel={(option) => option.BillNumber || ""}
+                      value={
+                        billList.find(
+                          (bill) => bill.BillId === formData.BillId
+                        ) || null
+                      }
+                      onChange={handleBillAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.BillId === value.BillId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Bill No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
                     />
                   </div>
                   <div className="col-md-3 mt-2 ">
                     <label className="form-label">
                       Linked To purchase order
                     </label>
-                    <TextField
-                      disabled
-                      name="EstimateNumber"
-                      type="text"
-                      variant="outlined"
-                      placeholder="546234"
+                    <Autocomplete                      
                       size="small"
-                      fullWidth
+                      options={PoList}
+                      getOptionLabel={(option) => option.PurchaseOrderNumber || ""}
+                      value={
+                        PoList.find(
+                          (po) => po.PurchaseOrderId === formData.PurchaseOrderId
+                        ) || null
+                      }
+                      onChange={handlePoAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.PurchaseOrderId === value.PurchaseOrderId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          
+                          placeholder="Purchase order No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
                     />
                   </div>
                 </div>

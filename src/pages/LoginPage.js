@@ -45,6 +45,7 @@ const LoginPage = () => {
         }
       );
 
+
       if (response.data.status === "success") {
         // if (response.status === 200){
           sessionStorage.setItem("userEmail", email);
@@ -64,7 +65,7 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.log("Error logging in:", error);
-      setError("An error occurred while logging in. Please try again later.");
+      setError(error.response.data);
       setBtndisable(false)
     }
   };
