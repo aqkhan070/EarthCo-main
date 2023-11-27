@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AddInvioces from "./AddInvioces";
 import InvoiceTitleBar from "./InvoiceTitleBar";
 import InvoiceCards from "./InvoiceCards";
@@ -15,16 +15,22 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { Delete, Create } from "@mui/icons-material";
+import { Delete, Create,Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
+import { DataContext } from "../../context/AppData";
+import { useNavigate } from "react-router-dom";
+
 
 const Invoices = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const navigate = useNavigate();
+  const {setInvoiceData} = useContext(DataContext);
   const { invoiceList, loading, error, fetchInvoices } = useFetchInvoices();
   const [showContent, setShowContent] = useState(true);
 
@@ -59,9 +65,7 @@ const Invoices = () => {
     setPage(0);
   };
 
-  const filteredInvoices = invoiceList.filter((invoice) =>
-    invoice.InvoiceNumber.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredInvoices = invoiceList
 
   const sortedInvoices = filteredInvoices.sort((a, b) => {
     if (order === "asc") {
@@ -113,11 +117,7 @@ const Invoices = () => {
                       {submitRes ? submitRes : "Successfuly Added/Updated Invoice"}
                     </Alert>
                   )}
-                  {error && (
-                    <Alert className="mb-3" severity="error">
-                      {error ? error : "Error fetching Invoice Data"}
-                    </Alert>
-                  )}
+                 
 
                   {loading ? (
                     <div className="center-loader">
@@ -130,7 +130,7 @@ const Invoices = () => {
                           label="Search"
                           variant="standard"
                           size="small"
-                          style={{ marginBottom: "2em", width: "15em" }}
+                          style={{  width: "15em" }}
                           fullWidth
                           value={searchText}
                           onChange={(e) => setSearchText(e.target.value)}
@@ -204,13 +204,17 @@ const Invoices = () => {
                                 </TableRow>
                               </TableHead>
                               <TableBody>
+                                <TableRow>
+                                  {error ? <TableCell className="text-center" colSpan={9}> <div className="text-center">No Record Found</div></TableCell>: null}
+                                </TableRow>
+
                                 {sortedInvoices
                                   .slice(
                                     page * rowsPerPage,
                                     page * rowsPerPage + rowsPerPage
                                   )
                                   .map((invoice, index) => (
-                                    <TableRow key={index}>
+                                    <TableRow  hover key={index}>
                                       <TableCell>
                                         <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                           <input
@@ -242,6 +246,19 @@ const Invoices = () => {
                                         </div>
                                       </TableCell>
                                       <TableCell>
+                                      <Button
+                            // className="btn btn-primary btn-icon-xxs me-2"
+                            onClick={() => {
+                              setInvoiceData(invoice)
+                              navigate(
+                                "/Dashboard/Invoices/Invoice-Preview"
+                              );
+                            }}
+                          >
+                            {/* <i className="fa-solid fa-eye"></i> */}
+
+                            <Visibility />
+                          </Button>
                                         <Button
                                           onClick={() => {
                                             setSelectedInvoice(
@@ -266,14 +283,13 @@ const Invoices = () => {
                                           aria-hidden="true"
                                         >
                                           <div
-                                            className="modal-dialog"
+                                            className="modal-dialog modal-dialog-centered"
                                             role="document"
                                           >
                                             <div className="modal-content">
                                               <div className="modal-header">
                                                 <h5 className="modal-title">
-                                                  Are you sure you want to
-                                                  delete {invoice.InvoiceNumber}
+                                                 Delete Invoice
                                                 </h5>
                                                 <button
                                                   type="button"
@@ -282,17 +298,22 @@ const Invoices = () => {
                                                 ></button>
                                               </div>
                                               <div className="modal-body">
-                                                <div className="basic-form text-center">
+                                                <p>
+                                                Are you sure you want to
+                                                  delete {invoice.InvoiceNumber}
+                                                </p>
+                                                </div>
+                                                <div className="modal-footer">
                                                   <button
                                                     type="button"
                                                     id="closer"
-                                                    className="btn btn-danger light m-3"
+                                                    className="btn btn-danger light me-2"
                                                     data-bs-dismiss="modal"
                                                   >
                                                     Close
                                                   </button>
                                                   <button
-                                                    className="btn btn-primary m-3"
+                                                    className="btn btn-primary "
                                                     data-bs-dismiss="modal"
                                                     onClick={() => {
                                                       deleteInvoice(
@@ -307,7 +328,7 @@ const Invoices = () => {
                                                     Yes
                                                   </button>
                                                 </div>
-                                              </div>
+                                              
                                             </div>
                                           </div>
                                         </div>
@@ -315,7 +336,7 @@ const Invoices = () => {
                                     </TableRow>
                                   ))}
                                 {emptyRows > 0 && (
-                                  <TableRow style={{ height: 53 * emptyRows }}>
+                                  <TableRow >
                                     <TableCell colSpan={9} />
                                   </TableRow>
                                 )}
@@ -342,6 +363,7 @@ const Invoices = () => {
         </>
       ) : (
         <AddInvioces
+        setSelectedInvoice={setSelectedInvoice}
           setShowContent={setShowContent}
           selectedInvoice={selectedInvoice}
           fetchInvoices={fetchInvoices}

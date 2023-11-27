@@ -4,10 +4,10 @@ import React, { createContext, useContext, useState } from "react";
 const EstimateContext = createContext();
 
 export const EstimateProvider = ({ children }) => {
-  const [estimateState, setEstimateState] = useState(initialEstimateState);
+  const [estimateLinkData, setEstimateLinkData] = useState({});
 
   return (
-    <EstimateContext.Provider value={{ estimateState, setEstimateState }}>
+    <EstimateContext.Provider value={{ estimateLinkData, setEstimateLinkData }}>
       {children}
     </EstimateContext.Provider>
   );

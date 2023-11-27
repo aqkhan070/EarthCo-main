@@ -7,16 +7,27 @@ import BillTitle from "./BillTitle";
 import formatDate from "../../custom/FormatDate";
 import Alert from "@mui/material/Alert";
 import useFetchPo from "../Hooks/useFetchPo";
+import { Delete, Create } from "@mui/icons-material";
+import {
+  Button
+
+} from "@mui/material";
+import { Print, Email, Download } from "@mui/icons-material";
 
 
 
-const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess }) => {
+const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,setselectedBill }) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    BillDate: null,
+    DueDate: null,
+    PurchaseOrderId : null
+
+  });
   const [customersList, setCustomersList] = useState([]);
   const [showCustomersList, setShowCustomersList] = useState(true);
   const [inputValue, setInputValue] = useState("");
@@ -226,7 +237,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     const simulatedEvent = {
       target: {
         name: "PurchaseOrderId",
-        value: newValue ? newValue.PurchaseOrderId : "",
+        value: newValue ? newValue.PurchaseOrderId : null,
       },
     };
 
@@ -256,7 +267,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     const updatedFormData = {
       ...formData,
       [name]: value,
-      PurchaseOrderId: 1,
+   
       Amount: 0.0,
       Currency: "usd",
       BillId: selectedBill,
@@ -311,6 +322,22 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     }
   }, [searchText]);
 
+  const handleAddItem =() => {
+    // Adding the new item to the itemsList
+    setItemsList((prevItems) => [
+      ...prevItems,
+      { ...itemInput }, // Ensure each item has a unique 'id'
+    ]);
+    // Reset the input fields
+    setSearchText("");
+    setSelectedItem(null);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    })}
+
   const handleItemChange = (event) => {
     setShowItem(true);
     setSearchText(event.target.value);
@@ -345,6 +372,33 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     }, 0);
     return total;
   };
+
+  const handleQuantityChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Qty: Number(event.target.value),
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+  
+  const handleRateChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Rate: Number(event.target.value),
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+  
   useEffect(() => {
     // Calculate the total amount and update the state
     const total = calculateTotalAmount();
@@ -383,7 +437,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
     e.preventDefault();
     setSubmitClicked(true);
 
-    if (!formData.SupplierId ||!formData.BillNumber ) {
+    if (!formData.SupplierId  || !formData.BillDate ) {
       setEmptyFieldsError(true)
       return
     }
@@ -445,7 +499,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
       
-      setErrorMessage(error.message);
+      setErrorMessage(error.response.data);
       console.error("API Call Error:", error);
     }
 
@@ -626,7 +680,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                     <div className="col-md-9">
                       <div className="row">
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Bill # <span className="text-danger">*</span></label>
+                          <label className="form-label">Bill # </label>
                           <div className="input-group mb-2">
                             <TextField
                               type="text"
@@ -634,7 +688,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                               value={formData.BillNumber}
                               onChange={handleChange}
                               size="small"
-                              error={submitClicked && !formData.BillNumber}
+                            
                               className="form-control"
                               placeholder="Bill No"
                             />
@@ -670,12 +724,14 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                           />
                         </div>
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Date</label>
+                          <label className="form-label">Date<span className="text-danger">*</span></label>
                           <div className="input-group mb-2">
-                            <input
+                            <TextField
                               type="date"
+                              size="small"
                               className="form-control"
                               name="BillDate"
+                              error={submitClicked && !formData.BillDate}
                               value={formatDate(formData.BillDate)}
                               onChange={handleChange}
                             />
@@ -693,6 +749,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                             />
                           </div>
                         </div>
+
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Purchase Order</label>
                           <Autocomplete                      
@@ -755,6 +812,8 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
               </div>
             </div>
 
+
+
             <div className="card">
               <div className="card-body p-0">
                 <div className="estDataBox">
@@ -765,162 +824,182 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                   <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Description</th>
-                          <th>Rate</th>
-                          <th>Qty / Duration</th>
-                          <th>Tax</th>
-                          <th>Amount</th>
-                          <th>Action</th>
-                        </tr>
+                         <tr>
+                            <th className="itemName-width">Item</th>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Amount</th>
+                            <th>Tax</th>
+                            <th>Action</th>
+                          </tr>
                       </thead>
                       <tbody>
-                        {
-                          itemsList && itemsList.length > 0 ? (
-                            itemsList.map((item, index) => (
-                              <tr key={item.ItemId}>
-                                {" "}
-                                {/* Make sure item has a unique 'id' or use index as a fallback */}
-                                <td>{item.Name}</td>
-                                <td>{item.Description}</td>
-                                <td>{item.Rate}</td>
-                                <td>{item.Qty}</td>
-                                <td>NaN</td>
-                                <td>{item.Rate * item.Qty}</td>
-                                <td>
-                                  <div className="badgeBox">
-                                    <span
-                                      className="actionBadge badge-danger light border-0 badgebox-size"
-                                      onClick={() => {
-                                        deleteItem(item.ItemId);
+                      {itemsList && itemsList.length > 0 ? (
+    itemsList.map((item, index) => (
+      <tr colSpan={2} key={item.ItemId}>
+        <td className="itemName-width">{item.Name}</td>
+        <td>{item.Description}</td>
+        <td>
+          <input
+            type="number"
+            style={{ width: "7em" }}
+        className="form-control form-control-sm"
+            value={item.Qty}
+            onChange={(e) => handleQuantityChange(item.ItemId, e)}
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            value={item.Rate}
+            style={{ width: "7em" }}
+        className="form-control form-control-sm"
+            onChange={(e) => handleRateChange(item.ItemId, e)}
+          />
+        </td>
+        <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+        <td>NaN</td>
+        <td>
+          <div className="badgeBox">
+            <Button
+              onClick={() => {
+                deleteItem(item.ItemId);
+              }}
+            >
+              <Delete color="error" />
+            </Button>
+          </div>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <></>
+  )}
+                          <tr>
+                            <td className="itemName-width">
+                              <>
+                                <Autocomplete
+                                  id="search-items"
+                                  options={searchResults || null}
+                                  getOptionLabel={(item) => item.ItemName}
+                                  value={selectedItem} // This should be the selected item, not searchText
+                                  onChange={(event, newValue) => {
+                                    if (newValue) {
+                                      handleItemClick(newValue);
+                                    } else {
+                                      setSelectedItem(null);
+                                    }
+                                  }}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      label="Search for items..."
+                                      variant="outlined"
+                                      size="small"
+                                      fullWidth
+                                      onChange={handleItemChange}
+                                    />
+                                  )}
+                                  renderOption={(props, item) => (
+                                    <li
+                                      style={{
+                                        cursor: "pointer",
+                                        width: "30em",
                                       }}
+                                      {...props}
+                                      onClick={() => handleItemClick(item)}
                                     >
-                                      <span className="material-symbols-outlined badgebox-size">
-                                        delete
-                                      </span>
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <></>
-                          ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
-                        }
-
-                        <tr>
-                          <td>
-                            <>
-                              <Autocomplete
-                                id="search-items"
-                                options={searchResults}
-                                getOptionLabel={(item) => item.ItemName}
-                                value={selectedItem}
-                                onChange={(event, newValue) => {
-                                  if (newValue) {
-                                    handleItemClick(newValue);
-                                  } else {
-                                    setSelectedItem(null);
+                                      <div className="customer-dd-border">
+                                      <p><strong>{item.ItemName}</strong> </p>
+                                       <small>{item.Type}</small><br />
+                                        <small>{item.SaleDescription}</small>
+                                      </div>
+                                    </li>
+                                  )}
+                                  onKeyPress={(e) => {
+                                    if (e.key === "Enter") {
+                                      // Handle item addition when Enter key is pressed
+                                      e.preventDefault(); // Prevent form submission
+                                      handleAddItem();
+                                    }
+                                  }}
+                                />
+                              </>
+                            </td>
+                            <td>
+                              <p>{selectedItem?.SaleDescription || " "}</p>
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="Qty"
+                                value={itemInput.Qty}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Qty: Number(e.target.value),
+                                  })
+                                }
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                placeholder="Quantity"
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
                                   }
                                 }}
-                                inputValue={searchText}
-                                onInputChange={(_, newInputValue) => {
-                                  setShowItem(true);
-                                  setSearchText(newInputValue);
-                                  setSelectedItem(null); // Clear selected item when input changes
-                                }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Search for items..."
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                  />
-                                )}
-                                renderOption={(props, item) => (
-                                  <li
-                                    style={{ cursor: "pointer" }}
-                                    {...props}
-                                    onClick={() => handleItemClick(item)}
-                                  >
-                                    {item.ItemName}
-                                  </li>
-                                )}
                               />
-                            </>
-                          </td>
-                          <td>
-                            <p>{selectedItem?.SaleDescription || " "}</p>
-                          </td>
-
-                          <td>
-                            <div className="col-sm-9">
-                              <p>
-                                {selectedItem?.SalePrice ||
-                                  itemInput.Rate ||
-                                  " "}
-                              </p>
-                            </div>
-                          </td>
-
-                          <td>
-                            <input
-                              type="number"
-                              name="Qty"
-                              value={itemInput.Qty}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Qty: Number(e.target.value),
-                                })
-                              }
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              placeholder="Quantity"
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name="tax"
-                              disabled
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              placeholder="Tax"
-                            />
-                          </td>
-                          <td>
-                            <h5 style={{ margin: "0" }}>
-                              {itemInput.Rate * itemInput.Qty}
-                            </h5>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={() => {
-                                // Adding the new item to the itemsList
-                                setItemsList((prevItems) => [
-                                  ...prevItems,
-                                  { ...itemInput }, // Ensure each item has a unique 'id'
-                                ]);
-                                // Reset the input fields
-                                setSearchText("");
-                                setSelectedItem(null);
-                                setItemInput({
-                                  Name: "",
-                                  Qty: 1,
-                                  Description: "",
-                                  Rate: null,
-                                });
-                              }}
-                            >
-                              Add
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
+                            </td>
+                            <td>
+                              <div className="col-sm-9">
+                                <input type="number" 
+                                name="Rate"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={selectedItem?.SalePrice || itemInput.Rate ||""}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Rate: Number(e.target.value),
+                                  })
+                                }
+                                onClick={(e) => {
+                                  setSelectedItem({
+                                    ...selectedItem,
+                                    SalePrice: 0,
+                                  })
+                                }}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                                />
+                            
+                              </div>
+                            </td>
+                            <td>
+                              <h5 style={{ margin: "0" }}>
+                                {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                              </h5>
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="tax"
+                                style={{ width: "7em" }}
+                                disabled
+                                className="form-control form-control-sm"
+                                placeholder="tax"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
                     </table>
                   </div>
                 </div>
@@ -1004,32 +1083,32 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                 </div>
                 <div className="col-md-4"></div>
                 <div className="col-md-4">
-                  <table className="table table-clear">
+                  <table className="table table-borderless table-clear">
                     <tbody>
                       <tr>
                         <td className="left">
                           <strong>Subtotal</strong>
                         </td>
-                        <td className="right">${totalAmount}</td>
+                        <td className="right">${(totalAmount).toFixed(2)}</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>Discount (20%)</strong>
                         </td>
-                        <td className="right">$00</td>
+                        <td className="right">$0.00</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>VAT (10%)</strong>
                         </td>
-                        <td className="right">$00</td>
+                        <td className="right">$0.00</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <strong>Total</strong>
                         </td>
                         <td className="right">
-                          <strong>${totalAmount}</strong>
+                          <strong>${(totalAmount).toFixed(2)}</strong>
                         </td>
                       </tr>
                     </tbody>
@@ -1046,36 +1125,36 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess })
                 </div>
 <div className=" col-md-3 text-end">
               <div>
-                <a
-                  href="#"
-                  className="btn btn-primary light me-1 px-3"
-                  data-bs-toggle="modal"
-                >
-                  <i className="fa fa-print m-0"></i>{" "}
-                </a>
-                <a
-                  href="#"
-                  className="btn btn-primary light me-1 px-3"
-                  data-bs-toggle="modal"
-                >
-                  <i className="fa fa-envelope m-0"></i>{" "}
-                </a>
-                <a href="#">
+              <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary estm-action-btn"
+                  >
+                    <Email />
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary estm-action-btn mr-2"
+                  >
+                    <Print></Print>
+                  </button>
+               
+               
                   <button type="button" className="btn btn-primary me-1" onClick={handleSubmit}>
                     Save
                   </button>
-                </a>
-                <a>
-                  {" "}
+              
+            
+            
                   <button
                     className="btn btn-danger light ms-1"
                     onClick={() => {
+                      setselectedBill(0)
                       setshowContent(true);
                     }}
                   >
                     Cancel
                   </button>
-                </a>
+               
               </div>
             </div>
               </div>

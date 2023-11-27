@@ -1,13 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TitleBar from "../TitleBar";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Create, Delete, Update } from "@mui/icons-material";
+import { Create, Delete } from "@mui/icons-material";
 import AddStaff from "./AddStaff";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  Button,
+  IconButton,
+  TablePagination,
+  TableSortLabel,
+  TextField,
+} from "@mui/material";
 
 const StaffList = () => {
   const token = Cookies.get("token");
@@ -20,8 +33,9 @@ const StaffList = () => {
   const [selectedStaff, setSelectedStaff] = useState(0);
   const [addStaffSuccess, setAddStaffSuccess] = useState(false);
   const [updateStaffSuccess, setUpdateStaffSuccess] = useState(false);
-  const [deleteStaffSuccess, setDeleteStaffSuccess] = useState(false)
+  const [deleteStaffSuccess, setDeleteStaffSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [staffFetchError, setstaffFetchError] = useState(false)
 
   const icon = (
     <svg
@@ -31,22 +45,7 @@ const StaffList = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.986 14.0673C7.4407 14.0673 4.41309 14.6034 4.41309 16.7501C4.41309 18.8969 7.4215 19.4521 10.986 19.4521C14.5313 19.4521 17.5581 18.9152 17.5581 16.7693C17.5581 14.6234 14.5505 14.0673 10.986 14.0673Z"
-        stroke="#888888"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10.986 11.0054C13.3126 11.0054 15.1983 9.11881 15.1983 6.79223C15.1983 4.46564 13.3126 2.57993 10.986 2.57993C8.65944 2.57993 6.77285 4.46564 6.77285 6.79223C6.76499 9.11096 8.63849 10.9975 10.9563 11.0054H10.986Z"
-        stroke="#888888"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {/* ... Your SVG Path Data */}
     </svg>
   );
 
@@ -56,6 +55,7 @@ const StaffList = () => {
         `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`,
         { headers }
       );
+      setstaffFetchError(false)
       setStaffData(response.data);
       if (response.data != null) {
         setIsLoading(false);
@@ -63,9 +63,11 @@ const StaffList = () => {
       console.log("staff list iss", response.data);
     } catch (error) {
       console.log("error getting staff list", error);
+      setstaffFetchError(true)
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     getStaffList();
   }, []);
@@ -75,17 +77,48 @@ const StaffList = () => {
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Staff/DeleteStaff?id=${id}`,
         { headers }
-        );
-        setDeleteStaffSuccess(true);
-        setTimeout(() => {
-          setDeleteStaffSuccess(false);
-        }, 4000);
-      console.log("staff deteted successfully");
+      );
+      setDeleteStaffSuccess(true);
+      setTimeout(() => {
+        setDeleteStaffSuccess(false);
+      }, 4000);
+      console.log("staff deleted successfully");
       getStaffList();
     } catch (error) {
       console.log("error deleting staff", error);
     }
   };
+
+  // Pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Sorting
+  const [orderBy, setOrderBy] = useState("UserId");
+  const [order, setOrder] = useState("asc");
+
+  const handleSortRequest = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const sortedData = staffData.slice().sort((a, b) => {
+    if (order === "asc") {
+      return a[orderBy] > b[orderBy] ? 1 : -1;
+    } else {
+      return b[orderBy] > a[orderBy] ? 1 : -1;
+    }
+  });
 
   return (
     <>
@@ -103,24 +136,17 @@ const StaffList = () => {
                   <div className="card">
                     <div className="card-body">
                       {addStaffSuccess && (
-                        <Alert severity="success">
-                          Staff Added Successfuly
-                        </Alert>
+                        <Alert severity="success">Staff Added Successfully</Alert>
                       )}
                       {updateStaffSuccess && (
-                        <Alert severity="success">
-                          Staff Updated Successfuly
-                        </Alert>
+                        <Alert severity="success">Staff Updated Successfully</Alert>
                       )}
                       {deleteStaffSuccess && (
-                        <Alert severity="success">
-                          Staff Deleted Successfuly
-                        </Alert>
+                        <Alert severity="success">Staff Deleted Successfully</Alert>
                       )}
                       <div className="table-responsive active-projects style-1">
                         <div className="tbl-caption mb-3">
                           <h4 className="heading mb-0">Staff</h4>
-
                           <div>
                             <button
                               className="btn btn-primary btn-sm"
@@ -134,43 +160,83 @@ const StaffList = () => {
                             </button>
                           </div>
                         </div>
-                        <table id="customerTbl" className="table">
-                          <thead>
-                            <tr>
-                              <th>#</th>
-                              <th>First Name </th>
-                              <th>Last Name</th>
-                              <th>User Name</th>
-                              <th>Role </th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {staffData.map((staff) => {
-                              return (
-                                <tr key={staff.UserId}>
-                                  <td>{staff.UserId}</td>
-                                  <td>{staff.FirstName}</td>
-                                  <td>{staff.LastName}</td>
-                                  <td>{staff.Email}</td>
-                                  <td>{staff.Role}</td>
-                                  <td>
-                                    {" "}
-                                    <Create
-                                      className="custom-create-icon"
-                                      onClick={() => {
-                                        settoggleAddStaff(false);
-                                        setSelectedStaff(staff.UserId);
-                                      }}
-                                    ></Create>{" "}
-                                    <Delete
-                                      className="custom-delete-icon"
-                                      color="error"
-                                      data-bs-toggle="modal"
-                                      data-bs-target={`#deleteModal${staff.UserId}`}
-                                      
-                                    ></Delete>
-                                    <div
+                        <TableContainer component={Paper}>
+                          <Table id="customerTbl">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>#</TableCell>
+                                <TableCell>
+                                  <TableSortLabel
+                                    active={orderBy === "FirstName"}
+                                    direction={orderBy === "FirstName" ? order : "asc"}
+                                    onClick={() => handleSortRequest("FirstName")}
+                                  >
+                                    First Name
+                                  </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                  <TableSortLabel
+                                    active={orderBy === "LastName"}
+                                    direction={orderBy === "LastName" ? order : "asc"}
+                                    onClick={() => handleSortRequest("LastName")}
+                                  >
+                                    Last Name
+                                  </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                  <TableSortLabel
+                                    active={orderBy === "Email"}
+                                    direction={orderBy === "Email" ? order : "asc"}
+                                    onClick={() => handleSortRequest("Email")}
+                                  >
+                                    User Name
+                                  </TableSortLabel>
+                                </TableCell>
+                                <TableCell>
+                                  <TableSortLabel
+                                    active={orderBy === "Role"}
+                                    direction={orderBy === "Role" ? order : "asc"}
+                                    onClick={() => handleSortRequest("Role")}
+                                  >
+                                    Role
+                                  </TableSortLabel>
+                                </TableCell>
+                                <TableCell>Actions</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {staffFetchError? <TableRow><TableCell className="text-center" colSpan={12}>No Record Found</TableCell></TableRow>: null}
+                              {sortedData
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((staff) => (
+                                  <TableRow hover key={staff.UserId}>
+                                    <TableCell>{staff.UserId}</TableCell>
+                                    <TableCell>{staff.FirstName}</TableCell>
+                                    <TableCell>{staff.LastName}</TableCell>
+                                    <TableCell>{staff.Email}</TableCell>
+                                    <TableCell>{staff.Role}</TableCell>
+                                    <TableCell>
+                                      <Button
+                                      // className=" btn btn-primary  btn-icon-xxs me-2"
+                                        
+                                        onClick={() => {
+                                          settoggleAddStaff(false);
+                                          setSelectedStaff(staff.UserId);
+                                        }}
+                                      >
+                                        <Create  />
+                                        {/* <i className="fas fa-pencil-alt"></i> */}
+                                      </Button>
+                                      <Button
+                                        color="error"
+                                        // className="btn btn-danger btn-icon-xxs "
+                                        data-bs-toggle="modal"
+                                        data-bs-target={`#deleteModal${staff.UserId}`}
+                                      >
+                                        <Delete color="error" />
+                                        {/* <i className="fas fa-trash-alt"></i> */}
+                                      </Button>
+                                      <div
                                       className="modal fade"
                                       id={`deleteModal${staff.UserId}`}
                                       tabIndex="-1"
@@ -217,33 +283,26 @@ const StaffList = () => {
                                         </div>
                                       </div>
                                     </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                        <TablePagination
+                          rowsPerPageOptions={[5, 10, 25]}
+                          component="div"
+                          count={staffData.length}
+                          rowsPerPage={rowsPerPage}
+                          page={page}
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* #modal */}
-
-              {/* <div className="modal fade" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
-                            <div className="modal-body">
-                                ...
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary">Save changes</button>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
             </div>
           )}
         </>

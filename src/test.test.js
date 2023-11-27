@@ -1,26 +1,37 @@
+// ThemeProvider.js
+import React, { createContext, useContext, useState } from 'react';
+import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material';
 
-{
- "Notes": "Notes",
- "Address": "Address",
- "isAfterPhoto": false,
- "isComplete": false,
- "PunchlistId": 15,
+// Create a context for the theme
+const ThemeContext = createContext();
 
- "tblPunchlistItems": [ { "ItemId":456,
- "Name": "Name1",
-  "Description": "Description1",
-  "Qty":1,
-  "Rate":2.5,
-  "Amount":0
- }]  }
+// Define your themes
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light',
+  },
+});
 
-this payload 
-  {"PunchlistId":11,
-  "Notes":"nnnn",
-  "Address":"aaaa",
-  "isComplete":true,
-  "tblPunchlistItems":[{"Name":"HUNTER:458200",
-  "Qty":1,
-  "Description":"Hunter Latching Solenoid",
-  "Rate":65.35,
-  "ItemId":456}]}
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(lightTheme); // Default to light theme
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === lightTheme ? darkTheme : lightTheme));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
+    </ThemeContext.Provider>
+  );
+};
+
+export const useTheme = () => {
+  return useContext(ThemeContext);
+};

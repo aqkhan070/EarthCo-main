@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import { Autocomplete, TextField } from "@mui/material";
 
 
-const PunchListModal1 = ({selectedPL,fetchPunchList}) => {
+const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -146,6 +146,33 @@ const PunchListModal1 = ({selectedPL,fetchPunchList}) => {
     // Step 4: Update the state with the selected file
     setSelectedAfterFile(file);
   };
+
+
+  const getPunchListDetail = async (id) => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistDetail?id=${id}`,
+        {
+          headers,
+        }
+      );
+  
+      setFormData((prevData) => ({
+        ...prevData,
+        ...response.data,
+      }));
+  
+      // Handle the response. For example, you can reload the customers or show a success message
+      console.log("pl details res:", response.data);
+    } catch (error) {
+      console.error("There was an error deleting the customer:", error);
+    }
+  };
+  
+
+  useEffect(() => {
+    getPunchListDetail(plDetailId)
+  },[plDetailId])
 
 
   // handle submit

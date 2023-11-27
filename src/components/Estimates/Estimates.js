@@ -4,11 +4,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import StatusCardsEst from "./StatusCardsEst";
 import { DataContext } from "../../context/AppData";
 import { RoutingContext } from "../../context/RoutesContext";
-import { Form } from "react-bootstrap";
-import axios from "axios";
+
 import { NavLink, useNavigate } from "react-router-dom";
-import $ from "jquery";
-import "datatables.net";
+
 import { Autocomplete, TextField } from "@mui/material";
 import StatusCards from "./StatusCards";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -16,17 +14,31 @@ import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
 import useGetEstimate from "../Hooks/useGetEstimate";
 
-const Estimates = () => {
+const Estimates = ({setestmPreviewId}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const activeRef = useRef(null);
-
+ 
   const { estimates, isLoading, tableError, getEstimate } = useGetEstimate();
 
   // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
+
+  const [open, setOpen] = useState(0)
+  const [closed, setClosed] = useState(0)
+  const [accepted, setAccepted] = useState(0)
+  useEffect(() => {
+    // Filter the estimates array to get only the entries with Status === "Pending"
+    const pendingEstimates = estimates.filter(estimate => estimate.Status === "Pending");
+    const pendingClosed = estimates.filter(estimate => estimate.Status === "Closed");
+    const pendingAccepted = estimates.filter(estimate => estimate.Status === "Accepted");
+
+    // Update the state variable with the number of pending estimates
+    setOpen(pendingEstimates.length);
+    setClosed(pendingClosed.length);
+    setAccepted(pendingAccepted.length);
+  }, [estimates]);
 
  
   const [selectedCustomer, setSelectCustomer] = useState({});
@@ -132,7 +144,7 @@ const Estimates = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        {showStatusCards && <StatusCards />}
+        {showStatusCards && <StatusCards closed={closed} accepted={accepted} open={open}/>}
 
         {/* <StatusCardsEst
           drafts={28102}
@@ -158,7 +170,9 @@ const Estimates = () => {
                     headers={headers}
                     getEstimate={getEstimate}
                     estimates={estimates}
+                    tableError={tableError}
                     setShowStatusCards={setShowStatusCards}
+                    setestmPreviewId={setestmPreviewId}
                   />
                 </div>
               )}

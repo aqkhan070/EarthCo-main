@@ -19,6 +19,7 @@ const CustomersTable = () => {
   const [customerAddSuccess, setCustomerAddSuccess] = useState(false);
   const [customerUpdateSuccess, setCustomerUpdateSuccess] = useState(false);
 
+  const [customerFetchError, setcustomerFetchError] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchCustomers = async () => {
@@ -27,17 +28,19 @@ const CustomersTable = () => {
         "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList",
         { headers }
       );
+      setcustomerFetchError(false)
       setCustomers(response.data);
       if (response.data != null) {
         setIsLoading(false);
       }
     } catch (error) {
       console.log("EEEEEEEEEEEEEEEEE", error);
-      if (error.response.status === 404) {
+     
         setIsLoading(false);
-      } else {
+        setcustomerFetchError(true)
+  
         console.error("API Call Error:", error);
-      }
+      
     }
   };
 
@@ -70,6 +73,7 @@ const CustomersTable = () => {
             ) : (
               <div>
                 <CustomerTR
+                customerFetchError={customerFetchError}
                 headers={headers}
                   customers={customers}
                   setCustomerAddSuccess={setCustomerAddSuccess}

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import logo1 from "../assets/images/background/earthco_logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -22,12 +24,16 @@ const ResetPassword = () => {
         .then((response) => {
           // Set the 'email' state with the decrypted email
           setEmail(response.data);
+         
+
         })
         .catch((error) => {
           console.log("Error decrypting email:", error);
         });
     }
   }, []);
+
+  const [successRes, setSuccessRes] = useState("")
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -48,9 +54,16 @@ const ResetPassword = () => {
           Email: emailParam,
         }
       );
+      setSuccessRes(response.data.status)
+      // console.log(response.data);
+
+      setTimeout(() => {
+        navigate("/");
+        
+      }, 4000);
 
       if (response.data) {
-        console.log("Password changed successfule");
+        console.log("Password changed successfule", response.data);
         // navigate("/");
       } else {
         setError("Password reset failed. Please try again.");
@@ -61,11 +74,17 @@ const ResetPassword = () => {
     }
   };
 
+  useEffect(() => { 
+    
+  setError("")   
+  }, [confirmPassword, password])
+  
+
   return (
     <div className="page-wraper">
       <div className="browse-job login-style3">
         <div
-          className="bg-white"
+          className="bg-white row"
           style={{
             display: "flex",
             alignItems: "center",
@@ -103,6 +122,16 @@ const ResetPassword = () => {
                       role="tabpanel"
                       aria-labelledby="nav-personal-tab"
                     >
+                      {error && (
+                      <Alert severity="error">
+                        {error ? error : "Error Adding Estimates"}
+                      </Alert>
+                    )}
+                    {successRes && (
+                      <Alert severity="success">
+                        {successRes ? successRes : "password resetted succesfuly"}
+                      </Alert>
+                    )}
                       <form
                         onSubmit={handleResetPassword}
                         className="dz-form pb-3"
@@ -135,10 +164,19 @@ const ResetPassword = () => {
                         </div>
                         {/* Display the error message if passwords don't match */}
                         {error && <h5 className="authError mb-2">{error}</h5>}
+                        
+                        
 
-                        <div className="text-center bottom">
+                        <div className=" text-end bottom">
+                        <button
+                            className="btn btn-dark me-2 "
+                            type="submit"
+                            onClick={(e) => {e.preventDefault();  navigate("/");}}
+                          >
+                            Back to login
+                          </button>
                           <button
-                            className="btn btn-primary button-md btn-block"
+                            className="btn btn-primary "
                             type="submit"
                           >
                             Reset Password
@@ -146,6 +184,7 @@ const ResetPassword = () => {
                         </div>
                       </form>
                     </div>
+                    
                   </div>
                 </div>
               </nav>

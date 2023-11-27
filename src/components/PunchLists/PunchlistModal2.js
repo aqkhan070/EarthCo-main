@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import useCustomerSearch from "../Hooks/useCustomerSearch";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -18,6 +20,10 @@ const PunchlistModal2 = ({
   selectedPL
 
 }) => {
+
+  const { customerSearch, fetchCustomers } = useCustomerSearch();
+  const { name, fetchName } = useFetchCustomerName();
+
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedServiceRequest, setSelectedServiceRequest] = useState(null);
 
@@ -41,30 +47,23 @@ const PunchlistModal2 = ({
     fetchPLData()
   }, [selectedPL])
 
+  const handleCustomerAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    const simulatedEvent = {
+      target: {
+        name: "CustomerId",
+        value: newValue ? newValue.UserId : "",
+      },
+    };
 
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
+    handleChange(simulatedEvent);
+  };
   
   
 
-  const handleAutocompleteChange = async (e) => {
-    setInputValue(e.target.value);
-    try {
-      setShowCustomersList(true); // Show the list when typing
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`,
-        { headers }
-      );
-      console.log("customers search list", res.data);
-      setCustomersList(res.data);
-    } catch (error) {
-      console.log("customer search api error", error);
-    }
-  };
-  const selectCustomer = (customer) => {
-    setAddPunchListData({ ...addPunchListData, CustomerId: customer.UserId });
 
-    setInputValue(customer.CompanyName); // Add this line to update the input value
-    setShowCustomersList(false);
-  };
 
   const [selectedContact, setSelectedContact] = useState({})
   const handleContactAutocompleteChange = (event, newValue) => {
@@ -153,36 +152,30 @@ const PunchlistModal2 = ({
                   <label className="form-label">
                     Customer <span className="text-danger">*</span>
                   </label>
-                  <TextField
-                    type="text"
-                    name="CustomerId"
-                    value={inputValue}
-                    onChange={handleAutocompleteChange}
-                    placeholder="Customers"
-                    variant="outlined"
-                    size="small"
-                    // helperText={submitClicked && !formData.CustomerId ? 'Customer is required' : ''}
-                    required
-                    fullWidth
-                  />
-                  {showCustomersList && customersList && (
-                    <ul
-                      style={{ top: "7.5em" }}
-                      className="search-results-container"
-                    >
-                      {customersList.map((customer) => (
-                        <li
-                          style={{ cursor: "pointer" }}
-                          key={customer.UserId}
-                          onClick={() => {
-                            selectCustomer(customer);
-                          }} // Use the selectCustomer function
-                        >
-                          {customer.CompanyName}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.CompanyName || ""}
+                      value={name ? { CompanyName: name } : null}
+                      onChange={handleCustomerAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
+                          // error={submitClicked && !formData.CustomerId}
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                 
                 </div>
 
                 <div className="col-md-6 mb-3 ">
@@ -279,7 +272,7 @@ const PunchlistModal2 = ({
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Contact Company</label>
+                  <label className="form-label">Contact Email</label>
                   <TextField
                   size="small"
                   value={selectedContact.Email || addPunchListData.ContactEmail}                  
@@ -315,6 +308,7 @@ const PunchlistModal2 = ({
               </button>
               <button
                 type="submit"
+                id="closer"
                 className="btn btn-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#editPunch"

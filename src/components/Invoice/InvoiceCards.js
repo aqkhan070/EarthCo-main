@@ -12,7 +12,7 @@ const InvoiceCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1 ">Draft</p>
-                <h4 className="mb-0 smaller-widget">779</h4>
+                <h4 className="mb-0 smaller-widget">0</h4>
               </div>
             </div>
           </div>
@@ -27,7 +27,7 @@ const InvoiceCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Sent</p>
-                <h4 className="mb-0 smaller-widget">5131</h4>
+                <h4 className="mb-0 smaller-widget">0</h4>
               </div>
             </div>
           </div>
@@ -42,7 +42,7 @@ const InvoiceCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1 ">Overdue</p>
-                <h4 className="mb-0 smaller-widget">71889</h4>
+                <h4 className="mb-0 smaller-widget">0</h4>
               </div>
             </div>
           </div>
@@ -57,7 +57,7 @@ const InvoiceCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1 ">Paid</p>
-                <h4 className="mb-0 smaller-widget">71889</h4>
+                <h4 className="mb-0 smaller-widget">0</h4>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@ const InvoiceCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Total</p>
-                <h4 className="mb-0 smaller-widget">71889</h4>
+                <h4 className="mb-0 smaller-widget">0</h4>
               </div>
             </div>
           </div>

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo1 from "../assets/images/background/earthco_logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
+import Alert from "@mui/material/Alert";
 
 
 const LoginPage = () => {
@@ -11,6 +12,8 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const [resetEmail, setResetEmail] = useState("");
+  const [resetRes, setResetRes] = useState("")
+  const [resetError, setResetError] = useState("")
 
   const [fName, setFName] = useState("");
   const [userName, setUserName] = useState("");
@@ -26,6 +29,13 @@ const LoginPage = () => {
   const [btndisable, setBtndisable] = useState(false)
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSignError("");
+    setResetError("");
+    setResetRes("");
+    setError("");
+  },[email,password,resetEmail,fName, userName,emailSIn, passSignIn, lastName,address,phone,reTypePass ])
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
@@ -86,18 +96,23 @@ const LoginPage = () => {
         }
       );
 
+      setResetRes(response.data.status)
+
       if (response.status === 200) {
         // Password reset request successful, you can display a success message or take other actions.
-        console.log("Password reset request successful");
+        console.log("Password reset request successful", response.data);
       } else {
         // Password reset request failed, display an error message.
         console.error("Password reset request failed:", response.data);
       }
     } catch (error) {
       // Handle any errors here
-      console.error("Error:", error);
+      console.error("Error:", error.response.data);
+      setResetError(error.response.data)
     }
   };
+
+
 
   const handleSubmitSignUp = async (e) => {
     e.preventDefault();
@@ -125,6 +140,7 @@ const LoginPage = () => {
           },
         }
       );
+      console.log(response.data);
 
       if (response.data.status === "success") {
         // Registration successful, you can redirect the user to the dashboard or perform other actions
@@ -137,10 +153,8 @@ const LoginPage = () => {
         setSignError("Registration failed. Please try again.");
       }
     } catch (error) {
-      console.log("Error during registration:", error);
-      setSignError(
-        "An error occurred during registration. Please try again later."
-      );
+      console.log("Error during registration:", error.response.data);
+      setSignError(error.response.data);
     }
   };
 
@@ -169,7 +183,7 @@ const LoginPage = () => {
     <div className="page-wraper">
       <div className="browse-job login-style3">
         <div
-          className="bg-white"
+          className="bg-white row"
           style={{
             display: "flex",
             alignItems: "center",
@@ -200,6 +214,7 @@ const LoginPage = () => {
                   id="nav-tab"
                   role="tablist"
                 >
+                  
                   <div className="tab-content w-100" id="nav-tabContent">
                     <div
                       className="tab-pane fade show active"
@@ -212,9 +227,15 @@ const LoginPage = () => {
                         action=""
                         className="dz-form pb-3"
                       >
+                        
                         <h3 className="form-title m-t0">
                           Personal Information
                         </h3>
+                    {error && (
+                      <Alert severity="error">
+                        {error ? error : "Error Adding Estimates"}
+                      </Alert>
+                    )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -239,7 +260,8 @@ const LoginPage = () => {
                             onChange={(e) => {setPassword(e.target.value); setError("")}}
                           />
                         </div>
-                        <h5 className="authError mb-2">{error}</h5>
+                        {/* <h5 className="authError mb-2">{error}</h5> */}
+
                         <div className="form-group text-left mb-3 forget-main">
                           <div
                             style={{
@@ -300,6 +322,8 @@ const LoginPage = () => {
                         Create an account
                       </button>
                     </div>
+
+
                     {/* Forgot password */}
                     <div
                       className="tab-pane fade"
@@ -309,6 +333,16 @@ const LoginPage = () => {
                     >
                       <form className="dz-form" onSubmit={handleForgotPassword}>
                         <h3 className="form-title m-t0">Forget Password?</h3>
+                        {resetRes && (
+                      <Alert severity="success">
+                        {resetRes ? resetRes : "Error Adding Estimates"}
+                      </Alert>
+                    )}
+                    {resetError && (
+                      <Alert severity="error">
+                        {resetError ? resetError : "Error Adding Estimates"}
+                      </Alert>
+                    )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -319,13 +353,16 @@ const LoginPage = () => {
                         <div className="form-group mb-4">
                           <input
                             name="dzName"
-                            required=""
+                            required
                             className="form-control"
                             placeholder="Email Address"
                             type="text"
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
+                            
                           />
+                        {/* <div className="text-primary"> {resetRes}</div> */}
+                        {/* <div className="text-danger">{resetError}</div> */}
                         </div>
                         <div className="form-group clearfix text-left">
                           <button
@@ -361,39 +398,44 @@ const LoginPage = () => {
                         onSubmit={handleSubmitSignUp}
                       >
                         <h3 className="form-title">Sign Up</h3>
+                        {signError && (
+                      <Alert severity="error">
+                        {signError ? signError : "Error Adding Estimates"}
+                      </Alert>
+                    )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
                         <p>Enter your personal details below: </p>
-                        <div className="form-group mt-3">
+                        {/* <div className="form-group mt-3">
                           <input
                             name="fullName"
-                            required=""
+                            required
                             value={fName}
                             onChange={(e) => setFName(e.target.value)}
                             className="form-control"
                             placeholder="Full Name"
                             type="text"
                           />
-                        </div>
+                        </div> */}
                         <div className="form-group mt-3">
                           <input
                             name="userName"
-                            required=""
+                            required
                             value={userName}
                             onChange={(e) => {
                               setUserName(e.target.value);
                               setSignError("");
                             }}
                             className="form-control"
-                            placeholder="User Name"
+                            placeholder="First name"
                             type="text"
                           />
                         </div>
                         <div className="form-group mt-3">
                           <input
                             name="lastName"
-                            required=""
+                            required
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             className="form-control"
@@ -404,7 +446,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3">
                           <input
                             name="email"
-                            required=""
+                            required
                             value={emailSIn}
                             onChange={(e) => {
                               setEmailSI(e.target.value);
@@ -412,13 +454,13 @@ const LoginPage = () => {
                             }}
                             className="form-control"
                             placeholder="Email Address"
-                            type="text"
+                            type="email"
                           />
                         </div>
                         <div className="form-group mt-3">
                           <input
                             name="password"
-                            required=""
+                            required
                             value={passSignIn}
                             onChange={(e) => {
                               setPassSignIn(e.target.value);
@@ -432,7 +474,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3 mb-2">
                           <input
                             name="dzName"
-                            required=""
+                            required
                             value={reTypePass}
                             onChange={handleChangePass2}
                             className="form-control"
@@ -445,7 +487,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3">
                           <input
                             name="address"
-                            required=""
+                            required
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             className="form-control"
@@ -456,7 +498,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3">
                           <input
                             name="phone"
-                            required=""
+                            required
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             className="form-control"
@@ -465,8 +507,8 @@ const LoginPage = () => {
                           />
                         </div>
 
-                        <h4 className="authError mb-1">{signError}</h4>
-                        <div className="mb-3">
+                        {/* <h4 className="authError mb-1">{signError}</h4> */}
+                        {/* <div className="mb-3">
                           <span className="form-check float-start me-2 ">
                             <input
                               type="checkbox"
@@ -481,7 +523,7 @@ const LoginPage = () => {
                               I agree to the Terms of Service Privacy Policy
                             </label>
                           </span>
-                        </div>
+                        </div> */}
                         <br />
                         <div className="form-group signBtns mt-3">
                           <button
@@ -501,6 +543,7 @@ const LoginPage = () => {
                             Submit
                           </button>
                         </div>
+                        
                       </form>
                     </div>
                   </div>

@@ -29,6 +29,7 @@ const PunchListIndex = () => {
   const [contactList, setContactList] = useState([]);
   const [inputValue, setInputValue] = useState("");
 const [selectedPL, setselectedPL] = useState(0)
+const [plDetailId, setPlDetailId] = useState(0)
 
   const [addPunchListData, setAddPunchListData] = useState({
     Title: "",
@@ -182,7 +183,7 @@ const [selectedPL, setselectedPL] = useState(0)
                   </div>
                 ) : (
                   <div>
-                    <PunchTR punchData={punchData} setselectedPL={setselectedPL} />
+                    <PunchTR punchData={punchData} setselectedPL={setselectedPL} setPlDetailId={setPlDetailId} />
                   </div>
                 )}
               </div>
@@ -193,6 +194,7 @@ const [selectedPL, setselectedPL] = useState(0)
         {/* modal */}
 
         <PunchListModal1
+         plDetailId={plDetailId}
           selectedPL={selectedPL}
           fetchPunchList={fetchPunchList}
         />

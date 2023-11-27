@@ -107,8 +107,8 @@ const AddStaff = ({
     setEmptyFieldsError(false);
     setEmailError(false)
     setPhoneError(false)
-    setFirstNameError(false)
-    setLastNameError(false)
+    setFirstNameError("")
+    setLastNameError("")
     const { name, value } = event.target;
 
     const newValue = name === "RoleId" ? parseInt(value, 10) : value;
@@ -143,80 +143,98 @@ const AddStaff = ({
   }, [customerInfo]);
 
   const addStaff = async () => {
-    setSubmitClicked(true)
+    setSubmitClicked(true);
+  
     if (
       !customerInfo.FirstName ||
       !customerInfo.LastName ||
       !customerInfo.Email ||
-      !customerInfo.Password ||      
-      !customerInfo.RoleId ||
-      !customerInfo.ConfirmPassword
+      !customerInfo.RoleId
     ) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
     }
-
-    if (customerInfo.Password !== customerInfo.ConfirmPassword) {
+  
+    if (selectedStaff === 0 && !customerInfo.Password) {
+      setEmptyFieldsError(true);
+      console.log("Required fields are empty");
       return;
     }
+  
+    if (
+      selectedStaff === 0 &&
+      customerInfo.Password !== customerInfo.ConfirmPassword
+    ) {
+      // Handle password and confirm password mismatch
+      // setConfirmPasswordError(true);
+      console.log("Password and Confirm Password do not match");
+      return; // Terminate the function here
+    }
+  
     if (
       !validator.isLength(customerInfo.FirstName, { min: 3, max: 30 })
     ) {
-      setFirstNameError(true);
+      setFirstNameError("First name should be between 3 and 30 characters");
       console.log("First name should be between 3 and 30 characters");
       return;
     }
   
-    // Validate last name length
     if (
       !validator.isLength(customerInfo.LastName, { min: 3, max: 30 })
     ) {
-      setLastNameError(true);
+      setLastNameError("Last name should be between 3 and 30 characters");
       console.log("Last name should be between 3 and 30 characters");
       return;
     }
+  
     if (!validator.isEmail(customerInfo.Email)) {
-      setEmailError(true)
+      setEmailError(true);
       console.log("Email must contain the @ symbol");
       return;
     }
+  
     if (customerInfo.Phone && !validator.isMobilePhone(customerInfo.Phone, 'any', { max: 20 })) {
       setPhoneError(true);
       console.log("Phone number is not valid");
       return;
     }
-
+  
     try {
       const response = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
         customerInfo,
         { headers }
       );
-      // window.location.reload();
+  
       setTimeout(() => {
         setAlertSuccess(false);
       }, 3000);
-
+  
       setTimeout(() => {
         setAddStaffSuccess(false);
         setUpdateStaffSuccess(false);
       }, 4000);
+      
       selectedStaff !== 0
         ? setUpdateStaffSuccess(true)
         : setAddStaffSuccess(true);
+      
       setAlertSuccess(true);
       getStaffList();
       settoggleAddStaff(true);
-
-      console.log("staff added successfully", customerInfo);
+  
+      console.log("Staff added successfully", customerInfo);
     } catch (error) {
       if (error.response.status === 409) {
         setAlert(true);
       }
-      console.log("roles api call error", error.response.status);
+      console.log("Roles API call error", error.response.status);
     }
   };
+  
+  
+  
 
   const getStaffData = async () => {
     if (selectedStaff === 0) {
@@ -354,7 +372,7 @@ const AddStaff = ({
                     className="form-control"
                     variant="outlined"
                     size="small"
-                    error={submitClicked && !customerInfo.Password}
+                    error={selectedStaff === 0 && submitClicked && !customerInfo.Password}
                     onChange={handleCustomerInfo}
                     name="Password"
                     id="passwordInput"
@@ -372,7 +390,7 @@ const AddStaff = ({
                     variant="outlined"
                     size="small"
                     onChange={handleCustomerInfo}
-                    error={submitClicked && !customerInfo.ConfirmPassword}
+                    // error={selectedStaff !== 0 && submitClicked && !customerInfo.ConfirmPassword}
                     id="confirmPasswordInput"
                     name="ConfirmPassword"
                     placeholder="Confirm Password"
@@ -478,12 +496,12 @@ const AddStaff = ({
                   )}
                   {firstNameError && (
                     <Alert severity="error">
-                     Please enter valid First Name
+                    {firstNameError}
                     </Alert>
                   )}
                   {lastNameError && (
                     <Alert severity="error">
-                     Please enter valid Last Name
+                    {lastNameError}
                     </Alert>
                   )}
                 </div>

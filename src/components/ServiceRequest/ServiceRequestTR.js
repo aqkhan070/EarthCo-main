@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
 import UpdateSRForm from "./UpdateSRForm";
 import { Form } from "react-bootstrap";
 import {
@@ -17,12 +18,11 @@ import {
   Checkbox,
   Paper,
 } from "@mui/material";
-import { Create, Delete  } from "@mui/icons-material";
+import { Create, Delete, Visibility } from "@mui/icons-material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Alert from '@mui/material/Alert';
-
-
+import Alert from "@mui/material/Alert";
+import { DataContext } from "../../context/AppData";
 
 const theme = createTheme({
   palette: {
@@ -44,7 +44,12 @@ const theme = createTheme({
   },
 });
 
-const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceRequest }) => {
+const ServiceRequestTR = ({
+  serviceRequest,
+  setShowCards,
+  fetchServiceRequest,
+  sRfetchError,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
@@ -55,16 +60,21 @@ const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceR
   const [serviceRequestId, setServiceRequestId] = useState(0);
 
   const [showContent, setShowContent] = useState(true);
-  const [successAlert, setSuccessAlert] = useState('')
-  const [deleteSuccess, setDeleteSuccess] = useState(false)
+  const [successAlert, setSuccessAlert] = useState("");
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
   const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
+  const navigate = useNavigate();
+  const {setSRData} = useContext(DataContext);
 
   const columnFieldMapping = {
     "Service Request #": "ServiceRequestNumber",
     "Customer Name": "CustomerId",
     "Assigned to": "Assign",
-    "Status": "SRStatusId",
+    Status: "SRStatusId",
     "Work Requested": "WorkRequest",
     "Date Created": "CreatedDate",
   };
@@ -72,34 +82,30 @@ const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceR
   //
 
   const deleteServiceRequest = async (id) => {
-    
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`,{headers}        
-       
-      );   
-      setDeleteSuccess(true)
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequest?id=${id}`,
+        { headers }
+      );
+      setDeleteSuccess(true);
       setTimeout(() => {
-      setDeleteSuccess(false)
-        
+        setDeleteSuccess(false);
       }, 4000);
 
       // Handle the response. For example, you can reload the customers or show a success message
-      console.log("ServiceRequest deleted successfully:",);
-      fetchServiceRequest()
+      console.log("ServiceRequest deleted successfully:");
+      fetchServiceRequest();
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
     }
   };
 
   const handleDelete = (id) => {
-   
-      deleteServiceRequest(id);
-    
+    deleteServiceRequest(id);
   };
 
   useEffect(() => {
-    setShowCards(true)
+    setShowCards(true);
   }, []);
 
   const handleSearch = (data) => {
@@ -175,12 +181,22 @@ const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceR
       {showContent ? (
         <ThemeProvider theme={theme}>
           <div className="card-body">
-          {successAlert && <Alert className="mb-3" severity="success">{successAlert?successAlert:"Successfuly Added/Updated Service request"}</Alert> }
-          {deleteSuccess && <Alert className="mb-3" severity="success">Successfuly Deleted Service request</Alert> }
-            <div className=" text-center">
+            {successAlert && (
+              <Alert className="mb-3" severity="success">
+                {successAlert
+                  ? successAlert
+                  : "Successfuly Added/Updated Service request"}
+              </Alert>
+            )}
+            {deleteSuccess && (
+              <Alert className="mb-3" severity="success">
+                Successfuly Deleted Service request
+              </Alert>
+            )}
+            <div className=" text-center m-2">
               <div className="row ">
                 <div className="col-md-12">
-                <div>
+                  <div>
                     <Form.Select
                       size="sm"
                       value={filterDate}
@@ -204,147 +220,180 @@ const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceR
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="custom-button-container">
-                    
-                      <Button variant="contained" color="primary" onClick={() => {setShowContent(false); setServiceRequestId(0)}}>
-                        + Add Service Request
-                      </Button>
-                   
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setShowContent(false);
+                        setServiceRequestId(0);
+                      }}
+                    >
+                      + Add Service Request
+                    </Button>
                   </div>
                 </div>
               </div>
               <br />
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow className="table-header">
-                      {[
-                        "Select",
-                        "Service Request #",
-                        "Customer Name",
-                        "Assigned to",
-                        "Status",
-                        "Work Requested",
-                        "Date Created",
-                        "Actions",
-                      ].map((column, index) => (
-                        <TableCell key={index}>
-                          {index < 5 ? (
-                            <TableSortLabel
-                              active={
-                                sorting.field === columnFieldMapping[column]
-                              }
-                              direction={sorting.order}
-                              onClick={() =>
-                                setSorting({
-                                  field: columnFieldMapping[column],
-                                  order:
-                                    sorting.order === "asc" &&
-                                    sorting.field === columnFieldMapping[column]
-                                      ? "desc"
-                                      : "asc",
-                                })
-                              }
-                            >
-                              {column}
-                            </TableSortLabel>
-                          ) : (
-                            column
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sortedAndSearchedCustomers.slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((customer, rowIndex) => (
-                        <TableRow key={rowIndex} hover>
-                          <TableCell>
-                            <Checkbox />
-                          </TableCell>
-                          <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                          <TableCell>{customer.CustomerName}</TableCell>
-                          <TableCell>{customer.Assign}</TableCell>
-                          <TableCell>{customer.Status}</TableCell>
-                          <TableCell>{customer.WorkRequest}</TableCell>
-                          <TableCell>{customer.CreatedDate}</TableCell>
-                          <TableCell>
-                            <Button
-                              className="delete-button"
-                              onClick={() => {
-                                setServiceRequestId(customer.ServiceRequestId);
-                                setShowContent(false);
-                                console.log("////////", serviceRequestId);
-                                // console.log("////////",customer.ServiceRequestId);
-                              }}
-                            >
-                              <Create />
-                            </Button>
 
-                            <Button
-                              color="error"
-                              className="delete-button"
-                              data-bs-toggle="modal"
-                              data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
-                              
-                            >
-                              <Delete />
-                            </Button>
+              <Table>
+                <TableHead>
+                  <TableRow className="table-header">
+                    {[
+                      "Select",
+                      "Service Request #",
+                      "Customer Name",
+                      "Assigned to",
+                      "Status",
+                      "Work Requested",
+                      "Date Created",
+                      "Actions",
+                    ].map((column, index) => (
+                      <TableCell key={index}>
+                        {index < 5 ? (
+                          <TableSortLabel
+                            active={
+                              sorting.field === columnFieldMapping[column]
+                            }
+                            direction={sorting.order}
+                            onClick={() =>
+                              setSorting({
+                                field: columnFieldMapping[column],
+                                order:
+                                  sorting.order === "asc" &&
+                                  sorting.field === columnFieldMapping[column]
+                                    ? "desc"
+                                    : "asc",
+                              })
+                            }
+                          >
+                            {column}
+                          </TableSortLabel>
+                        ) : (
+                          column
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sRfetchError ? (
+                    <TableRow>
+                      <TableCell className="text-center" colSpan={12}>
+                        No Record found
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                  {sortedAndSearchedCustomers
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((customer, rowIndex) => (
+                      <TableRow key={rowIndex} hover>
+                        <TableCell>
+                          <Checkbox />
+                        </TableCell>
+                        <TableCell>{customer.ServiceRequestNumber}</TableCell>
+                        <TableCell>{customer.CustomerName}</TableCell>
+                        <TableCell>{customer.Assign}</TableCell>
+                        <TableCell>{customer.Status}</TableCell>
+                        <TableCell>{customer.WorkRequest}</TableCell>
+                        <TableCell>{customer.CreatedDate}</TableCell>
+                        <TableCell>
+                          <Button
+                            // className="btn btn-primary btn-icon-xxs me-2"
+                            onClick={() => {
+                              navigate(
+                                "/Dashboard/Service-Requests/Service-Request-Preview"
+                              );
+                              // setestmPreviewId(estimate.EstimateId);
+                              setSRData(customer);
+                            }}
+                          >
+                            {/* <i className="fa-solid fa-eye"></i> */}
+
+                            <Visibility />
+                          </Button>
+                          <Button
+                            // className="btn btn-primary btn-icon-xxs me-2"
+                            onClick={() => {
+                              setServiceRequestId(customer.ServiceRequestId);
+                              setShowContent(false);
+                              console.log("////////", serviceRequestId);
+                              // console.log("////////",customer.ServiceRequestId);
+                            }}
+                          >
+                            <Create />
+                            {/* <i className="fas fa-pencil-alt"></i> */}
+                          </Button>
+
+                          <Button
+                            // className="btn btn-danger btn-icon-xxs mr-2"
+                            data-bs-toggle="modal"
+                            data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
+                          >
+                            <Delete color="error" />
+                            {/* <i className="fas fa-trash-alt"></i> */}
+                          </Button>
+                          <div
+                            className="modal fade"
+                            id={`deleteModal${customer.ServiceRequestId}`}
+                            tabIndex="-1"
+                            aria-labelledby="deleteModalLabel"
+                            aria-hidden="true"
+                          >
                             <div
-                        className="modal fade"
-                        id={`deleteModal${customer.ServiceRequestId}`}
-                        tabIndex="-1"
-                        aria-labelledby="deleteModalLabel"
-                        aria-hidden="true"
-                      >
-                        <div className="modal-dialog" role="document">
-                          <div className="modal-content">
-                            <div className="modal-header">
-                              <h5 className="modal-title">
-                                Are you sure you want to delete{" "}
-                                {customer.ServiceRequestNumber}
-                              </h5>
-                              <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                              ></button>
-                            </div>
-                            <div className="modal-body">
-                              <div className="basic-form text-center">
-                                <button
-                                  type="button"
-                                  id="closer"
-                                  className="btn btn-danger light m-3"
-                                  data-bs-dismiss="modal"
-                                >
-                                  Close
-                                </button>
-                                <button
-                                  className="btn btn-primary m-3"
-                                  data-bs-dismiss="modal"
-                                  onClick={() =>{
-                                    handleDelete(customer.ServiceRequestId);
-                                    console.log("delete id", customer.ServiceRequestId)}
-                                  }
-                                >
-                                  Yes
-                                </button>
+                              className="modal-dialog modal-dialog-centered"
+                              role="document"
+                            >
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5 className="modal-title">
+                                    Delete Service Request
+                                  </h5>
+                                  <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                  ></button>
+                                </div>
+                                <div className="modal-body">
+                                  <p>
+                                    {" "}
+                                    Are you sure you want to delete Service
+                                    Request No {customer.ServiceRequestNumber}
+                                  </p>
+                                </div>
+                                <div className="modal-footer">
+                                  <button
+                                    type="button"
+                                    id="closer"
+                                    className="btn btn-danger light "
+                                    data-bs-dismiss="modal"
+                                  >
+                                    Close
+                                  </button>
+                                  <button
+                                    className="btn btn-primary "
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                      handleDelete(customer.ServiceRequestId);
+                                      console.log(
+                                        "delete id",
+                                        customer.ServiceRequestId
+                                      );
+                                    }}
+                                  >
+                                    Yes
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
 
               <TablePagination
                 component="div"
@@ -362,7 +411,7 @@ const ServiceRequestTR = ({headers, serviceRequest , setShowCards, fetchServiceR
         </ThemeProvider>
       ) : (
         <UpdateSRForm
-        headers={headers}
+          headers={headers}
           serviceRequestId={serviceRequestId}
           setShowContent={setShowContent}
           setShowCards={setShowCards}

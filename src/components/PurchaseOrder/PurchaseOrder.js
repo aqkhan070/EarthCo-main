@@ -17,10 +17,12 @@ import {
   TableSortLabel,
   Button,
 } from "@mui/material";
-import { Delete, Create } from "@mui/icons-material";
+import { Delete, Create, Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchPo from "../Hooks/useFetchPo";
+import { NavLink, useNavigate } from "react-router-dom";
+import { DataContext } from "../../context/AppData";
 
 const PurchaseOrder = () => {
   const token = Cookies.get("token");
@@ -42,6 +44,24 @@ const PurchaseOrder = () => {
   const [deleteRes, setDeleteRes] = useState("");
   const [postSuccess, setPostSuccess] = useState(false);
   const [postSuccessRes, setPostSuccessRes] = useState("");
+
+  const [open, setOpen] = useState(0)
+  const [closed, setClosed] = useState(0)
+
+  const navigate = useNavigate();
+  const {setPOData} = useContext(DataContext);
+
+  useEffect(() => {
+    // Filter the estimates array to get only the entries with Status === "Pending"
+    const pendingPO = PoList.filter(estimate => estimate.Status === "Open");
+    const pendingClosed = PoList.filter(estimate => estimate.Status === "Closed");
+   
+
+    // Update the state variable with the number of pending estimates
+    setOpen(pendingPO.length);
+    setClosed(pendingClosed.length);
+   
+  }, [PoList]);
   
 
   const deletePo = async (id) => {
@@ -70,6 +90,7 @@ const PurchaseOrder = () => {
 
   useEffect(() => {
     fetchPo();
+    setselectedPo(0)
   }, []);
 
   const handleChangePage = (event, newPage) => {
@@ -110,7 +131,7 @@ const PurchaseOrder = () => {
           <PoTitle />
           <div className="container-fluid">
             <div className="row">
-              <PoCards />
+              <PoCards closed={closed} open={open} />
 
               <div className="col-xl-3 mb-3 text-right"></div>
               <div className="col-xl-12">
@@ -134,11 +155,11 @@ const PurchaseOrder = () => {
                         : "Successfully Added purchase order"}
                     </Alert>
                   )}
-                  {error && (
+                  {/* {error && (
                     <Alert className="m-3" severity="error">
                       {error? error: "Error fetching purchase order data"}
                     </Alert>
-                  )}
+                  )} */}
 
                   {loading ? (
                     <div className="center-loader">
@@ -167,7 +188,7 @@ const PurchaseOrder = () => {
                       </div>
 
                       <div className="card-body">
-                        <TableContainer component={Paper}>
+                       
                           <Table>
                             <TableHead className="table-header">
                               <TableRow>
@@ -184,8 +205,8 @@ const PurchaseOrder = () => {
                                 </TableCell>
                                 <TableCell>Date</TableCell>
                                 <TableCell>Status</TableCell>
-                                <TableCell>R-Manager</TableCell>
-                                <TableCell>R-By</TableCell>
+                                <TableCell>Regional Manager</TableCell>
+                                <TableCell>Requested By</TableCell>
                                 <TableCell>Estimate#</TableCell>
                                 <TableCell>Bill#</TableCell>
                                 <TableCell>Invoice#</TableCell>
@@ -194,13 +215,15 @@ const PurchaseOrder = () => {
                               </TableRow>
                             </TableHead>
                             <TableBody>
+                              {error ? <TableRow> <TableCell className="text-center" colSpan={9}> No records found </TableCell></TableRow>: null}
                               {sortedPoList
                                 .slice(
                                   page * rowsPerPage,
                                   page * rowsPerPage + rowsPerPage
                                 )
                                 .map((po) => (
-                                  <TableRow key={po.EstimateNumber}>
+
+                                  <TableRow hover key={po.EstimateNumber}>
                                     <TableCell>{po.SupplierName}</TableCell>
                                     <TableCell>{po.Date}</TableCell>
                                     <TableCell>{po.Status}</TableCell>
@@ -212,23 +235,36 @@ const PurchaseOrder = () => {
                                     <TableCell>{po.Amount}</TableCell>
                                     <TableCell>
                                       <div className="button-container">
+                                      <Button
+                            // className="btn btn-primary btn-icon-xxs me-2"
+                            onClick={() => {
+                              setPOData(po)
+                              navigate(
+                                "/Dashboard/Purchase-Order/Purchase-Order-Preview"
+                              );
+                            }}
+                          >
+                            {/* <i className="fa-solid fa-eye"></i> */}
+
+                            <Visibility />
+                          </Button>
                                         <Button
-                                          className="delete-button"
+                                          //  className="btn btn-primary btn-icon-xxs me-2"
                                           onClick={() => {
                                             setShowContent(false);
                                             setselectedPo(po.PurchaseOrderId);
                                           }}
                                         >
-                                          <Create
-                                            style={{ color: "#7c9c3d" }}
-                                          />
+                                          {/* <i className="fas fa-pencil-alt"></i> */}
+                                          <Create></Create>
                                         </Button>
                                         <Button
-                                          className="delete-button"
+                                          // className="btn btn-danger btn-icon-xxs mr-2"
                                           data-bs-toggle="modal"
                                           data-bs-target={`#deleteModal${po.PurchaseOrderId}`}
                                         >
-                                          <Delete color="error" />
+                                         {/* <i className="fas fa-trash-alt"></i> */}
+                                         <Delete color="error"></Delete>
                                         </Button>
                                         <div
                                           className="modal fade"
@@ -238,14 +274,14 @@ const PurchaseOrder = () => {
                                           aria-hidden="true"
                                         >
                                           <div
-                                            className="modal-dialog"
+                                            className="modal-dialog modal-dialog modal-dialog-centered"
                                             role="document"
                                           >
                                             <div className="modal-content">
                                               <div className="modal-header">
                                                 <h5 className="modal-title">
-                                                  Are you sure you want to
-                                                  delete {po.PurchaseOrderId}
+                                                  Delete Purchase Order
+                                                 
                                                 </h5>
                                                 <button
                                                   type="button"
@@ -254,17 +290,22 @@ const PurchaseOrder = () => {
                                                 ></button>
                                               </div>
                                               <div className="modal-body">
-                                                <div className="basic-form text-center">
+                                                <p>
+                                                Are you sure you want to
+                                                  delete {po.PurchaseOrderId}?
+                                                </p>
+                                                </div>
+                                                <div className="modal-footer">
                                                   <button
                                                     type="button"
                                                     id="closer"
-                                                    className="btn btn-danger light m-3"
+                                                    className="btn btn-danger light me-2"
                                                     data-bs-dismiss="modal"
                                                   >
                                                     Close
                                                   </button>
                                                   <button
-                                                    className="btn btn-primary m-3"
+                                                    className="btn btn-primary "
                                                     data-bs-dismiss="modal"
                                                     onClick={() => {
                                                       deletePo(
@@ -275,7 +316,7 @@ const PurchaseOrder = () => {
                                                     Yes
                                                   </button>
                                                 </div>
-                                              </div>
+                                              
                                             </div>
                                           </div>
                                         </div>
@@ -285,7 +326,7 @@ const PurchaseOrder = () => {
                                 ))}
                             </TableBody>
                           </Table>
-                        </TableContainer>
+                       
                         <TablePagination
                           rowsPerPageOptions={[5, 10, 25]}
                           component="div"
@@ -305,6 +346,7 @@ const PurchaseOrder = () => {
         </>
       ) : (
         <AddPO
+        setselectedPo={setselectedPo}
           selectedPo={selectedPo}
           setShowContent={setShowContent}
           setPostSuccessRes={setPostSuccessRes}

@@ -804,7 +804,7 @@ const UpdateCustomer = ({
                             id="inlineRadio1"
                             name="isLoginAllow"
                             value="Customer"
-                            checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
+                            checked={companyData.isLoginAllow === true} // Check the "yes" radio button if allowLogin is true
                             onChange={() => {
                               setAllowLogin(true);
                               setDisableButton(true);
@@ -824,7 +824,7 @@ const UpdateCustomer = ({
                             id="inlineRadio2"
                             name="isLoginAllow"
                             value="BillToServiceLocation"
-                            checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
+                            checked={companyData.isLoginAllow === false} // Check the "no" radio button if allowLogin is false
                             onChange={() => {
                               setAllowLogin(false);
                             }}
@@ -907,12 +907,12 @@ const UpdateCustomer = ({
                     )}
                   </div>
                 </div>
-                <div className="col-md-6">
+                {/* <div className="col-md-6">
                   <label className="col-sm-4 col-form-label">
                     Address<span className="text-danger">*</span>
                   </label>
                   <AddressInputs />
-                </div>
+                </div> */}
               </div>
               <div className="row m-3">
                 <div className="col-md-9">

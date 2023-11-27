@@ -11,6 +11,11 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import formatDate from "../../custom/FormatDate";
 import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import useCustomerSearch from "../Hooks/useCustomerSearch";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { Delete, Create } from "@mui/icons-material";
+import {Button} from "@mui/material";
+
 
 const UpdateSRForm = ({
   headers,
@@ -20,6 +25,12 @@ const UpdateSRForm = ({
   fetchServiceRequest,
   setSuccessAlert,
 }) => {
+
+const {customerSearch, fetchCustomers } = useCustomerSearch();
+
+const { name, setName, fetchName } = useFetchCustomerName();
+
+
   const [customersList, setCustomersList] = useState([]);
   const [customer, setCustomer] = useState();
 
@@ -32,14 +43,13 @@ const UpdateSRForm = ({
       CustomerId: 0,
       ServiceRequestNumber: "",
 
-      DueDate: "",
-      SRTypeId: 0,
-      SRStatusId: 0,
+      
+      SRTypeId: 1,
+      SRStatusId: 1,
       Assign: "",
       WorkRequest: "",
       ActionTaken: "",
-      CompletedDate: "",
-      tblSRItems: [],
+          tblSRItems: [],
     },
   }); // payload
 
@@ -130,13 +140,14 @@ const UpdateSRForm = ({
   useEffect(() => {
     fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
     fetctContacts(SRData.ServiceRequestData.CustomerId);
-    SRData.ServiceRequestData.ServiceRequestNumber &&
+    fetchName(SRData.ServiceRequestData.CustomerId);
+   
     SRData.ServiceRequestData.ContactId &&
     SRData.ServiceRequestData.ServiceLocationId &&
     SRData.ServiceRequestData.Assign
       ? setDisableSubmit(false)
       : setDisableSubmit(true);
-  }, [SRData]);
+  }, [SRData.ServiceRequestData.CustomerId]);
 
   const fetchStaffList = async () => {
     try {
@@ -165,37 +176,23 @@ const UpdateSRForm = ({
     }
   };
 
-  const [showCustomersList, setShowCustomersList] = useState(true);
-  const [inputValue, setInputValue] = useState("");
   const [disableSubmit, setDisableSubmit] = useState(true);
 
-  const handleAutocompleteChange = async (e) => {
-    inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
-    setInputValue(e.target.value);
-    try {
-      setShowCustomersList(true); // Show the list when typing
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`,
-        { headers }
-      );
-      console.log("customers search list", res.data);
-      setCustomersList(res.data);
-    } catch (error) {
-      console.log("customer search api error", error);
-    }
-  };
+ 
+ 
 
-  const selectCustomer = (customer) => {
-    // setSRData({ ...SRData, CustomerId: customer.UserId });
-    setSRData((prevData) => ({
-      ServiceRequestData: {
-        ...prevData.ServiceRequestData,
-        CustomerId: customer.UserId,
+  const handleCustomerAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    const simulatedEvent = {
+      target: {
+        name: "CustomerId",
+        value: newValue ? newValue.UserId : "",
       },
-    }));
+    };
 
-    setInputValue(customer.CompanyName); // Add this line to update the input value
-    setShowCustomersList(false);
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
+    handleInputChange(simulatedEvent);
   };
 
   const handleSLAutocompleteChange = (event, newValue) => {
@@ -236,6 +233,7 @@ const UpdateSRForm = ({
 
   const handleInputChange = (event) => {
     // setSubmitClicked(false);
+    setErrorMessage("")
     setEmptyFieldsError(false);
     const { name, value } = event.target;
     setSRData((prevData) => ({
@@ -267,8 +265,7 @@ const UpdateSRForm = ({
     if (
       !SRData.ServiceRequestData.CustomerId ||
       !SRData.ServiceRequestData.ServiceLocationId ||
-      !SRData.ServiceRequestData.ContactId ||
-      !SRData.ServiceRequestData.ServiceRequestNumber ||
+      !SRData.ServiceRequestData.ContactId ||     
       !SRData.ServiceRequestData.Assign
     ) {
       setEmptyFieldsError(true);
@@ -324,9 +321,9 @@ const UpdateSRForm = ({
       // window.location.reload();
       setShowCards(true);
     } catch (error) {
-      console.error("API Call Error:", error.message);
+      console.error("API Call Error:", error.response.data);
       setBtnDisable(false);
-      setErrorMessage(error.message);
+      setErrorMessage(error.response.data);
       setError(true);
     }
     for (let [key, value] of formData.entries()) {
@@ -355,6 +352,7 @@ const UpdateSRForm = ({
     updatedFiles.splice(index, 1);
     setFiles(updatedFiles);
   };
+  const [PrevFiles, setPrevFiles] = useState([])
 
   const fetchSR = async () => {
     if (serviceRequestId === 0) {
@@ -367,7 +365,7 @@ const UpdateSRForm = ({
         `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`,
         { headers }
       );
-      setInputValue(response.data.Data.CustomerId);
+      
       setSRList(response.data.Data);
 
       setSRData((prevData) => ({
@@ -382,6 +380,7 @@ const UpdateSRForm = ({
       setTblSRItems(response.data.ItemData);
       setLoading(false);
       console.log("response.data.Data", response.data);
+      setPrevFiles(response.data.FileData)
 
       console.log(" list is///////", response.data.Data);
     } catch (error) {
@@ -392,6 +391,7 @@ const UpdateSRForm = ({
 
   useEffect(() => {
     fetchSR();
+    fetchCustomers();
   }, []);
 
   useEffect(() => {
@@ -433,7 +433,33 @@ const UpdateSRForm = ({
 
     setSelectedItem(null); // Clear selected item when input changes
   };
+  
+  const handleAddItem = () => {
+    const newItem = { ...itemInput };
+  const newAmount = newItem.Qty * newItem.Rate;
+  newItem.Amount = newAmount;
 
+  setTblSRItems([...tblSRItems, newItem]);
+
+  // Reset the modal input field and other states
+  setSearchText("");
+  setSelectedItem({
+    SalePrice: "",
+    SaleDescription: "",
+  });
+  setItemInput({
+    Name: "",
+    Qty: 1,
+    Description: "",
+    Rate: 0,
+  });
+
+  // Enable or disable the button based on your condition
+  // setItemBtnDisable(false); // You can add your logic here
+
+  console.log("table items are ", tblSRItems);
+  }
+  
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setSearchText(item.ItemName); // Set the input text to the selected item's name
@@ -449,6 +475,36 @@ const UpdateSRForm = ({
     itemInput.ItemId && setItemBtnDisable(false);
     console.log("selected item is", itemInput);
   };
+
+  const handleQuantityChange = (itemId, event) => {
+    const updatedItems = tblSRItems.map((item) => {
+      if (item.ItemId === itemId) {
+        const updatedItem = { ...item };
+        updatedItem.Qty = parseInt(event.target.value, 10);
+        updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+        return updatedItem;
+      }
+      return item;
+    });
+  
+    setTblSRItems(updatedItems);
+  };
+  
+  const handleRateChange = (itemId, event) => {
+    const updatedItems = tblSRItems.map((item) => {
+      if (item.ItemId === itemId) {
+        const updatedItem = { ...item };
+        updatedItem.Rate = parseFloat(event.target.value);
+        updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+        return updatedItem;
+      }
+      return item;
+    });
+  
+    setTblSRItems(updatedItems);
+  };
+  
+
 
   useEffect(() => {
     setShowCards(false);
@@ -514,46 +570,49 @@ const UpdateSRForm = ({
                     <h4>Service Request Details</h4>
                   </div>{" "}
                   <div className=" my-2">
-                    <div className="row">
-                      <div className="col-xl-3 mb-2 col-md-3 ">
-                        <label className="form-label">
-                          Customers<span className="text-danger">*</span>
-                        </label>
+                    <div className="row">                     
 
+                      <div className="col-md-3 mb-2">
+                    <label className="form-label">Customers<span className="text-danger">*</span></label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.CompanyName || ""}
+                      value={name ? { CompanyName: name } : null}
+                      onChange={handleCustomerAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.CompanyName}</h6>
+                            <small># {option.UserId}</small>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
                         <TextField
-                          type="text"
-                          name="CustomerId"
-                          variant="outlined"
-                          size="small"
-                          value={inputValue} // Bind the input value state to the value of the input
-                          onChange={handleAutocompleteChange}
-                          placeholder="Customers"
+                          {...params}
+                          label=""
+                          onClick={() => {
+                            setName("");
+                          }}
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
                           error={
                             submitClicked &&
                             !SRData.ServiceRequestData.CustomerId
                           }
-                          // helperText={submitClicked && !SRData.ServiceRequestData.CustomerId ? 'Customer is required' : ''}
-                          className="form-control form-control-sm"
+                          className="bg-white"
                         />
-                        {showCustomersList && customersList && (
-                          <ul
-                            style={{ top: "140px" }}
-                            className="search-results-container"
-                          >
-                            {customersList.map((customer) => (
-                              <li
-                                style={{ cursor: "pointer" }}
-                                key={customer.UserId}
-                                onClick={() => {
-                                  selectCustomer(customer);
-                                }} // Use the selectCustomer function
-                              >
-                                {customer.CompanyName}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
+                      )}
+                    />
+                  </div>
+
                       <div className="col-xl-3 mb-2 col-md-3 ">
                         <label className="form-label">
                           Service Locations
@@ -633,7 +692,7 @@ const UpdateSRForm = ({
                         <FormControl fullWidth>
                           <Select
                             name="SRStatusId"
-                            value={SRData.ServiceRequestData.SRStatusId || ""}
+                            value={SRData.ServiceRequestData.SRStatusId || 1}
                             onChange={handleInputChange}
                             size="small"
                           >
@@ -650,7 +709,7 @@ const UpdateSRForm = ({
                         {/* Adjust the column size as needed */}
                         <label className="form-label">
                           Service Request Number
-                          <span className="text-danger">*</span>
+                          
                         </label>
                         <TextField
                           name="ServiceRequestNumber"
@@ -660,10 +719,7 @@ const UpdateSRForm = ({
                             SRData.ServiceRequestData.ServiceRequestNumber || ""
                           }
                           onChange={handleInputChange}
-                          error={
-                            submitClicked &&
-                            !SRData.ServiceRequestData.ServiceRequestNumber
-                          }
+                          
                           className="form-txtarea form-control form-control-sm"
                           placeholder=" Service Request Number"
                         />
@@ -710,14 +766,14 @@ const UpdateSRForm = ({
               </div>
               {/* Assign and scedule */}
               <div className="">
-                <div className="mx-3 mt-3">
+                <div className=" mt-3">
                   <div className="itemtitleBar">
                     <h4>Assign & Schedule</h4>
                   </div>
                   <br />
-                  <div className="mx-1">
+                  <div className="">
                     <div className="row">
-                      <div className="col-md-4">
+                      <div className="col-md-4 mx-3 mb-3">
                         {" "}
                         {/* Adjust the column size as needed */}
                         <label className="form-label">
@@ -754,201 +810,216 @@ const UpdateSRForm = ({
                           )}
                         />
                       </div>
-                      <div className="col-md-6 pt-4">
+                     {/* <div className="col-md-6 pt-4">
                         {" "}
-                        {/* Adjust the column size as needed */}
+                         Adjust the column size as needed
                         <button className="btn schedule-btn">Schedule</button>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
               </div>
+              
+
               {/* item table */}
-              <div className="mx-3 mt-3">
-                <div className="">
+              <div className="">
+                <div className="card-body p-0">
                   <div className="estDataBox">
                     <div className="itemtitleBar">
                       <h4>Items</h4>
                     </div>
-
-                    <div className="table-responsive active-projects style-1 mt-2 ">
+                    <div className="table-responsive active-projects style-1 mt-2">
                       <table id="empoloyees-tblwrapper" className="table">
                         <thead>
                           <tr>
-                            <th>Name</th>
+                            <th className="itemName-width">Item</th>
                             <th>Description</th>
+                            <th>Qty</th>
                             <th>Rate</th>
-                            <th>Qty / Duration</th>
-                            <th>Tax</th>
                             <th>Amount</th>
-                            <th>Actions</th>
+                            <th>Tax</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
-                        {tblSRItems ? (
-                          <tbody>
-                            {tblSRItems.map((item, index) => (
-                              <tr key={index}>
-                                <td>{item.Name}</td>
-                                <td>{item.Description}</td>
-                                <td>{item.Rate}</td>
-                                <td>{item.Qty}</td>
-                                <td>NaN</td>
-                                <td>{item.Qty * item.Rate}</td>
-                                <td>
-                                  <div className="badgeBox">
-                                    <span
-                                      className="actionBadge badge-danger light border-0 badgebox-size"
-                                      onClick={() => removeItem(index)}
-                                    >
-                                      <span className="material-symbols-outlined badgebox-size">
-                                        delete
-                                      </span>
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                            <tr>
-                              <td className="sr-item-input">
-                                <>
-                                  <Autocomplete
-                                    className="sr-item-input"
-                                    id="search-items"
-                                    options={searchResults}
-                                    getOptionLabel={(item) => item.ItemName}
-                                    value={selectedItem}
-                                    onChange={(event, newValue) => {
-                                      if (newValue) {
-                                        handleItemClick(newValue);
-                                      } else {
-                                        setSelectedItem(null);
-                                      }
-                                    }}
-                                    inputValue={searchText}
-                                    onInputChange={(event, newInputValue) => {
-                                      setShowItem(true);
-                                      setSearchText(newInputValue);
-                                      setSelectedItem(null); // Clear selected item when input changes
-                                    }}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        label="Search for items..."
-                                        variant="outlined"
-                                        className="sr-item-input"
-                                        size="small"
-                                        fullWidth
-                                      />
-                                    )}
-                                    renderOption={(props, item) => (
-                                      <li
-                                        style={{ cursor: "pointer" }}
-                                        {...props}
-                                        onClick={() => handleItemClick(item)}
-                                      >
-                                        {item.ItemName}
-                                      </li>
-                                    )}
-                                  />
-                                </>
-                              </td>
-                              <td>
-                                <p>{selectedItem?.SaleDescription || " "}</p>
-                              </td>
+                        <tbody>
 
-                              <td>
-                                <div className="col-sm-9">
-                                  <p>
-                                    {selectedItem?.SalePrice ||
-                                      itemInput.Rate ||
-                                      " "}
-                                  </p>
-                                </div>
-                              </td>
+                        {tblSRItems?.map((item, index) => (
+  <tr colSpan={2} key={item.ItemId}>
+    <td className="itemName-width">{item.Name}</td>
+    <td>{item.Description}</td>
+    <td>
+      <input
+        type="number"
+        style={{ width: "7em" }}
+        className="form-control form-control-sm"
+        value={item.Qty}
+        onChange={(e) => handleQuantityChange(item.itemId, e)}
+      />
+    </td>
+    <td>
+      <input
+        type="number"
+        style={{ width: "7em" }}
+        className="form-control form-control-sm"
+        value={item.Rate}
+        onChange={(e) => handleRateChange(item.itemId, e)}
+      />
+    </td>
+    <td>{(item.Rate * item.Qty ).toFixed(2)}</td>
+    <td>NaN</td>
+    <td>
+      <div className="badgeBox">
+        <Button onClick={() => removeItem(index)}>
+          <Delete color="error" />
+        </Button>
+      </div>
+    </td>
+  </tr>
+))}
 
-                              <td>
-                                <input
-                                  type="number"
-                                  name="Qty"
-                                  value={itemInput.Qty}
-                                  onChange={(e) =>
-                                    setItemInput({
-                                      ...itemInput,
-                                      Qty: Number(e.target.value),
-                                    })
-                                  }
-                                  style={{ width: "7em" }}
-                                  className="form-control form-control-sm"
-                                  placeholder="Quantity"
-                                />
-                              </td>
-                              <td>
-                                <input
-                                  type="number"
-                                  name="Tax"
-                                  // value={itemInput.Qty}
-                                  // onChange={(e) =>
-                                  //   setItemInput({
-                                  //     ...itemInput,
-                                  //     Qty: Number(e.target.value),
-                                  //   })
-                                  // }
-                                  style={{ width: "7em" }}
-                                  className="form-control form-control-sm"
-                                  placeholder="Tax"
-                                  disabled
-                                />
-                              </td>
-                              <td>
-                                <h5 style={{ margin: "0" }}>
-                                  {itemInput.Rate * itemInput.Qty}
-                                </h5>
-                              </td>
-                              <td>
-                                <button
-                                  className="btn btn-primary btn-sm"
-                                  onClick={() => {
-                                    setTblSRItems([...tblSRItems, itemInput]);
-                                    setSearchText("");
-                                    setSelectedItem({
-                                      SalePrice: "",
-                                      SaleDescription: "",
-                                    });
-                                    setItemInput({
-                                      Name: "",
-                                      Qty: 1,
-                                      Description: "",
-                                      Rate: 0,
-                                    }); // Reset the modal input field
-                                    console.log("table items are ", tblSRItems);
+                          <tr>
+                            <td className="itemName-width">
+                              <>
+                                <Autocomplete
+                                  id="search-items"
+                                  options={searchResults}
+                                  getOptionLabel={(item) => item.ItemName}
+                                  value={selectedItem ||""} // This should be the selected item, not searchText
+                                  onChange={(event, newValue) => {
+                                    if (newValue) {
+                                      handleItemClick(newValue);
+                                    } else {
+                                      setSelectedItem(null);
+                                    }
                                   }}
-                                  // disabled={itemBtnDisable}
-                                >
-                                  Add
-                                </button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        ) : (
-                          <tbody>
-                            <tr>
-                              <td colSpan="7">No items found</td>
-                            </tr>
-                          </tbody>
-                        )}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      label="Search for items..."
+                                      variant="outlined"
+                                      size="small"
+                                      fullWidth
+                                      onChange={handleItemChange}
+                                    />
+                                  )}
+                                  renderOption={(props, item) => (
+                                    <li
+                                      style={{
+                                        cursor: "pointer",
+                                        width: "30em",
+                                      }}
+                                      {...props}
+                                      onClick={() => handleItemClick(item)}
+                                    >
+                                      <div className="customer-dd-border">
+                                      <p><strong>{item.ItemName}</strong> </p>
+                                        <p>{item.Type}</p>
+                                        <small>{item.SaleDescription}</small>
+                                      </div>
+                                    </li>
+                                  )}
+                                  onKeyPress={(e) => {
+                                    if (e.key === "Enter") {
+                                      // Handle item addition when Enter key is pressed
+                                      e.preventDefault(); // Prevent form submission
+                                      handleAddItem();
+                                    }
+                                  }}
+                                />
+                              </>
+                            </td>
+                            <td>
+                              <p>{selectedItem?.SaleDescription  || " "}</p>
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="Qty"
+                                value={itemInput.Qty}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Qty: Number(e.target.value),
+                                  })
+                                }
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                placeholder="Quantity"
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <div className="col-sm-9">
+                                <input type="number" 
+                                name="Rate"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={selectedItem?.SalePrice || itemInput.Rate ||""}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Rate: Number(e.target.value),
+                                  })
+                                }
+                                onClick={(e) => {
+                                  setSelectedItem({
+                                    ...selectedItem,
+                                    SalePrice: 0,
+                                  })
+                                }}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                                />
+                            
+                              </div>
+                            </td>
+                            <td>
+                              <h5 style={{ margin: "0" }}>
+                                {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                              </h5>
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="tax"
+                                style={{ width: "7em" }}
+                                disabled
+                                className="form-control form-control-sm"
+                                placeholder="tax"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
                       </table>
                     </div>
                   </div>
                 </div>
               </div>
+
+
               {/* files */}
+
+
               <div className="">
-                <div className="mx-3 ">
+                <div className=" ">
                   <div className="estDataBox">
                     <div className="itemtitleBar">
                       <h4>Files</h4>
                     </div>
-                    <button
+                    <div className="row">
+                      <div className="col-md-2">
+                        <button
                       className="btn btn-primary btn-sm"
                       style={{ margin: "12px 20px" }}
                       onClick={addFile}
@@ -961,19 +1032,114 @@ const UpdateSRForm = ({
                       onChange={trackFile}
                       style={{ display: "none" }}
                     />
-                    <div className="table-responsive active-projects style-1">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>File Name</th>
-                            <th>Type</th>
-                            <th>Size</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {files.map((file, index) => (
+                      </div>
+                    
+                    
+                      {PrevFiles.map((file, index) => (
+                            <div
+                              key={index}
+                              className="col-md-2 col-md-2 mt-3 image-container"
+                              style={{
+                                width: "150px", // Set the desired width
+                                height: "120px", // Set the desired height
+                                margin: "1em",
+                                position: "relative",
+                              }}
+                            >
+                              <img
+                                src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                                alt={file.FileName}
+                                style={{
+                                  width: "150px",
+                                  height: "120px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <p
+                                className="file-name-overlay"
+                                style={{
+                                  position: "absolute",
+                                  bottom: "0",
+                                  left: "13px",
+                                  right: "0",
+                                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                  textAlign: "center",
+                                  overflow: "hidden",
+                                  whiteSpace: "nowrap",
+                                  width: "100%",
+                                  textOverflow: "ellipsis",
+                                  padding: "5px",
+                                }}
+                              >
+                                {file.FileName}
+                              </p>
+                              <span
+                                className="file-delete-button"
+                                style={{
+                                  left: "140px"
+                                }}
+                                // onClick={() => removeFile(index)}
+                              >
+                                <span>
+                                  <Delete color="error" />
+                                </span>
+                              </span>
+                            </div>
+                          ))}
+
+                        {files.map((file, index) => (
+                            <div
+                              key={index}
+                              className="col-md-2 col-md-2 mt-3 image-container"
+                              style={{
+                                width: "150px", // Set the desired width
+                                height: "120px", // Set the desired height
+                                margin: "1em",
+                                position: "relative",
+                              }}
+                            >
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                style={{
+                                  width: "150px",
+                                  height: "120px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                              <p
+                                className="file-name-overlay"
+                                style={{
+                                  position: "absolute",
+                                  bottom: "0",
+                                  left: "13px",
+                                  right: "0",
+                                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                  textAlign: "center",
+                                  overflow: "hidden",
+                                  whiteSpace: "nowrap",
+                                  width: "100%",
+                                  textOverflow: "ellipsis",
+                                  padding: "5px",
+                                }}
+                              >
+                                {file.name}
+                              </p>
+                              <span
+                                className="file-delete-button"
+                                style={{
+                                  left: "140px"
+                                }}
+                                onClick={() => removeFile(index)}
+                              >
+                                <span>
+                                  <Delete color="error" />
+                                </span>
+                              </span>
+                            </div>
+                          ))}
+
+                          {/* {files.map((file, index) => (
                             <tr key={index}>
                               <td>{index + 1}</td>
                               <td>{file.FileName || file.name}</td>
@@ -993,10 +1159,9 @@ const UpdateSRForm = ({
                                 </div>
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          ))} */}
+                       </div>
+
                   </div>
                 </div>
               </div>
@@ -1009,7 +1174,7 @@ const UpdateSRForm = ({
                   <div className="row">
                     <div className="col-md-4 mx-1 mt-2">
                       <div className="row">
-                        <div className="col-md-12">
+                        <div className="col-md-12 mb-1">
                           {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">Work Requested:</label>
@@ -1025,7 +1190,7 @@ const UpdateSRForm = ({
                             fullWidth
                           />
                         </div>
-                        <div className="col-md-12 ">
+                        <div className="col-md-12 mb-1">
                           {" "}
                           <label className="form-label">Action Taken:</label>
                           {/* Adjust the column size as needed */}
@@ -1063,7 +1228,7 @@ const UpdateSRForm = ({
                     </div>
                     <div className="col-md-1"></div>
                     <div className="col-md-6 mt-3">
-                      {SRData.ServiceRequestData.SRTypeId === 2 ? (
+                      {SRData.ServiceRequestData.SRTypeId === 3 ? (
                         <iframe
                           className="SRmap"
                           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
@@ -1080,13 +1245,13 @@ const UpdateSRForm = ({
               </div>
             </div>
 
-            <div className="mb-2 row">
-              <div className="col-md-10">
-                {error && (
-                  <Alert className="mb-3" severity="error">
-                    {errorMessage
-                      ? errorMessage
-                      : "Adding/Updating Service request Failed"}
+            <div className="mt-3 mb-3 row">
+              <div className="col-md-8">
+                {errorMessage && (
+                  <Alert className="" severity="error">
+                    
+                     {errorMessage}
+                    
                   </Alert>
                 )}
                 {emptyFieldsError && (
@@ -1095,7 +1260,7 @@ const UpdateSRForm = ({
                   </Alert>
                 )}
               </div>
-              <div className="col-md-2 mb-3">
+              <div className="col-md-4 mb-3 text-right">
                 <button
                   type="button"
                   className="btn btn-primary me-1"

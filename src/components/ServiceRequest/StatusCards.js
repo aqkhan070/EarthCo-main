@@ -108,8 +108,8 @@ const StatusCards = ({ newData, open, closed, total }) => {
                             </span>
                             <div className="media-body">
                                 <p className="mb-1">Open</p>
-                                <h4 className="mb-0">5131</h4>
-                                <span className="badge badge-warning">30%</span>
+                                <h4 className="mb-0">{open}</h4>
+                                {/* <span className="badge badge-warning">30%</span> */}
                             </div>
                         </div>
                     </div>
@@ -127,8 +127,8 @@ const StatusCards = ({ newData, open, closed, total }) => {
                             </span>
                             <div className="media-body">
                                 <p className="mb-1">Closed</p>
-                                <h4 className="mb-0">71889</h4>
-                                <span className="badge badge-danger">55%</span>
+                                <h4 className="mb-0">{closed}</h4>
+                                {/* <span className="badge badge-danger">55%</span> */}
                             </div>
                         </div>
                     </div>

@@ -8,10 +8,12 @@ import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
+import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 
 const ServiceRequests = () => {
-  const [serviceRequest, setserviceRequest] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+ 
+
+  const {isLoading, fetchServiceRequest, serviceRequest, sRfetchError} = useFetchServiceRequests();
 
   const token = Cookies.get("token");
   const headers = {
@@ -21,26 +23,22 @@ const ServiceRequests = () => {
   const [showCards, setShowCards] = useState(true);
 
   // const [locationOptions, setLocationOptions] = useState();
+  const [open, setOpen] = useState(0)
+  const [closed, setClosed] = useState(0)
 
-  const fetchServiceRequest = async () => {
+ 
 
-    try {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",
-        { headers }
-      );
-      if (response.data != null) {
-        setIsLoading(false);
-      }
-      setserviceRequest(response.data);
-      console.log("zzzzzzzzzzzzzzz", response.data);
-    } catch (error) {
-      console.log("EEEEEEEEEEEEEEEEE", error);
-      
-        setIsLoading(false);
-     
-    }
-  };
+  useEffect(() => {
+    // Filter the estimates array to get only the entries with Status === "Pending"
+    const pendingEstimates = serviceRequest.filter(estimate => estimate.Status === "Open");
+    const pendingClosed = serviceRequest.filter(estimate => estimate.Status === "Closed");
+   
+
+    // Update the state variable with the number of pending estimates
+    setOpen(pendingEstimates.length);
+    setClosed(pendingClosed.length);
+   
+  }, [serviceRequest]);
 
   useEffect(() => {
     fetchServiceRequest();
@@ -53,8 +51,8 @@ const ServiceRequests = () => {
         {showCards && (
           <StatusCards
             newData={1178}
-            open={5142}
-            closed={71858}
+            open={open}
+            closed={closed}
             total={78178}
           />
         )}
@@ -68,6 +66,7 @@ const ServiceRequests = () => {
               ) : (
                 <div>
                   <ServiceRequestTR
+                  sRfetchError={sRfetchError}
                   headers={headers}
                     serviceRequest={serviceRequest}
                     setShowCards={setShowCards}

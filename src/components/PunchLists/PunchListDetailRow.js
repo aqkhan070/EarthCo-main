@@ -22,8 +22,38 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Add, Delete, Edit } from "@mui/icons-material";
 import punchList from "../../assets/images/1.jpg";
 import { Form } from "react-bootstrap";
+import axios from "axios";
 
-const PunchListDetailRow = ({ item, rowIndex, expandedRow }) => {
+
+const PunchListDetailRow = ({headers, item, rowIndex, expandedRow,setPlDetailId }) => {
+
+  const deletePunchListDetail = async (id) => {
+    // try {
+    //   const response = await axios.get(
+    //     `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlist?id=${id}`,
+    //     {
+    //       headers,
+    //     }
+    //   );
+  
+      
+  
+    //   const data = await response.json();
+  
+    //   // Handle the response. For example, you can reload the customers or show a success message
+    //   console.log("detail deleted successfully:", data);
+    //   window.location.reload();
+    // } catch (error) {
+    //   console.error("There was an error deleting the customer:", error);
+    // }
+  };
+
+ 
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
+      deletePunchListDetail(id);
+    }
+  };
   return (
     <>
       {item.DetailDataList.map((detail) => {
@@ -89,10 +119,11 @@ const PunchListDetailRow = ({ item, rowIndex, expandedRow }) => {
                             className="delete-button"
                             data-bs-toggle="modal"
                             data-bs-target="#addPhotos"
+                            onClick={setPlDetailId(detail.DetailData.PunchlistDetailId)}
                           >
                             <Edit />
                           </Button>
-                          <Button color="error" className="delete-button">
+                          <Button color="error" className="delete-button" onClick={() => {handleDelete(detail.DetailData.PunchlistDetailId)}}>
                             <Delete />
                           </Button>
                         </TableCell>

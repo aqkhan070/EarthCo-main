@@ -42,21 +42,33 @@ import AddStaff from "./components/Staff/AddStaff";
 import ErrorPage from "./pages/ErrorPage";
 import ResetPassword from "./pages/ResetPassword";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import EstimatePreview from "./components/Estimates/EstimatePreview";
+import PurchaseOrder from "./components/PurchaseOrder/PurchaseOrder";
+import PurchaseOrderIndex from "./components/PurchaseOrder/PurchaseOrderIndex";
+import { AddPO } from "./components/PurchaseOrder/AddPO";
+import Invoices from "./components/Invoice/Invoices";
+import InvoiceIndex from "./components/Invoice/InvoiceIndex";
+import AddInvioces from "./components/Invoice/AddInvioces";
+import Bills from "./components/Bill/Bills";
+import { EstimateProvider } from "./context/EstimateContext";
+import SRPreview from "./components/ServiceRequest/SRPreview";
+import POPreview from "./components/PurchaseOrder/POPreview";
+import InvoicePreview from "./components/Invoice/InvoicePreview";
 
 
 function App() {
-  
   const { SRroute, estimateRoute } = useContext(RoutingContext);
 
   return (
     <>
-      <BrowserRouter>
+    <EstimateProvider><BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
 
           <Route path="/Dashboard/*" element={<DashboardPage />}>
             <Route path="" element={<DashBoard />} />
+
             <Route path="Customers" element={<CustomerIndex />}>
               <Route path="" element={<CustomersTable />} />
               <Route path="Add-Customer" element={<AddCutomer />} />
@@ -70,13 +82,33 @@ function App() {
             <Route path="Estimates" element={<EstimateIndex />}>
               <Route path="" element={<EstimateList />} />
               <Route path="Add-Estimate" element={<AddEstimate />} />
+              <Route path="Estimate-Preview" element={<EstimatePreview />} />
               <Route path={estimateRoute} element={<EstimateIDopen />} />
             </Route>
             <Route path="Service-Requests/*" element={<ServiceIndex />}>
               <Route path="" element={<SRlist />} />
+              <Route path='Service-Request-Preview' element={<SRPreview />} />
               <Route path="Add-SRform" element={<AddSRform />} />
               <Route path={SRroute} element={<ServiceRequest />} />
             </Route>
+
+            <Route path="Purchase-Order/*" element={<PurchaseOrderIndex />}>
+             <Route path="" element={<PurchaseOrder />}>
+    <Route path='Purchase-Order-Preview' element={<POPreview />} />
+
+          <Route path="AddPO" element={<AddPO />}></Route>
+          </Route>
+         
+          </Route>
+
+            <Route path="Bills" element={<Bills />}></Route>
+            <Route path="Invoices/*" element={<InvoiceIndex />}>
+             <Route path="" element={<Invoices />}></Route>
+          <Route path="AddInvioces" element={<AddInvioces />}></Route>
+    <Route path='Invoice-Preview' element={<InvoicePreview />} />
+
+          </Route>
+
             <Route path="Irrigation" element={<IrrigationIndex />}>
               <Route path="" element={<Irrigationlist />} />
               <Route path="Add-Irrigation" element={<IrrigationForm />} />
@@ -105,7 +137,8 @@ function App() {
         {/* <DataFun>
           <DashboardPage />
         </DataFun> */}
-      </BrowserRouter>
+      </BrowserRouter></EstimateProvider>
+      
     </>
   );
 }

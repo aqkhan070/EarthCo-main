@@ -20,6 +20,7 @@ const useFetchPo = () => {
       );
       setPoList(res.data);
       setLoading(false);
+      setError("")
       console.log("purchase order", res.data);
     } catch (error) {
       setLoading(false);

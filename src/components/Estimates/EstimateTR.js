@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Form } from "react-bootstrap";
 import {
   Table,
@@ -20,9 +20,10 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import UpdateEstimateForm from "./UpdateEstimateForm";
 import Alert from "@mui/material/Alert";
-import { Delete, Create } from "@mui/icons-material";
+import { Delete, Create,Visibility } from "@mui/icons-material";
 import axios from "axios";
 import Cookies from "js-cookie";
+import formatDate from "../../custom/FormatDate";
 
 const theme = createTheme({
   palette: {
@@ -45,13 +46,15 @@ const theme = createTheme({
 });
 
 const EstimateTR = ({
+  tableError,
   headers,
   estimates,
   setShowStatusCards,
   getEstimate,
+  setestmPreviewId,
 }) => {
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
-
+ 
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
   const [filtering, setFiltering] = useState("");
@@ -182,8 +185,8 @@ const EstimateTR = ({
         <ThemeProvider theme={theme}>
           <div className="card">
             <div className="card-body">
-              <Paper>
-                <div className=" text-center">
+              <div className="row m-2">
+                <div className=" text-center mb-3">
                   {submitsuccess && (
                     <Alert severity="success">Successfuly Added Estimates</Alert>
                   )}
@@ -195,7 +198,7 @@ const EstimateTR = ({
                       Successfuly Deleted Estimate
                     </Alert>
                   )}
-                  <div className="row">
+                  <div className="row mt-3">
                     <div>
                       <Form.Select
                         size="sm"
@@ -233,7 +236,7 @@ const EstimateTR = ({
                     </div>
                   </div>
                 </div>{" "}
-                <br />
+               
                 <TableContainer>
                   <Table>
                     <TableHead className="table-header">
@@ -272,6 +275,7 @@ const EstimateTR = ({
                       </TableRow>
                     </TableHead>
                     <TableBody>
+                      {tableError? <TableRow><TableCell className="text-center" colSpan={12}>No record Found</TableCell></TableRow>: null}
                       {filteredEstimates
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((estimate, index) => (
@@ -282,8 +286,8 @@ const EstimateTR = ({
                             <TableCell>{estimate.EstimateId}</TableCell>
                             <TableCell>{estimate.CustomerName}</TableCell>
                             <TableCell>{estimate.RegionalManager}</TableCell>
-                            <TableCell>{estimate.Date}</TableCell>
-                            <TableCell>{estimate.Status}</TableCell>
+                            <TableCell>{formatDate(estimate.Date)}</TableCell>
+                            <TableCell><span className="badge badge-pill badge-success ">{estimate.Status}</span></TableCell>
                             <TableCell>{estimate.EstimateNumber}</TableCell>
                             {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
                             <TableCell>{estimate.DescriptionofWork}</TableCell>
@@ -291,25 +295,41 @@ const EstimateTR = ({
                             <TableCell>{estimate.BillNumber}</TableCell>
                             <TableCell>{estimate.InvoiceNumber}</TableCell>
                             <TableCell>{estimate.ProfitPercentage}</TableCell>
-                            <TableCell>{estimate.EstimateAmount}</TableCell>
+                            <TableCell>{(estimate.EstimateAmount).toFixed(2)}</TableCell>
                             <TableCell>
                               <div className="button-container">
                                 <Button
-                                  className="delete-button"
+                                // className="btn btn-primary btn-icon-xxs me-2"
+                                 onClick={() => {
+                                  navigate("/Dashboard/Estimates/Estimate-Preview");
+                                  setestmPreviewId(estimate.EstimateId);
+                                  console.log(estimate.EstimateId);
+                                                                
+                                }}
+                                >
+                               {/* <i className="fa-solid fa-eye"></i> */}
+
+                              <Visibility />
+                                </Button>
+                                <Button
+                                  // className="btn btn-primary btn-icon-xxs me-2"
                                   onClick={() => {
                                     setSelectedItem(estimate.EstimateId);
                                     console.log(",,,,,,,,,,", selectedItem);
                                     setShowContent(false);
                                   }}
                                 >
-                                  <Create />
+                               {/* <i className="fas fa-pencil-alt"></i> */}
+                               <Create></Create>
+
                                 </Button>
                                 <Button
-                                  className="delete-button"
+                                  // className="btn btn-danger btn-icon-xxs mr-2"
                                   data-bs-toggle="modal"
                                   data-bs-target={`#deleteModal${estimate.EstimateId}`}
                                 >
                                   <Delete color="error" />
+                                  {/* <i className="fas fa-trash-alt"></i> */}
                                 </Button>
                                 <div
                                   className="modal fade"
@@ -318,13 +338,11 @@ const EstimateTR = ({
                                   aria-labelledby="deleteModalLabel"
                                   aria-hidden="true"
                                 >
-                                  <div className="modal-dialog" role="document">
+                                  <div className="modal-dialog modal-dialog-centered" role="document">
                                     <div className="modal-content">
                                       <div className="modal-header">
-                                        <h5 className="modal-title">
-                                          Are you sure you want to delete{" "}
-                                          {estimate.EstimateNumber}
-                                        </h5>
+                                          
+                                        <h5 className="modal-title">Delete Estimate</h5>
                                         <button
                                           type="button"
                                           className="btn-close"
@@ -332,17 +350,23 @@ const EstimateTR = ({
                                         ></button>
                                       </div>
                                       <div className="modal-body">
-                                        <div className="basic-form text-center">
+                                      <p >
+                                          Are you sure you want to delete Estimate No {" "}
+                                          {estimate.EstimateNumber}
+                                        </p>
+                                        </div>
+                                        
+                                        <div className="modal-footer">
                                           <button
                                             type="button"
                                             id="closer"
-                                            className="btn btn-danger light m-3"
+                                            className="btn btn-danger light"
                                             data-bs-dismiss="modal"
                                           >
                                             Close
                                           </button>
                                           <button
-                                            className="btn btn-primary m-3"
+                                            className="btn btn-primary "
                                             data-bs-dismiss="modal"
                                             onClick={() => {
                                               handleDelete(estimate.EstimateId);
@@ -355,7 +379,7 @@ const EstimateTR = ({
                                             Yes
                                           </button>
                                         </div>
-                                      </div>
+                                      
                                     </div>
                                   </div>
                                 </div>
@@ -378,7 +402,7 @@ const EstimateTR = ({
                     setPage(0);
                   }}
                 />
-              </Paper>
+              </div>
             </div>
           </div> 
         </ThemeProvider>

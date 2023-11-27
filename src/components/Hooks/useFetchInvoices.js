@@ -19,6 +19,7 @@ const useFetchInvoices = () => {
         `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoiceList`,
         { headers }
       );
+      setError("")
       setInvoiceList(res.data);
       setLoading(false);
       console.log(res.data);

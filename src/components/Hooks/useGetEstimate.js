@@ -19,6 +19,7 @@ const useGetEstimate = () => {
         { headers }
       );
       console.log("estimate response is", response.data);
+      setTableError(false)
       setEstimates(response.data);
       if (response.data != null) {
         setIsLoading(false);

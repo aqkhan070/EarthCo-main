@@ -39,7 +39,7 @@ const theme = createTheme({
   },
 });
 
-const CustomerTR = ({ customers, setCustomerAddSuccess, setCustomerUpdateSuccess, fetchCustomers,headers }) => {
+const CustomerTR = ({ customers, setCustomerAddSuccess, setCustomerUpdateSuccess, fetchCustomers,headers,customerFetchError }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showContent, setShowContent] = useState(true);
 
@@ -97,172 +97,182 @@ const CustomerTR = ({ customers, setCustomerAddSuccess, setCustomerUpdateSuccess
         <div className="card">
           {deleteSuccess && <Alert severity="success">Successfully deleted Company</Alert>}
           
-          <div className="search-row">
-            <div className="search-container tblsearch-input">
-              <TextField
-                className="tblsearch-input"
-                variant="standard"
-                size="small"
-                label="Search"
-                value={filtering}
-                onChange={(e) => setFiltering(e.target.value)}
-              />
+          <div className="card-body">
+            <div className="search-row">
+              <div className="search-container tblsearch-input">
+                <TextField
+                  className="tblsearch-input"
+                  variant="standard"
+                  size="small"
+                  label="Search"
+                  value={filtering}
+                  onChange={(e) => setFiltering(e.target.value)}
+                />
+              </div>
+              <div className="add-customer-btn">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setSelectedItem(0);
+                    console.log(",,,,,,,,,,", selectedItem);
+                    setShowContent(false);
+                  }}
+                >
+                  + Add Customer
+                </Button>
+              </div>
             </div>
-            <div className="add-customer-btn">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setSelectedItem(0);
-                  console.log(",,,,,,,,,,", selectedItem);
-                  setShowContent(false);
-                }}
-              >
-                + Add Customer
-              </Button>
-            </div>
-          </div>
-
-          <br />
-          <div className="text-center m-3">
-            <Table>
-              <TableHead>
-                <TableRow className="table-header">
-                  {/* Map through columns here */}
-                  {[
-                    // "Select",
-                    "Customer Id",
-                    "Customer Name",
-                    "Contact Name",
-                    "Contact Company",
-                    "Contact Email",
-                    "Actions",
-                  ].map((column, index) => (
-                    <TableCell key={index}>
-                      {index < 5 ? (
-                        <TableSortLabel
-                          active={sorting.field === column}
-                           direction={["asc", "desc"].includes(sorting.order) ? sorting.order : "asc"}
-                          onClick={() =>
-                            setSorting({
-                              field: column,
-                              order:
-                                sorting.order === "asc" &&
-                                sorting.field === column
-                                  ? "desc"
-                                  : "asc",
-                            })
-                          }
-                        >
-                          {column}
-                        </TableSortLabel>
-                      ) : (
-                        column
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredCustomers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((customer, rowIndex) => (
-                    <TableRow key={rowIndex} hover>
-                      {/* <TableCell>
-                  <Checkbox
-                    checked={selectedItem === customer.CustomerId}
-                    onChange={() => setSelectedItem(customer.CustomerId)}
-                  /> 
-                </TableCell>*/}
-                      <TableCell>{customer.CustomerId}</TableCell>
-                      <TableCell>{customer.CompanyName}</TableCell>
-                      <TableCell>
-                        {customer.CustomerName}
-                      </TableCell>
-                      <TableCell>{customer.Address}</TableCell>
-                      <TableCell>{customer.Email}</TableCell>
-                      <TableCell>
-                        <Link
-                        // to={"/Dashboard/Customers/Update-Customer"}
-                        >
-                          <Button
-                            className="delete-button"
-                            onClick={() => {
-                              setSelectedItem(customer.CustomerId);
-                              console.log(",,,,,,,,,,", selectedItem);
-                              setShowContent(false);
-                            }}
+           
+            <div className="text-center m-3">
+              <Table>
+                <TableHead>
+                  <TableRow className="table-header">
+                    {/* Map through columns here */}
+                    {[
+                      // "Select",
+                      "Customer Id",
+                      "Customer Name",
+                      "Contact Name",
+                      "Contact Company",
+                      "Contact Email",
+                      "Actions",
+                    ].map((column, index) => (
+                      <TableCell key={index}>
+                        {index < 5 ? (
+                          <TableSortLabel
+                            active={sorting.field === column}
+                             direction={["asc", "desc"].includes(sorting.order) ? sorting.order : "asc"}
+                            onClick={() =>
+                              setSorting({
+                                field: column,
+                                order:
+                                  sorting.order === "asc" &&
+                                  sorting.field === column
+                                    ? "desc"
+                                    : "asc",
+                              })
+                            }
                           >
-                            <Create />
+                            {column}
+                          </TableSortLabel>
+                        ) : (
+                          column
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {customerFetchError ? <TableRow><TableCell colSpan={12} className="text-center"> No Record Found</TableCell></TableRow>: null}
+                  {filteredCustomers
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((customer, rowIndex) => (
+                      <TableRow key={rowIndex} hover>
+                        {/* <TableCell>
+                    <Checkbox
+                      checked={selectedItem === customer.CustomerId}
+                      onChange={() => setSelectedItem(customer.CustomerId)}
+                    />
+                  </TableCell>*/}
+                        <TableCell>{customer.CustomerId}</TableCell>
+                        <TableCell>{customer.CompanyName}</TableCell>
+                        <TableCell>
+                          {customer.CustomerName}
+                        </TableCell>
+                        <TableCell>{customer.Address}</TableCell>
+                        <TableCell>{customer.Email}</TableCell>
+                        <TableCell>
+                          <Link
+                          // to={"/Dashboard/Customers/Update-Customer"}
+                          >
+                            <Button
+                             
+                              onClick={() => {
+                                setSelectedItem(customer.CustomerId);
+                                console.log(",,,,,,,,,,", selectedItem);
+                                setShowContent(false);
+                              }}
+                            >
+                              <Create />
+                              {/* <i className="fas fa-pencil-alt"></i> */}
+                            </Button>
+                          </Link>
+                          <Button
+                           
+                            // className="btn btn-danger btn-icon-xxs "
+                            data-bs-toggle="modal"
+                            data-bs-target={`#deleteModal${customer.CustomerId}`}
+                          >
+                            <Delete color="error" />
+                            {/* <i className="fas fa-trash-alt"></i> */}
                           </Button>
-                        </Link>
-                        <Button
-                          color="error"
-                          className="delete-button"
-                          data-bs-toggle="modal"
-                          data-bs-target={`#deleteModal${customer.CustomerId}`}
+            
+                        <div
+                          className="modal fade"
+                          id={`deleteModal${customer.CustomerId}`}
+                          tabIndex="-1"
+                          aria-labelledby="deleteModalLabel"
+                          aria-hidden="true"
                         >
-                          <Delete />
-                        </Button>
-                      
-                      <div
-                        className="modal fade"
-                        id={`deleteModal${customer.CustomerId}`}
-                        tabIndex="-1"
-                        aria-labelledby="deleteModalLabel"
-                        aria-hidden="true"
-                      >
-                        <div className="modal-dialog" role="document">
-                          <div className="modal-content">
-                            <div className="modal-header">
-                              <h5 className="modal-title">
-                                Are you sure you want to delete{" "}
-                                {customer.CompanyName}
-                              </h5>
-                              <button
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                              ></button>
-                            </div>
-                            <div className="modal-body">
-                              <div className="basic-form text-center">
+                          <div className="modal-dialog modal-dialog-centered" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title">Customer Delete</h5>
+                                
                                 <button
                                   type="button"
-                                  id="closer"
-                                  className="btn btn-danger light m-3"
+                                  className="btn-close"
                                   data-bs-dismiss="modal"
-                                >
-                                  Close
-                                </button>
+                                ></button>
+                              </div>
+                              <div className="modal-body">
+                              
+                                  <p >
+                                  Are you sure you want to delete{" "}
+                                  {customer.CompanyName}
+                                </p>
+                                  
+                                
+                              </div>
+
+                              <div className="modal-footer">
                                 <button
-                                  className="btn btn-primary m-3"
-                                  data-bs-dismiss="modal"
-                                  onClick={() => handleDelete(customer.CustomerId)}
-                                >
-                                  Yes
-                                </button>
+                                    type="button"
+                                    id="closer"
+                                    className="btn btn-danger light "
+                                    data-bs-dismiss="modal"
+                                  >
+                                    Close
+                                  </button>
+                                  <button
+                                    className="btn btn-primary "
+                                    data-bs-dismiss="modal"
+                                    onClick={() => handleDelete(customer.CustomerId)}
+                                  >
+                                    Yes
+                                  </button>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              component="div"
-              count={filteredCustomers.length}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(event) => {
-                setRowsPerPage(parseInt(event.target.value, 10));
-                setPage(0);
-              }}
-            />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                component="div"
+                count={filteredCustomers.length}
+                page={page}
+                onPageChange={(event, newPage) => setPage(newPage)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(event) => {
+                  setRowsPerPage(parseInt(event.target.value, 10));
+                  setPage(0);
+                }}
+              />
+            </div>
           </div>
         </div>
       ) : (

@@ -10,7 +10,7 @@ const useFetchBills = () => {
 
   const [billList, setBillList] = useState([]);
   const [loading, setLoading] = useState(true);
-
+ const [billError, setBillError] = useState(false)
 
   const fetchBills = async () => {
     try {
@@ -18,11 +18,13 @@ const useFetchBills = () => {
         `https://earthcoapi.yehtohoga.com/api/Bill/GetBillList`,
         { headers }
       );
+      setBillError(false)
       setLoading(false);
       setBillList(res.data);
       console.log("bill list is",  res.data);
     } catch (error) {
       setLoading(false);
+      setBillError(true)
       console.log("api call error", error);
     }
   };
@@ -31,7 +33,7 @@ const useFetchBills = () => {
     fetchBills();
   }, []);
 
-  return { billList, loading, fetchBills };
+  return { billError, billList, loading, fetchBills };
 };
 
 export default useFetchBills;

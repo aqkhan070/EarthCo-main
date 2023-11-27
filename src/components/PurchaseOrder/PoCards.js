@@ -1,6 +1,6 @@
 import React from "react";
 
-const PoCards = () => {
+const PoCards = ({closed, open}) => {
   return (
     <>
       <div className="col-xl-3  col-lg-6 col-sm-6">
@@ -26,8 +26,8 @@ const PoCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Open</p>
-                <h4 className="mb-0">779</h4>
-                <span className="badge badge-primary">15%</span>
+                <h4 className="mb-0">{open}</h4>
+               
               </div>
             </div>
           </div>
@@ -60,8 +60,8 @@ const PoCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Open Approved</p>
-                <h4 className="mb-0">5131</h4>
-                <span className="badge badge-warning">30%</span>
+                <h4 className="mb-0">{open}</h4>
+          
               </div>
             </div>
           </div>
@@ -90,8 +90,8 @@ const PoCards = () => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Closed Billed</p>
-                <h4 className="mb-0">71889</h4>
-                <span className="badge badge-danger">55%</span>
+                <h4 className="mb-0">{closed}</h4>
+           
               </div>
             </div>
           </div>

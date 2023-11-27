@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate  } from "react-router-dom";
 import DashBoard from "../components/DashBoard";
 import HeaderExp from "../components/Header/HeaderExp";
 import SideBar from "../components/SideBar/SideBar";
@@ -34,27 +34,40 @@ import EstimateIDopen from "../components/Estimates/EstimateIDopen";
 import AddEstimate from "../components/Estimates/AddEstimate";
 import MapIndex from "../components/Map/MapIndex";
 import AddSRform from "../components/ServiceRequest/AddSRform";
+
 import StaffIndex from "../components/Staff/StaffIndex";
 import StaffList from "../components/Staff/StaffList";
 import AddStaff from "../components/Staff/AddStaff";
 import CustomerData from "../context/CustomerData";
 import PurchaseOrder from "../components/PurchaseOrder/PurchaseOrder";
+import { AddPO } from "../components/PurchaseOrder/AddPO";
+import PurchaseOrderIndex from "../components/PurchaseOrder/PurchaseOrderIndex";
+
 import Bills from "../components/Bill/Bills";
 import Invoices from "../components/Invoice/Invoices";
+import InvoiceIndex from "../components/Invoice/InvoiceIndex";
+import AddInvioces from "../components/Invoice/AddInvioces";
 import Items from "../components/Items/Items";
 import Cookies from "js-cookie";
+import EstimatePreview from "../components/Estimates/EstimatePreview";
+import SRPreview from "../components/ServiceRequest/SRPreview";
+import POPreview from "../components/PurchaseOrder/POPreview";
+import InvoicePreview from "../components/Invoice/InvoicePreview";
 
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const token = Cookies.get("token");
+  const navigate = useNavigate();
+
+  const isEstimatePreviewRoute = window.location.pathname.includes("Estimate-Preview");
 
 
   return (
     <>
     {token ?
     <>
-    <HeaderExp />
-      <SideBar />
+      {!isEstimatePreviewRoute && <HeaderExp />}
+          {!isEstimatePreviewRoute && <SideBar />}
 
       <div className="content-body" id="contentBody">
         <Routes>
@@ -79,16 +92,34 @@ const DashboardPage = () => {
           <Route path="Estimates" element={<EstimateIndex />}>
             <Route path="" element={<EstimateList />} />
             <Route path="Add-Estimate" element={<AddEstimate />} />
+            <Route path="Estimate-Preview" element={<EstimatePreview />} />
             <Route path={estimateRoute} element={<EstimateIDopen />} />
           </Route>
           <Route path="Service-Requests" element={<ServiceIndex />}>
             <Route path="" element={<SRlist />} />
+            <Route path='Service-Request-Preview' element={<SRPreview />} />
             <Route path="Add-SRform" element={<AddSRform />} />
             <Route path={SRroute} element={<ServiceRequest />} />
           </Route>
-          <Route path="Purchase-Order" element={<PurchaseOrder />}></Route>
+          <Route path="Purchase-Order/*" element={<PurchaseOrderIndex />}>
+             <Route path="" element={<PurchaseOrder />}>
+    <Route path='Purchase-Order-Preview' element={<POPreview />} />
+
+          <Route path="AddPO" element={<AddPO />}></Route>
+          </Route>
+         
+          </Route>
           <Route path="Bills" element={<Bills />}></Route>
-          <Route path="Invoices" element={<Invoices />}></Route>
+
+          <Route path="Invoices/*" element={<InvoiceIndex />}>
+             <Route path="" element={<Invoices />}></Route>
+    <Route path='Invoice-Preview' element={<InvoicePreview />} />
+
+          <Route path="AddInvioces" element={<AddInvioces />}></Route>
+          </Route>
+
+         
+
           <Route path="Items" element={<Items />}></Route>
 
           <Route path="Irrigation" element={<IrrigationIndex />}>
