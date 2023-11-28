@@ -164,7 +164,7 @@ const StaffList = () => {
                           <Table id="customerTbl">
                             <TableHead>
                               <TableRow>
-                                <TableCell>#</TableCell>
+                                <TableCell className="ms-3">#</TableCell>
                                 <TableCell>
                                   <TableSortLabel
                                     active={orderBy === "FirstName"}
@@ -210,7 +210,7 @@ const StaffList = () => {
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((staff) => (
                                   <TableRow hover key={staff.UserId}>
-                                    <TableCell>{staff.UserId}</TableCell>
+                                    <TableCell className="ms-3">{staff.UserId}</TableCell>
                                     <TableCell>{staff.FirstName}</TableCell>
                                     <TableCell>{staff.LastName}</TableCell>
                                     <TableCell>{staff.Email}</TableCell>

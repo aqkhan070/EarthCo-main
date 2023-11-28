@@ -13,7 +13,7 @@ import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 const ServiceRequests = () => {
  
 
-  const {isLoading, fetchServiceRequest, serviceRequest, sRfetchError} = useFetchServiceRequests();
+  const {isLoading, fetchServiceRequest,totalRecords , serviceRequest, sRfetchError} = useFetchServiceRequests();
 
   const token = Cookies.get("token");
   const headers = {
@@ -26,7 +26,10 @@ const ServiceRequests = () => {
   const [open, setOpen] = useState(0)
   const [closed, setClosed] = useState(0)
 
+  const [statusId, setStatusId] = useState(0)
+
  
+
 
   useEffect(() => {
     // Filter the estimates array to get only the entries with Status === "Pending"
@@ -41,8 +44,7 @@ const ServiceRequests = () => {
   }, [serviceRequest]);
 
   useEffect(() => {
-    fetchServiceRequest();
-    console.log("cookies user data is", userdata.Firstname);
+    fetchServiceRequest();  
   }, []);
 
   return (
@@ -50,9 +52,12 @@ const ServiceRequests = () => {
       <div className="row">
         {showCards && (
           <StatusCards
+          setStatusId={setStatusId}
+          statusId={statusId}
+          totalRecords
             newData={1178}
-            open={open}
-            closed={closed}
+            open={totalRecords.totalOpenRecords}
+            closed={totalRecords.totalClosedRecords}
             total={78178}
           />
         )}
@@ -71,6 +76,7 @@ const ServiceRequests = () => {
                     serviceRequest={serviceRequest}
                     setShowCards={setShowCards}
                     fetchServiceRequest={fetchServiceRequest}
+                    statusId={statusId}
                   />
                 </div>
               )}

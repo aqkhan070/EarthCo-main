@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Route, Routes, useNavigate  } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import DashBoard from "../components/DashBoard";
 import HeaderExp from "../components/Header/HeaderExp";
 import SideBar from "../components/SideBar/SideBar";
@@ -32,6 +32,7 @@ import SRlist from "../components/ServiceRequest/SRlist";
 import EstimateList from "../components/Estimates/EstimateList";
 import EstimateIDopen from "../components/Estimates/EstimateIDopen";
 import AddEstimate from "../components/Estimates/AddEstimate";
+
 import MapIndex from "../components/Map/MapIndex";
 import AddSRform from "../components/ServiceRequest/AddSRform";
 
@@ -53,102 +54,144 @@ import EstimatePreview from "../components/Estimates/EstimatePreview";
 import SRPreview from "../components/ServiceRequest/SRPreview";
 import POPreview from "../components/PurchaseOrder/POPreview";
 import InvoicePreview from "../components/Invoice/InvoicePreview";
-
+import BillPreview from "../components/Bill/BillPreview";
+import BillIndex from "../components/Bill/BillIndex";
+import AddBill from "../components/Bill/AddBill";
+import UpdateEstimateForm from "../components/Estimates/UpdateEstimateForm";
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const token = Cookies.get("token");
   const navigate = useNavigate();
 
-  const isEstimatePreviewRoute = window.location.pathname.includes("Estimate-Preview");
-
+  const isEstimatePreviewRoute =
+    window.location.pathname.includes("Estimate-Preview");
+  const isSRPreviewRoute = window.location.pathname.includes(
+    "Service-Request-Preview"
+  );
+  const isBillPreviewRoute = window.location.pathname.includes("Bill-Preview");
+  const isInvoicePreviewRoute =
+    window.location.pathname.includes("Invoice-Preview");
+  const isPOPreviewRoute = window.location.pathname.includes(
+    "Purchase-Order-Preview"
+  );
 
   return (
     <>
-    {token ?
-    <>
-      {!isEstimatePreviewRoute && <HeaderExp />}
-          {!isEstimatePreviewRoute && <SideBar />}
+      {token ? (
+        <>
+          {!isEstimatePreviewRoute &&
+            !isSRPreviewRoute &&
+            !isBillPreviewRoute &&
+            !isInvoicePreviewRoute &&
+            !isPOPreviewRoute && <HeaderExp />}
+          {!isEstimatePreviewRoute &&
+            !isSRPreviewRoute &&
+            !isBillPreviewRoute &&
+            !isInvoicePreviewRoute &&
+            !isPOPreviewRoute && <SideBar />}
 
-      <div className="content-body" id="contentBody">
-        <Routes>
-          <Route path="" element={<DashBoard />} />
-          <Route
-            path="/Customers/*"
-            element={
-              <CustomerData>
-                <CustomerIndex />
-              </CustomerData>
+          <div
+            className={
+              !isEstimatePreviewRoute &&
+              !isSRPreviewRoute &&
+              !isBillPreviewRoute &&
+              !isInvoicePreviewRoute &&
+              !isPOPreviewRoute &&
+              "content-body"
             }
+            id="contentBody"
           >
-            <Route path="" element={<CustomersTable />} />
-            <Route path="Update-Customer" element={<UpdateCustomer />} />
-            <Route path="Add-Customer" element={<AddCutomer />} />
-          </Route>
-          <Route path="Staff/*" element={<StaffIndex />}>
-            <Route path="" element={<StaffList />} />
-            <Route path="Add-Staff" element={<AddStaff />} />
-          </Route>
-          <Route path="Map" element={<MapIndex />} />
-          <Route path="Estimates" element={<EstimateIndex />}>
-            <Route path="" element={<EstimateList />} />
-            <Route path="Add-Estimate" element={<AddEstimate />} />
-            <Route path="Estimate-Preview" element={<EstimatePreview />} />
-            <Route path={estimateRoute} element={<EstimateIDopen />} />
-          </Route>
-          <Route path="Service-Requests" element={<ServiceIndex />}>
-            <Route path="" element={<SRlist />} />
-            <Route path='Service-Request-Preview' element={<SRPreview />} />
-            <Route path="Add-SRform" element={<AddSRform />} />
-            <Route path={SRroute} element={<ServiceRequest />} />
-          </Route>
-          <Route path="Purchase-Order/*" element={<PurchaseOrderIndex />}>
-             <Route path="" element={<PurchaseOrder />}>
-    <Route path='Purchase-Order-Preview' element={<POPreview />} />
+            <Routes>
+              <Route path="" element={<DashBoard />} />
+              <Route
+                path="/Customers/*"
+                element={
+                  <CustomerData>
+                    <CustomerIndex />
+                  </CustomerData>
+                }
+              >
+                <Route path="" element={<CustomersTable />} />
+                <Route path="Update-Customer" element={<UpdateCustomer />} />
+                <Route path="Add-Customer" element={<AddCutomer />} />
+              </Route>
+              <Route path="Staff/*" element={<StaffIndex />}>
+                <Route path="" element={<StaffList />} />
+                <Route path="Add-Staff" element={<AddStaff />} />
+              </Route>
+              <Route path="Map" element={<MapIndex />} />
+              <Route path="Estimates" element={<EstimateIndex />}>
+                <Route path="" element={<EstimateList />} />
+                <Route path="Add-Estimate" element={<AddEstimate />} />
+                <Route path='Update-Estimate' element={<UpdateEstimateForm />} />
+                <Route path="Estimate-Preview" element={<EstimatePreview />} />
+                <Route path={estimateRoute} element={<EstimateIDopen />} />
+              </Route>
+              <Route path="Service-Requests" element={<ServiceIndex />}>
+                <Route path="" element={<SRlist />} />
+                <Route path="Service-Request-Preview" element={<SRPreview />} />
+                <Route path="Add-SRform" element={<AddSRform />} />
+                <Route path={SRroute} element={<ServiceRequest />} />
+              </Route>
+              <Route path="Purchase-Order/*" element={<PurchaseOrderIndex />}>
+                <Route path="" element={<PurchaseOrder />}>
+                  <Route
+                    path="Purchase-Order-Preview"
+                    element={<POPreview />}
+                  />
 
-          <Route path="AddPO" element={<AddPO />}></Route>
-          </Route>
-         
-          </Route>
-          <Route path="Bills" element={<Bills />}></Route>
+                  <Route path="AddPO" element={<AddPO />}></Route>
+                </Route>
+              </Route>
 
-          <Route path="Invoices/*" element={<InvoiceIndex />}>
-             <Route path="" element={<Invoices />}></Route>
-    <Route path='Invoice-Preview' element={<InvoicePreview />} />
+              <Route path="Bills/*" element={<BillIndex />}>
+                <Route path="" element={<Bills />}></Route>
+                <Route path='AddBill' element={<AddBill />} />
+                <Route path="Bill-Preview" element={<BillPreview />} />
+              </Route>
 
-          <Route path="AddInvioces" element={<AddInvioces />}></Route>
-          </Route>
+              <Route path="Invoices/*" element={<InvoiceIndex />}>
+                <Route path="" element={<Invoices />}></Route>
+                <Route path="Invoice-Preview" element={<InvoicePreview />} />
 
-         
+                <Route path="AddInvioces" element={<AddInvioces />}></Route>
+              </Route>
 
-          <Route path="Items" element={<Items />}></Route>
+              <Route path="Items" element={<Items />}></Route>
 
-          <Route path="Irrigation" element={<IrrigationIndex />}>
-            <Route path="" element={<Irrigationlist />} />
-            <Route path="Add-Irrigation" element={<IrrigationForm />} />
-          </Route>
-          <Route path="Irrigation/Audit-Report" element={<Audit />} />
-          <Route path="Punchlist" element={<PunchListIndex />} />
-          <Route
-            path="Irrigation/PunchlistPreview"
-            element={<PunchlistPreview />}
-          />
-          <Route path="SummaryReport" element={<SummaryReport />} />
-          <Route path="ProposalSummary" element={<ProposalSummary />} />
-          <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
-            <Route path="" element={<WeeklyReportlist />} />
-            <Route path="WeeklyReport" element={<WeeklyReport />} />
-            <Route path="Add-Weekly-Report" element={<AddWRform />} />
-          </Route>
-          <Route path="Landscape" element={<LandscapeIndex />}>
-            <Route path="" element={<Landscapelist />} />
-            <Route path="Add-Landscape" element={<LandscapeForm />} />
-          </Route>
-          <Route path="Landscape/PunchList-Report" element={<Landscape />} />
-        </Routes>
-      </div>
-    </>: <div><h1>Access is denied</h1></div>
-    }
-      
+              <Route path="Irrigation" element={<IrrigationIndex />}>
+                <Route path="" element={<Irrigationlist />} />
+                <Route path="Add-Irrigation" element={<IrrigationForm />} />
+              </Route>
+              <Route path="Irrigation/Audit-Report" element={<Audit />} />
+              <Route path="Punchlist" element={<PunchListIndex />} />
+              <Route
+                path="Irrigation/PunchlistPreview"
+                element={<PunchlistPreview />}
+              />
+              <Route path="SummaryReport" element={<SummaryReport />} />
+              <Route path="ProposalSummary" element={<ProposalSummary />} />
+              <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
+                <Route path="" element={<WeeklyReportlist />} />
+                <Route path="WeeklyReport" element={<WeeklyReport />} />
+                <Route path="Add-Weekly-Report" element={<AddWRform />} />
+              </Route>
+              <Route path="Landscape" element={<LandscapeIndex />}>
+                <Route path="" element={<Landscapelist />} />
+                <Route path="Add-Landscape" element={<LandscapeForm />} />
+              </Route>
+              <Route
+                path="Landscape/PunchList-Report"
+                element={<Landscape />}
+              />
+            </Routes>
+          </div>
+        </>
+      ) : (
+        <div>
+          <h1>Access is denied</h1>
+        </div>
+      )}
 
       <Footer />
     </>

@@ -54,7 +54,10 @@ import { EstimateProvider } from "./context/EstimateContext";
 import SRPreview from "./components/ServiceRequest/SRPreview";
 import POPreview from "./components/PurchaseOrder/POPreview";
 import InvoicePreview from "./components/Invoice/InvoicePreview";
-
+import BillIndex from "./components/Bill/BillIndex";
+import BillPreview from "./components/Bill/BillPreview";
+import AddBill from "./components/Bill/AddBill";
+import UpdateEstimateForm from "./components/Estimates/UpdateEstimateForm";
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -82,6 +85,7 @@ function App() {
             <Route path="Estimates" element={<EstimateIndex />}>
               <Route path="" element={<EstimateList />} />
               <Route path="Add-Estimate" element={<AddEstimate />} />
+              <Route path='Update-Estimate' element={<UpdateEstimateForm />} />
               <Route path="Estimate-Preview" element={<EstimatePreview />} />
               <Route path={estimateRoute} element={<EstimateIDopen />} />
             </Route>
@@ -101,7 +105,15 @@ function App() {
          
           </Route>
 
-            <Route path="Bills" element={<Bills />}></Route>
+            {/* <Route path="Bills" element={<Bills />}></Route> */}
+            <Route path="Bills/*" element={<BillIndex />}>
+             <Route path="" element={<Bills />}></Route>
+             <Route path='AddBill' element={<AddBill />} />
+    <Route path='Bill-Preview' element={<BillPreview />} />
+      
+          </Route>
+
+
             <Route path="Invoices/*" element={<InvoiceIndex />}>
              <Route path="" element={<Invoices />}></Route>
           <Route path="AddInvioces" element={<AddInvioces />}></Route>

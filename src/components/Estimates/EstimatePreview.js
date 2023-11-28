@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import logo from "../../assets/images/logo/earthco_logo.png";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
-
+import formatDate from "../../custom/FormatDate";
 
 const EstimatePreview = () => {
   const { name, setName, fetchName } = useFetchCustomerName();
@@ -36,14 +36,13 @@ const EstimatePreview = () => {
   };
 
   useEffect(() => {
- 
     fetchEstimates();
   }, []);
   useEffect(() => {
     if (previewData && previewData.EstimateData) {
-        fetchName(previewData.EstimateData.CustomerId);
+      fetchName(previewData.EstimateData.CustomerId);
     }
-}, [previewData]);
+  }, [previewData]);
   useEffect(() => {
     // Calculate the total amount when previewData changes
     if (previewData && previewData.EstimateItemData) {
@@ -61,9 +60,14 @@ const EstimatePreview = () => {
 
   return (
     <>
-       <div className="card m-5">
+      <div className="card m-5">
         <div className="card-body">
-        <div style={{ borderBottom: "5px solid #0394fc", margin:"1em 0em 3em 0em" }}></div>
+          <div
+            style={{
+              borderBottom: "5px solid #0394fc",
+              margin: "1em 0em 3em 0em",
+            }}
+          ></div>
           <div className="row">
             <div className="col-md-2">
               {" "}
@@ -76,52 +80,79 @@ const EstimatePreview = () => {
           </div>
 
           <div className="row">
-            <div className="col-md-3">
-              <h4>EarthCo</h4>
-              <h6>{name || ""}</h6>
-            </div>
-            <div className="col-md-5 "></div>
-            <div className="col-md-1 p-0 m-0">
-              <h6><strong>date</strong></h6>
-            </div>
-            <div className="col-md-2 p-0 m-0">
-              <h6><strong>Expiration Date</strong></h6>
-            </div>
-            <div className="col-md-1 p-0 m-0">
-              <h6><strong>Estimate#</strong></h6>
+            <div className="col-md-8">
+              <table>
+                <thead>
+                  <tr>
+                    <th>
+                      {" "}
+                      <h5>EarthCo</h5>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <h6>{name || ""}</h6>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      {" "}
+                      <h6>{previewData.EstimateData.Address}</h6>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h6>
+                        <strong>Bill to</strong>
+                      </h6>
+                    </td>
+                    <td>
+                      <h6>
+                        <strong>Ship to</strong>
+                      </h6>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h6>
+                        <>{previewData.EstimateData.Address}</>
+                      </h6>
+                    </td>
+                    <td>
+                      <h6>
+                        <>{previewData.EstimateData.Address}</>
+                      </h6>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
-            <div className="col-md-3">
-              <h6>Customer Address</h6>
-            </div>
-            <div className="col-md-4"></div>
-            <div className="col-md-2 p-0 m-0">
-              <h6>{previewData.EstimateData.CreatedDate}</h6>
-            </div>
-            <div className="col-md-2">
-              <h6></h6>
-            </div>
-            <div className="col-md-1 p-0 m-0">
-              <h6>{previewData.EstimateData.EstimateNumber}</h6>
+            <div className="col-md-4 text-right">
+              <table style={{width:"100%"}}>
+                <thead>
+                  <tr>
+                    <th> <h6>Date</h6> </th>
+                    <th> <h6>Estimate #</h6> </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><h6>{formatDate(previewData.EstimateData.CreatedDate)}</h6></td>
+                   
+                    <td><h6>{previewData.EstimateData.EstimateNumber}</h6></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-
-          <div className="row">
-            <div className="col-md-3">
-              <h4>Bill To</h4>
-              <h6>address</h6>
-            </div>
-            <div className="col-md-3">
-              <h4>Ship To</h4>
-              <h6>address</h6>
-            </div>
-          </div>
-
           <table id="empoloyees-tblwrapper" className="table ">
             <thead className="table-header">
               <tr>
                 <th>Description</th>
-                <th>Qty / Duration</th>
+                <th>Qty</th>
                 <th>Rate</th>
 
                 <th>Amount</th>
@@ -134,27 +165,30 @@ const EstimatePreview = () => {
                     <td>{item.Description}</td>
                     <td>{item.Qty}</td>
                     <td>{item.Rate}</td>
-                    <td>{item.Amount}</td>
+                    <td>{item.Amount.toFixed(2)}</td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
-        <div className="row ">
-
+        <div className="card-body">
+              <div className="row">
           <div className="col-md-8"></div>
           <div className="col-md-2"><h6>SubTotal:</h6></div>
-          <div className="col-md-2"><h6>{totalAmount}</h6></div>
+          <div className="col-md-2"><h6>{totalAmount.toFixed(2)}</h6></div>
           <div className="col-md-8"></div>
-          <div className="col-md-2"><h6>Discount:</h6></div>   <hr />
+          <div className="col-md-2">
+            <h6>Discount:</h6>
+          </div>{" "}
+          <hr />
           <div className="col-md-8"></div>
           <div className="col-md-2"><h6>Total Amount:</h6></div>
-          <div className="col-md-2"><h6>{totalAmount}</h6></div>            
+          <div className="col-md-2"><h6>{totalAmount.toFixed(2)}</h6></div>            
        
         
-          <div style={{ borderBottom: "5px solid #012a47", margin:"0em 0em 3em 0em" }}></div>
-
+          <div style={{ borderBottom: "5px solid #012a47", margin:"1em 0em 3em 0em" }}></div>
+          </div>
         </div>
       </div>
     </>

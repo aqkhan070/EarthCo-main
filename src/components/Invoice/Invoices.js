@@ -21,6 +21,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
 import { DataContext } from "../../context/AppData";
 import { useNavigate } from "react-router-dom";
+import formatDate from "../../custom/FormatDate";
 
 
 const Invoices = () => {
@@ -31,7 +32,7 @@ const Invoices = () => {
 
   const navigate = useNavigate();
   const {setInvoiceData} = useContext(DataContext);
-  const { invoiceList, loading, error, fetchInvoices } = useFetchInvoices();
+  const { invoiceList, loading, error, fetchInvoices, fetchFilterInvoice, filteredInvoiceList,totalRecords } = useFetchInvoices();
   const [showContent, setShowContent] = useState(true);
 
   const [selectedInvoice, setSelectedInvoice] = useState(0);
@@ -56,16 +57,34 @@ const Invoices = () => {
     setOrderBy(property);
   };
 
+  const [tablePage, setTablePage] = useState(0);
+  const [statusId, setStatusId] = useState(0)
+  useEffect(() => {
+    // Initial fetch of estimates
+    fetchFilterInvoice(1, rowsPerPage, statusId);
+  }, []);
+
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    fetchFilterInvoice(tablePage + 1, rowsPerPage, statusId);
+  }, [tablePage, rowsPerPage, statusId]);
+  
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setTablePage(newPage);
   };
+
+
+
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const filteredInvoices = invoiceList
+  const filteredInvoices = filteredInvoiceList
 
   const sortedInvoices = filteredInvoices.sort((a, b) => {
     if (order === "asc") {
@@ -86,7 +105,7 @@ const Invoices = () => {
         { headers }
       );
       console.log(res.data);
-      fetchInvoices();
+      fetchFilterInvoice();
       setDeleteRes(res.data);
       setDeleteSuccess(true);
       setTimeout(() => {
@@ -105,8 +124,8 @@ const Invoices = () => {
           <div className="container-fluid">
             <div className="row">
               <InvoiceCards />
-              <div className="card dz-card" id="bootstrap-table2">
-                <div className="col-xl-12">
+              <div className="col-xl-12" id="bootstrap-table2">
+                <div className="card">
                   {deleteSuccess && (
                     <Alert className="mb-3" severity="success">
                       {deleteRes ? deleteRes : "Successfuly Deleted Invoice"}
@@ -127,7 +146,7 @@ const Invoices = () => {
                     <>
                       <div className="card-header flex-wrap d-flex justify-content-between  border-0">
                         <TextField
-                          label="Search"
+                          label="Search Invoices"
                           variant="standard"
                           size="small"
                           style={{  width: "15em" }}
@@ -228,7 +247,7 @@ const Invoices = () => {
                                       <TableCell>
                                         {invoice.InvoiceNumber}
                                       </TableCell>
-                                      <TableCell>{invoice.IssueDate}</TableCell>
+                                      <TableCell>{formatDate(invoice.IssueDate)}</TableCell>
                                       <TableCell>
                                         {invoice.CustomerName}
                                       </TableCell>
@@ -236,7 +255,7 @@ const Invoices = () => {
                                         {invoice.BalanceAmount}
                                       </TableCell>
                                       <TableCell>
-                                        {invoice.TotalAmount}
+                                      {invoice.TotalAmount.toFixed(2)}
                                       </TableCell>
                                       <TableCell></TableCell>
                                       <TableCell>
@@ -298,7 +317,7 @@ const Invoices = () => {
                                                 ></button>
                                               </div>
                                               <div className="modal-body">
-                                                <p>
+                                                <p className="text-center">
                                                 Are you sure you want to
                                                   delete {invoice.InvoiceNumber}
                                                 </p>
@@ -343,14 +362,17 @@ const Invoices = () => {
                               </TableBody>
                             </Table>
                             <TablePagination
-                              rowsPerPageOptions={[10, 25, 50]}
-                              component="div"
-                              count={sortedInvoices.length}
-                              rowsPerPage={rowsPerPage}
-                              page={page}
-                              onPageChange={handleChangePage}
-                              onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
+  rowsPerPageOptions={[10, 25, 50]}
+  component="div"
+  count={totalRecords}
+  rowsPerPage={rowsPerPage}
+  page={tablePage} // Use tablePage for the table rows
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={(event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+  }}
+/>
                           </div>
                         </div>
                       </div>
@@ -368,6 +390,7 @@ const Invoices = () => {
           selectedInvoice={selectedInvoice}
           fetchInvoices={fetchInvoices}
           setSubmitRes={setSubmitRes}
+          fetchFilterInvoice={fetchFilterInvoice}
         />
       )}
     </>

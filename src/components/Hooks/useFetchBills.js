@@ -11,6 +11,8 @@ const useFetchBills = () => {
   const [billList, setBillList] = useState([]);
   const [loading, setLoading] = useState(true);
  const [billError, setBillError] = useState(false)
+const [filteredBillsList, setFilteredBillsList] = useState([])
+const [totalRecords, setTotalRecords] = useState(0)
 
   const fetchBills = async () => {
     try {
@@ -18,14 +20,32 @@ const useFetchBills = () => {
         `https://earthcoapi.yehtohoga.com/api/Bill/GetBillList`,
         { headers }
       );
-      setBillError(false)
-      setLoading(false);
+      // setBillError(false)
+      // setLoading(false);
       setBillList(res.data);
       console.log("bill list is",  res.data);
     } catch (error) {
+      // setLoading(false);
+      // setBillError(true)
+      console.log("api call error", error);
+    }
+  };
+
+  const fetchFilterBills = async (pageNo = 1, PageLength = 10) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Bill/GetBillServerSideList?DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        { headers }
+      );
+      setBillError(false)
+      setLoading(false);
+      setFilteredBillsList(res.data.Data);
+      setTotalRecords(res.data.totalRecords)
+      console.log("purchase order", res.data);
+    } catch (error) {
       setLoading(false);
       setBillError(true)
-      console.log("api call error", error);
+      console.log("api call error", error.message);
     }
   };
 
@@ -33,7 +53,7 @@ const useFetchBills = () => {
     fetchBills();
   }, []);
 
-  return { billError, billList, loading, fetchBills };
+  return { billError, billList, loading, fetchBills, fetchFilterBills,filteredBillsList,totalRecords };
 };
 
 export default useFetchBills;

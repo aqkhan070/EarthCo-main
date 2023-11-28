@@ -460,7 +460,7 @@ const handleSubmit = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Qty / Duration</th>
+                      <th>Qty</th>
                       <th>Name</th>
                       <th>Description</th>
                       <th>Rate</th>
@@ -651,7 +651,7 @@ const handleSubmit = () => {
               Submit
             </button>
             <NavLink to="/Dashboard/Estimates">
-              <button className="btn btn-danger light ms-1">Cancel</button>
+              <button className="btn btn-danger light ms-1 me-2">Cancel</button>
             </NavLink>
           </div>
         </div>

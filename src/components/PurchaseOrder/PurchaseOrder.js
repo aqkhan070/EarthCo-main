@@ -23,17 +23,18 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useFetchPo from "../Hooks/useFetchPo";
 import { NavLink, useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
+import formatDate from "../../custom/FormatDate";
 
 const PurchaseOrder = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const { PoList, loading, error, fetchPo } = useFetchPo();
+  const { PoList, loading, error, fetchPo, filteredPo, fetchFilterPo, totalRecords } = useFetchPo();
  
   const [showContent, setShowContent] = useState(true);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [orderBy, setOrderBy] = useState("");
   const [order, setOrder] = useState("asc");
   const [search, setSearch] = useState("");
@@ -62,7 +63,23 @@ const PurchaseOrder = () => {
     setClosed(pendingClosed.length);
    
   }, [PoList]);
+
+
+  const [tablePage, setTablePage] = useState(0);
+  const [statusId, setStatusId] = useState(0)
+  useEffect(() => {
+    // Initial fetch of estimates
+    fetchFilterPo(1, rowsPerPage, statusId);
+  }, []);
+
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    fetchFilterPo(tablePage + 1, rowsPerPage, statusId);
+  }, [tablePage, rowsPerPage, statusId]);
   
+  const handleChangePage = (event, newPage) => {
+    setTablePage(newPage);
+  };
 
   const deletePo = async (id) => {
     try {
@@ -75,7 +92,7 @@ const PurchaseOrder = () => {
       setTimeout(() => {
         setDeleteSuccess(false);
       }, 4000);
-      fetchPo();
+      fetchFilterPo();
       console.log("delete response", res.data);
     } catch (error) {
       setDeleteRes(error);
@@ -89,13 +106,11 @@ const PurchaseOrder = () => {
   };
 
   useEffect(() => {
-    fetchPo();
+    // fetchPo();
     setselectedPo(0)
   }, []);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -108,7 +123,7 @@ const PurchaseOrder = () => {
     setOrderBy(property);
   };
 
-  const sortedPoList = PoList.filter((po) =>
+  const sortedPoList = filteredPo.filter((po) =>
     po.SupplierName.toLowerCase().includes(search.toLowerCase())
   ).sort((a, b) => {
     if (orderBy === "Vendor") {
@@ -131,7 +146,7 @@ const PurchaseOrder = () => {
           <PoTitle />
           <div className="container-fluid">
             <div className="row">
-              <PoCards closed={closed} open={open} />
+              <PoCards closed={totalRecords.totalClosedRecords} open={totalRecords.totalOpenRecords} setStatusId={setStatusId} statusId={statusId} />
 
               <div className="col-xl-3 mb-3 text-right"></div>
               <div className="col-xl-12">
@@ -225,7 +240,7 @@ const PurchaseOrder = () => {
 
                                   <TableRow hover key={po.EstimateNumber}>
                                     <TableCell>{po.SupplierName}</TableCell>
-                                    <TableCell>{po.Date}</TableCell>
+                                    <TableCell>{formatDate(po.Date)}</TableCell>
                                     <TableCell>{po.Status}</TableCell>
                                     <TableCell>{po.RegionalManager}</TableCell>
                                     <TableCell>{po.RequestedBy}</TableCell>
@@ -327,15 +342,18 @@ const PurchaseOrder = () => {
                             </TableBody>
                           </Table>
                        
-                        <TablePagination
-                          rowsPerPageOptions={[5, 10, 25]}
-                          component="div"
-                          count={sortedPoList.length}
-                          rowsPerPage={rowsPerPage}
-                          page={page}
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
+                          <TablePagination
+  rowsPerPageOptions={[10, 25, 50]}
+  component="div"
+  count={totalRecords.totalRecords}
+  rowsPerPage={rowsPerPage}
+  page={tablePage} // Use tablePage for the table rows
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={(event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+  }}
+/>
                       </div>
                     </>
                   )}
@@ -352,6 +370,7 @@ const PurchaseOrder = () => {
           setPostSuccessRes={setPostSuccessRes}
           setPostSuccess={setPostSuccess}
           fetchPo={fetchPo}
+          fetchFilterPo={fetchFilterPo}
         />
       )}
     </>

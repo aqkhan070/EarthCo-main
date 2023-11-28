@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AddBill from "./AddBill";
 import BillTitle from "./BillTitle";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { Delete, Create } from "@mui/icons-material";
+import { Delete, Create, Visibility } from "@mui/icons-material";
 import {
   Table,
   TableContainer,
@@ -20,6 +20,10 @@ import {
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchBills from "../Hooks/useFetchBills";
+import { NavLink, useNavigate } from "react-router-dom";
+import { DataContext } from "../../context/AppData";
+import formatDate from "../../custom/FormatDate";
+
 
 const Bills = () => {
   const headers = {
@@ -36,7 +40,28 @@ const Bills = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState("");
 
-  const { billList, loading, fetchBills, billError } = useFetchBills();
+  const { billList, loading, fetchBills, billError, fetchFilterBills,filteredBillsList,totalRecords } = useFetchBills();
+  
+  const {setBillData} = useContext(DataContext);
+
+
+  const navigate = useNavigate();
+
+  const [tablePage, setTablePage] = useState(0);
+
+  useEffect(() => {
+    // Initial fetch of estimates
+    fetchFilterBills(1, rowsPerPage );
+  }, []);
+
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    fetchFilterBills(tablePage + 1, rowsPerPage );
+  }, [tablePage, rowsPerPage ]);
+  
+  const handleChangePage = (event, newPage) => {
+    setTablePage(newPage);
+  };
 
   const deleteBill = async (id) => {
     try {
@@ -48,7 +73,7 @@ const Bills = () => {
       setTimeout(() => {
         setDeleteSuccess(false);
       }, 4000);
-      fetchBills();
+      fetchFilterBills();
 
       console.log(res.data);
     } catch (error) {
@@ -67,7 +92,7 @@ const Bills = () => {
     setOrderBy(property);
   };
 
-  const filteredBills = billList.filter((bill) =>
+  const filteredBills = filteredBillsList.filter((bill) =>
     bill.SupplierName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -81,9 +106,9 @@ const Bills = () => {
     }
   });
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -96,16 +121,18 @@ const Bills = () => {
         <>
           <BillTitle />
           <div className="container-fluid">
-            <div className="row">
+      
               <div className="card " id="bootstrap-table2">
                 <div className="card-body">
+                <div className="row  mb-3">
+                <div className=" text-center">
                   {deleteSuccess && (
-                    <Alert className="mt-2" severity="success">
+                    <Alert className="" severity="success">
                       Successfully deleted Bill
                     </Alert>
                   )}
                   {submitSuccess && (
-                    <Alert className="mt-2" severity="success">
+                    <Alert className="" severity="success">
                       {submitSuccess
                         ? submitSuccess
                         : "Successfully Added/Updated bill"}
@@ -118,7 +145,7 @@ const Bills = () => {
                   ) : (
                     <>
                       <div className="row">
-                        <div className="col-md-2 text-right">
+                        <div className="col-md-2 mb-2 text-right">
                           <TextField
                             label="Search"
                             variant="standard"
@@ -142,8 +169,8 @@ const Bills = () => {
                             + Add New Bill
                           </Button>
                         </div>
+                    
                       </div>
-
                       <Table hover>
                         <TableHead className="table-header">
                           <TableRow>
@@ -186,12 +213,25 @@ const Bills = () => {
                             .map((bill) => (
                               <TableRow hover key={bill.BillId}>
                                 <TableCell>{bill.SupplierName}</TableCell>
-                                <TableCell>{bill.DueDate}</TableCell>
+                                <TableCell>{formatDate(bill.DueDate)}</TableCell>
                                 <TableCell>{bill.Amount}</TableCell>
                                 <TableCell>{bill.Memo}</TableCell>
                                 <TableCell>{bill.Currency}</TableCell>
                                 <TableCell>{bill.Tags}</TableCell>
                                 <TableCell>
+                                <Button
+                                // className="btn btn-primary btn-icon-xxs me-2"
+                                 onClick={() => {
+                                  navigate("/Dashboard/Bills/Bill-Preview");
+                                  setBillData(bill);
+                                  // console.log(estimate.EstimateId);
+                                                                
+                                }}
+                                >
+                               {/* <i className="fa-solid fa-eye"></i> */}
+
+                              <Visibility />
+                                </Button>
                                   <Button
                                     // className="btn btn-primary btn-icon-xxs me-2"
                                     onClick={() => {
@@ -268,20 +308,24 @@ const Bills = () => {
                       </Table>
 
                       <TablePagination
-                        rowsPerPageOptions={[10, 25, 50]}
-                        component="div"
-                        count={sortedBills.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onChangePage={handleChangePage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
-                      />
+  rowsPerPageOptions={[10, 25, 50]}
+  component="div"
+  count={totalRecords}
+  rowsPerPage={rowsPerPage}
+  page={tablePage} // Use tablePage for the table rows
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={(event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+  }}
+/>
                     </>
                   )}
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+                      </div>
         </>
       ) : (
         <AddBill
@@ -290,6 +334,7 @@ const Bills = () => {
           selectedBill={selectedBill}
           setselectedBill={setselectedBill}
           setSubmitSuccess={setSubmitSuccess}
+          fetchFilterBills={fetchFilterBills}
         />
       )}
     </>

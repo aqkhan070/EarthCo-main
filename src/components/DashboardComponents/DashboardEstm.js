@@ -41,7 +41,7 @@ const DashboardEstm = ({dashBoardData}) => {
                       <TableCell>Customer Name</TableCell>
                       <TableCell>Assign to</TableCell>
                       <TableCell>Estimate #</TableCell>
-                      <TableCell>Estimate Ammount</TableCell>
+                      <TableCell>Estimate Amount</TableCell>
                       <TableCell>Estimate Note</TableCell>
                       <TableCell>Status</TableCell>
                       </TableRow>

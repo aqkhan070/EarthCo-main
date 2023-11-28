@@ -365,7 +365,7 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
                           <th>Name</th>
                           <th>Description</th>
                           <th>Rate</th>
-                          <th>Qty / Duration</th>
+                          <th>Qty</th>
                           {/* <th>Tax</th> */}
                           <th>Amount</th>
                           <th>Action</th>

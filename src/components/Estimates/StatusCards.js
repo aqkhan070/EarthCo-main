@@ -1,6 +1,6 @@
 import React from "react";
 
-const StatusCards = ({ newData, open, closed, total, accepted }) => {
+const StatusCards = ({setStatusId,estmRecords, statusId, newData, open, closed, total, accepted }) => {
   return (
     <>
       {/* <div className="col-xl-3 col-sm-6">
@@ -75,7 +75,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
 
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body p-4">
+          <div className={statusId===4?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(4)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-primary text-primary">
                 {/* <i className="ti-user"></i>  */}
@@ -98,7 +98,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
               </span>
               <div className="media-body">
                 <p className="mb-1">New</p>
-                <h4 className="mb-0">{open}</h4>
+                <h4 className="mb-0">{estmRecords.totalNewRecords}</h4>
                 {/* <span className="badge badge-primary">15%</span> */}
               </div>
             </div>
@@ -107,7 +107,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
       </div>
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body p-4">
+          <div className={statusId===1?"card-body selected-Card p-4":"card-body p-4" }  style={{cursor:"pointer"}} onClick={() => {setStatusId(1)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-warning text-warning">
                 <svg
@@ -132,7 +132,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Open Approved</p>
-                <h4 className="mb-0">{accepted}</h4>
+                <h4 className="mb-0">{estmRecords.totalApprovedRecords}</h4>
                 {/* <span className="badge badge-warning">30%</span> */}
               </div>
             </div>
@@ -141,7 +141,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
       </div>
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body  p-4">
+          <div className={statusId===2?"card-body selected-Card p-4":"card-body p-4" }  style={{cursor:"pointer"}} onClick={() => {setStatusId(2)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-danger text-danger">
                 <svg
@@ -163,7 +163,7 @@ const StatusCards = ({ newData, open, closed, total, accepted }) => {
               </span>
               <div className="media-body">
                 <p className="mb-1">Closed Billed</p>
-                <h4 className="mb-0">{closed}</h4>
+                <h4 className="mb-0">{estmRecords.totalClosedRecords}</h4>
                 {/* <span className="badge badge-danger">55%</span> */}
               </div>
             </div>

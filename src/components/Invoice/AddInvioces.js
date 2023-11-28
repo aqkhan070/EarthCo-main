@@ -13,6 +13,7 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useEstimateContext } from "../../context/EstimateContext";
+import useDeleteFile from "../Hooks/useDeleteFile";
 
 import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
@@ -23,12 +24,19 @@ const AddInvioces = ({
   fetchInvoices,
   setSubmitRes,
   setSelectedInvoice,
+  fetchFilterInvoice,
 }) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
+  const currentDate = new Date();
   const [formData, setFormData] = useState({
+    currentDate: currentDate,
     tblInvoiceItems: [],
   });
   const [customersList, setCustomersList] = useState([]);
@@ -49,8 +57,14 @@ const AddInvioces = ({
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
 
+
+  const [totalItemAmount, setTotalItemAmount] = useState(0);
+  const [profitPercentage, setProfitPercentage] = useState(0);
+  
   // const { estimates, getEstimate } = useGetEstimate();
   const { billList, fetchBills } = useFetchBills();
+  const { deleteInvoiceFile } = useDeleteFile();
+
   const navigate = useNavigate();
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
 
@@ -84,18 +98,19 @@ const AddInvioces = ({
   };
 
   const getInvoice = async () => {
-    if (!selectedInvoice) {
+    if ( idParam===0 ||selectedInvoice===0 ) {
       return;
     }
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoice?id=${selectedInvoice}`,
+        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoice?id=${selectedInvoice || idParam}`,
         { headers }
       );
       console.log("selected invoice is", res.data);
       // setFormData(res.data.Data);
       setInputValue(res.data.Data.CustomerId);
+      setPrevFiles(res.data.FileData)
       setLoading(false);
       // setItemsList(res.data.ItemData)
       const combinedItems = [...res.data.CostItemData, ...res.data.ItemData];
@@ -124,8 +139,8 @@ const AddInvioces = ({
 
     // Assuming handleInputChange is defined somewhere within YourComponent
     // Call handleInputChange with the simulated event
-    console.log("Customer data izz", newValue.Address)
-    setCustomerAddress(newValue.Address)
+    console.log("Customer data izz", newValue.Address);
+    setCustomerAddress(newValue.Address);
     handleChange(simulatedEvent);
   };
 
@@ -361,36 +376,47 @@ const AddInvioces = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
-
+  
+    let InvoiceData = {}; // Declare InvoiceData in the outer scope
+  
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
     }
-    const postData = new FormData();
-
+  
     // Merge the current items with the new items for EstimateData
-    const InvoiceData = {
-      ...formData,
-      InvoiceId: selectedInvoice,
-
-      // CreatedBy: 2,
-      // EditBy: 2,
-      // isActive: true,
-    };
-
+    if (idParam) {
+      InvoiceData = {
+        ...formData,
+        InvoiceId: idParam,
+        TotalAmount: totalItemAmount || 0,
+        ProfitPercentage: profitPercentage || 0,
+      };
+    } else {
+      InvoiceData = {
+        ...formData,
+        InvoiceId: selectedInvoice || 0,
+        TotalAmount: totalItemAmount || 0,
+        ProfitPercentage: profitPercentage || 0,
+      };
+    }
+  
     console.log("InvoiceData:", InvoiceData);
-    // console.log("data:", data);
-
+  
+    const postData = new FormData();
     postData.append("InvoiceData", JSON.stringify(InvoiceData));
+  
     console.log(JSON.stringify(InvoiceData));
+  
     // Appending files to postData
     selectedFiles.forEach((fileObj) => {
       postData.append("Files", fileObj);
     });
-
+  
     submitData(postData);
   };
+  
 
   // const appendFilesToFormData = (formData) => {
   //   Files.forEach((fileObj) => {
@@ -412,20 +438,24 @@ const AddInvioces = ({
         }
       );
 
-      if (!estimateLinkData.EstimateId) {
-        setEstimateLinkData({});
-      setSubmitRes(response.data.Message);
-      setTimeout(() => {
-        setSubmitRes("");
-      }, 4000);
-      fetchInvoices();
-      setShowContent(true);
+      if (idParam) {
+        navigate("/Dashboard/Invoices");
+        return
       }
-      if (estimateLinkData.EstimateId){
-        setEstimateLinkData({})
+
+      setEstimateLinkData({});
+      if (!estimateLinkData.EstimateId ) {
+        setSubmitRes(response.data.Message);
+        setTimeout(() => {
+          setSubmitRes("");
+        }, 4000);
+        fetchFilterInvoice();
+        setShowContent(true);
+      }
+      if (estimateLinkData.EstimateId) {
+        setEstimateLinkData({});
         navigate("/Dashboard/Invoices");
       }
-      
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
@@ -456,7 +486,6 @@ const AddInvioces = ({
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
   const inputRef = useRef(null);
- 
 
   useEffect(() => {
     if (searchText) {
@@ -505,9 +534,6 @@ const AddInvioces = ({
   };
 
   const handleAddItem = () => {
-
-  
-
     setFormData((prevData) => ({
       ...prevData,
       tblInvoiceItems: [...(prevData.tblInvoiceItems || []), itemInput],
@@ -559,17 +585,17 @@ const AddInvioces = ({
   };
 
   const [subtotal, setSubtotal] = useState(0);
-  const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalACAmount, setTotalACAmount] = useState(0);
-  const [profitPercentage, setProfitPercentage] = useState(0);
-  
+
+
+
   useEffect(() => {
     const filteredACItems = formData.tblInvoiceItems?.filter(
       (item) => item.isCost === true
     );
-  
+
     const newACTotalAmount = filteredACItems?.reduce(
       (acc, item) => acc + item.Rate * item.Qty,
       0
@@ -577,28 +603,26 @@ const AddInvioces = ({
     const filteredItems = formData.tblInvoiceItems?.filter(
       (item) => item.isCost === false
     );
-  
+
     const newTotalAmount = filteredItems?.reduce(
       (acc, item) => acc + item.Rate * item.Qty,
       0
     );
-  
+
     setSubtotal(newTotalAmount);
     setTotalACAmount(newACTotalAmount);
     const calculatedTotalProfit = newTotalAmount - newACTotalAmount;
     setTotalProfit(calculatedTotalProfit);
-    setTotalItemAmount(newTotalAmount );
-    const calculatedProfitPercentage = (calculatedTotalProfit / newTotalAmount) * 100;
-    setProfitPercentage(calculatedProfitPercentage * 2);
-  
+    setTotalItemAmount(newTotalAmount);
+    const calculatedProfitPercentage =
+      (calculatedTotalProfit / newACTotalAmount) * 100;
+    setProfitPercentage(calculatedProfitPercentage);
+
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
   }, [formData.tblInvoiceItems]);
 
   // Calculate the total amount when tblInvoiceItems or formData changes
-  useEffect(() => {
-    
-   
-  }, [formData.tblInvoiceItems]);
+  useEffect(() => {}, [formData.tblInvoiceItems]);
 
   // AC
 
@@ -614,7 +638,6 @@ const AddInvioces = ({
   const [showACItem, setShowACItem] = useState(true);
   const [itemACBtnDisable, setItemACBtnDisable] = useState(true);
   const inputACRef = useRef(null);
-
 
   const handleACAddItem = () => {
     setFormData((prevData) => ({
@@ -715,8 +738,6 @@ const AddInvioces = ({
     }));
   };
 
- 
-
   const deleteItem = (itemId) => {
     const updatedArr = formData.tblInvoiceItems.filter(
       (item) => item.ItemId !== itemId
@@ -733,8 +754,11 @@ const AddInvioces = ({
 
   // files
 
+  const [PrevFiles, setPrevFiles] = useState([]);
+
+
   const handleFileChange = (e) => {
-    const files = e.target.files;
+    const files = e.target.files[0];
     const newFileObjects = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -743,12 +767,24 @@ const AddInvioces = ({
         name: file.name,
         size: file.size,
         type: file.type,
+        url: URL.createObjectURL(file),
       };
       newFileObjects.push(fileObject);
     }
 
-    setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    // setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    setSelectedFiles((prevFiles) => [...prevFiles, files]);
+
     console.log("Added files:", newFileObjects);
+  };
+
+  const handleDeleteFile = (indexToDelete) => {
+    // Create a new array without the file to be deleted
+    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToDelete);
+  
+    // Update the selectedFiles state with the new array
+    setSelectedFiles(updatedFiles);
+    console.log("Deleted file at index:", indexToDelete);
   };
 
   return (
@@ -797,8 +833,8 @@ const AddInvioces = ({
             <div className="itemtitleBar">
               <h4>Invoice Details</h4>
             </div>
-            <div className="mx-3 mt-2">
-              <div className="row mb-3 ">
+            <div className="">
+              <div className=" card-body row mb-3 ">
                 <div className="col-md-3">
                   <label className="form-label">
                     Customer<span className="text-danger">*</span>
@@ -909,7 +945,25 @@ const AddInvioces = ({
                   </div>
                 </div>
                 <div className=" col-md-3">
-                  <label className="form-label">Linked Estimate</label>
+                  <label className="form-label">Linked Estimate
+                  
+                  {formData.EstimateId? 
+                        <><br />
+                        <a href="" style={{color: "blue"}}
+                        onClick={() => {
+
+                          navigate(`/Dashboard/Estimates/Update-Estimate?id=${formData.EstimateId}`)                      
+                          
+
+                        }}
+                        >
+                      Go to Estimate
+                      </a></>
+                        : ""
+
+                        }
+                  
+                  </label>
                   <div className="input-group mb-2">
                     <Autocomplete
                       id="inputState19"
@@ -983,7 +1037,23 @@ const AddInvioces = ({
                       />
                     </div>
                     <div className=" col-md-6">
-                      <label className="form-label">Related Bills</label>
+                      <label className="form-label">Related Bills
+                      {formData.BillId? 
+                        <><br />
+                        <a href="" style={{color: "blue"}}
+                        onClick={() => {
+
+                          navigate(`/Dashboard/Bills/addbill?id=${formData.BillId}`)                      
+                          
+
+                        }}
+                        >
+                      Go to Bill
+                      </a></>
+                        : ""
+
+                        }
+                      </label>
                       <Autocomplete
                         size="small"
                         options={billList}
@@ -1131,14 +1201,15 @@ const AddInvioces = ({
                 </div>
               </div> */}
               </div>
+              </div>
 
               {/* item table */}
-              <div className="">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
+             
                     <div className="itemtitleBar">
                       <h4>Items</h4>
                     </div>
+                <div className="card-body">
+                  <div className="estDataBox">
                     <div className="table-responsive active-projects style-1 mt-2">
                       <table id="empoloyees-tblwrapper" className="table">
                         <thead>
@@ -1336,14 +1407,14 @@ const AddInvioces = ({
                     </div>
                   </div>
                 </div>
-              </div>
+            
 
-              <div className="">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
-                    <div className="itemtitleBar">
+                <div className="itemtitleBar">
                       <h4>Additional Costs</h4>
                     </div>
+                <div className="card-body ">
+                  <div className="estDataBox">
+                  
                     <div className="table-responsive active-projects style-1 mt-2">
                       <table id="empoloyees-tblwrapper" className="table">
                         <thead>
@@ -1535,7 +1606,7 @@ const AddInvioces = ({
                     </div>
                   </div>
                 </div>
-              </div>
+           
 
               <div className="card">
                 <div className="card-body row">
@@ -1629,9 +1700,8 @@ const AddInvioces = ({
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-4"></div>
-                  <div className="col-md-4">
 
+                  <div className="col-md-4 ms-auto sub-total">
                     <table className="table table-clear table-borderless">
                       <tbody>
                         <tr>
@@ -1639,7 +1709,9 @@ const AddInvioces = ({
                             <strong>Subtotal</strong>
                           </td>
                           <td className="right">
-                            {subtotal !== undefined ? `$${subtotal.toFixed(2)}` : '$0.00'}
+                            {subtotal !== undefined
+                              ? `$${subtotal.toFixed(2)}`
+                              : "$0.00"}
                           </td>
                         </tr>
                         <tr>
@@ -1682,7 +1754,12 @@ const AddInvioces = ({
                             <strong>Total</strong>
                           </td>
                           <td className="right">
-                            <strong> {totalItemAmount !== undefined ? `$${totalItemAmount.toFixed(2)}` : '$0.00'}</strong>
+                            <strong>
+                              {" "}
+                              {totalItemAmount !== undefined
+                                ? `$${totalItemAmount.toFixed(2)}`
+                                : "$0.00"}
+                            </strong>
                           </td>
                         </tr>
                         <tr>
@@ -1691,10 +1768,10 @@ const AddInvioces = ({
                         </tr>
                         <tr>
                           <td className="left">
-                            <strong>Balance due</strong>
+                            <h3>Balance due</h3>
                           </td>
                           <td className="right">
-                            <strong>$0.00</strong>
+                            <h3>$0.00</h3>
                           </td>
                         </tr>
                         <tr>
@@ -1703,7 +1780,12 @@ const AddInvioces = ({
                         </tr>
                         <tr>
                           <td className="left">Total Profit(%)</td>
-                          <td className="right"> {profitPercentage !== undefined ? `${profitPercentage.toFixed(2)}%` : '0.00%'}</td>
+                          <td className="right">
+                            {" "}
+                            {profitPercentage !== undefined
+                              ? `${profitPercentage.toFixed(2)}%`
+                              : "0.00%"}
+                          </td>
                         </tr>
                         <tr>
                           <td className="left">Profit Margin(%)</td>
@@ -1712,6 +1794,121 @@ const AddInvioces = ({
                       </tbody>
                     </table>
                   </div>
+                </div>
+
+                <div className="row mx-2">
+
+                {PrevFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.FileName}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            onClick={() => {
+                              deleteInvoiceFile(file.BillFileId);
+
+                              setTimeout(() => {
+                                getInvoice();
+                                
+                              }, 1000);
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+
+
+                {selectedFiles.map((file, index) => (
+  <div
+    key={index}
+    className="col-md-2 col-md-2 mt-3 image-container"
+    style={{
+      width: "150px", // Set the desired width
+      height: "120px", // Set the desired height
+      margin: "1em",
+      position: "relative",
+    }}
+  >
+    <img
+       src={file.url}
+      alt={file.name}
+      style={{
+        width: "150px",
+        height: "120px",
+        objectFit: "cover",
+      }}
+    />
+    <p
+      className="file-name-overlay"
+      style={{
+        position: "absolute",
+        bottom: "0",
+        left: "13px",
+        right: "0",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+        textAlign: "center",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        width: "100%",
+        textOverflow: "ellipsis",
+        padding: "5px",
+      }}
+    >
+      {file.name}
+    </p>
+    <span
+      className="file-delete-button"
+      style={{
+        left: "140px",
+      }}
+      onClick={() => {handleDeleteFile(index)}}
+    >
+      <span>
+        <Delete color="error" />
+      </span>
+    </span>
+  </div>
+))}
                 </div>
               </div>
 
@@ -1726,12 +1923,12 @@ const AddInvioces = ({
                     <Alert severity="error">
                       {errorMessage
                         ? errorMessage
-                        : "Error Adding/Updating Invoice"}
+                        : "Error Adding/Updating Invoice"}-
                     </Alert>
                   )}
                 </div>
 
-               <div className="col-md-4 text-right">
+                <div className="col-md-4 text-right">
                   <button
                     type="button"
                     className="btn btn-primary me-1"
@@ -1741,25 +1938,26 @@ const AddInvioces = ({
                   </button>
 
                   <button
-                    className="btn btn-danger light ms-1"
+                    className="btn btn-danger light me-3 ms-1"
+                    
                     onClick={() => {
                       navigate("/Dashboard/Invoices");
-                      if (!estimateLinkData.EstimateId) {
-                          setShowContent(true);
-                      setFormData({});
-                      setSelectedInvoice(0);
-                    }
-                    setEstimateLinkData({})
-                    
+                      if (idParam) {
+                        return
+                      }
+                      if (!estimateLinkData.EstimateId ) {
+                        setShowContent(true);
+                        setFormData({});
+                        setSelectedInvoice(0);
+                      }
+                      setEstimateLinkData({});
                     }}
                   >
                     Cancel
                   </button>
                 </div>
-
-               
               </div>
-            </div>
+         
           </div>
         </div>
       )}

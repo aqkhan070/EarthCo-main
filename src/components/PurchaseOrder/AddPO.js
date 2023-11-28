@@ -20,6 +20,7 @@ import { Button } from "@mui/material";
 import { Print, Email, Download } from "@mui/icons-material";
 import { useEstimateContext } from "../../context/EstimateContext";
 import { useNavigate, NavLink } from "react-router-dom";
+import useDeleteFile from "../Hooks/useDeleteFile";
 
 export const AddPO = ({
   selectedPo,
@@ -28,11 +29,18 @@ export const AddPO = ({
   setPostSuccessRes,
   setPostSuccess,
   fetchPo,
+  fetchFilterPo,
 }) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const currentDate = new Date();
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
+  // setselectedPo = idParam;
 
   const initialFormData = {
     PurchaseOrderId: selectedPo,
@@ -45,7 +53,7 @@ export const AddPO = ({
     RegionalManager: 0,
     DueDate: null,
 
-    Date: null,
+    Date: currentDate,
     Tags: "",
     PurchaseOrderNumber: "",
   };
@@ -73,6 +81,7 @@ export const AddPO = ({
 
   const { invoiceList, fetchInvoices } = useFetchInvoices();
   const { billList, fetchBills } = useFetchBills();
+  const { deletePOFile } = useDeleteFile();
 
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
 
@@ -102,21 +111,23 @@ export const AddPO = ({
   };
 
   const fetchpoData = async () => {
-    if (selectedPo === 0) {
+
+    if (idParam === 0|| selectedPo === 0) {
       return;
     }
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrder?id=${selectedPo}`,
+        `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrder?id=${selectedPo || idParam}`,
         { headers }
       );
       setLoading(false);
 
-      console.log("selected purchase order is", res.data.Data);
+      console.log("selected purchase order is", res.data);
       setFormData(res.data.Data);
       setInputValue(res.data.Data.CustomerId);
       setItemsList(res.data.ItemData);
+      setPrevFiles(res.data.FileData);
     } catch (error) {
       setLoading(false);
       console.log("API call error", error);
@@ -327,6 +338,7 @@ export const AddPO = ({
         ...prevData,
         EstimateNumber: "",
         EstimateId: "",
+
       }));
     }
   };
@@ -377,41 +389,38 @@ export const AddPO = ({
     handleInputChange(simulatedEvent);
   };
 
- 
-const handleInputChange = (e, newValue) => {
-  setEmptyFieldsError(false);
-  const { name, value } = e.target;
+  const handleInputChange = (e, newValue) => {
+    setEmptyFieldsError(false);
+    const { name, value } = e.target;
 
-  setSelectedCustomer(newValue);
-  setSelectedSL(newValue);
+    setSelectedCustomer(newValue);
+    setSelectedSL(newValue);
 
-  // Initialize parsedValue with the original value
-  const parsedValue = value;
+    // Initialize parsedValue with the original value
+    const parsedValue = value;
 
-  // Check if the field name is "StatusId" and convert the value to a number if it is
-  if (name === "StatusId") {
-    setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
-  } else {
-    // For other fields, just update them without modifying StatusId
-    setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
-  }
-};
-  
+    // Check if the field name is "StatusId" and convert the value to a number if it is
+    if (name === "StatusId") {
+      setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+    } else {
+      // For other fields, just update them without modifying StatusId
+      setFormData((prevData) => ({ ...prevData, [name]: parsedValue }));
+    }
+  };
 
-const handleChange = (e) => {
-  setEmptyFieldsError(false);
-  // Extract the name and value from the event target
-  const { name, value } = e.target;
+  const handleChange = (e) => {
+    setEmptyFieldsError(false);
+    // Extract the name and value from the event target
+    const { name, value } = e.target;
 
-  // Check if the field name is "StatusId"
-  if (name === "StatusId") {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  } else {
-    // For other fields, just update them without modifying StatusId
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  }
-};
-
+    // Check if the field name is "StatusId"
+    if (name === "StatusId") {
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    } else {
+      // For other fields, just update them without modifying StatusId
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+    }
+  };
 
   useEffect(() => {
     fetchServiceLocations(formData.CustomerId);
@@ -431,20 +440,19 @@ const handleChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
       StatusId: 1,
-    }))
+    }));
     console.log("estimate link data is", estimateLinkData);
 
     if (estimateLinkData.tblEstimateItems) {
-       setItemsList(
-      estimateLinkData.tblEstimateItems,
-   );
+      setItemsList(estimateLinkData.tblEstimateItems);
     }
-   
-    setFormData( (prevData) => ({
-      ...prevData, 
-      estimateLinkData
+
+    setFormData((prevData) => ({
+      ...prevData,
+      estimateLinkData,
+
     }));
-    console.log("item List is",itemsList );
+    console.log("item List is", itemsList);
   }, []);
 
   // items
@@ -482,7 +490,7 @@ const handleChange = (e) => {
   }, [searchText]);
 
   const handleAddItem = () => {
-    // Adding the new item to the itemsList    
+    // Adding the new item to the itemsList
 
     setItemsList((prevItems) => [
       ...prevItems,
@@ -556,13 +564,12 @@ const handleChange = (e) => {
   const calculateTotalAmount = () => {
     if (itemsList) {
       const total = itemsList.reduce((acc, item) => {
-      return acc + item.Rate * item.Qty;
-    }, 0);
-    return total;
+        return acc + item.Rate * item.Qty;
+      }, 0);
+      return total;
     } else {
       return 0;
     }
-    
   };
   useEffect(() => {
     // Calculate the total amount and update the state
@@ -571,10 +578,12 @@ const handleChange = (e) => {
   }, [itemsList]);
 
   // file
+  const [PrevFiles, setPrevFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [lastfile, setLastfile] = useState({});
 
   const handleFileChange = (e) => {
-    const files = e.target.files;
+    const files = e.target.files[0];
     const newFileObjects = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -583,12 +592,27 @@ const handleChange = (e) => {
         name: file.name,
         size: file.size,
         type: file.type,
+        url: URL.createObjectURL(file),
       };
       newFileObjects.push(fileObject);
     }
 
-    setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    // setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    setSelectedFiles((prevFiles) => [...prevFiles, files]);
+    setLastfile(selectedFiles[selectedFiles.length - 1]);
+
     console.log("Added files:", newFileObjects);
+  };
+
+  const handleDeleteFile = (indexToDelete) => {
+    // Create a new array without the file to be deleted
+    const updatedFiles = selectedFiles.filter(
+      (_, index) => index !== indexToDelete
+    );
+
+    // Update the selectedFiles state with the new array
+    setSelectedFiles(updatedFiles);
+    console.log("Deleted file at index:", indexToDelete);
   };
 
   // submit handler
@@ -616,8 +640,10 @@ const handleChange = (e) => {
     // Merge the current items with the new items for EstimateData
     const PurchaseOrderData = {
       ...formData,
-
+      Amount: totalAmount,
+      PurchaseOrderId: selectedPo || idParam,
       tblPurchaseOrderItems: itemsList,
+      
 
       // CreatedBy: 2,
       // EditBy: 2,
@@ -655,30 +681,33 @@ const handleChange = (e) => {
         { headers }
       );
 
+      setEstimateLinkData({})
+      if(idParam){
+        navigate(`/Dashboard/Purchase-Order`)  
+        return
+      }
+
       if (!estimateLinkData.EstimateId) {
-         fetchPo();
-      setPostSuccessRes(response.data.Message);
-      setPostSuccess(true);
-      setShowContent(true);
-      setTimeout(() => {
-        setPostSuccess(false);
-      }, 4000);
+        fetchFilterPo();
+        setPostSuccessRes(response.data.Message);
+        setPostSuccess(true);
+        setShowContent(true);
+
+        setTimeout(() => {
+          setPostSuccess(false);
+        }, 4000);
       }
       if (estimateLinkData.EstimateId) {
-        navigate("/Dashboard/Purchase-Order")
-     }
-
-     
+        navigate("/Dashboard/Purchase-Order");
+      }
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
+      if (estimateLinkData.EstimateId) {
+        setError(true);
+        setErrorMessage(error.response.data);
+      }
 
-      if (estimateLinkData.EstimateId) {setError(true);
-      setErrorMessage(error.response.data);
-       
-     }
-
-      
       console.error("API Call Error:", error);
     }
 
@@ -738,8 +767,8 @@ const handleChange = (e) => {
               <div className="itemtitleBar">
                 <h4>Purchase Order Details</h4>
               </div>
-              <div className="m-3">
-                <div className="row mb-3">
+              <div className="">
+                <div className=" card-body row mb-3">
                   {/* <div className="col-xl-3">
                 <label className="form-label">Customer<span className="text-danger">*</span></label>
                 <TextField
@@ -1053,7 +1082,23 @@ const handleChange = (e) => {
                         </FormControl>
                       </div>
                       <div className=" col-md-4 mt-2">
-                        <label className="form-label">Invoice Number</label>
+                        <label className="form-label">Invoice Number
+                        {formData.InvoiceId? 
+                        <><br />
+                        <a href="" style={{color: "blue"}}
+                        onClick={() => {
+
+                          navigate(`/Dashboard/Invoices/AddInvioces?id=${formData.InvoiceId}`)                      
+                          
+
+                        }}
+                        >
+                      Go to Invoice
+                      </a></>
+                        : ""
+
+                        }
+                        </label>
 
                         <Autocomplete
                           size="small"
@@ -1095,7 +1140,24 @@ const handleChange = (e) => {
                     </div>
                   </div> */}
                       <div className="col-md-4 mt-2">
-                        <label className="form-label">Bill Number</label>
+                        <label className="form-label">Bill Number
+                        
+                        {formData.BillId? 
+                        <><br />
+                        <a href="" style={{color: "blue"}}
+                        onClick={() => {
+
+                          navigate(`/Dashboard/Bills/addbill?id=${formData.BillId}`)                      
+                          
+
+                        }}
+                        >
+                      Go to Bill
+                      </a></>
+                        : ""
+
+                        }
+                        </label>
 
                         <Autocomplete
                           size="small"
@@ -1160,12 +1222,13 @@ const handleChange = (e) => {
 
                 {/* item table */}
 
-                <div className="">
-                  <div className="p-0">
-                    <div className="estDataBox">
-                      <div className="itemtitleBar">
+                
+                <div className="itemtitleBar">
                         <h4>Items</h4>
                       </div>
+                  <div className="card-body">
+                    <div className="estDataBox">
+                     
 
                       <div className="table-responsive active-projects style-1 mt-2">
                         <table id="empoloyees-tblwrapper" className="table">
@@ -1370,7 +1433,7 @@ const handleChange = (e) => {
                       </div>
                     </div>
                   </div>
-                </div>
+              
 
                 <div className="">
                   {/* <div className="itemtitleBar">
@@ -1450,7 +1513,7 @@ const handleChange = (e) => {
                                     strokeLinejoin="round"
                                   ></path>
                                 </svg>
-                                <div className="fallback">
+                                <div className="fallback mb-3">
                                   <input
                                     name="file"
                                     type="file"
@@ -1463,16 +1526,10 @@ const handleChange = (e) => {
                         </div>
                       </div>
                     </div>
-
-                    <div className="col-md-8">
-                      <div className="row">
-                        <div
-                          style={{ height: "10em" }}
-                          className="col-md-12"
-                        ></div>
-
-                        <div className="col-md-8"> </div>
-                        <div className="col-md-4">
+<div className="col-md-4"></div>
+                    <div className="col-md-4">
+                     
+                        <div className="col-md-10 ms-auto sub-total">
                           <table className="table table-clear">
                             <tbody>
                               {/* <tr>
@@ -1505,60 +1562,126 @@ const handleChange = (e) => {
                             </tbody>
                           </table>
                         </div>
-                        <div className="col-md-6"></div>
-
-                        <div
-                          style={{ marginTop: "8em" }}
-                          className="mb-2 col-md-6 text-end"
-                        >
-                          <div>
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-primary estm-action-btn"
-                            >
-                              <Email />
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-outline-primary estm-action-btn me-2"
-                            >
-                              <Print></Print>
-                            </button>
-
-                            <button
-                              type="button"
-                              className="btn btn-primary me-1"
-                              onClick={handleSubmit}
-                            >
-                              Save
-                            </button>
-
-                            <button
-                              className="btn btn-danger light ms-1"
-                              onClick={() => {
-                                
-                                setFormData(initialFormData);
-                                if (estimateLinkData.EstimateId) {
-                                  navigate("/Dashboard/Purchase-Order")
-
-                                }
-                                setEstimateLinkData({})
-                                if (!estimateLinkData.EstimateId) {
-                                  setShowContent(true)
-                                  setselectedPo(0);
-
-                                }
-                                                   
-                              }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+                      
+                     
                     </div>
 
-                    <div className="col-md-10">
+                    <div className="row card-body mx-2">
+                      {PrevFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.FileName}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            onClick={() => {
+                              deletePOFile(file.PurchaseOrderFileId);
+
+                              setTimeout(() => {
+                                fetchpoData();
+                                
+                              }, 1000);
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+
+                      {selectedFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.name}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            onClick={() => {
+                              handleDeleteFile(index);
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="col-md-6">
                       {emptyFieldsError && (
                         <Alert severity="error">
                           Please fill all required fields
@@ -1571,6 +1694,55 @@ const handleChange = (e) => {
                             : "Error submitting Purchase Order Data"}
                         </Alert>
                       )}
+                    </div>
+
+                    <div className="mb-2  col-md-6 text-end">
+                      <div className="mx-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary estm-action-btn"
+                        >
+                          <Email />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                        >
+                          <Print></Print>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-primary me-1"
+                          onClick={handleSubmit}
+                        >
+                          Save
+                        </button>
+
+                        <button
+                          className="btn btn-danger light ms-1"
+                          onClick={() => {
+                            setFormData(initialFormData);
+                            if(idParam){
+                              navigate("/Dashboard/Purchase-Order");
+                              return
+                            }
+
+                            if (estimateLinkData.EstimateId) {
+                              navigate("/Dashboard/Purchase-Order");
+                              setEstimateLinkData({})
+                            }
+                            setEstimateLinkData({});
+                            if (!estimateLinkData.EstimateId) {
+                              setShowContent(true);
+                              setselectedPo(0);
+                            }
+                          }}
+
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

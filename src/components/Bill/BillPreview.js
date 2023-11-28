@@ -1,68 +1,60 @@
 import React, { useContext, useEffect, useState } from "react";
-import { RoutingContext } from "../../context/RoutesContext";
 import Cookies from "js-cookie";
 import axios from "axios";
 import logo from "../../assets/images/logo/earthco_logo.png";
-import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 
-
-const EstimatePreview = () => {
-  const { name, setName, fetchName } = useFetchCustomerName();
-
-  const { estmPreviewId } = useContext(RoutingContext);
+const BillPreview = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
 
-  const [previewData, setPreviewData] = useState({});
-  const [totalAmount, setTotalAmount] = useState(0);
+  const { billData } = useContext(DataContext);
 
-  const fetchEstimates = async () => {
-    if (estmPreviewId === 0) {
-      return;
-    }
+  const [billPreviewData, setBillPreviewData] = useState({});
+
+  const getBill = async () => {
     try {
-      const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${estmPreviewId}`,
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${billData.BillId}`,
         { headers }
       );
-      setPreviewData(response.data);
-      console.log("selected estimate is", response.data);
-      console.log("selected estimate is", previewData);
+
+      console.log("selected bill is", res.data);
+      setBillPreviewData(res.data);
     } catch (error) {
-      console.error("API Call Error:", error);
+      console.log("api call error", error);
     }
   };
 
-  useEffect(() => {
- 
-    fetchEstimates();
-  }, []);
-  useEffect(() => {
-    if (previewData && previewData.EstimateData) {
-        fetchName(previewData.EstimateData.CustomerId);
-    }
-}, [previewData]);
-  useEffect(() => {
-    // Calculate the total amount when previewData changes
-    if (previewData && previewData.EstimateItemData) {
-      const total = previewData.EstimateItemData.reduce(
-        (accumulator, item) => accumulator + item.Amount,
-        0
-      );
-      setTotalAmount(total);
-    }
-  }, [previewData]);
+    useEffect(() => {
+        getBill()
+        // console.log("billData", billData);
+    },[])
 
-  if (!previewData || Object.keys(previewData).length === 0) {
-    return <div>Loading...</div>;
-  }
+    const [totalAmount, setTotalAmount] = useState(0);
+
+    useEffect(() => {
+      // Calculate the total amount when previewData changes
+      if (billPreviewData && billPreviewData.ItemData) {
+        const total = billPreviewData.ItemData.reduce(
+          (accumulator, item) => accumulator + item.Qty * item.Rate,
+          0
+        );
+        setTotalAmount(total);
+      }
+    }, [billPreviewData]);
+  
+    if (!billPreviewData || Object.keys(billPreviewData).length === 0) {
+      return <div>Loading...</div>;
+    }
+
+ 
 
   return (
-    <>
-       <div className="card m-5">
+    <div className="card m-5">
         <div className="card-body">
         <div style={{ borderBottom: "5px solid #0394fc", margin:"1em 0em 3em 0em" }}></div>
           <div className="row">
@@ -72,7 +64,7 @@ const EstimatePreview = () => {
             </div>
             <div className="col-md-7"></div>
             <div className="col-md-3">
-              <h1>Invoice</h1>
+              <h1>Bill</h1>
             </div>
           </div>
 
@@ -87,10 +79,10 @@ const EstimatePreview = () => {
                 <tbody>
                   <tr>
                     <td>
-                    <h6>{InvoiceData.CustomerName || ""}</h6>
+                    <h6>{billData.SupplierName || ""}</h6>
                     </td>
                   </tr>
-                  <tr><td> <h6>Customer Address</h6></td></tr>
+                  <tr><td> <h6>{billPreviewData.Data.Address}</h6></td></tr>
                   <tr>
                     <td>
                        <h6><strong>Bill to</strong></h6>
@@ -101,10 +93,10 @@ const EstimatePreview = () => {
                   </tr>
                   <tr>
                     <td>
-                       <h6><>Address</></h6>
+                       <h6><>{billPreviewData.Data.Address}</></h6>
                     </td>
                     <td>
-                       <h6><>Address</></h6>
+                       <h6><>{billPreviewData.Data.Address}</></h6>
                     </td>
                   </tr>
                 </tbody>
@@ -116,14 +108,15 @@ const EstimatePreview = () => {
                 <thead>
                   <tr>
                     <th> <h6>Date</h6> </th>
-                    <th> <h6>Invoice #</h6> </th>
+                    <th><h6>Expiration Date</h6> </th>
+                    <th> <h6>Bill #</h6> </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><h6>{formatDate(InvoiceData.IssueDate)}</h6></td>
-                   
-                    <td> <h6>{InvoiceData.InvoiceNumber}</h6></td>
+                    <td><h6>{formatDate(billPreviewData.Data.BillDate)}</h6></td>
+                    <td><h6></h6></td>
+                    <td><h6>{billPreviewData.Data.BillNumber}</h6></td>
                   </tr>
                 </tbody>
               </table>
@@ -135,14 +128,14 @@ const EstimatePreview = () => {
             <thead className="table-header">
               <tr>
                 <th>Description</th>
-                <th>Qty</th>
+                <th>Qty </th>
                 <th>Rate</th>
 
                 <th>Amount</th>
               </tr>
             </thead>
             <tbody>
-            {InvoicePreviewData?.ItemData.map((item, index) => {
+              {billPreviewData.ItemData.map((item, index) => {
                 return (
                   <tr key={index}>
                     <td>{item.Description}</td>
@@ -155,11 +148,11 @@ const EstimatePreview = () => {
             </tbody>
           </table>
         </div>
-        <div className="card-body">
-              <div className="row">
+        <div className="row ">
+
           <div className="col-md-8"></div>
           <div className="col-md-2"><h6>SubTotal:</h6></div>
-          <div className="col-md-2"><h6>{totalAmount}</h6></div>
+          <div className="col-md-2"><h6>0{totalAmount}</h6></div>
           <div className="col-md-8"></div>
           <div className="col-md-2"><h6>Discount:</h6></div>   <hr />
           <div className="col-md-8"></div>
@@ -167,12 +160,11 @@ const EstimatePreview = () => {
           <div className="col-md-2"><h6>{totalAmount}</h6></div>            
        
         
-          <div style={{ borderBottom: "5px solid #012a47", margin:"1em 0em 3em 0em" }}></div>
-          </div>
+          <div style={{ borderBottom: "5px solid #012a47", margin:"0em 0em 3em 0em" }}></div>
+
         </div>
       </div>
-    </>
-  );
-};
+  )
+}
 
-export default EstimatePreview;
+export default BillPreview;

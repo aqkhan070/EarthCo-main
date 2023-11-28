@@ -20,7 +20,7 @@ const Estimates = ({setestmPreviewId}) => {
     Authorization: `Bearer ${token}`,
   };
  
-  const { estimates, isLoading, tableError, getEstimate } = useGetEstimate();
+  const { estimates, estmRecords,  isLoading, tableError, getEstimate, getFilteredEstimate} = useGetEstimate();
 
   // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
@@ -40,7 +40,7 @@ const Estimates = ({setestmPreviewId}) => {
     setAccepted(pendingAccepted.length);
   }, [estimates]);
 
- 
+  const [statusId, setStatusId] = useState(0);
   const [selectedCustomer, setSelectCustomer] = useState({});
 
   const [customer, setCustomer] = useState("");
@@ -58,6 +58,8 @@ const Estimates = ({setestmPreviewId}) => {
  
   useEffect(() => {
     getEstimate();
+    // getFilteredEstimate();
+    console.log("Test",estimates);
     setShowStatusCards(true);
   }, []);
 
@@ -142,9 +144,12 @@ const Estimates = ({setestmPreviewId}) => {
   const saveAddEstPop = () => {};
 
   return (
-    <div className="container-fluid">
+   
+
+    <>
+     <div className="container-fluid">
       <div className="row">
-        {showStatusCards && <StatusCards closed={closed} accepted={accepted} open={open}/>}
+        {showStatusCards && <StatusCards estmRecords={estmRecords} statusId={statusId} setStatusId={setStatusId} closed={closed} accepted={accepted} open={open}/>}
 
         {/* <StatusCardsEst
           drafts={28102}
@@ -160,22 +165,7 @@ const Estimates = ({setestmPreviewId}) => {
                 <Alert severity="error">Error Loading Estimates!</Alert>
               )}
 
-              {isLoading ? (
-                <div className="center-loader">
-                  <CircularProgress style={{ color: "#789a3d" }} />
-                </div>
-              ) : (
-                <div>
-                  <EstimateTR
-                    headers={headers}
-                    getEstimate={getEstimate}
-                    estimates={estimates}
-                    tableError={tableError}
-                    setShowStatusCards={setShowStatusCards}
-                    setestmPreviewId={setestmPreviewId}
-                  />
-                </div>
-              )}
+           
             </div>
           </div>
         </div>
@@ -265,6 +255,25 @@ const Estimates = ({setestmPreviewId}) => {
         </div>
       </div>
     </div>
+    {isLoading ? (
+                <div className="center-loader">
+                  <CircularProgress style={{ color: "#789a3d" }} />
+                </div>
+              ) : (
+                <div>
+                  <EstimateTR
+                    headers={headers}
+                    getEstimate={getEstimate}
+                    estimates={estimates}
+                    tableError={tableError}
+                    setShowStatusCards={setShowStatusCards}
+                    setestmPreviewId={setestmPreviewId}
+                    statusId={statusId}
+                  />
+                </div>
+              )}
+    </>
+
   );
 };
 

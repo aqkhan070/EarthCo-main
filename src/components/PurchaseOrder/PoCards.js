@@ -1,11 +1,11 @@
 import React from "react";
 
-const PoCards = ({closed, open}) => {
+const PoCards = ({closed, open,statusId, setStatusId}) => {
   return (
     <>
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body p-4">
+          <div className={statusId===1?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(1)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-primary text-primary">
                 <svg
@@ -36,7 +36,7 @@ const PoCards = ({closed, open}) => {
 
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body p-4">
+          <div className={statusId===3?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(1)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-warning text-warning">
                 <svg
@@ -69,7 +69,7 @@ const PoCards = ({closed, open}) => {
       </div>
       <div className="col-xl-3  col-lg-6 col-sm-6">
         <div className="widget-stat card">
-          <div className="card-body  p-4">
+          <div className={statusId===2?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(2)}}>
             <div className="media ai-icon">
               <span className="me-3 bgl-danger text-danger">
                 <svg

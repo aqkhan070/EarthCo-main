@@ -1,6 +1,6 @@
 import React from 'react'
 
-const StatusCards = ({ newData, open, closed, total }) => {
+const StatusCards = ({setStatusId,statusId, newData, open, closed, total }) => {
     return (
         <>
             {/* <div className="col-xl-3 col-sm-6">
@@ -95,7 +95,7 @@ const StatusCards = ({ newData, open, closed, total }) => {
             </div> */}
             <div className="col-xl-3  col-lg-6 col-sm-6">
                 <div className="widget-stat card">
-                    <div className="card-body p-4">
+                    <div className={statusId===1?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(1)}}>
                         <div className="media ai-icon">
                             <span className="me-3 bgl-warning text-warning">
                                 <svg id="icon-orders" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
@@ -117,7 +117,7 @@ const StatusCards = ({ newData, open, closed, total }) => {
             </div>
             <div className="col-xl-3  col-lg-6 col-sm-6">
                 <div className="widget-stat card">
-                    <div className="card-body  p-4">
+                    <div className={statusId===2?"card-body selected-Card p-4":"card-body p-4" } style={{cursor:"pointer"}} onClick={() => {setStatusId(2)}}>
                         <div className="media ai-icon">
                             <span className="me-3 bgl-danger text-danger">
                                 <svg id="icon-revenue" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-dollar-sign">

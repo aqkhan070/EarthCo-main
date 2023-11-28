@@ -10,20 +10,24 @@ import useFetchPo from "../Hooks/useFetchPo";
 import { Delete, Create } from "@mui/icons-material";
 import {
   Button
-
 } from "@mui/material";
 import { Print, Email, Download } from "@mui/icons-material";
+import useDeleteFile from "../Hooks/useDeleteFile";
+import { useNavigate, NavLink } from "react-router-dom";
 
 
-
-const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,setselectedBill }) => {
+const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,setselectedBill,fetchFilterBills }) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const currentDate = new Date();
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    BillDate: null,
+    BillDate: currentDate,
     DueDate: null,
     PurchaseOrderId : null
 
@@ -44,14 +48,20 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
   const [terms, setTerms] = useState([]);
 
   const { PoList, fetchPo } = useFetchPo();
+  const { deleteBillFile } = useDeleteFile();
 
 
   const getBill = async () => {
+    if (selectedBill === 0 || idParam === 0) {
+      return
+    }
+
     try {
-      const res = await axios.get( `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${selectedBill}`,{headers})
+      const res = await axios.get( `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${selectedBill || idParam}`,{headers})
       setFormData(res.data.Data)
       setItemsList(res.data.ItemData)
       setFormData((prevData) => ({ ...prevData, BillId: selectedBill }));
+      setPrevFiles(res.data.FileData)
       console.log("selected bill is",res.data)
     } catch (error) {
       console.log("api call error", error)
@@ -271,6 +281,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
       Amount: 0.0,
       Currency: "usd",
       BillId: selectedBill,
+      Amount: totalAmount,
     };
 
     // Update the formData state
@@ -408,9 +419,11 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
   // files
 
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [PrevFiles, setPrevFiles] = useState([]);
+
 
   const handleFileChange = (e) => {
-    const files = e.target.files;
+    const files = e.target.files[0];
     const newFileObjects = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -419,13 +432,25 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
         name: file.name,
         size: file.size,
         type: file.type,
+        url: URL.createObjectURL(file),
       };
       newFileObjects.push(fileObject);
     }
 
-    setSelectedFiles([...selectedFiles, ...newFileObjects]);
+    // setSelectedFiles([...selectedFiles, ...files]);
+    setSelectedFiles((prevFiles) => [...prevFiles, files]);
     console.log("Added files:", newFileObjects);
   };
+
+  const handleDeleteFile = (indexToDelete) => {
+    // Create a new array without the file to be deleted
+    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToDelete);
+  
+    // Update the selectedFiles state with the new array
+    setSelectedFiles(updatedFiles);
+    console.log("Deleted file at index:", indexToDelete);
+  };
+
 
   // submit handler
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
@@ -448,8 +473,9 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     // Merge the current items with the new items for EstimateData
     const BillData = {
       ...formData,
-      BillId: selectedBill,
+      BillId: selectedBill || idParam,
       tblBillItems: itemsList,
+      Currency: "usd",
 
       // CreatedBy: 2,
       // EditBy: 2,
@@ -488,7 +514,13 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
           headers,
         }
       );
-      fetchBills();
+
+      if(idParam){
+        navigate(`/Dashboard/Bills`)  
+        return
+      }
+
+      fetchFilterBills();
       setshowContent(true);
       setSubmitSuccess(response.data.Message)
       setTimeout(() => {
@@ -533,11 +565,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
               <h4>Bill Details</h4>
             </div>
           <div className="">
-          {errorMessage && (
-                    <Alert severity="error">
-                      {errorMessage? errorMessage: "Error Submitting Bill Data"}
-                    </Alert>
-                  )}
+        
             
             {/* <div className="row mb-2 mx-1">
               <div className="col-xl-3">
@@ -751,7 +779,23 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                         </div>
 
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Purchase Order</label>
+                          <label className="form-label">Purchase Order
+                          {formData.PurchaseOrderId? 
+                        <><br />
+                        <a href="" style={{color: "blue"}}
+                        onClick={() => {
+
+                          navigate(`/Dashboard/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`)                      
+                          
+
+                        }}
+                        >
+                      Go to Purchase Order
+                      </a></>
+                        : ""
+
+                        }
+                          </label>
                           <Autocomplete                      
                       size="small"
                       options={PoList}
@@ -814,12 +858,12 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
 
 
 
-            <div className="card">
-              <div className="card-body p-0">
-                <div className="estDataBox">
-                  <div className="itemtitleBar">
+            <div className="itemtitleBar">
                     <h4>Items</h4>
                   </div>
+              <div className="card-body">
+                <div className="estDataBox">
+                
 
                   <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper" className="table">
@@ -1004,9 +1048,9 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                   </div>
                 </div>
               </div>
-            </div>
+        
 
-            <div className="card">
+         
               <div className="card-body row">
                 <div className="col-md-4">
                   <div className="row">
@@ -1078,11 +1122,12 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                           </form>
                         </div>
                       </div>
+                     
                     </div>
                   </div>
                 </div>
-                <div className="col-md-4"></div>
-                <div className="col-md-4">
+         
+                <div className="col-md-4  ms-auto sub-total">
                   <table className="table table-borderless table-clear">
                     <tbody>
                       <tr>
@@ -1115,8 +1160,128 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                   </table>
                 </div>
               </div>
+
+              <div className="row mx-2">
+
+              {PrevFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.FileName}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            onClick={() => {
+                              deleteBillFile(file.BillFileId);
+
+                              setTimeout(() => {
+                                getBill();
+                                
+                              }, 1000);
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                      
+              {selectedFiles.map((file, index) => (
+  <div
+    key={index}
+    className="col-md-2 col-md-2 mt-3 image-container"
+    style={{
+      width: "150px", // Set the desired width
+      height: "120px", // Set the desired height
+      margin: "1em",
+      position: "relative",
+    }}
+  >
+    <img
+        src={URL.createObjectURL(file)}
+      alt={file.name}
+      style={{
+        width: "150px",
+        height: "120px",
+        objectFit: "cover",
+      }}
+    />
+    <p
+      className="file-name-overlay"
+      style={{
+        position: "absolute",
+        bottom: "0",
+        left: "13px",
+        right: "0",
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+        textAlign: "center",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        width: "100%",
+        textOverflow: "ellipsis",
+        padding: "5px",
+      }}
+    >
+      {file.name}
+    </p>
+    <span
+      className="file-delete-button"
+      style={{
+        left: "140px",
+      }}
+      onClick={() => {handleDeleteFile(index)}}
+    >
+      <span>
+        <Delete color="error" />
+      </span>
+    </span>
+  </div>
+))}
+                    </div>
+
               <div className="row mb-3 mx-3">
                 <div className="col-md-9">
+                {errorMessage && (
+                    <Alert severity="error">
+                      {errorMessage? errorMessage: "Error Submitting Bill Data"}
+                    </Alert>
+                  )}
                   {
                     emptyFieldsError && <Alert severity="error">
                   please fill all required fields
@@ -1148,6 +1313,10 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                   <button
                     className="btn btn-danger light ms-1"
                     onClick={() => {
+                      if(idParam){
+                        navigate(`/Dashboard/Bills`)   
+                        return
+                      }
                       setselectedBill(0)
                       setshowContent(true);
                     }}
@@ -1159,7 +1328,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
             </div>
               </div>
             
-            </div>
+          
 
           </div>
         </div>

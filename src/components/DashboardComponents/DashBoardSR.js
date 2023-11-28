@@ -17,6 +17,7 @@ import {
     Paper,
   } from "@mui/material";
 import { Form } from "react-bootstrap";
+import formatDate from '../../custom/FormatDate';
 
 
 const DashBoardSR = ({dashBoardData}) => {
@@ -38,7 +39,7 @@ const DashBoardSR = ({dashBoardData}) => {
                     <TableRow className="table-header">
                     <TableCell>Customer Name</TableCell>
                     <TableCell>Assigned To</TableCell>
-                    <TableCell>Service Request#</TableCell>
+                    <TableCell>Service Request #</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell>Work Requested</TableCell>
                     <TableCell>Date Created </TableCell>
@@ -54,7 +55,7 @@ const DashBoardSR = ({dashBoardData}) => {
                           <TableCell>{customer.ServiceRequestNumber}</TableCell>
                           <TableCell>{customer.Status}</TableCell>
                           <TableCell>{customer.WorkRequest}</TableCell>
-                          <TableCell>{customer.CreatedDate}</TableCell>                         
+                          <TableCell>{formatDate(customer.CreatedDate)}</TableCell>                         
                           <TableCell>{customer.Type}</TableCell>                         
                         </TableRow>
                       ))}

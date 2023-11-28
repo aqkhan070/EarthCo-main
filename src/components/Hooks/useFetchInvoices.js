@@ -12,6 +12,27 @@ const useFetchInvoices = () => {
   const [invoiceList, setInvoiceList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [totalRecords, setTotalRecords] = useState(0)
+  const [filteredInvoiceList, setfilteredInvoiceList] = useState([])
+  
+  const fetchFilterInvoice = async (pageNo = 1, PageLength = 10, StatusId = 0) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoiceServerSideList?DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        { headers }
+      );
+      setfilteredInvoiceList(res.data.Data);
+      setTotalRecords(res.data.totalRecords);
+      setError("")
+      setLoading(false);
+      console.log("purchase order", res.data);
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+      console.log("api call error", error.message);
+    }
+  };
+
 
   const fetchInvoices = async () => {
     try {
@@ -19,22 +40,23 @@ const useFetchInvoices = () => {
         `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoiceList`,
         { headers }
       );
-      setError("")
       setInvoiceList(res.data);
-      setLoading(false);
+      // setError("")
+      // setLoading(false);
       console.log(res.data);
     } catch (error) {
-      setLoading(false);
-      setError(error.message);
+      // setLoading(false);
+      // setError(error.message);
       console.log("Api call error");
     }
   };
+
 
   useEffect(() => {
     fetchInvoices();
   }, []);
 
-  return { invoiceList, loading, error, fetchInvoices };
+  return { invoiceList, loading, error, fetchInvoices, fetchFilterInvoice, filteredInvoiceList,totalRecords };
 };
 
 export default useFetchInvoices;

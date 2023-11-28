@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import TitleBar from "../TitleBar";
-import { NavLink } from "react-router-dom";
+import { NavLink, Navigate } from "react-router-dom";
 import axios from "axios";
 import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
@@ -14,8 +14,9 @@ import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import { Delete, Create } from "@mui/icons-material";
-import {Button} from "@mui/material";
-
+import { Button } from "@mui/material";
+import useDeleteFile from "../Hooks/useDeleteFile";
+import { useNavigate } from "react-router-dom";
 
 const UpdateSRForm = ({
   headers,
@@ -24,12 +25,12 @@ const UpdateSRForm = ({
   setShowCards,
   fetchServiceRequest,
   setSuccessAlert,
+  fetchFilterServiceRequest
 }) => {
+  const { customerSearch, fetchCustomers } = useCustomerSearch();
+  const { deleteSRFile } = useDeleteFile();
 
-const {customerSearch, fetchCustomers } = useCustomerSearch();
-
-const { name, setName, fetchName } = useFetchCustomerName();
-
+  const { name, setName, fetchName } = useFetchCustomerName();
 
   const [customersList, setCustomersList] = useState([]);
   const [customer, setCustomer] = useState();
@@ -43,15 +44,16 @@ const { name, setName, fetchName } = useFetchCustomerName();
       CustomerId: 0,
       ServiceRequestNumber: "",
 
-      
       SRTypeId: 1,
       SRStatusId: 1,
       Assign: "",
       WorkRequest: "",
       ActionTaken: "",
-          tblSRItems: [],
+      tblSRItems: [],
     },
   }); // payload
+
+  const navigate = useNavigate();
 
   const [itemInput, setItemInput] = useState({
     Name: "",
@@ -141,7 +143,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
     fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
     fetctContacts(SRData.ServiceRequestData.CustomerId);
     fetchName(SRData.ServiceRequestData.CustomerId);
-   
+
     SRData.ServiceRequestData.ContactId &&
     SRData.ServiceRequestData.ServiceLocationId &&
     SRData.ServiceRequestData.Assign
@@ -177,9 +179,6 @@ const { name, setName, fetchName } = useFetchCustomerName();
   };
 
   const [disableSubmit, setDisableSubmit] = useState(true);
-
- 
- 
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
@@ -233,7 +232,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
 
   const handleInputChange = (event) => {
     // setSubmitClicked(false);
-    setErrorMessage("")
+    setErrorMessage("");
     setEmptyFieldsError(false);
     const { name, value } = event.target;
     setSRData((prevData) => ({
@@ -265,7 +264,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
     if (
       !SRData.ServiceRequestData.CustomerId ||
       !SRData.ServiceRequestData.ServiceLocationId ||
-      !SRData.ServiceRequestData.ContactId ||     
+      !SRData.ServiceRequestData.ContactId ||
       !SRData.ServiceRequestData.Assign
     ) {
       setEmptyFieldsError(true);
@@ -315,7 +314,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
       setShowContent(true);
       setShowCards(true);
       setBtnDisable(false);
-      fetchServiceRequest();
+      fetchFilterServiceRequest();
 
       // Handle successful submission
       // window.location.reload();
@@ -352,7 +351,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
     updatedFiles.splice(index, 1);
     setFiles(updatedFiles);
   };
-  const [PrevFiles, setPrevFiles] = useState([])
+  const [PrevFiles, setPrevFiles] = useState([]);
 
   const fetchSR = async () => {
     if (serviceRequestId === 0) {
@@ -365,7 +364,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
         `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequest?id=${serviceRequestId}`,
         { headers }
       );
-      
+
       setSRList(response.data.Data);
 
       setSRData((prevData) => ({
@@ -380,7 +379,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
       setTblSRItems(response.data.ItemData);
       setLoading(false);
       console.log("response.data.Data", response.data);
-      setPrevFiles(response.data.FileData)
+      setPrevFiles(response.data.FileData);
 
       console.log(" list is///////", response.data.Data);
     } catch (error) {
@@ -433,33 +432,33 @@ const { name, setName, fetchName } = useFetchCustomerName();
 
     setSelectedItem(null); // Clear selected item when input changes
   };
-  
+
   const handleAddItem = () => {
     const newItem = { ...itemInput };
-  const newAmount = newItem.Qty * newItem.Rate;
-  newItem.Amount = newAmount;
+    const newAmount = newItem.Qty * newItem.Rate;
+    newItem.Amount = newAmount;
 
-  setTblSRItems([...tblSRItems, newItem]);
+    setTblSRItems([...tblSRItems, newItem]);
 
-  // Reset the modal input field and other states
-  setSearchText("");
-  setSelectedItem({
-    SalePrice: "",
-    SaleDescription: "",
-  });
-  setItemInput({
-    Name: "",
-    Qty: 1,
-    Description: "",
-    Rate: 0,
-  });
+    // Reset the modal input field and other states
+    setSearchText("");
+    setSelectedItem({
+      SalePrice: "",
+      SaleDescription: "",
+    });
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: 0,
+    });
 
-  // Enable or disable the button based on your condition
-  // setItemBtnDisable(false); // You can add your logic here
+    // Enable or disable the button based on your condition
+    // setItemBtnDisable(false); // You can add your logic here
 
-  console.log("table items are ", tblSRItems);
-  }
-  
+    console.log("table items are ", tblSRItems);
+  };
+
   const handleItemClick = (item) => {
     setSelectedItem(item);
     setSearchText(item.ItemName); // Set the input text to the selected item's name
@@ -486,10 +485,10 @@ const { name, setName, fetchName } = useFetchCustomerName();
       }
       return item;
     });
-  
+
     setTblSRItems(updatedItems);
   };
-  
+
   const handleRateChange = (itemId, event) => {
     const updatedItems = tblSRItems.map((item) => {
       if (item.ItemId === itemId) {
@@ -500,11 +499,9 @@ const { name, setName, fetchName } = useFetchCustomerName();
       }
       return item;
     });
-  
+
     setTblSRItems(updatedItems);
   };
-  
-
 
   useEffect(() => {
     setShowCards(false);
@@ -537,12 +534,17 @@ const { name, setName, fetchName } = useFetchCustomerName();
                       + Add Estimate{" "}
                     </button>
                   </NavLink>
+
                   <button
                     type="button"
+                    onClick={() => {
+                      navigate("/Dashboard/Invoices");
+                    }}
                     className="btn btn-sm btn-secondary mx-2"
                   >
                     + Add Invoice
                   </button>
+
                   <button
                     type="button"
                     className="btn btn-sm btn-outline-primary"
@@ -565,53 +567,54 @@ const { name, setName, fetchName } = useFetchCustomerName();
               </div>
 
               <div className="">
-                <div className="mx-3">
+                <div className="">
                   <div className="itemtitleBar">
                     <h4>Service Request Details</h4>
                   </div>{" "}
-                  <div className=" my-2">
-                    <div className="row">                     
-
+                  <div className=" card-body">
+                    <div className="row">
                       <div className="col-md-3 mb-2">
-                    <label className="form-label">Customers<span className="text-danger">*</span></label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={customerSearch}
-                      getOptionLabel={(option) => option.CompanyName || ""}
-                      value={name ? { CompanyName: name } : null}
-                      onChange={handleCustomerAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.CustomerId
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div className="customer-dd-border">
-                            <h6> {option.CompanyName}</h6>
-                            <small># {option.UserId}</small>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          onClick={() => {
-                            setName("");
-                          }}
-                          onChange={(e) => {
-                            fetchCustomers(e.target.value);
-                          }}
-                          placeholder="Choose..."
-                          error={
-                            submitClicked &&
-                            !SRData.ServiceRequestData.CustomerId
+                        <label className="form-label">
+                          Customers<span className="text-danger">*</span>
+                        </label>
+                        <Autocomplete
+                          id="staff-autocomplete"
+                          size="small"
+                          options={customerSearch}
+                          getOptionLabel={(option) => option.CompanyName || ""}
+                          value={name ? { CompanyName: name } : null}
+                          onChange={handleCustomerAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.UserId === value.CustomerId
                           }
-                          className="bg-white"
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div className="customer-dd-border">
+                                <h6> {option.CompanyName}</h6>
+                                <small># {option.UserId}</small>
+                              </div>
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              onClick={() => {
+                                setName("");
+                              }}
+                              onChange={(e) => {
+                                fetchCustomers(e.target.value);
+                              }}
+                              placeholder="Choose..."
+                              error={
+                                submitClicked &&
+                                !SRData.ServiceRequestData.CustomerId
+                              }
+                              className="bg-white"
+                            />
+                          )}
                         />
-                      )}
-                    />
-                  </div>
+                      </div>
 
                       <div className="col-xl-3 mb-2 col-md-3 ">
                         <label className="form-label">
@@ -709,7 +712,6 @@ const { name, setName, fetchName } = useFetchCustomerName();
                         {/* Adjust the column size as needed */}
                         <label className="form-label">
                           Service Request Number
-                          
                         </label>
                         <TextField
                           name="ServiceRequestNumber"
@@ -719,7 +721,6 @@ const { name, setName, fetchName } = useFetchCustomerName();
                             SRData.ServiceRequestData.ServiceRequestNumber || ""
                           }
                           onChange={handleInputChange}
-                          
                           className="form-txtarea form-control form-control-sm"
                           placeholder=" Service Request Number"
                         />
@@ -810,7 +811,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
                           )}
                         />
                       </div>
-                     {/* <div className="col-md-6 pt-4">
+                      {/* <div className="col-md-6 pt-4">
                         {" "}
                          Adjust the column size as needed
                         <button className="btn schedule-btn">Schedule</button>
@@ -819,132 +820,108 @@ const { name, setName, fetchName } = useFetchCustomerName();
                   </div>
                 </div>
               </div>
-              
 
               {/* item table */}
-              <div className="">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
-                    <div className="itemtitleBar">
-                      <h4>Items</h4>
-                    </div>
-                    <div className="table-responsive active-projects style-1 mt-2">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th className="itemName-width">Item</th>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Tax</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-
+              <div className="itemtitleBar">
+                <h4>Items</h4>
+              </div>
+              <div className="card-body row ">
+                <div className="estDataBox">
+                  <div className="table-responsive active-projects style-1 mt-2">
+                    <table id="empoloyees-tblwrapper" className="table ">
+                      <thead>
+                        <tr>
+                          <th className="itemName-width">Item</th>
+                          <th>Description</th>
+                          <th>Qty</th>
+                          <th>Rate</th>
+                          <th>Amount</th>
+                          <th>Tax</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
                         {tblSRItems?.map((item, index) => (
-  <tr colSpan={2} key={item.ItemId}>
-    <td className="itemName-width">{item.Name}</td>
-    <td>{item.Description}</td>
-    <td>
-      <input
-        type="number"
-        style={{ width: "7em" }}
-        className="form-control form-control-sm"
-        value={item.Qty}
-        onChange={(e) => handleQuantityChange(item.itemId, e)}
-      />
-    </td>
-    <td>
-      <input
-        type="number"
-        style={{ width: "7em" }}
-        className="form-control form-control-sm"
-        value={item.Rate}
-        onChange={(e) => handleRateChange(item.itemId, e)}
-      />
-    </td>
-    <td>{(item.Rate * item.Qty ).toFixed(2)}</td>
-    <td>NaN</td>
-    <td>
-      <div className="badgeBox">
-        <Button onClick={() => removeItem(index)}>
-          <Delete color="error" />
-        </Button>
-      </div>
-    </td>
-  </tr>
-))}
-
-                          <tr>
-                            <td className="itemName-width">
-                              <>
-                                <Autocomplete
-                                  id="search-items"
-                                  options={searchResults}
-                                  getOptionLabel={(item) => item.ItemName}
-                                  value={selectedItem ||""} // This should be the selected item, not searchText
-                                  onChange={(event, newValue) => {
-                                    if (newValue) {
-                                      handleItemClick(newValue);
-                                    } else {
-                                      setSelectedItem(null);
-                                    }
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      label="Search for items..."
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      onChange={handleItemChange}
-                                    />
-                                  )}
-                                  renderOption={(props, item) => (
-                                    <li
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "30em",
-                                      }}
-                                      {...props}
-                                      onClick={() => handleItemClick(item)}
-                                    >
-                                      <div className="customer-dd-border">
-                                      <p><strong>{item.ItemName}</strong> </p>
-                                        <p>{item.Type}</p>
-                                        <small>{item.SaleDescription}</small>
-                                      </div>
-                                    </li>
-                                  )}
-                                  onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                      // Handle item addition when Enter key is pressed
-                                      e.preventDefault(); // Prevent form submission
-                                      handleAddItem();
-                                    }
-                                  }}
-                                />
-                              </>
-                            </td>
+                          <tr colSpan={2} key={item.ItemId}>
+                            <td className="itemName-width">{item.Name}</td>
+                            <td>{item.Description}</td>
                             <td>
-                              <p>{selectedItem?.SaleDescription  || " "}</p>
+                              <input
+                                type="number"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={item.Qty}
+                                onChange={(e) =>
+                                  handleQuantityChange(item.itemId, e)
+                                }
+                              />
                             </td>
                             <td>
                               <input
                                 type="number"
-                                name="Qty"
-                                value={itemInput.Qty}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Qty: Number(e.target.value),
-                                  })
-                                }
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                placeholder="Quantity"
+                                value={item.Rate}
+                                onChange={(e) =>
+                                  handleRateChange(item.itemId, e)
+                                }
+                              />
+                            </td>
+                            <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                            <td>NaN</td>
+                            <td>
+                              <div className="badgeBox">
+                                <Button onClick={() => removeItem(index)}>
+                                  <Delete color="error" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+
+                        <tr>
+                          <td className="itemName-width">
+                            <>
+                              <Autocomplete
+                                id="search-items"
+                                options={searchResults}
+                                getOptionLabel={(item) => item.ItemName}
+                                value={selectedItem || ""} // This should be the selected item, not searchText
+                                onChange={(event, newValue) => {
+                                  if (newValue) {
+                                    handleItemClick(newValue);
+                                  } else {
+                                    setSelectedItem(null);
+                                  }
+                                }}
+                                renderInput={(params) => (
+                                  <TextField
+                                    {...params}
+                                    label="Search for items..."
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    onChange={handleItemChange}
+                                  />
+                                )}
+                                renderOption={(props, item) => (
+                                  <li
+                                    style={{
+                                      cursor: "pointer",
+                                      width: "30em",
+                                    }}
+                                    {...props}
+                                    onClick={() => handleItemClick(item)}
+                                  >
+                                    <div className="customer-dd-border">
+                                      <p>
+                                        <strong>{item.ItemName}</strong>{" "}
+                                      </p>
+                                      <p>{item.Type}</p>
+                                      <small>{item.SaleDescription}</small>
+                                    </div>
+                                  </li>
+                                )}
                                 onKeyPress={(e) => {
                                   if (e.key === "Enter") {
                                     // Handle item addition when Enter key is pressed
@@ -953,14 +930,46 @@ const { name, setName, fetchName } = useFetchCustomerName();
                                   }
                                 }}
                               />
-                            </td>
-                            <td>
-                              <div className="col-sm-9">
-                                <input type="number" 
+                            </>
+                          </td>
+                          <td>
+                            <p>{selectedItem?.SaleDescription || " "}</p>
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="Qty"
+                              value={itemInput.Qty}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Qty: Number(e.target.value),
+                                })
+                              }
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              placeholder="Quantity"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <div className="col-sm-9">
+                              <input
+                                type="number"
                                 name="Rate"
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                value={selectedItem?.SalePrice || itemInput.Rate ||""}
+                                value={
+                                  selectedItem?.SalePrice ||
+                                  itemInput.Rate ||
+                                  ""
+                                }
                                 onChange={(e) =>
                                   setItemInput({
                                     ...itemInput,
@@ -971,7 +980,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
                                   setSelectedItem({
                                     ...selectedItem,
                                     SalePrice: 0,
-                                  })
+                                  });
                                 }}
                                 onKeyPress={(e) => {
                                   if (e.key === "Enter") {
@@ -980,201 +989,41 @@ const { name, setName, fetchName } = useFetchCustomerName();
                                     handleAddItem();
                                   }
                                 }}
-                                />
-                            
-                              </div>
-                            </td>
-                            <td>
-                              <h5 style={{ margin: "0" }}>
-                                {(itemInput.Rate * itemInput.Qty).toFixed(2)}
-                              </h5>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="tax"
-                                style={{ width: "7em" }}
-                                disabled
-                                className="form-control form-control-sm"
-                                placeholder="tax"
                               />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                            </div>
+                          </td>
+                          <td>
+                            <h5 style={{ margin: "0" }}>
+                              {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                            </h5>
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="tax"
+                              style={{ width: "7em" }}
+                              disabled
+                              className="form-control form-control-sm"
+                              placeholder="tax"
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
 
-
-              {/* files */}
-
-
-              <div className="">
-                <div className=" ">
-                  <div className="estDataBox">
-                    <div className="itemtitleBar">
-                      <h4>Files</h4>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <button
-                      className="btn btn-primary btn-sm"
-                      style={{ margin: "12px 20px" }}
-                      onClick={addFile}
-                    >
-                      + Add
-                    </button>
-                    <input
-                      type="file"
-                      ref={inputFile}
-                      onChange={trackFile}
-                      style={{ display: "none" }}
-                    />
-                      </div>
-                    
-                    
-                      {PrevFiles.map((file, index) => (
-                            <div
-                              key={index}
-                              className="col-md-2 col-md-2 mt-3 image-container"
-                              style={{
-                                width: "150px", // Set the desired width
-                                height: "120px", // Set the desired height
-                                margin: "1em",
-                                position: "relative",
-                              }}
-                            >
-                              <img
-                                src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                                alt={file.FileName}
-                                style={{
-                                  width: "150px",
-                                  height: "120px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                              <p
-                                className="file-name-overlay"
-                                style={{
-                                  position: "absolute",
-                                  bottom: "0",
-                                  left: "13px",
-                                  right: "0",
-                                  backgroundColor: "rgba(0, 0, 0, 0.3)",
-                                  textAlign: "center",
-                                  overflow: "hidden",
-                                  whiteSpace: "nowrap",
-                                  width: "100%",
-                                  textOverflow: "ellipsis",
-                                  padding: "5px",
-                                }}
-                              >
-                                {file.FileName}
-                              </p>
-                              <span
-                                className="file-delete-button"
-                                style={{
-                                  left: "140px"
-                                }}
-                                // onClick={() => removeFile(index)}
-                              >
-                                <span>
-                                  <Delete color="error" />
-                                </span>
-                              </span>
-                            </div>
-                          ))}
-
-                        {files.map((file, index) => (
-                            <div
-                              key={index}
-                              className="col-md-2 col-md-2 mt-3 image-container"
-                              style={{
-                                width: "150px", // Set the desired width
-                                height: "120px", // Set the desired height
-                                margin: "1em",
-                                position: "relative",
-                              }}
-                            >
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt={file.name}
-                                style={{
-                                  width: "150px",
-                                  height: "120px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                              <p
-                                className="file-name-overlay"
-                                style={{
-                                  position: "absolute",
-                                  bottom: "0",
-                                  left: "13px",
-                                  right: "0",
-                                  backgroundColor: "rgba(0, 0, 0, 0.3)",
-                                  textAlign: "center",
-                                  overflow: "hidden",
-                                  whiteSpace: "nowrap",
-                                  width: "100%",
-                                  textOverflow: "ellipsis",
-                                  padding: "5px",
-                                }}
-                              >
-                                {file.name}
-                              </p>
-                              <span
-                                className="file-delete-button"
-                                style={{
-                                  left: "140px"
-                                }}
-                                onClick={() => removeFile(index)}
-                              >
-                                <span>
-                                  <Delete color="error" />
-                                </span>
-                              </span>
-                            </div>
-                          ))}
-
-                          {/* {files.map((file, index) => (
-                            <tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{file.FileName || file.name}</td>
-
-                              <td>{file.type || "N/A"}</td>
-                              <td>{file.size} bytes</td>
-                              <td>
-                                <div className="badgeBox">
-                                  <span
-                                    className="actionBadge badge-danger light border-0 badgebox-size"
-                                    onClick={() => removeFile(index)}
-                                  >
-                                    <span className="material-symbols-outlined badgebox-size">
-                                      delete
-                                    </span>
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))} */}
-                       </div>
-
-                  </div>
-                </div>
-              </div>
               {/* Details */}
-              <div className="mx-3 mt-3">
+              <div className=" mt-3">
                 <div className="">
                   <div className="itemtitleBar">
                     <h4>Details</h4>
                   </div>
-                  <div className="row">
-                    <div className="col-md-4 mx-1 mt-2">
+                  <div className="card-body row">
+                    <div className="col-md-12 mx-1 mt-2">
                       <div className="row">
-                        <div className="col-md-12 mb-1">
+                        <div className="col-md-4 mb-1">
                           {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">Work Requested:</label>
@@ -1190,7 +1039,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
                             fullWidth
                           />
                         </div>
-                        <div className="col-md-12 mb-1">
+                        <div className="col-md-4 mb-1">
                           {" "}
                           <label className="form-label">Action Taken:</label>
                           {/* Adjust the column size as needed */}
@@ -1207,7 +1056,7 @@ const { name, setName, fetchName } = useFetchCustomerName();
                           />
                         </div>
 
-                        <div className=" col-md-12">
+                        <div className=" col-md-4">
                           <label className="form-label">Date Completed:</label>
 
                           <TextField
@@ -1224,34 +1073,198 @@ const { name, setName, fetchName } = useFetchCustomerName();
                             placeholder="Completed Date "
                           />
                         </div>
+                        <div className="col-md-4">
+                          {SRData.ServiceRequestData.SRTypeId === 3 ? (
+                            <iframe
+                              className="SRmap"
+                              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
+                              allowFullScreen=""
+                              loading="lazy"
+                              referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                          ) : (
+                            ""
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-1"></div>
-                    <div className="col-md-6 mt-3">
-                      {SRData.ServiceRequestData.SRTypeId === 3 ? (
-                        <iframe
-                          className="SRmap"
-                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
-                          allowFullScreen=""
-                          loading="lazy"
-                          referrerPolicy="no-referrer-when-downgrade"
-                        ></iframe>
-                      ) : (
-                        ""
-                      )}
+                  </div>
+
+                  <div className="row card-body">
+                    <div className="col-xl-4 col-lg-4">
+                      <h4 className="card-title mt-2">Attachments</h4>
+                      <div className="dz-default dlab-message upload-img mb-3">
+                        <form action="#" className="dropzone">
+                          <svg
+                            width="41"
+                            height="40"
+                            viewBox="0 0 41 40"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M20.5 20V35"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                          </svg>
+                          <div className="fallback mb-3">
+                            <input
+                              name="file"
+                              type="file"
+                              onChange={trackFile}
+                            />
+                          </div>
+                        </form>
+                      </div>
                     </div>
+
+                    {PrevFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="col-md-2 col-md-2 mt-3 image-container"
+                        style={{
+                          width: "150px", // Set the desired width
+                          height: "120px", // Set the desired height
+                          margin: "1em",
+                          position: "relative",
+                        }}
+                      >
+                        <img
+                          src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          alt={file.FileName}
+                          style={{
+                            width: "150px",
+                            height: "120px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <p
+                          className="file-name-overlay"
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                            left: "13px",
+                            right: "0",
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            textAlign: "center",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            padding: "5px",
+                          }}
+                        >
+                          {file.FileName}
+                        </p>
+                        <span
+                          className="file-delete-button"
+                          style={{
+                            left: "140px",
+                          }}
+                          onClick={() => {
+                            deleteSRFile(file.SRFileId);
+                            setTimeout(() => {
+                              
+                              fetchSR();
+                            }, 1000);
+                          
+                          }}
+                        >
+                          <span>
+                            <Delete color="error" />
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+
+                    {files.map((file, index) => (
+                      <div
+                        key={index}
+                        className="col-md-2 col-md-2 mt-3 image-container"
+                        style={{
+                          width: "150px", // Set the desired width
+                          height: "120px", // Set the desired height
+                          margin: "1em",
+                          position: "relative",
+                        }}
+                      >
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          style={{
+                            width: "150px",
+                            height: "120px",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <p
+                          className="file-name-overlay"
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                            left: "13px",
+                            right: "0",
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            textAlign: "center",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            padding: "5px",
+                          }}
+                        >
+                          {file.name}
+                        </p>
+                        <span
+                          className="file-delete-button"
+                          style={{
+                            left: "140px",
+                          }}
+                          onClick={() => {
+                            removeFile(index);
+                           
+                          }}
+                        >
+                          <span>
+                            <Delete color="error" />
+                          </span>
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-3 mb-3 row">
+            <div className="row">
               <div className="col-md-8">
                 {errorMessage && (
                   <Alert className="" severity="error">
-                    
-                     {errorMessage}
-                    
+                    {errorMessage}
                   </Alert>
                 )}
                 {emptyFieldsError && (
@@ -1271,7 +1284,8 @@ const { name, setName, fetchName } = useFetchCustomerName();
                 </button>
 
                 <button
-                  className="btn btn-danger light ms-1"
+                  className="btn btn-danger  light ms-1"
+                  style={{ marginRight: "1em" }}
                   onClick={() => {
                     setShowContent(true);
                     setShowCards(true);

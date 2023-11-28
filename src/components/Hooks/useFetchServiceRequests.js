@@ -11,12 +11,14 @@ const useFetchServiceRequests = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [serviceRequest, setserviceRequest] = useState([]);
   const [sRfetchError, setSRfetchError] = useState(true)
+const [sRFilterList, setSRFilterList] = useState([])
+  const [totalRecords, setTotalRecords] = useState({})
 
-    const fetchServiceRequest = async () => {
+    const fetchFilterServiceRequest = async (pageNo = 1, PageLength = 10, StatusId = 0) => {
 
         try {
           const response = await axios.get(
-            "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",
+            `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestServerSideList?DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
             { headers }
           );
           setSRfetchError(false)
@@ -27,8 +29,9 @@ const useFetchServiceRequests = () => {
           if (response.data != null) {
             setIsLoading(false);
           }
-          setserviceRequest(response.data);
-          console.log("zzzzzzzzzzzzzzz", response.data);
+          setSRFilterList(response.data.Data);
+          setTotalRecords(response.data)
+          console.log("filter sr list", response.data);
         } catch (error) {
           console.log("EEEEEEEEEEEEEEEEE", error);
           
@@ -37,12 +40,37 @@ const useFetchServiceRequests = () => {
         }
       };
 
+    const fetchServiceRequest = async () => {
+
+        try {
+          const response = await axios.get(
+            "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",
+            { headers }
+          );
+          // setSRfetchError(false)
+    
+          
+    
+    
+          // if (response.data != null) {
+          //   setIsLoading(false);
+          // }
+          setserviceRequest(response.data);
+          console.log("zzzzzzzzzzzzzzz", response.data);
+        } catch (error) {
+          console.log("EEEEEEEEEEEEEEEEE", error);
+          
+            // setIsLoading(false);
+         
+        }
+      };
+
       useEffect(() => {
-        fetchServiceRequest()
+        fetchFilterServiceRequest()
       },[])
 
 
-  return {fetchServiceRequest,isLoading, serviceRequest, sRfetchError }
+  return {fetchServiceRequest,fetchFilterServiceRequest,totalRecords, sRFilterList, isLoading, serviceRequest, sRfetchError }
 }
 
 export default useFetchServiceRequests

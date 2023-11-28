@@ -5,6 +5,7 @@ import EstimateIDopen from './EstimateIDopen'
 import { RoutingContext } from '../../context/RoutesContext'
 import AddEstimate from './AddEstimate'
 import EstimatePreview from './EstimatePreview'
+import UpdateEstimateForm from './UpdateEstimateForm'
 
 const EstimateIndex = () => {
 
@@ -16,6 +17,7 @@ const EstimateIndex = () => {
                 <Route path='' element={<EstimateList />} />
                 <Route path={estimateRoute} element={<EstimateIDopen />} />
                 <Route path='Add-Estimate' element={<AddEstimate />} />
+                <Route path='Update-Estimate' element={<UpdateEstimateForm />} />
                 <Route path="Estimate-Preview" element={<EstimatePreview />} />
 
             </Routes>
