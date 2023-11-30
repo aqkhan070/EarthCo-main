@@ -137,11 +137,11 @@ const EstimateTR = ({
 
   // const filteredEstimates = estimates
   const filteredEstimates = filterdEstm
-    .filter((e) =>
-      e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-    )
-    .filter((e) => filterByDate(e.Date, filterDate))
-    .sort(getSorting(order, orderBy));
+    // .filter((e) =>
+    //   e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+    // )
+    // .filter((e) => filterByDate(e.Date, filterDate))
+    // .sort(getSorting(order, orderBy));
 
   // ... Pagination, Sorting logic ...
   function desc(a, b, orderBy) {

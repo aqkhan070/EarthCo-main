@@ -53,9 +53,8 @@ const ServiceRequestTR = ({
   fetchServiceRequest,
   sRfetchError,
 }) => {
-
-  const { fetchFilterServiceRequest, sRFilterList,totalRecords } = useFetchServiceRequests();
-
+  const { fetchFilterServiceRequest, sRFilterList, totalRecords } =
+    useFetchServiceRequests();
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -75,7 +74,7 @@ const ServiceRequestTR = ({
   };
 
   const navigate = useNavigate();
-  const {setSRData} = useContext(DataContext);
+  const { setSRData } = useContext(DataContext);
 
   const columnFieldMapping = {
     "Service Request #": "ServiceRequestNumber",
@@ -86,10 +85,10 @@ const ServiceRequestTR = ({
     "Date Created": "CreatedDate",
   };
 
-  const [pages, setpages] = useState(1)
+  const [pages, setpages] = useState(1);
 
   const [tablePage, setTablePage] = useState(0);
-  const [sRsearch, setSRsearch] = useState("")
+  const [sRsearch, setSRsearch] = useState("");
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterServiceRequest();
@@ -186,42 +185,42 @@ const ServiceRequestTR = ({
     });
   };
 
-  const sortedAndSearchedCustomers = handleSearch([...sRFilterList]).sort(
-    (a, b) => {
-      const { field, order } = sorting;
+  const sortedAndSearchedCustomers = sRFilterList;
+  // handleSearch([...sRFilterList]).sort(
+  //   (a, b) => {
+  //     const { field, order } = sorting;
 
-      if (field && order) {
-        if (order === "asc") {
-          return a[field] > b[field] ? 1 : -1;
-        }
-        if (order === "desc") {
-          return a[field] < b[field] ? 1 : -1;
-        }
-      }
-      return 0;
-    }
-  );
+  //     if (field && order) {
+  //       if (order === "asc") {
+  //         return a[field] > b[field] ? 1 : -1;
+  //       }
+  //       if (order === "desc") {
+  //         return a[field] < b[field] ? 1 : -1;
+  //       }
+  //     }
+  //     return 0;
+  //   }
+  // );
 
   return (
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
           <div className="card-body">
-       
-              <div className="row mx-1">
-            <div className=" text-center mb-3">
-            {successAlert && (
-              <Alert className="mb-3" severity="success">
-                {successAlert
-                  ? successAlert
-                  : "Successfuly Added/Updated Service request"}
-              </Alert>
-            )}
-            {deleteSuccess && (
-              <Alert className="mb-3" severity="success">
-                Successfuly Deleted Service request
-              </Alert>
-            )}
+            <div className="row mx-1">
+              <div className=" text-center mb-3">
+                {successAlert && (
+                  <Alert className="mb-3" severity="success">
+                    {successAlert
+                      ? successAlert
+                      : "Successfuly Added/Updated Service request"}
+                  </Alert>
+                )}
+                {deleteSuccess && (
+                  <Alert className="mb-3" severity="success">
+                    Successfuly Deleted Service request
+                  </Alert>
+                )}
                 <div className="col-md-12">
                   {/* <div>
                     <Form.Select
@@ -248,19 +247,17 @@ const ServiceRequestTR = ({
                     />
                   </div>
 
-                
-
                   <div className="custom-button-container">
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => {
-                            setShowContent(false);
-                            setServiceRequestId(0);
-                          }}
-                        >
-                          + Add Service Request
-                        </button>
-                      </div>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => {
+                        setShowContent(false);
+                        setServiceRequestId(0);
+                      }}
+                    >
+                      + Add Service Request
+                    </button>
+                  </div>
                 </div>
               </div>
               <br />
@@ -323,9 +320,15 @@ const ServiceRequestTR = ({
                         <TableCell>{customer.ServiceRequestNumber}</TableCell>
                         <TableCell>{customer.CustomerName}</TableCell>
                         <TableCell>{customer.Assign}</TableCell>
-                        <TableCell><span className="badge badge-pill badge-success ">{customer.Status}</span></TableCell>
+                        <TableCell>
+                          <span className="badge badge-pill badge-success ">
+                            {customer.Status}
+                          </span>
+                        </TableCell>
                         <TableCell>{customer.WorkRequest}</TableCell>
-                        <TableCell>{formatDate(customer.CreatedDate)}</TableCell>
+                        <TableCell>
+                          {formatDate(customer.CreatedDate)}
+                        </TableCell>
                         <TableCell>
                           <Button
                             // className="btn btn-primary btn-icon-xxs me-2"
@@ -422,18 +425,18 @@ const ServiceRequestTR = ({
                     ))}
                 </TableBody>
               </Table>
-<TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={totalRecords.totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50]}
+                component="div"
+                count={totalRecords.totalRecords}
+                rowsPerPage={rowsPerPage}
+                page={tablePage} // Use tablePage for the table rows
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={(event) => {
+                  setRowsPerPage(parseInt(event.target.value, 10));
+                  setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                }}
+              />
             </div>
           </div>
         </ThemeProvider>
