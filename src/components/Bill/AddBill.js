@@ -52,7 +52,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
 
 
   const getBill = async () => {
-    if (selectedBill === 0 || idParam === 0) {
+    if (selectedBill === 0 &&  idParam === 0) {
       return
     }
 

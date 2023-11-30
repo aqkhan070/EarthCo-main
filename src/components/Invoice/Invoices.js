@@ -59,15 +59,16 @@ const Invoices = () => {
 
   const [tablePage, setTablePage] = useState(0);
   const [statusId, setStatusId] = useState(0)
+  const [search, setSearch] = useState("")
   useEffect(() => {
     // Initial fetch of estimates
-    fetchFilterInvoice(1, rowsPerPage, statusId);
+    fetchFilterInvoice();
   }, []);
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterInvoice(tablePage + 1, rowsPerPage, statusId);
-  }, [tablePage, rowsPerPage, statusId]);
+    fetchFilterInvoice(search, tablePage + 1, rowsPerPage, statusId);
+  }, [search, tablePage, rowsPerPage, statusId]);
   
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -151,8 +152,8 @@ const Invoices = () => {
                           size="small"
                           style={{  width: "15em" }}
                           fullWidth
-                          value={searchText}
-                          onChange={(e) => setSearchText(e.target.value)}
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
                         />
                         <div>
                           <button
@@ -172,7 +173,7 @@ const Invoices = () => {
                             <Table>
                               <TableHead>
                                 <TableRow>
-                                  <TableCell style={{ width: "50px" }}>
+                                  {/* <TableCell style={{ width: "50px" }}>
                                     <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                       <input
                                         type="checkbox"
@@ -185,7 +186,7 @@ const Invoices = () => {
                                         htmlFor="checkAll"
                                       ></label>
                                     </div>
-                                  </TableCell>
+                                  </TableCell> */}
                                   <TableCell>
                                     <TableSortLabel
                                       active={orderBy === "InvoiceNumber"}
@@ -234,7 +235,7 @@ const Invoices = () => {
                                   )
                                   .map((invoice, index) => (
                                     <TableRow  hover key={index}>
-                                      <TableCell>
+                                      {/* <TableCell>
                                         <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                           <input
                                             type="checkbox"
@@ -243,7 +244,7 @@ const Invoices = () => {
                                           />
                                           <label className="form-check-label"></label>
                                         </div>
-                                      </TableCell>
+                                      </TableCell> */}
                                       <TableCell>
                                         {invoice.InvoiceNumber}
                                       </TableCell>
@@ -259,10 +260,10 @@ const Invoices = () => {
                                       </TableCell>
                                       <TableCell></TableCell>
                                       <TableCell>
-                                        <div className="d-flex align-items-center">
-                                          <i className="fa fa-circle text-success me-1"></i>{" "}
+                                      <span className="badge badge-pill badge-success ">
+                                         
                                           Open
-                                        </div>
+                                        </span>
                                       </TableCell>
                                       <TableCell>
                                       <Button

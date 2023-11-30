@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import logo1 from "../assets/images/background/earthco_logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
-
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -12,8 +12,8 @@ const LoginPage = () => {
   const [error, setError] = useState("");
 
   const [resetEmail, setResetEmail] = useState("");
-  const [resetRes, setResetRes] = useState("")
-  const [resetError, setResetError] = useState("")
+  const [resetRes, setResetRes] = useState("");
+  const [resetError, setResetError] = useState("");
 
   const [fName, setFName] = useState("");
   const [userName, setUserName] = useState("");
@@ -26,7 +26,7 @@ const LoginPage = () => {
   const [reTypePass, setReTypePass] = useState("");
   const [signError, setSignError] = useState("");
 
-  const [btndisable, setBtndisable] = useState(false)
+  const [btndisable, setBtndisable] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,11 +35,23 @@ const LoginPage = () => {
     setResetError("");
     setResetRes("");
     setError("");
-  },[email,password,resetEmail,fName, userName,emailSIn, passSignIn, lastName,address,phone,reTypePass ])
+  }, [
+    email,
+    password,
+    resetEmail,
+    fName,
+    userName,
+    emailSIn,
+    passSignIn,
+    lastName,
+    address,
+    phone,
+    reTypePass,
+  ]);
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
-    setBtndisable(true)
+    setBtndisable(true);
 
     try {
       const response = await axios.post(
@@ -55,28 +67,26 @@ const LoginPage = () => {
         }
       );
 
-
       if (response.data.status === "success") {
         // if (response.status === 200){
-          sessionStorage.setItem("userEmail", email);
-          setBtndisable(false)
+        sessionStorage.setItem("userEmail", email);
+        setBtndisable(false);
         setError("");
         const token = response.data.token.data;
-        Cookies.set('token', token, { expires: 7 });
-        Cookies.set('userData', response.data.Data, { expires: 7 });
+        Cookies.set("token", token, { expires: 7 });
+        Cookies.set("userData", response.data.Data, { expires: 7 });
         // console.log("login response iss", Cookies.get('token'))
-        console.log("login response is",response.data)
+        console.log("login response is", response.data);
 
-        
-        navigate("/Dashboard"); 
+        navigate("/Dashboard");
       } else {
         setError("Invalid email or password. Please try again.");
-        setBtndisable(false)
+        setBtndisable(false);
       }
     } catch (error) {
       console.log("Error logging in:", error);
       setError(error.response.data);
-      setBtndisable(false)
+      setBtndisable(false);
     }
   };
 
@@ -96,7 +106,8 @@ const LoginPage = () => {
         }
       );
 
-      setResetRes(response.data.status)
+      setResetRes(response.data.status);
+      document.getElementById("nav-personal-tab").click();
 
       if (response.status === 200) {
         // Password reset request successful, you can display a success message or take other actions.
@@ -108,11 +119,9 @@ const LoginPage = () => {
     } catch (error) {
       // Handle any errors here
       console.error("Error:", error.response.data);
-      setResetError(error.response.data)
+      setResetError(error.response.data);
     }
   };
-
-
 
   const handleSubmitSignUp = async (e) => {
     e.preventDefault();
@@ -140,18 +149,13 @@ const LoginPage = () => {
           },
         }
       );
+
+      document.getElementById("backLogin").click();
+      setFName("");
+      setLastName("");
+      setAddress("");
+      setPhone("");
       console.log(response.data);
-
-      if (response.data.status === "success") {
-        // Registration successful, you can redirect the user to the dashboard or perform other actions
-        setSignError("");
-
-        console.log("Registration successful");
-        // Redirect the user to the dashboard or other pages as needed.
-      } else {
-        // Registration failed, display an error message
-        setSignError("Registration failed. Please try again.");
-      }
     } catch (error) {
       console.log("Error during registration:", error.response.data);
       setSignError(error.response.data);
@@ -214,7 +218,6 @@ const LoginPage = () => {
                   id="nav-tab"
                   role="tablist"
                 >
-                  
                   <div className="tab-content w-100" id="nav-tabContent">
                     <div
                       className="tab-pane fade show active"
@@ -227,15 +230,14 @@ const LoginPage = () => {
                         action=""
                         className="dz-form pb-3"
                       >
-                        
                         <h3 className="form-title m-t0">
                           Personal Information
                         </h3>
-                    {error && (
-                      <Alert severity="error">
-                        {error ? error : "Error Adding Estimates"}
-                      </Alert>
-                    )}
+                        {error && (
+                          <Alert severity="error">
+                            {error ? error : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -257,7 +259,10 @@ const LoginPage = () => {
                             className="form-control"
                             required
                             value={password}
-                            onChange={(e) => {setPassword(e.target.value); setError("")}}
+                            onChange={(e) => {
+                              setPassword(e.target.value);
+                              setError("");
+                            }}
                           />
                         </div>
                         {/* <h5 className="authError mb-2">{error}</h5> */}
@@ -299,13 +304,17 @@ const LoginPage = () => {
                           </div>
                         </div>
                         <div className="text-center bottom">
-                          <button
-                            className="btn btn-primary button-md btn-block"
+                          <LoadingButton
+                            size="large"
+                            variant="contained"
+                            loading={btndisable}
+                            fullWidth
+                           
                             type="submit"
-                            disabled ={btndisable}
+                          
                           >
                             Sign Me In
-                          </button>
+                          </LoadingButton>
                         </div>
                       </form>
                       <button
@@ -323,7 +332,6 @@ const LoginPage = () => {
                       </button>
                     </div>
 
-
                     {/* Forgot password */}
                     <div
                       className="tab-pane fade"
@@ -334,15 +342,15 @@ const LoginPage = () => {
                       <form className="dz-form" onSubmit={handleForgotPassword}>
                         <h3 className="form-title m-t0">Forget Password?</h3>
                         {resetRes && (
-                      <Alert severity="success">
-                        {resetRes ? resetRes : "Error Adding Estimates"}
-                      </Alert>
-                    )}
-                    {resetError && (
-                      <Alert severity="error">
-                        {resetError ? resetError : "Error Adding Estimates"}
-                      </Alert>
-                    )}
+                          <Alert severity="success">
+                            {resetRes ? resetRes : "Error Adding Estimates"}
+                          </Alert>
+                        )}
+                        {resetError && (
+                          <Alert severity="error">
+                            {resetError ? resetError : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -359,10 +367,9 @@ const LoginPage = () => {
                             type="text"
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
-                            
                           />
-                        {/* <div className="text-primary"> {resetRes}</div> */}
-                        {/* <div className="text-danger">{resetError}</div> */}
+                          {/* <div className="text-primary"> {resetRes}</div> */}
+                          {/* <div className="text-danger">{resetError}</div> */}
                         </div>
                         <div className="form-group clearfix text-left">
                           <button
@@ -399,10 +406,10 @@ const LoginPage = () => {
                       >
                         <h3 className="form-title">Sign Up</h3>
                         {signError && (
-                      <Alert severity="error">
-                        {signError ? signError : "Error Adding Estimates"}
-                      </Alert>
-                    )}
+                          <Alert severity="error">
+                            {signError ? signError : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -483,7 +490,6 @@ const LoginPage = () => {
                           />
                         </div>
 
-                        
                         <div className="form-group mt-3">
                           <input
                             name="address"
@@ -543,7 +549,6 @@ const LoginPage = () => {
                             Submit
                           </button>
                         </div>
-                        
                       </form>
                     </div>
                   </div>

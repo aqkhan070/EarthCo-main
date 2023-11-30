@@ -1,28 +1,50 @@
+import { Alert, FormControl, MenuItem, Select, TextField } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-const AddItem = ({selectedItem, setShowContent, headers }) => {
-
+const AddItem = ({
+  selectedItem,
+  setShowContent,
+  headers,
+  getFilteredItemsList,
+  setSuccessRes,
+}) => {
   const [formData, setFormData] = useState({});
+  const [incomeAccountList, setIncomeAccountList] = useState([]);
 
   const getItem = async () => {
     try {
-      const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Item/GetItem?id=${selectedItem}`,{headers});
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetItem?id=${selectedItem}`,
+        { headers }
+      );
       console.log("selectedItem iss", res.data);
-      setFormData(res.data)
-      
+      setFormData(res.data);
     } catch (error) {
       console.log("API call error", error);
-      
+    }
+  };
+
+  const getIncomeAccount = async () => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetAccountList`,
+        { headers }
+      );
+      console.log("selectedItem iss", res.data);
+      setIncomeAccountList(res.data);
+    } catch (error) {
+      console.log("API call error", error);
     }
   };
 
   const handleChange = (e) => {
+    setemptyFieldError(false);
     const { name, value, type, checked } = e.target;
-  
+
     // Parse values as numbers if the input type is "number"
     const parsedValue = type === "number" ? parseFloat(value) : value;
-  
+
     // Update formData based on input type
     setFormData((prevData) => ({
       ...prevData,
@@ -31,21 +53,42 @@ const AddItem = ({selectedItem, setShowContent, headers }) => {
     console.log(formData);
   };
 
-const submitData = async () => {
-  try {
-    const res = await axios.post(`https://earthcoapi.yehtohoga.com/api/Item/AddItem`,formData, {headers});
-    console.log("successfuly posted item", res.data.Message);
-    setShowContent(true)
-  } catch (error) {
-    console.log("api call error",error.response.data.Message);
-    console.log("api call error2",error);
-    
-  }
-};
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [emptyFieldError, setemptyFieldError] = useState(false);
+  const submitData = async () => {
+    setSubmitClicked(true);
+    if (
+      !formData.ItemName ||
+      !formData.IncomeAccount ||
+      !formData.ExpenseAccount
+    ) {
+      setemptyFieldError(true)
+      return;
+    }
 
-useEffect(() => {
-  getItem()
-},[])
+    try {
+      const res = await axios.post(
+        `https://earthcoapi.yehtohoga.com/api/Item/AddItem`,
+        formData,
+        { headers }
+      );
+      console.log("successfuly posted item", res.data.Message);
+      setSuccessRes(res.data.Message);
+      setTimeout(() => {
+        setSuccessRes("");
+      }, 4000);
+      getFilteredItemsList();
+      setShowContent(true);
+    } catch (error) {
+      console.log("api call error", error.response.data.Message);
+      console.log("api call error2", error);
+    }
+  };
+
+  useEffect(() => {
+    getItem();
+    getIncomeAccount();
+  }, []);
 
   return (
     <>
@@ -60,14 +103,16 @@ useEffect(() => {
                 <label htmlFor="firstName" className="form-label">
                   Name / Number<span className="text-danger">*</span>
                 </label>
-                <input
+                <TextField
                   type="text"
+                  error={submitClicked && !formData.ItemName}
                   name="ItemName"
+                  size="small"
                   value={formData.ItemName}
                   className="form-control"
                   onChange={handleChange}
                   placeholder="Item Name"
-                />                
+                />
               </div>
               {/* <div className="col-md-3 mb-3">
                 <label htmlFor="lastName" className="form-label">
@@ -85,16 +130,22 @@ useEffect(() => {
                 <label htmlFor="lastName" className="form-label">
                   Income Account<span className="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="lastName"
-                  value={formData.IncomeAccount}
-                  onChange={handleChange}
-                  name="IncomeAccount"
-                  placeholder=""
-                />
-               
+                <FormControl fullWidth variant="outlined">
+                  <Select
+                    name="IncomeAccount"
+                    error={submitClicked && !formData.IncomeAccount}
+                    value={formData.IncomeAccount || ""}
+                    onChange={handleChange}
+                    size="small"
+                  >
+                    <MenuItem value=""></MenuItem>
+                    {incomeAccountList.map((type) => (
+                      <MenuItem key={type.AccountId} value={type.AccountId}>
+                        {type.Name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </div>
               <div className="col-md-3 mb-3">
                 <label htmlFor="lastName" className="form-label">
@@ -109,11 +160,10 @@ useEffect(() => {
                   id="lastName"
                   placeholder=""
                 />
-               
               </div>
 
               <div className="col-md-10">
-                <div  className="row">
+                <div className="row">
                   <div className="col-md-6">
                     <h4 className="mb-3">Sale</h4>
                     <div className="form-check custom-checkbox mb-2">
@@ -230,20 +280,38 @@ useEffect(() => {
                       <label htmlFor="firstName" className="form-label">
                         Expense Account<span className="text-danger">*</span>
                       </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="ExpenseAccount"
-                        value={formData.ExpenseAccount}
-                        onChange={handleChange}
-                        placeholder="Expense Account"
-                      />
+                      <FormControl fullWidth variant="outlined">
+                        <Select
+                          name="ExpenseAccount"
+                          error={submitClicked && !formData.ExpenseAccount}
+                          value={formData.ExpenseAccount || ""}
+                          onChange={handleChange}
+                          size="small"
+                        >
+                          <MenuItem value=""></MenuItem>
+                          {incomeAccountList.map((type) => (
+                            <MenuItem
+                              key={type.AccountId}
+                              value={type.AccountId}
+                            >
+                              {type.Name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="col-md-12 text-right">
-                <button onClick={submitData} type="button" className="btn btn-primary me-1">
+              <div className="col-md-8">
+                {emptyFieldError && <Alert severity="error">Please Fill All Required Fields</Alert>}
+              </div>
+              <div className="col-md-4 text-right">
+                <button
+                  onClick={submitData}
+                  type="button"
+                  className="btn btn-primary me-1"
+                >
                   Save
                 </button>
 

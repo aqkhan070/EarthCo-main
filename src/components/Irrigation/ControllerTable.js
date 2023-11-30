@@ -6,13 +6,20 @@ import {
  } from "@mui/material";
 
 
-const ControllerTable = ({ fetchIrrigation, controllerList, headers}) => {
+const ControllerTable = ({ setAddSucces, fetchIrrigation, controllerList, headers}) => {
 
     const deleteController = async (id) => {
       try {
         const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Irrigation/DeleteController?id=${id}`,{headers});
         console.log("successfully deleted controller", res.data);
         fetchIrrigation();
+        setTimeout(() => {
+          setAddSucces("")
+            
+          }, 3000);
+    
+          setAddSucces(res.data)
+          console.log(res.data)
 
       } catch (error) {
         console.log("delete api error", error);

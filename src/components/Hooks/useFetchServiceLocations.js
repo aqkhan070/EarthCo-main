@@ -6,7 +6,7 @@ function useFetchServiceLocations() {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
-  };
+  }; 
   const [serviceLocations, setServiceLocations] = useState([]);
 
   const fetchServiceLocations = async () => {

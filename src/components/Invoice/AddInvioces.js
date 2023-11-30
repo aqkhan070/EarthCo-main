@@ -98,7 +98,7 @@ const AddInvioces = ({
   };
 
   const getInvoice = async () => {
-    if ( idParam===0 ||selectedInvoice===0 ) {
+    if ( idParam===0 && selectedInvoice===0 ) {
       return;
     }
     setLoading(true);

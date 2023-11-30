@@ -112,7 +112,7 @@ export const AddPO = ({
 
   const fetchpoData = async () => {
 
-    if (idParam === 0|| selectedPo === 0) {
+    if (idParam === 0 && selectedPo === 0) {
       return;
     }
     setLoading(true);

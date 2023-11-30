@@ -18,7 +18,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
 
@@ -42,6 +42,10 @@ const theme = createTheme({
   },
 });
 const LandscapeTR = () => {
+  const headers = {
+    Authorization: `Bearer ${Cookies.get("token")}`,
+  };
+
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
   const [filtering, setFiltering] = useState("");
@@ -59,7 +63,8 @@ const LandscapeTR = () => {
 
   const fetchReports = async () => {
     const response = await axios.get(
-      `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`
+      `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`,
+      { headers }
     );
     try {
       setReports(response.data);
@@ -148,21 +153,12 @@ const LandscapeTR = () => {
       const response = await fetch(
         `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/DeleteMonthlyLandsacpe?id=${id}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete customer");
-      }
-
-      const data = await response.json();
-
       // Handle the response. For example, you can reload the customers or show a success message
-      console.log("Customer deleted successfully:", data);
+      console.log("Customer deleted successfully:", response.data);
       window.location.reload();
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
@@ -198,7 +194,7 @@ const LandscapeTR = () => {
                   </div>
                   <div className="custom-button-container">
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-sm"
                       onClick={() => {
                         navigate("/Dashboard/Landscape/Add-Landscape");
                       }}
@@ -260,8 +256,8 @@ const LandscapeTR = () => {
                         {/* <TableCell>...</TableCell> */}
                         {/* <TableCell>...</TableCell> */}
                         <TableCell>
-                        <div className="button-container">
-                          {/* <Button
+                          <div className="button-container">
+                            {/* <Button
                             className="delete-button"
                             onClick={() => {
                               setSelectedItem(estimate.EstimateId);
@@ -271,14 +267,16 @@ const LandscapeTR = () => {
                           >
                             <Create />
                           </Button> */}
-                          <Button className="delete-button">
-                            <Delete
-                              color="error"
-                              onClick={() => handleDelete(report.MonthlyLandsacpeId)}
-                            />
-                          </Button>
-                        </div>
-                      </TableCell>
+                            <Button className="delete-button">
+                              <Delete
+                                color="error"
+                                onClick={() =>
+                                  handleDelete(report.MonthlyLandsacpeId)
+                                }
+                              />
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))}
                 </TableBody>

@@ -230,9 +230,19 @@ const DataFun = ({ children }) => {
   const [InvoiceData, setInvoiceData] = useState({})
   const [billData, setBillData] = useState({})
 
+  const [PunchDetailData, setPunchDetailData] = useState({})
+  const [PunchListData, setPunchListData] = useState({})
+ const [proposalData, setproposalData] = useState([])
+ const [sRProposalData, setsRProposalData] = useState({})
+
+ const [sRMapData, setSRMapData] = useState([])
   return (
     <DataContext.Provider
       value={{
+        sRMapData, setSRMapData,
+        sRProposalData, setsRProposalData,
+        PunchListData, setPunchListData,
+        PunchDetailData, setPunchDetailData,
         billData, setBillData,
         InvoiceData, setInvoiceData,
         POData, setPOData,

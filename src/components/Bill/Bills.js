@@ -24,7 +24,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 
-
 const Bills = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
@@ -40,25 +39,33 @@ const Bills = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState("");
 
-  const { billList, loading, fetchBills, billError, fetchFilterBills,filteredBillsList,totalRecords } = useFetchBills();
-  
-  const {setBillData} = useContext(DataContext);
+  const {
+    billList,
+    loading,
+    fetchBills,
+    billError,
+    fetchFilterBills,
+    filteredBillsList,
+    totalRecords,
+  } = useFetchBills();
 
+  const { setBillData } = useContext(DataContext);
 
   const navigate = useNavigate();
 
   const [tablePage, setTablePage] = useState(0);
+  const [searchBill, setSearchBill] = useState("");
 
   useEffect(() => {
     // Initial fetch of estimates
-    fetchFilterBills(1, rowsPerPage );
+    fetchFilterBills();
   }, []);
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterBills(tablePage + 1, rowsPerPage );
-  }, [tablePage, rowsPerPage ]);
-  
+    fetchFilterBills(searchBill, tablePage + 1, rowsPerPage);
+  }, [searchBill, tablePage, rowsPerPage]);
+
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
   };
@@ -121,211 +128,216 @@ const Bills = () => {
         <>
           <BillTitle />
           <div className="container-fluid">
-      
-              <div className="card " id="bootstrap-table2">
-                <div className="card-body">
+            <div className="card " id="bootstrap-table2">
+              <div className="card-body">
                 <div className="row  mb-3">
-                <div className=" text-center">
-                  {deleteSuccess && (
-                    <Alert className="" severity="success">
-                      Successfully deleted Bill
-                    </Alert>
-                  )}
-                  {submitSuccess && (
-                    <Alert className="" severity="success">
-                      {submitSuccess
-                        ? submitSuccess
-                        : "Successfully Added/Updated bill"}
-                    </Alert>
-                  )}
-                  {loading ? (
-                    <div className="center-loader">
-                      <CircularProgress />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="row">
-                        <div className="col-md-2 mb-2 text-right">
-                          <TextField
-                            label="Search"
-                            variant="standard"
-                            fullWidth
-                            size="small"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                          />
-                        </div>
-                        <div className="col-md-8"></div>
-
-                        <div className="col-md-2 text-right">
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            onClick={() => {
-                              setshowContent(false);
-                            }}
-                          >
-                            + Add New Bill
-                          </Button>
-                        </div>
-                    
+                  <div className=" text-center">
+                    {deleteSuccess && (
+                      <Alert className="" severity="success">
+                        Successfully deleted Bill
+                      </Alert>
+                    )}
+                    {submitSuccess && (
+                      <Alert className="" severity="success">
+                        {submitSuccess
+                          ? submitSuccess
+                          : "Successfully Added/Updated bill"}
+                      </Alert>
+                    )}
+                    {loading ? (
+                      <div className="center-loader">
+                        <CircularProgress />
                       </div>
-                      <Table hover>
-                        <TableHead className="table-header">
-                          <TableRow>
-                            <TableCell>
-                              <TableSortLabel
-                                active={orderBy === "SupplierName"}
-                                direction={
-                                  orderBy === "SupplierName" ? order : "asc"
-                                }
-                                onClick={() => handleSort("SupplierName")}
-                              >
-                                Vendor
-                              </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                              <TableSortLabel
-                                active={orderBy === "DueDate"}
-                                direction={
-                                  orderBy === "DueDate" ? order : "asc"
-                                }
-                                onClick={() => handleSort("DueDate")}
-                              >
-                                Due Date
-                              </TableSortLabel>
-                            </TableCell>
-                            <TableCell>Amount</TableCell>
-                            <TableCell>Memo</TableCell>
-                            <TableCell>Currency</TableCell>
-                            <TableCell>Tags</TableCell>
-                            <TableCell>Actions</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                                {billError ? <TableRow><TableCell colSpan={12} className="text-center">No Record Found</TableCell></TableRow>: null}
-                          {sortedBills
-                            .slice(
-                              page * rowsPerPage,
-                              page * rowsPerPage + rowsPerPage
-                            )
-                            .map((bill) => (
-                              <TableRow hover key={bill.BillId}>
-                                <TableCell>{bill.SupplierName}</TableCell>
-                                <TableCell>{formatDate(bill.DueDate)}</TableCell>
-                                <TableCell>{bill.Amount}</TableCell>
-                                <TableCell>{bill.Memo}</TableCell>
-                                <TableCell>{bill.Currency}</TableCell>
-                                <TableCell>{bill.Tags}</TableCell>
-                                <TableCell>
-                                <Button
-                                // className="btn btn-primary btn-icon-xxs me-2"
-                                 onClick={() => {
-                                  navigate("/Dashboard/Bills/Bill-Preview");
-                                  setBillData(bill);
-                                  // console.log(estimate.EstimateId);
-                                                                
-                                }}
+                    ) : (
+                      <>
+                        <div className="row">
+                          <div className="col-md-2 mb-2 text-right">
+                            <TextField
+                              label="Search"
+                              variant="standard"
+                              fullWidth
+                              size="small"
+                              value={searchBill}
+                              onChange={(e) => setSearchBill(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-md-8"></div>
+
+                          <div className="col-md-2 text-right">
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => {
+                                setshowContent(false);
+                              }}
+                            >
+                              + Add New Bill
+                            </button>
+                          </div>
+                        </div>
+                        <Table hover>
+                          <TableHead className="table-header">
+                            <TableRow>
+                              <TableCell>
+                                <TableSortLabel
+                                  active={orderBy === "SupplierName"}
+                                  direction={
+                                    orderBy === "SupplierName" ? order : "asc"
+                                  }
+                                  onClick={() => handleSort("SupplierName")}
                                 >
-                               {/* <i className="fa-solid fa-eye"></i> */}
-
-                              <Visibility />
-                                </Button>
-                                  <Button
-                                    // className="btn btn-primary btn-icon-xxs me-2"
-                                    onClick={() => {
-                                      setshowContent(false);
-                                      setselectedBill(bill.BillId);
-                                    }}
-                                  >
-                                    {/* <i className="fas fa-pencil-alt"></i> */}
-                                    <Create></Create>
-                                  </Button>
-                                  <Button
-                                    data-bs-toggle="modal"
-                                    // className="btn btn-danger btn-icon-xxs mr-2"
-                                    data-bs-target={`#deleteModal${bill.BillId}`}
-                                  >
-                                    {/* <i className="fas fa-trash-alt"></i> */}
-                                    <Delete color="error"></Delete>
-                                  </Button>
-
-                                  <div
-                                    className="modal fade"
-                                    id={`deleteModal${bill.BillId}`}
-                                    tabIndex="-1"
-                                    aria-labelledby="deleteModalLabel"
-                                    aria-hidden="true"
-                                  >
-                                    <div
-                                      className="modal-dialog modal-dialog-centered"
-                                      role="document"
+                                  Vendor
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell>
+                                <TableSortLabel
+                                  active={orderBy === "DueDate"}
+                                  direction={
+                                    orderBy === "DueDate" ? order : "asc"
+                                  }
+                                  onClick={() => handleSort("DueDate")}
+                                >
+                                  Due Date
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell>Amount</TableCell>
+                              <TableCell>Memo</TableCell>
+                              <TableCell>Currency</TableCell>
+                              <TableCell>Tags</TableCell>
+                              <TableCell>Actions</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {billError ? (
+                              <TableRow>
+                                <TableCell colSpan={12} className="text-center">
+                                  No Record Found
+                                </TableCell>
+                              </TableRow>
+                            ) : null}
+                            {sortedBills
+                              .slice(
+                                page * rowsPerPage,
+                                page * rowsPerPage + rowsPerPage
+                              )
+                              .map((bill) => (
+                                <TableRow hover key={bill.BillId}>
+                                  <TableCell>{bill.SupplierName}</TableCell>
+                                  <TableCell>
+                                    {formatDate(bill.DueDate)}
+                                  </TableCell>
+                                  <TableCell>{bill.Amount}</TableCell>
+                                  <TableCell>{bill.Memo}</TableCell>
+                                  <TableCell>{bill.Currency}</TableCell>
+                                  <TableCell>{bill.Tags}</TableCell>
+                                  <TableCell>
+                                    <Button
+                                      // className="btn btn-primary btn-icon-xxs me-2"
+                                      onClick={() => {
+                                        navigate(
+                                          "/Dashboard/Bills/Bill-Preview"
+                                        );
+                                        setBillData(bill);
+                                        // console.log(estimate.EstimateId);
+                                      }}
                                     >
-                                      <div className="modal-content">
-                                        <div className="modal-header">
-                                          <h5 className="modal-title">
-                                            Delete Bill
-                                          </h5>
-                                          <button
-                                            type="button"
-                                            className="btn-close"
-                                            data-bs-dismiss="modal"
-                                          ></button>
-                                        </div>
-                                        <div className="modal-body">
-                                          <p>
-                                            Are you sure you want to delete{" "}
-                                            {bill.BillId}
-                                          </p>
-                                        </div>
-                                        <div className="modal-footer">
-                                          <button
-                                            type="button"
-                                            id="closer"
-                                            className="btn btn-danger light me-"
-                                            data-bs-dismiss="modal"
-                                          >
-                                            Close
-                                          </button>
-                                          <button
-                                            className="btn btn-primary"
-                                            data-bs-dismiss="modal"
-                                            onClick={() =>
-                                              deleteBill(bill.BillId)
-                                            }
-                                          >
-                                            Yes
-                                          </button>
+                                      {/* <i className="fa-solid fa-eye"></i> */}
+
+                                      <Visibility />
+                                    </Button>
+                                    <Button
+                                      // className="btn btn-primary btn-icon-xxs me-2"
+                                      onClick={() => {
+                                        setshowContent(false);
+                                        setselectedBill(bill.BillId);
+                                      }}
+                                    >
+                                      {/* <i className="fas fa-pencil-alt"></i> */}
+                                      <Create></Create>
+                                    </Button>
+                                    <Button
+                                      data-bs-toggle="modal"
+                                      // className="btn btn-danger btn-icon-xxs mr-2"
+                                      data-bs-target={`#deleteModal${bill.BillId}`}
+                                    >
+                                      {/* <i className="fas fa-trash-alt"></i> */}
+                                      <Delete color="error"></Delete>
+                                    </Button>
+
+                                    <div
+                                      className="modal fade"
+                                      id={`deleteModal${bill.BillId}`}
+                                      tabIndex="-1"
+                                      aria-labelledby="deleteModalLabel"
+                                      aria-hidden="true"
+                                    >
+                                      <div
+                                        className="modal-dialog modal-dialog-centered"
+                                        role="document"
+                                      >
+                                        <div className="modal-content">
+                                          <div className="modal-header">
+                                            <h5 className="modal-title">
+                                              Delete Bill
+                                            </h5>
+                                            <button
+                                              type="button"
+                                              className="btn-close"
+                                              data-bs-dismiss="modal"
+                                            ></button>
+                                          </div>
+                                          <div className="modal-body">
+                                            <p>
+                                              Are you sure you want to delete{" "}
+                                              {bill.BillId}
+                                            </p>
+                                          </div>
+                                          <div className="modal-footer">
+                                            <button
+                                              type="button"
+                                              id="closer"
+                                              className="btn btn-danger light me-"
+                                              data-bs-dismiss="modal"
+                                            >
+                                              Close
+                                            </button>
+                                            <button
+                                              className="btn btn-primary"
+                                              data-bs-dismiss="modal"
+                                              onClick={() =>
+                                                deleteBill(bill.BillId)
+                                              }
+                                            >
+                                              Yes
+                                            </button>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                        </TableBody>
-                      </Table>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                          </TableBody>
+                        </Table>
 
-                      <TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
-                    </>
-                  )}
+                        <TablePagination
+                          rowsPerPageOptions={[10, 25, 50]}
+                          component="div"
+                          count={totalRecords}
+                          rowsPerPage={rowsPerPage}
+                          page={tablePage} // Use tablePage for the table rows
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-            </div>
-                      </div>
+          </div>
         </>
       ) : (
         <AddBill

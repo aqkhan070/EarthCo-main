@@ -19,8 +19,9 @@ const CustomersTable = () => {
   const [customerAddSuccess, setCustomerAddSuccess] = useState(false);
   const [customerUpdateSuccess, setCustomerUpdateSuccess] = useState(false);
 
-  const [customerFetchError, setcustomerFetchError] = useState(false)
+  const [customerFetchError, setcustomerFetchError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const fetchCustomers = async () => {
     try {
@@ -28,24 +29,49 @@ const CustomersTable = () => {
         "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList",
         { headers }
       );
-      setcustomerFetchError(false)
+      setcustomerFetchError(false);
       setCustomers(response.data);
       if (response.data != null) {
         setIsLoading(false);
       }
     } catch (error) {
       console.log("EEEEEEEEEEEEEEEEE", error);
-     
+
+      setIsLoading(false);
+      setcustomerFetchError(true);
+
+      console.error("API Call Error:", error);
+    }
+  };
+
+  const fetchFilterCustomers = async (
+    Search = "",
+    pageNo = 1,
+    PageLength = 10
+  ) => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        { headers }
+      );
+      setcustomerFetchError(false);
+      setCustomers(response.data.Data);
+      setTotalRecords(response.data.totalRecords);
+      if (response.data != null) {
         setIsLoading(false);
-        setcustomerFetchError(true)
-  
-        console.error("API Call Error:", error);
-      
+      }
+    } catch (error) {
+      console.log("EEEEEEEEEEEEEEEEE", error);
+
+      setIsLoading(false);
+      setcustomerFetchError(true);
+      setCustomers([]);
+      console.error("API Call Error:", error);
     }
   };
 
   useEffect(() => {
-    fetchCustomers();
+    fetchFilterCustomers();
   }, []);
 
   return (
@@ -54,14 +80,10 @@ const CustomersTable = () => {
         <div className="">
           <div className="">
             {customerAddSuccess && (
-              <Alert severity="success">
-                Customer Added Successfuly
-              </Alert>
+              <Alert severity="success">Customer Added Successfuly</Alert>
             )}
             {customerUpdateSuccess && (
-              <Alert severity="success">
-                Customer Updated Successfuly
-              </Alert>
+              <Alert severity="success">Customer Updated Successfuly</Alert>
             )}
           </div>
 
@@ -73,13 +95,13 @@ const CustomersTable = () => {
             ) : (
               <div>
                 <CustomerTR
-                customerFetchError={customerFetchError}
-                headers={headers}
+                  customerFetchError={customerFetchError}
+                  headers={headers}
                   customers={customers}
                   setCustomerAddSuccess={setCustomerAddSuccess}
                   setCustomerUpdateSuccess={setCustomerUpdateSuccess}
-                  fetchCustomers={fetchCustomers}
-
+                  fetchCustomers={fetchFilterCustomers}
+                  totalRecords={totalRecords}
                 />
               </div>
             )}

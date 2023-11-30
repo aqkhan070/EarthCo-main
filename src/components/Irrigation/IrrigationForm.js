@@ -10,6 +10,7 @@ import IrrigationControler from "./IrrigationControler";
 import Alert from '@mui/material/Alert';
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
+import { CircularProgress } from "@mui/material";
 
 const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSelectedIrr, setSuccessres }) => {
   const token = Cookies.get("token");
@@ -27,8 +28,10 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
   const [selectedSL, setSelectedSL] = useState(null);
 
   const [submitClicked, setSubmitClicked] = useState(false)
-  const { name, fetchName } = useFetchCustomerName();
+  const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
+
+  const [addSucces, setAddSucces] = useState("")
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
@@ -159,6 +162,8 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
 
   const [controllerList, setControllerList] = useState([])
 
+  const [isLoading, setIsLoading] = useState(true)
+  
   const fetchIrrigation = async () => {
     if (selectedIrr === 0) {
       return
@@ -166,13 +171,21 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
     try {
       const res = await axios.get(`https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigation?id=${selectedIrr}`,{headers});
       console.log("selected irrigation is", res.data);
+
       setFormData(res.data.IrrigationData)
       setControllerList(res.data.ControllerData)
       setInputValue(res.data.IrrigationData.CustomerId)
+      setIsLoading(false)
     } catch (error) {
+      setIsLoading(false)
+
       console.log("fetch irrigation api call error", error);
     }
   };
+
+ 
+
+ 
 
   useEffect(() => {
     fetchIrrigation()
@@ -181,6 +194,16 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
   useEffect(() => {
     fetchCustomers()
   },[])
+
+
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="center-loader">
+  //                       <CircularProgress />
+  //                     </div>
+  //   )
+  // }
 
 
   return (
@@ -194,6 +217,7 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
             <div className="card-body">
               <div className="">
                 {errorMessage? <Alert severity="error">{errorMessage}</Alert>: null }
+                {addSucces && <Alert severity="success">{addSucces}</Alert>}
                 
                
                   <div className="row mb-2 mx-1">
@@ -209,10 +233,21 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.CustomerId
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                              <div className="customer-dd-border">
+                                <h6> {option.CompanyName}</h6>
+                                <small># {option.UserId}</small>
+                              </div>
+                            </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
+                          onClick={() => {
+                            setName("");
+                          }}
                           onChange={(e) => {
                             fetchCustomers(e.target.value);
                           }}
@@ -285,7 +320,7 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
 
                     <div className="col-md-3 ">
                       <div className="col-md-12">
-                        <label className="form-label">Irrigation number<span className="text-danger">*</span></label>
+                        <label className="form-label">Irrigation number</label>
                       </div>
                       <TextField
                         type="text"
@@ -338,13 +373,14 @@ const IrrigationForm = ({ getIrrigationList, setShowContent, selectedIrr, setSel
 
         {showForm && (
           <IrrigationControler
+          setAddSucces={setAddSucces}
           fetchIrrigation={fetchIrrigation}
             toggleShowForm={toggleShowForm}
             selectedIrr={selectedIrr}
           />
         )}
 
-        <ControllerTable fetchIrrigation={fetchIrrigation} headers={headers} controllerList={controllerList} />
+        <ControllerTable setAddSucces={setAddSucces} fetchIrrigation={fetchIrrigation} headers={headers} controllerList={controllerList} />
       </div>
     </>
   );

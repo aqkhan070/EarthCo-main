@@ -18,8 +18,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Delete, Create } from "@mui/icons-material";
-
-
+import Alert from "@mui/material/Alert";
 
 const Items = () => {
   const headers = {
@@ -32,8 +31,9 @@ const Items = () => {
   const [orderBy, setOrderBy] = useState("name");
   const [order, setOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedItem, setSelectedItem] = useState(0)
+  const [selectedItem, setSelectedItem] = useState(0);
 
+  const [successRes, setSuccessRes] = useState("");
 
   const getItemsList = async () => {
     try {
@@ -47,6 +47,28 @@ const Items = () => {
       console.log("Api call error", error);
     }
   };
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [search, setSearch] = useState("");
+
+  const getFilteredItemsList = async (
+    Search = "",
+    pageNo = 1,
+    PageLength = 10
+  ) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetItemServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        { headers }
+      );
+      console.log("filtered items data", res.data);
+      setItemsList(res.data.Data);
+      setTotalRecords(res.data.totalRecords);
+    } catch (error) {
+      setItemsList([]);
+      console.log("Api call error", error);
+    }
+  };
+
   const deleteItem = async (id) => {
     try {
       const res = await axios.get(
@@ -54,19 +76,34 @@ const Items = () => {
         { headers }
       );
       console.log("item deleted", res.data);
-     
     } catch (error) {
       console.log("Api call error", error);
     }
   };
 
+  const [tablePage, setTablePage] = useState(0);
+
   useEffect(() => {
-    getItemsList();
+    // Initial fetch of estimates
+    getFilteredItemsList();
   }, []);
 
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    getFilteredItemsList(search, tablePage + 1, rowsPerPage);
+  }, [search, tablePage, rowsPerPage]);
+
+  // useEffect(() => {
+  //   getItemsList();
+  // }, []);
+
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    console.log("New Page:", newPage);
+    setTablePage(newPage);
   };
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -79,9 +116,7 @@ const Items = () => {
     setOrderBy(property);
   };
 
-  const filteredItems = itemsList.filter((item) =>
-    item.ItemName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = itemsList;
 
   const emptyRows =
     rowsPerPage -
@@ -93,172 +128,184 @@ const Items = () => {
       {showContent ? (
         <>
           <div className="container-fluid">
-            <div className="card">
-              <div className="">
-                <div className="row">
-                  <div className="col-xl-12">
-                    <div className="card" id="bootstrap-table2">
-                      <div className=" card-header flex-wrap d-flex justify-content-between  border-0">
-                        <h4 className="heading mb-0">Items</h4>
-                        <div>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            onClick={() => setShowContent(false)}
-                          >
-                            + Add New
-                          </Button>
-                        </div>
-                      </div>
+            <div className="col-xl-12">
+              <div className="card" id="bootstrap-table2">
+                {successRes && <Alert security="success">{successRes}</Alert>}
 
-                      <div className="card-body">
-                    
-                          <div className="search-container ">
-                            <TextField
-                              label="Search"
-                              variant="standard"
-                              size="small"
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                          </div>
-                          <Table>
-                            <TableHead className="table-header">
-                              <TableRow>
-                                <TableCell>
-                                  <div className="form-check custom-checkbox checkbox-success check-lg me-3">
-                                    <input
-                                      type="checkbox"
-                                      className="form-check-input"
-                                      id="checkAll"
-                                      required=""
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor="checkAll"
-                                    ></label>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "ItemName"}
-                                    direction={
-                                      orderBy === "ItemName" ? order : "asc"
-                                    }
-                                    onClick={() =>
-                                      handleSortRequest("ItemName")
-                                    }
-                                  >
-                                    Name
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "SKU"}
-                                    direction={
-                                      orderBy === "SKU" ? order : "asc"
-                                    }
-                                    onClick={() => handleSortRequest("SKU")}
-                                  >
-                                    SKU
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "IncomeAccount"}
-                                    direction={
-                                      orderBy === "IncomeAccount"
-                                        ? order
-                                        : "asc"
-                                    }
-                                    onClick={() =>
-                                      handleSortRequest("IncomeAccount")
-                                    }
-                                  >
-                                    Account#
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>Actions</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {(rowsPerPage > 0
-                                ? filteredItems.slice(
-                                    page * rowsPerPage,
-                                    page * rowsPerPage + rowsPerPage
-                                  )
-                                : filteredItems
-                              ).map((item, index) => (
-                                <TableRow key={index} hover>
-                                  <TableCell>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3">
-                                      <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id={`customCheckBox${index}`}
-                                        required=""
-                                      />
-                                      <label
-                                        className="form-check-label"
-                                        htmlFor={`customCheckBox${index}`}
-                                      ></label>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell>{item.ItemName}</TableCell>
-                                  <TableCell>{item.SKU}</TableCell>
-                                  <TableCell>{item.IncomeAccount}</TableCell>
-                                  <TableCell>
-                                  
-                                      <Button
-                                        //  className=" btn btn-primary  btn-icon-xxs me-2"
-                                        size="small"
-                                        onClick={() => {
-                                          setSelectedItem(item.ItemId)
-                                          setShowContent(false)
-                                        }}
-                                      >
-                                        {/* <i className="fa fa-pencil"></i> */}
-                                        <Create></Create>
-                                      </Button>
-                                      <Button
-                                        //  className="btn btn-danger btn-icon-xxs "
-                                        size="small"
-                                        onClick={() => {deleteItem(item.ItemId)}}
-                                      >
-                                        {/* <i className="fa fa-trash"></i> */}
-                                        <Delete color="error" />
-                                      </Button>
-                                   
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                              {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                  <TableCell colSpan={5} />
-                                </TableRow>
-                              )}
-                            </TableBody>
-                          </Table>
-                     
-                        <TablePagination
-                          rowsPerPageOptions={[ 10, 50, 100]}
-                          component="div"
-                          count={filteredItems.length}
-                          rowsPerPage={rowsPerPage}
-                          page={page}
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                      </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-3 mb-2 text-left">
+                      <TextField
+                        label="Search"
+                        variant="standard"
+                        size="small"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="col-md-9 text-right">
+                      <button
+                        className="btn btn-primary btn-sm "
+                        onClick={() => setShowContent(false)}
+                      >
+                        + Add New
+                      </button>
                     </div>
                   </div>
+
+                  <Table>
+                    <TableHead className="table-header">
+                      <TableRow>
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "ItemName"}
+                            direction={orderBy === "ItemName" ? order : "asc"}
+                            onClick={() => handleSortRequest("ItemName")}
+                          >
+                            Name
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "SKU"}
+                            direction={orderBy === "SKU" ? order : "asc"}
+                            onClick={() => handleSortRequest("SKU")}
+                          >
+                            SKU
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "IncomeAccount"}
+                            direction={
+                              orderBy === "IncomeAccount" ? order : "asc"
+                            }
+                            onClick={() => handleSortRequest("IncomeAccount")}
+                          >
+                            Account #
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell className="text-end">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {(rowsPerPage > 0
+                        ? filteredItems.slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                        : filteredItems
+                      ).map((item, index) => (
+                        <TableRow key={index} hover>
+                          <TableCell>{item.ItemName}</TableCell>
+                          <TableCell>{item.SKU}</TableCell>
+                          <TableCell>{item.IncomeAccount}</TableCell>
+                          <TableCell className="text-end">
+                            <Button
+                              //  className=" btn btn-primary  btn-icon-xxs me-2"
+                              size="small"
+                              onClick={() => {
+                                setSelectedItem(item.ItemId);
+                                setShowContent(false);
+                              }}
+                            >
+                              {/* <i className="fa fa-pencil"></i> */}
+                              <Create></Create>
+                            </Button>
+                            <Button
+                              //  className="btn btn-danger btn-icon-xxs "
+                              size="small"
+                              data-bs-toggle="modal"
+                              // className="btn btn-danger btn-icon-xxs mr-2"
+                              data-bs-target={`#deleteItemModal${item.ItemId}`}
+                            >
+                              {/* <i className="fa fa-trash"></i> */}
+                              <Delete color="error" />
+                            </Button>
+
+                            <div
+                              className="modal fade"
+                              id={`deleteItemModal${item.ItemId}`}
+                              tabIndex="-1"
+                              aria-labelledby="deleteModalLabel"
+                              aria-hidden="true"
+                            >
+                              <div
+                                className="modal-dialog modal-dialog-centered"
+                                role="document"
+                              >
+                                <div className="modal-content">
+                                  <div className="modal-header">
+                                    <h5 className="modal-title">Delete Item</h5>
+                                    <button
+                                      type="button"
+                                      className="btn-close"
+                                      data-bs-dismiss="modal"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body text-center">
+                                    <p>
+                                      Are you sure you want to delete{" "}
+                                      {item.ItemName}
+                                    </p>
+                                  </div>
+                                  <div className="modal-footer">
+                                    <button
+                                      type="button"
+                                      id="closer"
+                                      className="btn btn-danger light me-"
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Close
+                                    </button>
+                                    <button
+                                      className="btn btn-primary"
+                                      data-bs-dismiss="modal"
+                                      onClick={() => deleteItem(item.ItemId)}
+                                    >
+                                      Yes
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 53 * emptyRows }}>
+                          <TableCell colSpan={5} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50]}
+                    component="div"
+                    count={totalRecords}
+                    rowsPerPage={rowsPerPage}
+                    page={tablePage} // Use tablePage for the table rows
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={(event) => {
+                      setRowsPerPage(parseInt(event.target.value, 10));
+                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                    }}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </>
       ) : (
-        <AddItem headers={headers} selectedItem={selectedItem} setShowContent={setShowContent} />
+        <AddItem
+          headers={headers}
+          getFilteredItemsList={getFilteredItemsList}
+          selectedItem={selectedItem}
+          setShowContent={setShowContent}
+          setSuccessRes={setSuccessRes}
+        />
       )}
     </>
   );

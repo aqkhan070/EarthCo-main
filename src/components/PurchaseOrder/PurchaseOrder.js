@@ -30,8 +30,17 @@ const PurchaseOrder = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const { PoList, loading, error, fetchPo, filteredPo, fetchFilterPo, totalRecords } = useFetchPo();
- 
+  
+  const {
+    PoList,
+    loading,
+    error,
+    fetchPo,
+    filteredPo,
+    fetchFilterPo,
+    totalRecords,
+  } = useFetchPo();
+
   const [showContent, setShowContent] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -46,37 +55,23 @@ const PurchaseOrder = () => {
   const [postSuccess, setPostSuccess] = useState(false);
   const [postSuccessRes, setPostSuccessRes] = useState("");
 
-  const [open, setOpen] = useState(0)
-  const [closed, setClosed] = useState(0)
-
   const navigate = useNavigate();
-  const {setPOData} = useContext(DataContext);
-
-  useEffect(() => {
-    // Filter the estimates array to get only the entries with Status === "Pending"
-    const pendingPO = PoList.filter(estimate => estimate.Status === "Open");
-    const pendingClosed = PoList.filter(estimate => estimate.Status === "Closed");
-   
-
-    // Update the state variable with the number of pending estimates
-    setOpen(pendingPO.length);
-    setClosed(pendingClosed.length);
-   
-  }, [PoList]);
-
+  const { setPOData } = useContext(DataContext);
 
   const [tablePage, setTablePage] = useState(0);
-  const [statusId, setStatusId] = useState(0)
+  const [statusId, setStatusId] = useState(0);
+  const [searchPo, setSearchPo] = useState("");
   useEffect(() => {
     // Initial fetch of estimates
-    fetchFilterPo(1, rowsPerPage, statusId);
+    fetchFilterPo();
   }, []);
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterPo(tablePage + 1, rowsPerPage, statusId);
-  }, [tablePage, rowsPerPage, statusId]);
-  
+    fetchFilterPo(searchPo, tablePage + 1, rowsPerPage, statusId);
+    console.log("search is" , searchPo)
+  }, [searchPo, tablePage, rowsPerPage, statusId]);
+
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
   };
@@ -107,10 +102,8 @@ const PurchaseOrder = () => {
 
   useEffect(() => {
     // fetchPo();
-    setselectedPo(0)
+    setselectedPo(0);
   }, []);
-
-  
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -123,17 +116,7 @@ const PurchaseOrder = () => {
     setOrderBy(property);
   };
 
-  const sortedPoList = filteredPo.filter((po) =>
-    po.SupplierName.toLowerCase().includes(search.toLowerCase())
-  ).sort((a, b) => {
-    if (orderBy === "Vendor") {
-      return order === "asc"
-        ? a.SupplierName.localeCompare(b.SupplierName)
-        : b.SupplierName.localeCompare(a.SupplierName);
-    }
-    // Add more cases for other columns if needed
-    return 0;
-  });
+  const sortedPoList = filteredPo;
 
   const emptyRows =
     rowsPerPage -
@@ -146,7 +129,12 @@ const PurchaseOrder = () => {
           <PoTitle />
           <div className="container-fluid">
             <div className="row">
-              <PoCards closed={totalRecords.totalClosedRecords} open={totalRecords.totalOpenRecords} setStatusId={setStatusId} statusId={statusId} />
+              <PoCards
+                closed={totalRecords.totalClosedRecords}
+                open={totalRecords.totalOpenRecords}
+                setStatusId={setStatusId}
+                statusId={statusId}
+              />
 
               <div className="col-xl-3 mb-3 text-right"></div>
               <div className="col-xl-12">
@@ -187,8 +175,8 @@ const PurchaseOrder = () => {
                           label="Search Purchase order"
                           variant="standard"
                           size="small"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
+                          value={searchPo}
+                          onChange={(e) => setSearchPo(e.target.value)}
                         />
                         <div>
                           <button
@@ -203,157 +191,159 @@ const PurchaseOrder = () => {
                       </div>
 
                       <div className="card-body">
-                       
-                          <Table>
-                            <TableHead className="table-header">
+                        <Table>
+                          <TableHead className="table-header">
+                            <TableRow>
+                              <TableCell>
+                                <TableSortLabel
+                                  active={orderBy === "Vendor"}
+                                  direction={
+                                    orderBy === "Vendor" ? order : "asc"
+                                  }
+                                  onClick={() => handleRequestSort("Vendor")}
+                                >
+                                  Vendor
+                                </TableSortLabel>
+                              </TableCell>
+                              <TableCell>Date</TableCell>
+                              <TableCell>Status</TableCell>
+                              <TableCell>Regional Manager</TableCell>
+                              <TableCell>Requested By</TableCell>
+                              <TableCell>Estimate#</TableCell>
+                              <TableCell>Bill#</TableCell>
+                              <TableCell>Invoice#</TableCell>
+                              <TableCell>Amount</TableCell>
+                              <TableCell>Actions</TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {!filteredPo ? (
                               <TableRow>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "Vendor"}
-                                    direction={
-                                      orderBy === "Vendor" ? order : "asc"
-                                    }
-                                    onClick={() => handleRequestSort("Vendor")}
-                                  >
-                                    Vendor
-                                  </TableSortLabel>
+                                {" "}
+                                <TableCell className="text-center" colSpan={9}>
+                                  {" "}
+                                  No records found{" "}
                                 </TableCell>
-                                <TableCell>Date</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Regional Manager</TableCell>
-                                <TableCell>Requested By</TableCell>
-                                <TableCell>Estimate#</TableCell>
-                                <TableCell>Bill#</TableCell>
-                                <TableCell>Invoice#</TableCell>
-                                <TableCell>Amount</TableCell>
-                                <TableCell>Actions</TableCell>
                               </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {error ? <TableRow> <TableCell className="text-center" colSpan={9}> No records found </TableCell></TableRow>: null}
-                              {sortedPoList
-                                .slice(
-                                  page * rowsPerPage,
-                                  page * rowsPerPage + rowsPerPage
-                                )
-                                .map((po) => (
-
-                                  <TableRow hover key={po.EstimateNumber}>
-                                    <TableCell>{po.SupplierName}</TableCell>
-                                    <TableCell>{formatDate(po.Date)}</TableCell>
-                                    <TableCell>{po.Status}</TableCell>
-                                    <TableCell>{po.RegionalManager}</TableCell>
-                                    <TableCell>{po.RequestedBy}</TableCell>
-                                    <TableCell>{po.EstimateNumber}</TableCell>
-                                    <TableCell>{po.BillNumber}</TableCell>
-                                    <TableCell>{po.InvoiceNumber}</TableCell>
-                                    <TableCell>{po.Amount}</TableCell>
-                                    <TableCell>
-                                      <div className="button-container">
+                            ) : (
+                              filteredPo.map((po) => (
+                                <TableRow hover key={po.EstimateNumber}>
+                                  <TableCell>{po.SupplierName}</TableCell>
+                                  <TableCell>{formatDate(po.Date)}</TableCell>
+                                  <TableCell>
+                                    <span className="badge badge-pill badge-success ">
+                                      {po.Status}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell>{po.RegionalManager}</TableCell>
+                                  <TableCell>{po.RequestedBy}</TableCell>
+                                  <TableCell>{po.EstimateNumber}</TableCell>
+                                  <TableCell>{po.BillNumber}</TableCell>
+                                  <TableCell>{po.InvoiceNumber}</TableCell>
+                                  <TableCell>{po.Amount}</TableCell>
+                                  <TableCell>
+                                    <div className="button-container">
                                       <Button
-                            // className="btn btn-primary btn-icon-xxs me-2"
-                            onClick={() => {
-                              setPOData(po)
-                              navigate(
-                                "/Dashboard/Purchase-Order/Purchase-Order-Preview"
-                              );
-                            }}
-                          >
-                            {/* <i className="fa-solid fa-eye"></i> */}
+                                        // className="btn btn-primary btn-icon-xxs me-2"
+                                        onClick={() => {
+                                          setPOData(po);
+                                          navigate(
+                                            "/Dashboard/Purchase-Order/Purchase-Order-Preview"
+                                          );
+                                        }}
+                                      >
+                                        {/* <i className="fa-solid fa-eye"></i> */}
 
-                            <Visibility />
-                          </Button>
-                                        <Button
-                                          //  className="btn btn-primary btn-icon-xxs me-2"
-                                          onClick={() => {
-                                            setShowContent(false);
-                                            setselectedPo(po.PurchaseOrderId);
-                                          }}
-                                        >
-                                          {/* <i className="fas fa-pencil-alt"></i> */}
-                                          <Create></Create>
-                                        </Button>
-                                        <Button
-                                          // className="btn btn-danger btn-icon-xxs mr-2"
-                                          data-bs-toggle="modal"
-                                          data-bs-target={`#deleteModal${po.PurchaseOrderId}`}
-                                        >
-                                         {/* <i className="fas fa-trash-alt"></i> */}
-                                         <Delete color="error"></Delete>
-                                        </Button>
+                                        <Visibility />
+                                      </Button>
+                                      <Button
+                                        //  className="btn btn-primary btn-icon-xxs me-2"
+                                        onClick={() => {
+                                          setShowContent(false);
+                                          setselectedPo(po.PurchaseOrderId);
+                                        }}
+                                      >
+                                        {/* <i className="fas fa-pencil-alt"></i> */}
+                                        <Create></Create>
+                                      </Button>
+                                      <Button
+                                        // className="btn btn-danger btn-icon-xxs mr-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target={`#deleteModal${po.PurchaseOrderId}`}
+                                      >
+                                        {/* <i className="fas fa-trash-alt"></i> */}
+                                        <Delete color="error"></Delete>
+                                      </Button>
+                                      <div
+                                        className="modal fade"
+                                        id={`deleteModal${po.PurchaseOrderId}`}
+                                        tabIndex="-1"
+                                        aria-labelledby="deleteModalLabel"
+                                        aria-hidden="true"
+                                      >
                                         <div
-                                          className="modal fade"
-                                          id={`deleteModal${po.PurchaseOrderId}`}
-                                          tabIndex="-1"
-                                          aria-labelledby="deleteModalLabel"
-                                          aria-hidden="true"
+                                          className="modal-dialog modal-dialog modal-dialog-centered"
+                                          role="document"
                                         >
-                                          <div
-                                            className="modal-dialog modal-dialog modal-dialog-centered"
-                                            role="document"
-                                          >
-                                            <div className="modal-content">
-                                              <div className="modal-header">
-                                                <h5 className="modal-title">
-                                                  Delete Purchase Order
-                                                 
-                                                </h5>
-                                                <button
-                                                  type="button"
-                                                  className="btn-close"
-                                                  data-bs-dismiss="modal"
-                                                ></button>
-                                              </div>
-                                              <div className="modal-body">
-                                                <p>
-                                                Are you sure you want to
-                                                  delete {po.PurchaseOrderId}?
-                                                </p>
-                                                </div>
-                                                <div className="modal-footer">
-                                                  <button
-                                                    type="button"
-                                                    id="closer"
-                                                    className="btn btn-danger light me-2"
-                                                    data-bs-dismiss="modal"
-                                                  >
-                                                    Close
-                                                  </button>
-                                                  <button
-                                                    className="btn btn-primary "
-                                                    data-bs-dismiss="modal"
-                                                    onClick={() => {
-                                                      deletePo(
-                                                        po.PurchaseOrderId
-                                                      );
-                                                    }}
-                                                  >
-                                                    Yes
-                                                  </button>
-                                                </div>
-                                              
+                                          <div className="modal-content">
+                                            <div className="modal-header">
+                                              <h5 className="modal-title">
+                                                Delete Purchase Order
+                                              </h5>
+                                              <button
+                                                type="button"
+                                                className="btn-close"
+                                                data-bs-dismiss="modal"
+                                              ></button>
+                                            </div>
+                                            <div className="modal-body">
+                                              <p>
+                                                Are you sure you want to delete{" "}
+                                                {po.PurchaseOrderId}?
+                                              </p>
+                                            </div>
+                                            <div className="modal-footer">
+                                              <button
+                                                type="button"
+                                                id="closer"
+                                                className="btn btn-danger light me-2"
+                                                data-bs-dismiss="modal"
+                                              >
+                                                Close
+                                              </button>
+                                              <button
+                                                className="btn btn-primary "
+                                                data-bs-dismiss="modal"
+                                                onClick={() => {
+                                                  deletePo(po.PurchaseOrderId);
+                                                }}
+                                              >
+                                                Yes
+                                              </button>
                                             </div>
                                           </div>
                                         </div>
                                       </div>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                            </TableBody>
-                          </Table>
-                       
-                          <TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={totalRecords.totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+                        </Table>
+
+                        <TablePagination
+                          rowsPerPageOptions={[10, 25, 50]}
+                          component="div"
+                          count={totalRecords.totalRecords}
+                          rowsPerPage={rowsPerPage}
+                          page={tablePage} // Use tablePage for the table rows
+                          onPageChange={handleChangePage}
+                          onRowsPerPageChange={(event) => {
+                            setRowsPerPage(parseInt(event.target.value, 10));
+                            setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                          }}
+                        />
                       </div>
                     </>
                   )}
@@ -364,7 +354,7 @@ const PurchaseOrder = () => {
         </>
       ) : (
         <AddPO
-        setselectedPo={setselectedPo}
+          setselectedPo={setselectedPo}
           selectedPo={selectedPo}
           setShowContent={setShowContent}
           setPostSuccessRes={setPostSuccessRes}

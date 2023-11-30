@@ -17,6 +17,8 @@ import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import useDeleteFile from "../Hooks/useDeleteFile";
 import { useNavigate } from "react-router-dom";
+import MapCo from "./MapCo";
+import { DataContext } from "../../context/AppData";
 
 const UpdateSRForm = ({
   headers,
@@ -25,8 +27,10 @@ const UpdateSRForm = ({
   setShowCards,
   fetchServiceRequest,
   setSuccessAlert,
-  fetchFilterServiceRequest
+  fetchFilterServiceRequest,
 }) => {
+  const { sRMapData, setSRMapData } = useContext(DataContext);
+
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { deleteSRFile } = useDeleteFile();
 
@@ -50,10 +54,15 @@ const UpdateSRForm = ({
       WorkRequest: "",
       ActionTaken: "",
       tblSRItems: [],
+      tblServiceRequestLatLongs: [],
     },
   }); // payload
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("map data isss", sRMapData);
+  }, [sRMapData]);
 
   const [itemInput, setItemInput] = useState({
     Name: "",
@@ -275,6 +284,7 @@ const UpdateSRForm = ({
     setBtnDisable(true);
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
+    SRData.ServiceRequestData.tblServiceRequestLatLongs = sRMapData;
 
     console.log("servise request data before", SRData);
     formData.append(
@@ -366,6 +376,8 @@ const UpdateSRForm = ({
       );
 
       setSRList(response.data.Data);
+
+      setSRMapData(response.data.LatLongData);
 
       setSRData((prevData) => ({
         ServiceRequestData: {
@@ -1023,22 +1035,31 @@ const UpdateSRForm = ({
                   <div className="card-body row">
                     <div className="col-md-12 mx-1 mt-2">
                       <div className="row">
-                        <div className="col-md-4 mb-1">
-                          {" "}
-                          {/* Adjust the column size as needed */}
-                          <label className="form-label">Work Requested:</label>
-                          <TextField
-                            name="WorkRequest"
-                            multiline
-                            rows={3}
-                            value={SRData.ServiceRequestData.WorkRequest || ""}
-                            onChange={handleInputChange}
-                            variant="outlined"
-                            placeholder="Work Requested"
-                            size="small"
-                            fullWidth
-                          />
-                        </div>
+                        {SRData.ServiceRequestData.SRTypeId === 3 ? (
+                          <></>
+                        ) : (
+                          <div className="col-md-4 mb-1">
+                            {" "}
+                            {/* Adjust the column size as needed */}
+                            <label className="form-label">
+                              Work Requested:
+                            </label>
+                            <TextField
+                              name="WorkRequest"
+                              multiline
+                              rows={3}
+                              value={
+                                SRData.ServiceRequestData.WorkRequest || ""
+                              }
+                              onChange={handleInputChange}
+                              variant="outlined"
+                              placeholder="Work Requested"
+                              size="small"
+                              fullWidth
+                            />
+                          </div>
+                        )}
+
                         <div className="col-md-4 mb-1">
                           {" "}
                           <label className="form-label">Action Taken:</label>
@@ -1073,16 +1094,17 @@ const UpdateSRForm = ({
                             placeholder="Completed Date "
                           />
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-12">
                           {SRData.ServiceRequestData.SRTypeId === 3 ? (
-                            <iframe
-                              className="SRmap"
-                              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
-                              allowFullScreen=""
-                              loading="lazy"
-                              referrerPolicy="no-referrer-when-downgrade"
-                            ></iframe>
+                            <MapCo />
                           ) : (
+                            // <iframe
+                            //   className="SRmap"
+                            //   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
+                            //   allowFullScreen=""
+                            //   loading="lazy"
+                            //   referrerPolicy="no-referrer-when-downgrade"
+                            // ></iframe>
                             ""
                           )}
                         </div>
@@ -1188,10 +1210,8 @@ const UpdateSRForm = ({
                           onClick={() => {
                             deleteSRFile(file.SRFileId);
                             setTimeout(() => {
-                              
                               fetchSR();
                             }, 1000);
-                          
                           }}
                         >
                           <span>
@@ -1246,7 +1266,6 @@ const UpdateSRForm = ({
                           }}
                           onClick={() => {
                             removeFile(index);
-                           
                           }}
                         >
                           <span>

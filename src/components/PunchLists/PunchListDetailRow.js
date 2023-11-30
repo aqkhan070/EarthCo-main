@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useContext, useState } from "react";
 import {
   Table,
   TableBody,
@@ -23,36 +23,63 @@ import { Add, Delete, Edit } from "@mui/icons-material";
 import punchList from "../../assets/images/1.jpg";
 import { Form } from "react-bootstrap";
 import axios from "axios";
+import { DataContext } from "../../context/AppData";
+import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import { useNavigate } from "react-router-dom";
+const PunchListDetailRow = ({
+  headers,
+  item,
+  rowIndex,
+  expandedRow,
+  setPlDetailId,
+}) => {
+  const { PunchDetailData, setPunchDetailData, setPunchListData } =
+    useContext(DataContext);
+  const navigate = useNavigate();
 
+  const [selectedItems, setSelectedItems] = useState([]);
 
-const PunchListDetailRow = ({headers, item, rowIndex, expandedRow,setPlDetailId }) => {
+  const handleCheckboxChange = (item) => {
+    if (selectedItems.includes(item)) {
+      // If item is already in the selectedItems array, remove it
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    } else {
+      // If item is not in the selectedItems array, add it
+      setSelectedItems([...selectedItems, item]);
+    }
 
-  const deletePunchListDetail = async (id) => {
-    // try {
-    //   const response = await axios.get(
-    //     `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlist?id=${id}`,
-    //     {
-    //       headers,
-    //     }
-    //   );
-  
-      
-  
-    //   const data = await response.json();
-  
-    //   // Handle the response. For example, you can reload the customers or show a success message
-    //   console.log("detail deleted successfully:", data);
-    //   window.location.reload();
-    // } catch (error) {
-    //   console.error("There was an error deleting the customer:", error);
-    // }
+    // const updatedSelectedItems = selectedItems.map((item) => ({
+    //   ...item,
+    //   isCost: true,
+    // }));
+    // setSelectedItems(updatedSelectedItems);
+    console.log("selected item is", selectedItems);
   };
 
- 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      deletePunchListDetail(id);
+  const deletePunchListDetail = async (id) => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/PunchList/DeletePunchlistDetail?id=${id}`,
+        {
+          headers,
+        }
+      );
+      console.log("delete pl details response", response.data);
+    } catch (error) {
+      console.error(
+        "There was an error deleting the punch list detail:",
+        error
+      );
     }
+  };
+
+  const handleDelete = (id) => {
+    deletePunchListDetail(id);
   };
   return (
     <>
@@ -81,37 +108,77 @@ const PunchListDetailRow = ({headers, item, rowIndex, expandedRow,setPlDetailId 
                               alt="PunchList Image"
                             />
                             <div>
-                              <h6>Keep plants</h6>
+                              <h6>{detail.DetailData.Notes}</h6>
                               <span>{detail.DetailData.PunchlistDetailId}</span>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           {" "}
-
-                          {detail.ItemData.map((item) => {
-                            return(
+                          <TableCell>
+                            {detail.ItemData.map((item) => {
+                              return (
                                 <div key={item.ItemId}>
-                            <Checkbox />
-                            <span>{item.Name}</span>
-                          </div>
-                            )
-                          })}
+                                  <Checkbox
+                                    checked={selectedItems.includes(item)}
+                                    onChange={() => handleCheckboxChange(item)}
+                                  />
+                                  <span>{item.Name}</span>
+                                </div>
+                              );
+                            })}
+                          </TableCell>
                         </TableCell>
                         <TableCell></TableCell>
                         <TableCell rowSpan={2} align="right">
-                          <Form.Select
-                            aria-label="Default select example"
-                            id="inputState"
-                            className="bg-white"
-                          >
-                            <option value="complete">Complete</option>
-                            <option value="pending">Pending</option>
-                            <option value="Estimate">Estimate</option>
-                            <option value="Service Request">
-                              Service Request
-                            </option>
-                          </Form.Select>
+                          <FormControl>
+                            {/* <InputLabel size="small" id="pLLink">
+                              select
+                            </InputLabel> */}
+                            <Select
+                              labelId="pLLink"
+                              aria-label="Default select example"
+                              variant="outlined"
+                              size="small"
+                              placeholder="Select"
+                              fullWidth
+                            >
+                              <MenuItem onClick={() => {}} value={2}>
+                                Complete
+                              </MenuItem>
+                              <MenuItem onClick={() => {}} value={3}>
+                                Pending
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  setPunchListData((prevData) => ({
+                                    ...prevData,
+                                    AssignTo: item.Data.AssignedTo,
+                                    ContactId: item.Data.ContactId,
+                                    PunchlistId: item.Data.PunchlistId,
+                                    CustomerId: item.Data.CustomerId,
+                                    ItemData: detail.ItemData,
+                                  }));
+                                  console.log("estimate", item);
+
+                                  navigate(
+                                    "/Dashboard/Estimates/Update-Estimate"
+                                  );
+                                }}
+                                value={5}
+                              >
+                                Estimate
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  console.log("service request");
+                                }}
+                                value={4}
+                              >
+                                Service Request
+                              </MenuItem>
+                            </Select>
+                          </FormControl>
                           <TableCell></TableCell>
                         </TableCell>
                         <TableCell align="left">
@@ -119,13 +186,75 @@ const PunchListDetailRow = ({headers, item, rowIndex, expandedRow,setPlDetailId 
                             className="delete-button"
                             data-bs-toggle="modal"
                             data-bs-target="#addPhotos"
-                            onClick={setPlDetailId(detail.DetailData.PunchlistDetailId)}
+                            onClick={() => {
+                              setPunchDetailData(detail);
+                            }}
                           >
                             <Edit />
                           </Button>
-                          <Button color="error" className="delete-button" onClick={() => {handleDelete(detail.DetailData.PunchlistDetailId)}}>
+                          <Button
+                            color="error"
+                            className="delete-button"
+                            data-bs-toggle="modal"
+                            data-bs-target={`#deletePlDetailsModal${detail.DetailData.PunchlistDetailId}`}
+                          >
                             <Delete />
                           </Button>
+
+                          <div
+                            className="modal fade"
+                            id={`deletePlDetailsModal${detail.DetailData.PunchlistDetailId}`}
+                            tabIndex="-1"
+                            aria-labelledby="deleteModalLabel"
+                            aria-hidden="true"
+                          >
+                            <div
+                              className="modal-dialog modal-dialog-centered"
+                              role="document"
+                            >
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5 className="modal-title">
+                                    Punch List Detail Delete
+                                  </h5>
+
+                                  <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                  ></button>
+                                </div>
+                                <div className="modal-body">
+                                  <p>
+                                    Are you sure you want to delete{" "}
+                                    {detail.DetailData.PunchlistDetailId}
+                                  </p>
+                                </div>
+
+                                <div className="modal-footer">
+                                  <button
+                                    type="button"
+                                    id="closer"
+                                    className="btn btn-danger light "
+                                    data-bs-dismiss="modal"
+                                  >
+                                    Close
+                                  </button>
+                                  <button
+                                    className="btn btn-primary "
+                                    data-bs-dismiss="modal"
+                                    onClick={() => {
+                                      handleDelete(
+                                        detail.DetailData.PunchlistDetailId
+                                      );
+                                    }}
+                                  >
+                                    Yes
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -136,7 +265,6 @@ const PunchListDetailRow = ({headers, item, rowIndex, expandedRow,setPlDetailId 
           </TableRow>
         );
       })}
-      
     </>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import useFetchProposalReports from "../Hooks/useFetchProposalReports";
-import { DataContext } from "../../context/AppData";
-import { CircularProgress } from "@mui/material";
 import formatDate from "../../custom/FormatDate";
 import logo from "../../assets/images/logo/earthco_logo.png";
+import useFetchProposalReports from "../Hooks/useFetchProposalReports";
+import { CircularProgress } from "@mui/material";
+import { DataContext } from "../../context/AppData";
 
-const ProposalSummary = () => {
+const SummaryReportPreview = () => {
   const { sRProposalData, setsRProposalData } = useContext(DataContext);
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
@@ -14,10 +14,10 @@ const ProposalSummary = () => {
       sRProposalData.formData.CustomerId,
       sRProposalData.formData.Year,
       sRProposalData.formData.Month,
-      "proposal"
+      "Service Request"
     );
 
-    console.log("sr propoal dala", reportData);
+    console.log("sr propoal dala", sRProposalData);
   }, []);
 
   return (
@@ -37,14 +37,19 @@ const ProposalSummary = () => {
                   <div className="row mb-5">
                     <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12">
                       <div>
+                        {" "}
                         <strong>{reportData[0].CompanyName}</strong>{" "}
                       </div>
                       <div>{reportData[0].Address}</div>
+
+                      <div>Submitted To: </div>
+                      <div>Christian Walton</div>
+                      <div>Optimum</div>
                     </div>
                     <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-12 text-center">
                       <h3>
                         {" "}
-                        <strong>Proposal Summary Report</strong>{" "}
+                        <strong>Service Request Summary Report</strong>{" "}
                       </h3>
                       <h3>Grandview Crest</h3>
                     </div>
@@ -59,11 +64,12 @@ const ProposalSummary = () => {
                     <table className="text-center table table-bordered ">
                       <thead>
                         <tr>
-                          <th>SUBMITTED:</th>
-                          <th>PROPOSAL #:</th>
-                          <th>DESCRIPTION:</th>
-                          <th>AMOUNT:</th>
+                          <th>RECEIVED:</th>
+                          <th>W/O #:</th>
+                          <th>REQUESTED WORK:</th>
+                          <th>EARTHCO'S ACTION TAKEN</th>
                           <th>STATUS: </th>
+                          <th>COMPLETED:</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -72,11 +78,12 @@ const ProposalSummary = () => {
                             <tr key={index}>
                               <td>{formatDate(report.CreatedDate)}</td>
                               <td className="left strong">
-                                {report.EstimateNumber}
+                                {report.ServiceRequestNumber}
                               </td>
-                              <td>{report.EstimateNotes}</td>
-                              <td>${report.TotalAmount}</td>
+                              <td>{report.WorkRequest}</td>
+                              <td>{report.ActionTaken}</td>
                               <td>{report.Status}</td>
+                              <td>{formatDate(report.CompletedDate)}</td>
                             </tr>
                           );
                         })}
@@ -93,4 +100,4 @@ const ProposalSummary = () => {
   );
 };
 
-export default ProposalSummary;
+export default SummaryReportPreview;

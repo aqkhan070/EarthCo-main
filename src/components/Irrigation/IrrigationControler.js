@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
+import { TextField } from "@mui/material";
 
 
-const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) => {
+const IrrigationControler = ({ setAddSucces, selectedIrr , toggleShowForm, fetchIrrigation }) => {
     const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -12,6 +13,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
   const [formData, setFormData] = useState({});
   const [addError, setAddError] = useState("")
   const handleChange = (e) => {
+    setEmptyFieldError(false)
     const { name, value } = e.target;
     const parsedValue =
       name === "NumberofBrokenHeads" ||
@@ -53,8 +55,18 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
     setPhoto(file);
   };
 
+  const [submitClicked, setSubmitClicked] = useState(false)
+  const [emptyFieldError, setEmptyFieldError] = useState(false)
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();  
+    setSubmitClicked(true)
+
+    if (!formData.MakeAndModel || !formData.SerialNumber) {
+      setEmptyFieldError(true)
+      return
+    }
 
    
     const postData = new FormData();
@@ -104,9 +116,16 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
         postData,
         {headers}
       ); 
+
       setFormData({      
       })
       fetchIrrigation(selectedIrr)
+      setTimeout(() => {
+      setAddSucces("")
+        
+      }, 3000);
+
+      setAddSucces(response.data.Message)
       toggleShowForm()
       document.getElementById("photo").value = '';
       document.getElementById("controllerPhoto").value = '';
@@ -117,6 +136,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
 
 
       console.log("Data submitted successfully:", response.data.Message);
+
     } catch (error) {     
       console.error("API Call Error:", error.response.data);
       setAddError(error.response.data)
@@ -140,14 +160,16 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
               >
                 <div className="col-sm-5 mx-2 mb-3">
                   <div className="col-md-12">
-                    <h5>Controller Make and Model</h5>
+                    <h5>Controller Make and Model<span class="text-danger">*</span></h5>
                   </div>
-                  <input
+                  <TextField
                     type="text"
+                    size="small"
                     className="form-control"
                     name="MakeAndModel"
                     onChange={handleChange}
                     placeholder="Controller Make and Model"
+                    error={submitClicked && !formData.MakeAndModel}
                   />
                 </div>
                 <div className="col-sm-5 mx-2 mb-3">
@@ -164,13 +186,15 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                 </div>
                 <div className="col-sm-5 mx-2 mb-3">
                   <div className="col-md-12">
-                    <h5>Serial Number</h5>
+                    <h5>Serial Number<span class="text-danger">*</span></h5>
                   </div>
-                  <input
+                  <TextField
                     type="text"
+                    size="small"
                     name="SerialNumber"
                     onChange={handleChange}
                     className="form-control"
+                    error={submitClicked && !formData.SerialNumber}
                     placeholder="Serial Number"
                   />
                 </div>
@@ -193,7 +217,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                   <div className="col-md-12 yesNoBtns">
                     <button
                       type="button"
-                      className={`btn light  col-md-6 YNbtn2 ${formData.isSatelliteBased && "btn-dark"}`}
+                      className={`btn light  col-md-6 YNbtn2 ${formData.isSatelliteBased && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -205,7 +229,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                     </button>
                     <button
                       type="button"
-                      className={`btn light  col-md-6 YNbtn2 ${!formData.isSatelliteBased && "btn-dark"}`}
+                      className={`btn light  col-md-6 YNbtn2 ${!formData.isSatelliteBased && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -224,7 +248,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                   <div className="col-md-12 yesNoBtns">
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-6 YNbtn1"
+                      className={`btn light col-md-6 YNbtn1 ${formData.TypeofWater == "Portable" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -236,7 +260,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-6 YNbtn2"
+                      className={`btn light col-md-6 YNbtn1 ${formData.TypeofWater == "Reclaimed" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -268,7 +292,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                   <div className="col-md-12 yesNoBtns">
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-2 YNbtn1"
+                      className={`btn light col-md-2 YNbtn1 ${formData.MeterSize == "1/2" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -280,7 +304,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-3 YNbtnMid borderRight"
+                      className={`btn light col-md-2 YNbtn1 ${formData.MeterSize == "3/4" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -288,11 +312,11 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                           }));
                       }}
                     >
-                      3/4 "
+                      3/4
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-2 YNbtnMid borderRight"
+                      className={`btn light col-md-2 YNbtn1 ${formData.MeterSize == "1" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -300,11 +324,11 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                           }));
                       }}
                     >
-                      1 "
+                      1
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-3 YNbtnMid borderRight"
+                      className={`btn light col-md-2 YNbtn1 ${formData.MeterSize == "11/2" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -312,11 +336,11 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                           }));
                       }}
                     >
-                      11/2 "
+                      11/2
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-2 YNbtn2"
+                      className={`btn light col-md-2 YNbtn1 ${formData.MeterSize == "2" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -324,7 +348,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                           }));
                       }}
                     >
-                      2 "
+                      2
                     </button>
                   </div>
                 </div>
@@ -371,7 +395,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                   <div className="col-md-12 yesNoBtns">
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-4 YNbtn1"
+                      className={`btn light col-md-4 YNbtn1 ${formData.TypeofValves == "Plastic" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -383,7 +407,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-4 YNbtnMid borderRight"
+                      className={`btn light col-md-4 YNbtn1 ${formData.TypeofValves == "Brass" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -395,7 +419,7 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
                     </button>
                     <button
                       type="button"
-                      className="btn light btn-dark col-md-4 YNbtn2"
+                      className={`btn light col-md-4 YNbtn1 ${formData.TypeofValves == "Mixed" && "btn-primary"}`}
                       onClick={() => {
                         setFormData((prevData) => ({
                             ...prevData,
@@ -500,12 +524,14 @@ const IrrigationControler = ({ selectedIrr , toggleShowForm, fetchIrrigation }) 
               <div className="row ">
                 <div className="col-md-8">
                   {addError && <Alert severity="error">{addError}</Alert>}
+                  {emptyFieldError&& <Alert severity="error">Please fill all required fields</Alert>}
+                
                 </div>
                 <div className=" col-md-4 text-right">
-                  <button type="button" className="btn btn-warning me-1" onClick={handleSubmit}>
+                  <button type="button" className="btn btn-primary me-1" onClick={handleSubmit}>
                     Add
                   </button>
-                  <button type="button" className="btn btn-danger light ms-1">
+                  <button onClick={toggleShowForm} type="button" className="btn btn-danger light ms-1">
                     Clear
                   </button>
                 </div>

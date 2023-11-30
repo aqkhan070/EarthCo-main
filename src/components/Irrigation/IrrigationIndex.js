@@ -14,7 +14,7 @@ const IrrigationIndex = () => {
 
     return (
         <>
-            <TitleBar icon={icon} title='Irrigation - Audit Form' />
+            <TitleBar icon={icon} title='Irrigation' />
             <Routes>
                 <Route path='' element={<Irrigationlist />} />
                 <Route path='Add-Irrigation' element={<IrrigationForm />} />

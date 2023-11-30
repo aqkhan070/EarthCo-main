@@ -1,5 +1,6 @@
 import React from "react";
 import { Form } from "react-bootstrap";
+import MapCo from "./MapCo";
 
 const Map = () => {
   return (
@@ -204,13 +205,7 @@ const Map = () => {
             </div>
           </div>
           <div className="col-md-7 py-3">
-            <iframe
-              className="map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            <MapCo/>
           </div>
         </div>
       </div>

@@ -48,7 +48,7 @@ const theme = createTheme({
 });
 
 const EstimateTR = ({
-  tableError,
+  
   headers,
   estimates,
   statusId,
@@ -57,7 +57,7 @@ const EstimateTR = ({
   setestmPreviewId,
 }) => {
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
-  const {estmRecords,filterdEstm, getFilteredEstimate} = useGetEstimate();
+  const {estmRecords, tableError, filterdEstm, getFilteredEstimate} = useGetEstimate();
 
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
@@ -201,6 +201,7 @@ const EstimateTR = ({
   const [pages, setpages] = useState(1)
 
   const [tablePage, setTablePage] = useState(0);
+  const [search, setSearch] = useState("")
   useEffect(() => {
     // Initial fetch of estimates
     getFilteredEstimate();
@@ -208,8 +209,8 @@ const EstimateTR = ({
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    getFilteredEstimate(tablePage + 1, rowsPerPage, statusId);
-  }, [tablePage, rowsPerPage, statusId]);
+    getFilteredEstimate(search,tablePage + 1, rowsPerPage, statusId);
+  }, [search, tablePage, rowsPerPage, statusId]);
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
     setTablePage(newPage);
@@ -279,12 +280,12 @@ const EstimateTR = ({
                         label="Search Estimates"
                         variant="standard"
                         size="small"
-                        value={filtering}
-                        onChange={(e) => setFiltering(e.target.value)}
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
                       />
                     </div>
                     <div className="custom-button-container">
-                      <button
+                      {/* <button
                         className="btn btn-danger btn-sm me-2"
                         data-bs-toggle="modal"
                         data-bs-target={`#deleteAllModal`}
@@ -296,7 +297,7 @@ const EstimateTR = ({
                       data-bs-target={`#updateAllModal`}
                       >
                         Update All
-                      </button>
+                      </button> */}
                       <button
                         className="btn btn-primary btn-sm"
                         onClick={() => {
@@ -403,11 +404,11 @@ const EstimateTR = ({
                   <Table>
                     <TableHead className="table-header">
                       <TableRow>
-                        <TableCell padding="checkbox">
-                          <Checkbox
+                        {/*<TableCell padding="checkbox">
+                           <Checkbox
                             checked={selectAll}
                             onChange={handleSelectAll}
-                          /></TableCell>
+                          /></TableCell> */}
                           <TableCell>#</TableCell>
                           <TableCell>Customer</TableCell>
                           <TableCell className="table-cell-align">Regional Manager</TableCell>
@@ -430,15 +431,14 @@ const EstimateTR = ({
                             No record Found
                           </TableCell>
                         </TableRow>
-                      ) : null}
-                      {filteredEstimates
+                      ) : filteredEstimates
                         .slice(
                           page * rowsPerPage,
                           page * rowsPerPage + rowsPerPage
                         )
                         .map((estimate, index) => (
                           <TableRow key={estimate.EstimateId} hover>
-                            <TableCell padding="checkbox">
+                            {/* <TableCell padding="checkbox">
                               <Checkbox
                                 checked={
                                   selectAll ||
@@ -450,7 +450,7 @@ const EstimateTR = ({
                                   handleCheckboxChange(e, estimate.EstimateId)
                                 }
                               />
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell>{estimate.EstimateId}</TableCell>
                             <TableCell className="table-cell-align" >{estimate.CustomerName}</TableCell>
                             <TableCell  className="table-cell-align" >{estimate.RegionalManager}</TableCell>
@@ -565,7 +565,8 @@ const EstimateTR = ({
                               </div>
                             </TableCell>
                           </TableRow>
-                        ))}
+                        )) }
+                     
                     </TableBody>
                   </Table>
                   
@@ -620,6 +621,7 @@ const EstimateTR = ({
           headers={headers}
           setShowContent={setShowContent}
           estimateId={selectedItem}
+         
           setShowStatusCards={setShowStatusCards}
           setSubmitsuccess={setSubmitsuccess}
           setUpdateSuccess={setUpdateSuccess}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Form } from "react-bootstrap";
 import punchList from "../../assets/images/1.jpg";
@@ -27,6 +27,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Add, Delete, Edit, Create } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import PunchListDetailRow from "./PunchListDetailRow";
+import formatDate from "../../custom/FormatDate";
 
 const theme = createTheme({
   palette: {
@@ -48,7 +49,7 @@ const theme = createTheme({
   },
 });
 
-const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
+const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setPlDetailId,totalRecords}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -97,6 +98,23 @@ const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
     } catch (error) {
       console.error("There was an error deleting the pl :", error);
     }
+  };
+
+  const [tablePage, setTablePage] = useState(0);
+  const [searchPL, setSearchPL] = useState("")
+  
+  useEffect(() => {
+    // Initial fetch of estimates
+    fetchFilterdPunchList();
+  }, []);
+
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    fetchFilterdPunchList(searchPL, tablePage + 1, rowsPerPage, statusId);
+  }, [searchPL, tablePage, rowsPerPage, statusId]);
+  
+  const handleChangePage = (event, newPage) => {
+    setTablePage(newPage);
   };
 
 
@@ -155,14 +173,14 @@ const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
                     label="Search"
                     variant="standard"
                     size="small"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={searchPL}
+                    onChange={(e) => setSearchPL(e.target.value)}
                   />
                 </div>
                 <div className="custom-button-container">
                   <a
                     href="/"
-                    className="btn btn-primary btn-md"
+                    className="btn btn-primary btn-sm"
                     data-bs-toggle="modal"
                     data-bs-target="#editPunch"
                   >
@@ -214,7 +232,7 @@ const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
               </TableHead>
               <TableBody>
                 {sortedAndSearchedCustomers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                
                   .map((item, rowIndex) => (
                     <>
                       <TableRow key={rowIndex} hover>
@@ -239,8 +257,8 @@ const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
                         <TableCell>{item.CustomerName}</TableCell>
                         <TableCell>{item.Data.Title}</TableCell>
                         <TableCell>{item.AssignToName}</TableCell>
-                        <TableCell>{item.Data.CreatedDate}</TableCell>
-                        <TableCell>{item.Status}</TableCell>
+                        <TableCell>{formatDate(item.Data.CreatedDate)}</TableCell>
+                        <TableCell><span className="badge badge-pill badge-success ">{item.Status}</span></TableCell>
                         <TableCell>{item.Reports}</TableCell>
 
                         <TableCell>
@@ -339,16 +357,17 @@ const PunchTR = ({ punchData, setselectedPL, setPlDetailId}) => {
             </Table>
 
             <TablePagination
-              component="div"
-              count={sortedAndSearchedCustomers.length}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(event) => {
-                setRowsPerPage(parseInt(event.target.value, 10));
-                setPage(0);
-              }}
-            />
+  rowsPerPageOptions={[10, 25, 50]}
+  component="div"
+  count={totalRecords.totalRecords}
+  rowsPerPage={rowsPerPage}
+  page={tablePage} // Use tablePage for the table rows
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={(event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+  }}
+/>
           </div>
         </div>
       </ThemeProvider>

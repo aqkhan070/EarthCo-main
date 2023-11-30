@@ -58,6 +58,8 @@ import BillPreview from "../components/Bill/BillPreview";
 import BillIndex from "../components/Bill/BillIndex";
 import AddBill from "../components/Bill/AddBill";
 import UpdateEstimateForm from "../components/Estimates/UpdateEstimateForm";
+import SummaryReportPreview from "../components/Reports/SummaryReportPreview";
+
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const token = Cookies.get("token");
@@ -170,6 +172,7 @@ const DashboardPage = () => {
                 element={<PunchlistPreview />}
               />
               <Route path="SummaryReport" element={<SummaryReport />} />
+              <Route path="SummaryReportPreview" element={<SummaryReportPreview />} />
               <Route path="ProposalSummary" element={<ProposalSummary />} />
               <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />
@@ -181,7 +184,7 @@ const DashboardPage = () => {
                 <Route path="Add-Landscape" element={<LandscapeForm />} />
               </Route>
               <Route
-                path="Landscape/PunchList-Report"
+                path="Landscape/Landscape-Report"
                 element={<Landscape />}
               />
             </Routes>

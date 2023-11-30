@@ -89,15 +89,16 @@ const ServiceRequestTR = ({
   const [pages, setpages] = useState(1)
 
   const [tablePage, setTablePage] = useState(0);
+  const [sRsearch, setSRsearch] = useState("")
   useEffect(() => {
     // Initial fetch of estimates
-    fetchFilterServiceRequest(1, rowsPerPage, statusId);
+    fetchFilterServiceRequest();
   }, []);
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterServiceRequest(tablePage + 1, rowsPerPage, statusId);
-  }, [tablePage, rowsPerPage, statusId]);
+    fetchFilterServiceRequest(sRsearch, tablePage + 1, rowsPerPage, statusId);
+  }, [sRsearch, tablePage, rowsPerPage, statusId]);
 
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
@@ -242,8 +243,8 @@ const ServiceRequestTR = ({
                       label="Search Service Request"
                       variant="standard"
                       size="small"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
+                      value={sRsearch}
+                      onChange={(e) => setSRsearch(e.target.value)}
                     />
                   </div>
 
@@ -268,7 +269,7 @@ const ServiceRequestTR = ({
                 <TableHead>
                   <TableRow className="table-header">
                     {[
-                      "Select",
+                      // "Select",
                       "Service Request #",
                       "Customer Name",
                       "Assigned to",
@@ -316,9 +317,9 @@ const ServiceRequestTR = ({
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((customer, rowIndex) => (
                       <TableRow key={rowIndex} hover>
-                        <TableCell>
+                        {/* <TableCell>
                           <Checkbox />
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell>{customer.ServiceRequestNumber}</TableCell>
                         <TableCell>{customer.CustomerName}</TableCell>
                         <TableCell>{customer.Assign}</TableCell>

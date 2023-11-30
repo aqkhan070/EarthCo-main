@@ -1,6 +1,56 @@
-import React from "react";
-
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import formatDate from "../../custom/FormatDate";
+import logo from "../../assets/images/logo/earthco_logo.png";
+import { DataContext } from "../../context/AppData";
 const Landscape = () => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  const { sRProposalData, setsRProposalData } = useContext(DataContext);
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
+  const [landscapeData, setLandscapeData] = useState({});
+
+  const getLandscape = async () => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpe?id=${idParam}&CustomerId=${sRProposalData.formData.CustomerId}&Year=${sRProposalData.formData.Year}&Month=${sRProposalData.formData.Month}`,
+        { headers }
+      );
+      setLandscapeData(res.data);
+      console.log("reponse landscape is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
+
+  const getLandscapebyCustomerId = async () => {
+    if (!idParam) {
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpe?id=${idParam}`,
+        { headers }
+      );
+      setLandscapeData(res.data);
+      console.log("reponse landscape is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
+
+  useEffect(() => {
+    getLandscape();
+    // getLandscapebyCustomerId();
+    console.log("landscap data", sRProposalData);
+  }, [sRProposalData]);
+
   return (
     <>
       <div className="container-fluid">
@@ -17,25 +67,17 @@ const Landscape = () => {
                       {" "}
                       <strong>Earthco</strong>{" "}
                     </div>
-                    <div>1225 E. Wakeham Avenue</div>
-                    <div>Santa Ana, California 92705</div>
+                    <div>{landscapeData.CompanyName}</div>
+                    <div>{landscapeData.Address}</div>
 
                     <div>
-                      <strong>Phone:</strong> 714.571.0455{" "}
-                    </div>
-                    <div>
-                      <strong>Fax:</strong> 714.571.0580
+                      <strong>Phone:</strong> {landscapeData.Phone}{" "}
                     </div>
                   </div>
 
                   <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                     <div className="brand-logo mb-2 inovice-logo">
-                      <img
-                        src="./assets/images/background/earthco_logo.png"
-                        alt=""
-                        className="light-logo"
-                        style={{ width: "100%" }}
-                      />
+                      <img style={{ width: "100%" }} src={logo} alt="" />
                     </div>
                   </div>
                 </div>
@@ -52,16 +94,9 @@ const Landscape = () => {
                         </thead>
                         <tbody>
                           <tr>
-                            <td>
-                              Monarch Bay Terrace HOA
-                              <br />
-                              Donna Depledge, Keystone
-                              <br />
-                              Pacific
-                            </td>
+                            <td>{landscapeData.RequestByName}</td>
                             <td className="left strong">
-                              Donna Depledge,
-                              <br /> Keystone Pacific
+                              {landscapeData.ServiceLocationName}
                             </td>
                           </tr>
                         </tbody>
@@ -70,10 +105,8 @@ const Landscape = () => {
                   </div>
                   <div className="col-md-6">
                     <div className="text-right">
-                      <strong>Date Created:</strong> 11/3/2014{" "}
-                    </div>
-                    <div className="text-right">
-                      <strong>Target Completion:</strong> 11/7/2014
+                      <strong>Date Created:</strong>{" "}
+                      {formatDate(landscapeData.CreatedDate)}
                     </div>
                   </div>
                 </div>
@@ -92,7 +125,7 @@ const Landscape = () => {
                         <td>
                           <strong>Supervisor visited the job weekly:</strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td> {landscapeData.SupervisorVisitedthejobweekly}</td>
                       </tr>
                       <tr>
                         <td>
@@ -100,7 +133,10 @@ const Landscape = () => {
                             Completed litter pickup of grounds areas:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.CompletedLitterpickupofgroundareas}
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -108,7 +144,10 @@ const Landscape = () => {
                             Completed sweeping or blowing of walkways:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Completedsweepingorblowingofwalkways}
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -116,7 +155,10 @@ const Landscape = () => {
                             High priority areas were visited weekly:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.HighpriorityareaswereVisitedweekly}
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -124,7 +166,10 @@ const Landscape = () => {
                             V ditches were cleaned and inspected:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.VDitcheswerecleanedandinspected}
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -133,7 +178,12 @@ const Landscape = () => {
                             section:{" "}
                           </strong>{" "}
                         </td>
-                        <td></td>
+                        <td>
+                          {" "}
+                          {
+                            landscapeData.WeepscreeninspectedandcleanedinrotationsectionId
+                          }
+                        </td>
                       </tr>
 
                       <tr
@@ -147,13 +197,13 @@ const Landscape = () => {
                         <td>
                           <strong>Fertilization of turf occurred: </strong>{" "}
                         </td>
-                        <td></td>
+                        <td> {landscapeData.Fertilizationoftrufoccoured}</td>
                       </tr>
                       <tr>
                         <td>
                           <strong>Turf was mowed and edged weekly: </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td> {landscapeData.Trufwasmovedandedgedweekly}</td>
                       </tr>
                       <tr
                         style={{ backgroundColor: "#cccccc", color: "black" }}
@@ -168,13 +218,18 @@ const Landscape = () => {
                             Shrubs trimmed according to rotation schedule:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {
+                            landscapeData.Shrubstrimmedaccordingtorotationschedule
+                          }
+                        </td>
                       </tr>
                       <tr>
                         <td>
                           <strong>Fertilization of shrubs occurred: </strong>{" "}
                         </td>
-                        <td></td>
+                        <td> {landscapeData.FertilizationofShrubsoccoured}</td>
                       </tr>
                       <tr
                         style={{ backgroundColor: "#cccccc", color: "black" }}
@@ -189,7 +244,12 @@ const Landscape = () => {
                             Watering of flowerbeds was completed and checked:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {
+                            landscapeData.WateringofflowerbedsCompletedandchecked
+                          }
+                        </td>
                       </tr>
                       <tr
                         style={{ backgroundColor: "#cccccc", color: "black" }}
@@ -204,7 +264,10 @@ const Landscape = () => {
                             Heads were adjusted for maximum coverage:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Headswereadjustedformaximumcoverage}
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -212,7 +275,12 @@ const Landscape = () => {
                             Repairs were made to maintain an effective system:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {
+                            landscapeData.Repairsweremadetomaintainaneffectivesystem
+                          }
+                        </td>
                       </tr>
                       <tr>
                         <td>
@@ -220,19 +288,22 @@ const Landscape = () => {
                             Controllers were inspected and adjusted:{" "}
                           </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Controllerswereinspectedandadjusted}
+                        </td>
                       </tr>
                       <tr>
                         <td>
                           <strong>Main line was repaired: </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td> {landscapeData.Mainlinewasrepaired}</td>
                       </tr>
                       <tr>
                         <td>
                           <strong>Valve(s) was repaired: </strong>{" "}
                         </td>
-                        <td>NO</td>
+                        <td> {landscapeData.Valvewasrepaired}</td>
                       </tr>
                       <tr
                         style={{ backgroundColor: "#cccccc", color: "black" }}
@@ -247,7 +318,10 @@ const Landscape = () => {
                             This months expected rotation schedule:{" "}
                           </strong>{" "}
                         </td>
-                        <td></td>
+                        <td>
+                          {" "}
+                          {landscapeData.Thismonthexpectedrotationschedule}
+                        </td>
                       </tr>
                       <tr
                         style={{ backgroundColor: "#cccccc", color: "black" }}
@@ -260,7 +334,7 @@ const Landscape = () => {
                         <td>
                           <strong>Notes: </strong>{" "}
                         </td>
-                        <td></td>
+                        <td> {landscapeData.Notes}</td>
                       </tr>
                     </tbody>
                   </table>

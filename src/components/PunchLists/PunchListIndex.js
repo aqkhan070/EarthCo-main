@@ -21,16 +21,22 @@ const PunchListIndex = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const { customers, isLoading, fetchCustomers } = useFetchCustomers();
-  const { punchData, fetchPunchList } = useFetchPunchList();
+  const { customers, fetchCustomers } = useFetchCustomers();
+  const {
+    punchData,
+    isLoading,
+    fetchPunchList,
+    totalRecords,
+    fetchFilterdPunchList,
+  } = useFetchPunchList();
 
   const [staffData, setStaffData] = useState([]);
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [inputValue, setInputValue] = useState("");
-const [selectedPL, setselectedPL] = useState(0)
-const [plDetailId, setPlDetailId] = useState(0)
-
+  const [selectedPL, setselectedPL] = useState(0);
+  const [plDetailId, setPlDetailId] = useState(0);
+  const [statusId, setStatusId] = useState(0);
   const [addPunchListData, setAddPunchListData] = useState({
     Title: "",
     ContactName: "",
@@ -38,7 +44,6 @@ const [plDetailId, setPlDetailId] = useState(0)
     ContactEmail: "",
     AssignedTo: "",
     CustomerId: null,
-   
   });
 
   const fetchStaffList = async () => {
@@ -88,7 +93,8 @@ const [plDetailId, setPlDetailId] = useState(0)
   useEffect(() => {
     fetchStaffList();
     fetchCustomers();
-    fetchPunchList();
+    // fetchPunchList();
+    // fetchFilterdPunchList()
   }, []);
   useEffect(() => {
     fetchServiceLocations(addPunchListData.CustomerId);
@@ -109,33 +115,7 @@ const [plDetailId, setPlDetailId] = useState(0)
       StatusId: 2,
     }));
   };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      await axios.post(
-        "https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList",
-        addPunchListData,
-        { headers }
-      );
-      // Handle success - maybe redirect or show a message
-      console.log("successfully posted ", addPunchListData);
-      fetchPunchList();
-      setAddPunchListData({
-        Title: "",
-        ContactId: null,
-        AssignedTo: null,
-        CustomerId: null,
-      });
-      setInputValue("");
-    } catch (error) {
-      console.error("Error sending dataaaaaaaa:", error);
-      // console.log("Error sending dataaaaaa:",addPunchListData);
-
-      // Handle error - show an error message to the user
-    }
-  };
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const icon = (
     <svg
@@ -162,30 +142,39 @@ const [plDetailId, setPlDetailId] = useState(0)
     </svg>
   );
 
- ;
-
   const toggleRow = () => {
     document.getElementById("subRow").classList.toggle("dispNone");
   };
+
+  if (isLoading) {
+    <div className="center-loader">
+      <CircularProgress />
+    </div>;
+  }
 
   return (
     <>
       {/* <TitleBar icon={icon} title="Punchlists" /> */}
       <div className="container-fluid">
         <div className="row">
-          <PunchListCards />
+          <PunchListCards
+            setStatusId={setStatusId}
+            statusId={statusId}
+            totalRecords={totalRecords}
+          />
           <div className="col-xl-12">
             <div className="card">
               <div className="card-body">
-                {isLoading ? (
-                  <div className="center-loader">
-                    <CircularProgress style={{ color: "#789a3d" }} />
-                  </div>
-                ) : (
-                  <div>
-                    <PunchTR punchData={punchData} setselectedPL={setselectedPL} setPlDetailId={setPlDetailId} />
-                  </div>
-                )}
+                <div>
+                  <PunchTR
+                    punchData={punchData}
+                    fetchFilterdPunchList={fetchFilterdPunchList}
+                    statusId={statusId}
+                    totalRecords={totalRecords}
+                    setselectedPL={setselectedPL}
+                    setPlDetailId={setPlDetailId}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -194,13 +183,13 @@ const [plDetailId, setPlDetailId] = useState(0)
         {/* modal */}
 
         <PunchListModal1
-         plDetailId={plDetailId}
+          plDetailId={plDetailId}
           selectedPL={selectedPL}
-          fetchPunchList={fetchPunchList}
+          fetchFilterdPunchList={fetchFilterdPunchList}
         />
         {/* modal2 */}
         <PunchlistModal2
-        selectedPL={selectedPL}
+          selectedPL={selectedPL}
           addPunchListData={addPunchListData}
           handleChange={handleChange}
           inputValue={inputValue}
@@ -210,7 +199,7 @@ const [plDetailId, setPlDetailId] = useState(0)
           setInputValue={setInputValue}
           headers={headers}
           setAddPunchListData={setAddPunchListData}
-          handleSubmit={handleSubmit}
+          setselectedPL={setselectedPL}
         />
       </div>
     </>

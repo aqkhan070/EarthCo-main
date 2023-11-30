@@ -1,22 +1,24 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Autocomplete, TextField } from "@mui/material";
+import { Delete, Create } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import useFetchPunchDetails from "../Hooks/useFetchPunchDetails";
+import { DataContext } from "../../context/AppData";
 
-
-const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
+const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-
-  
-
+  const { PunchDetailData, setPunchDetailData } = useContext(DataContext);
+  // const { pLDetail, setPLDetail } = useFetchPunchDetails();
 
   const [formData, setFormData] = useState({
-    PunchlistId: selectedPL
-  })
-
+    PunchlistId: selectedPL,
+  });
+  const [itemsList, setItemsList] = useState([]);
   const [returnElement, setReturnElement] = useState();
   const hideOptional = () => {
     const checkbox = document.getElementById("customCheckBox1");
@@ -25,33 +27,68 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
         <div className="mb-3 row">
           <label className="col-sm-3 col-form-label">Photo (After)</label>
           <div className="col-sm-9">
-            <input type="file" className="form-control" id="afterFile" placeholder="" onChange={handleAfterFileInputChange} />
+            <input
+              type="file"
+              className="form-control"
+              id="afterFile"
+              placeholder=""
+              onChange={handleAfterFileInputChange}
+            />
           </div>
         </div>
       );
     } else {
       setReturnElement(false);
     }
-  }
+  };
+
+  useEffect(() => {
+    // Assuming PunchDetailData.DetailData is an object
+    const newFormData = { ...formData };
+    const newItemData = [...itemsList];
+
+    // Iterate over the keys of PunchDetailData.DetailData
+    for (const key in PunchDetailData.DetailData) {
+      // Check if the key exists in PunchDetailData.DetailData
+      if (PunchDetailData.DetailData.hasOwnProperty(key)) {
+        // Add the key-value pair to formData
+        newFormData[key] = PunchDetailData.DetailData[key];
+      }
+    }
+
+    for (const key in PunchDetailData.ItemData) {
+      // Check if the key exists in PunchDetailData.DetailData
+      if (PunchDetailData.ItemData.hasOwnProperty(key)) {
+        // Add the key-value pair to formData
+        newItemData[key] = PunchDetailData.ItemData[key];
+      }
+    }
+
+    // Update formData with the new keys
+    setItemsList(newItemData);
+    setFormData(newFormData);
+  }, [PunchDetailData.DetailData, PunchDetailData.ItemData]);
 
   const handleChange = (event) => {
     const { name } = event.target;
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-  
+    const value =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
-      PunchlistId: selectedPL
+      PunchlistId: selectedPL,
     }));
   };
 
   useEffect(() => {
-    console.log("mail payload",formData );
-  },[formData])
+    console.log("mail payload", formData);
+  }, [formData]);
 
   // items
 
-  const [itemsList, setItemsList] = useState([]);
   const [itemInput, setItemInput] = useState({
     Name: "",
     Qty: 1,
@@ -82,6 +119,23 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
       setSearchResults([]); // Clear the search results when input is empty
     }
   }, [searchText]);
+
+  const handleAddItem = () => {
+    // Adding the new item to the itemsList
+    setItemsList((prevItems) => [
+      ...prevItems,
+      { ...itemInput }, // Ensure each item has a unique 'id'
+    ]);
+    // Reset the input fields
+    setSearchText("");
+    setSelectedItem(null);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
+  };
 
   const handleItemChange = (event) => {
     setShowItem(true);
@@ -117,12 +171,74 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
     }, 0);
     return total;
   };
+
+  const handleQuantityChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Qty: Number(event.target.value),
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+
+  const handleRateChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Rate: Number(event.target.value),
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+
   useEffect(() => {
     // Calculate the total amount and update the state
     const total = calculateTotalAmount();
     setTotalAmount(total);
-    console.log("items are",itemsList);
   }, [itemsList]);
+
+  // files
+
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [PrevFiles, setPrevFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    const files = e.target.files[0];
+    const newFileObjects = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileObject = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: URL.createObjectURL(file),
+      };
+      newFileObjects.push(fileObject);
+    }
+
+    // setSelectedFiles([...selectedFiles, ...files]);
+    setSelectedFiles((prevFiles) => [...prevFiles, files]);
+    console.log("Added files:", newFileObjects);
+  };
+
+  const handleDeleteFile = (indexToDelete) => {
+    // Create a new array without the file to be deleted
+    const updatedFiles = selectedFiles.filter(
+      (_, index) => index !== indexToDelete
+    );
+
+    // Update the selectedFiles state with the new array
+    setSelectedFiles(updatedFiles);
+    console.log("Deleted file at index:", indexToDelete);
+  };
 
   // files
   const [selectedFile, setSelectedFile] = useState(null);
@@ -147,7 +263,6 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
     setSelectedAfterFile(file);
   };
 
-
   const getPunchListDetail = async (id) => {
     try {
       const response = await axios.get(
@@ -156,39 +271,39 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
           headers,
         }
       );
-  
+
       setFormData((prevData) => ({
         ...prevData,
         ...response.data,
       }));
-  
+
       // Handle the response. For example, you can reload the customers or show a success message
       console.log("pl details res:", response.data);
     } catch (error) {
-      console.error("There was an error deleting the customer:", error);
+      console.error("There was an error getting the pl details:", error);
     }
   };
-  
 
   useEffect(() => {
-    getPunchListDetail(plDetailId)
-  },[plDetailId])
-
+    getPunchListDetail(plDetailId);
+  }, [plDetailId]);
 
   // handle submit
 
-  const handleSubmit = (e) => {
-    e.preventDefault();  
+  useEffect(() => {
+    console.log("Pl detailsform data is", formData);
+    console.log("Pl items data is", itemsList);
+  }, [formData, itemsList]);
 
-   
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
     const postData = new FormData();
 
     // Merge the current items with the new items for EstimateData
     const PunchlistDetailData = {
-      ...formData,    
+      ...formData,
       tblPunchlistItems: itemsList,
-
-      
     };
 
     console.log("PunchlistDetailData:", PunchlistDetailData);
@@ -199,14 +314,13 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
     if (selectedFile) {
       postData.append("Files", selectedFile);
     }
-  
+
     // Append selectedAfterFile if it exists
     if (selectedAfterFile) {
       postData.append("AfterFiles", selectedAfterFile);
     }
 
     console.log(JSON.stringify(PunchlistDetailData));
-   
 
     submitData(postData);
   };
@@ -226,34 +340,37 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchlistDetail",
         postData,
-        {headers}
-      ); 
+        { headers }
+      );
+
+      document.getElementById("PunchDetailModalCloser").click();
       setFormData({
-        Notes:"",
-        Address:"",
+        Notes: "",
+        Address: "",
         isComplete: null,
-        isAfterPhoto: null
-      })
-      fetchPunchList();
-      document.getElementById("formFile").value = '';
-      document.getElementById("afterFile").value = '';
+        isAfterPhoto: null,
+      });
+      fetchFilterdPunchList();
+      document.getElementById("formFile").value = "";
+      document.getElementById("afterFile").value = "";
       setItemsList([]);
       for (const entry of postData.entries()) {
         console.log(`FormData Entry - ${entry[0]}: ${entry[1]}`);
       }
 
-
       console.log("Data submitted successfully:", response.data.Message);
-    } catch (error) {     
+    } catch (error) {
       console.error("API Call Error:", error);
     }
-
-  
   };
 
   return (
     <div className="modal fade" id="addPhotos">
-      <div className="modal-dialog" role="document">
+      <div
+        className="modal-dialog"
+        role="document"
+        style={{ maxWidth: "80em" }}
+      >
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Add Punchlist</h5>
@@ -263,285 +380,322 @@ const PunchListModal1 = ({selectedPL,fetchPunchList, plDetailId}) => {
               data-bs-dismiss="modal"
             ></button>
           </div>
-    
-            <div className="modal-body">
-              <div className="basic-form">
-                <div className="mb-3 row">
-                  <label className="col-sm-3 col-form-label">Photo</label>
-                  <div className="col-sm-9">
-                    <input className="form-control"  onChange={handleFileInputChange} type="file" id="formFile" />
-                  </div>
+
+          <div className="modal-body">
+            <div className="basic-form">
+              <div className="mb-3 row">
+                <label className="col-sm-3 col-form-label">Photo</label>
+                <div className="col-sm-9">
+                  <input
+                    className="form-control"
+                    onChange={handleFileInputChange}
+                    type="file"
+                    id="formFile"
+                  />
                 </div>
-                <div className="mb-3 row">
-                  <label className="col-sm-3 col-form-label">Notes</label>
-                  <div className="col-sm-9">
-                    <textarea
+              </div>
+              <div className="mb-3 row">
+                <label className="col-sm-3 col-form-label">Notes</label>
+                <div className="col-sm-9">
+                  <textarea
                     name="Notes"
-                    value={formData.Notes}
+                    value={formData.Notes || ""}
                     onChange={handleChange}
-                      className="form-control"
-                      placeholder=""
-                    ></textarea>
-                  </div>
+                    className="form-control"
+                    placeholder=""
+                  ></textarea>
                 </div>
-                <div className="mb-3 row">
-                  <label className="col-sm-3 col-form-label">Address</label>
-                  <div className="col-sm-9">
-                    <input
+              </div>
+              <div className="mb-3 row">
+                <label className="col-sm-3 col-form-label">Address</label>
+                <div className="col-sm-9">
+                  <input
                     name="Address"
-                      type="text"
-                      value={formData.Address}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder=""
-                    />
-                  </div>
+                    type="text"
+                    value={formData.Address || ""}
+                    onChange={handleChange}
+                    className="form-control"
+                    placeholder=""
+                  />
                 </div>
-                <div className="row">
-                  <div
-                    className="form-check custom-checkbox mx-3 mb-3"
-                    onClick={hideOptional}
-                  >
-                    {/* <div className="col-sm-3"> */}
-                    <input
-                      type="checkbox"
-                      name="isAfterPhoto"
-                      onChange={handleChange}
-                      value={formData.isAfterPhoto}
-                      className="form-check-input"
-                      id="customCheckBox1"
-                    />
-                    {/* </div> */}
-                    {/* <div className="col-sm-9"> */}
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox1"
-                    >
-                      After Photo
-                    </label>
-                    {/* </div> */}
-                  </div>
+              </div>
+              <div className="row">
+                <div
+                  className="form-check custom-checkbox mx-3 mb-3"
+                  onClick={hideOptional}
+                >
+                  {/* <div className="col-sm-3"> */}
+                  <input
+                    type="checkbox"
+                    name="isAfterPhoto"
+                    onChange={handleChange}
+                    value={formData.isAfterPhoto || ""}
+                    className="form-check-input"
+                    id="customCheckBox1"
+                  />
+                  {/* </div> */}
+                  {/* <div className="col-sm-9"> */}
+                  <label className="form-check-label" htmlFor="customCheckBox1">
+                    After Photo
+                  </label>
+                  {/* </div> */}
                 </div>
-                {/* <div className="mb-3 row">
+              </div>
+              {/* <div className="mb-3 row">
                                         <label className="col-sm-3 col-form-label">After Photo</label>
                                     </div> */}
 
-                {returnElement}
-                <div className="row">
-                  <div className="form-check custom-checkbox mx-3">
-                    {/* <div className="col-sm-3"> */}
-                    <input
-                      type="checkbox"
-                      name="isComplete"
-                      value={formData.isComplete}
-                      className="form-check-input"
-                      onChange={handleChange}
-                      id="customCheckBox2"
-                    />
-                    {/* </div> */}
-                    {/* <div className="col-sm-9"> */}
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox2"
-                    >
-                      Complete ?
-                    </label>
-                    {/* </div> */}
-                  </div>
+              {returnElement}
+              <div className="row">
+                <div className="form-check custom-checkbox mx-3">
+                  {/* <div className="col-sm-3"> */}
+                  <input
+                    type="checkbox"
+                    name="isComplete"
+                    value={formData.isComplete || ""}
+                    className="form-check-input"
+                    onChange={handleChange}
+                    id="customCheckBox2"
+                  />
+                  {/* </div> */}
+                  {/* <div className="col-sm-9"> */}
+                  <label className="form-check-label" htmlFor="customCheckBox2">
+                    Complete ?
+                  </label>
+                  {/* </div> */}
                 </div>
               </div>
             </div>
-            {/* item modal */}
-
+          </div>
+          {/* item modal */}
+          <div className="itemtitleBar">
+            <h4>Items</h4>
+          </div>
+          <div className="card-body">
             <div className="estDataBox">
-                  <div className="itemtitleBar">
-                    <h4>Items</h4>
-                  </div>
-
-                  <div className="table-responsive active-projects style-1 mt-2">
-                    <table id="empoloyees-tblwrapper" className="table">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Description</th>
-                          <th>Rate</th>
-                          <th>Qty</th>
-                          {/* <th>Tax</th> */}
-                          <th>Amount</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          itemsList && itemsList.length > 0 ? (
-                            itemsList.map((item, index) => (
-                              <tr key={item.ItemId}>
-                                {" "}
-                                {/* Make sure item has a unique 'id' or use index as a fallback */}
-                                <td>{item.Name}</td>
-                                <td>{item.Description}</td>
-                                <td>{item.Rate}</td>
-                                <td>{item.Qty}</td>
-                                {/* <td>NaN</td> */}
-                                <td>{item.Rate * item.Qty}</td>
-                                <td>
-                                  <div className="badgeBox">
-                                    <span
-                                      className="actionBadge badge-danger light border-0 badgebox-size"
-                                      onClick={() => {
-                                        deleteItem(item.ItemId);
-                                      }}
-                                    >
-                                      <span className="material-symbols-outlined badgebox-size">
-                                        delete
-                                      </span>
-                                    </span>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <></>
-                          ) /* Add a null check or alternative content if formData.tblEstimateItems is empty */
-                        }
-
-                        <tr>
-                          <td>
-                            <>
-                              <Autocomplete
-                                id="search-items"
-                                options={searchResults}
-                                getOptionLabel={(item) => item.ItemName}
-                                value={selectedItem}
-                                onChange={(event, newValue) => {
-                                  if (newValue) {
-                                    handleItemClick(newValue);
-                                  } else {
-                                    setSelectedItem(null);
-                                  }
-                                }}
-                                inputValue={searchText}
-                                onInputChange={(_, newInputValue) => {
-                                  setShowItem(true);
-                                  setSearchText(newInputValue);
-                                  setSelectedItem(null); // Clear selected item when input changes
-                                }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Search for items..."
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                  />
-                                )}
-                                renderOption={(props, item) => (
-                                  <li
-                                    style={{ cursor: "pointer" }}
-                                    {...props}
-                                    onClick={() => handleItemClick(item)}
-                                  >
-                                    {item.ItemName}
-                                  </li>
-                                )}
-                              />
-                            </>
-                          </td>
-                          <td>
-                            <p>{selectedItem?.SaleDescription || " "}</p>
-                          </td>
-
-                          <td>
-                            <div className="col-sm-9">
-                              <p>
-                                {selectedItem?.SalePrice ||
-                                  itemInput.Rate ||
-                                  " "}
-                              </p>
-                            </div>
-                          </td>
-
+              <div className="table-responsive active-projects style-1 mt-2">
+                <table id="empoloyees-tblwrapper" className="table">
+                  <thead>
+                    <tr>
+                      <th className="itemName-width">Item</th>
+                      <th>Description</th>
+                      <th>Qty</th>
+                      <th>Rate</th>
+                      <th>Amount</th>
+                      <th>Tax</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itemsList && itemsList.length > 0 ? (
+                      itemsList.map((item, index) => (
+                        <tr colSpan={2} key={item.ItemId}>
+                          <td className="itemName-width">{item.Name}</td>
+                          <td>{item.Description}</td>
                           <td>
                             <input
                               type="number"
-                              name="Qty"
-                              value={itemInput.Qty}
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={item.Qty}
                               onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Qty: Number(e.target.value),
-                                })
+                                handleQuantityChange(item.ItemId, e)
                               }
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              placeholder="Quantity"
                             />
                           </td>
-                          {/* <td>
+                          <td>
                             <input
-                              type="text"
-                              name="tax"
-                              disabled
+                              type="number"
+                              value={item.Rate}
                               style={{ width: "7em" }}
                               className="form-control form-control-sm"
-                              placeholder="Tax"
+                              onChange={(e) => handleRateChange(item.ItemId, e)}
                             />
-                          </td> */}
-                          <td>
-                            <h5 style={{ margin: "0" }}>
-                              {itemInput.Rate * itemInput.Qty}
-                            </h5>
                           </td>
+                          <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                          <td>NaN</td>
                           <td>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={() => {
-                                // Adding the new item to the itemsList
-                                setItemsList((prevItems) => [
-                                  ...prevItems,
-                                  { ...itemInput }, // Ensure each item has a unique 'id'
-                                ]);
-                                // Reset the input fields
-                                setSearchText("");
-                                setSelectedItem(null);
-                                setItemInput({
-                                  Name: "",
-                                  Qty: 1,
-                                  Description: "",
-                                  Rate: null,
-                                });
-                              }}
-                            >
-                              Add
-                            </button>
+                            <div className="badgeBox">
+                              <Button
+                                onClick={() => {
+                                  deleteItem(item.ItemId);
+                                }}
+                              >
+                                <Delete color="error" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-danger light"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              {/* <NavLink to='/PunchlistPreview'> */}
-              <button
-                type="button"
-                className="btn btn-primary"
-                data-bs-dismiss="modal"
-                onClick={handleSubmit}
-              >
-                Save
-              </button>
-              {/* </NavLink> */}
+                      ))
+                    ) : (
+                      <></>
+                    )}
+                    <tr>
+                      <td className="itemName-width">
+                        <>
+                          <Autocomplete
+                            id="search-items"
+                            options={searchResults || null}
+                            getOptionLabel={(item) => item.ItemName}
+                            value={selectedItem} // This should be the selected item, not searchText
+                            onChange={(event, newValue) => {
+                              if (newValue) {
+                                handleItemClick(newValue);
+                              } else {
+                                setSelectedItem(null);
+                              }
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label="Search for items..."
+                                variant="outlined"
+                                size="small"
+                                fullWidth
+                                onChange={handleItemChange}
+                              />
+                            )}
+                            renderOption={(props, item) => (
+                              <li
+                                style={{
+                                  cursor: "pointer",
+                                  width: "30em",
+                                }}
+                                {...props}
+                                onClick={() => handleItemClick(item)}
+                              >
+                                <div className="customer-dd-border">
+                                  <p>
+                                    <strong>{item.ItemName}</strong>{" "}
+                                  </p>
+                                  <small>{item.Type}</small>
+                                  <br />
+                                  <small>{item.SaleDescription}</small>
+                                </div>
+                              </li>
+                            )}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
+                        </>
+                      </td>
+                      <td>
+                        <p>{selectedItem?.SaleDescription || " "}</p>
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          name="Qty"
+                          value={itemInput.Qty}
+                          onChange={(e) =>
+                            setItemInput({
+                              ...itemInput,
+                              Qty: Number(e.target.value),
+                            })
+                          }
+                          style={{ width: "7em" }}
+                          className="form-control form-control-sm"
+                          placeholder="Quantity"
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              // Handle item addition when Enter key is pressed
+                              e.preventDefault(); // Prevent form submission
+                              handleAddItem();
+                            }
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <div className="col-sm-9">
+                          <input
+                            type="number"
+                            name="Rate"
+                            style={{ width: "7em" }}
+                            className="form-control form-control-sm"
+                            value={
+                              selectedItem?.SalePrice || itemInput.Rate || ""
+                            }
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Rate: Number(e.target.value),
+                              })
+                            }
+                            onClick={(e) => {
+                              setSelectedItem({
+                                ...selectedItem,
+                                SalePrice: 0,
+                              });
+                            }}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <h5 style={{ margin: "0" }}>
+                          {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                        </h5>
+                      </td>
+                      <td>
+                        <input
+                          type="number"
+                          name="tax"
+                          style={{ width: "7em" }}
+                          disabled
+                          className="form-control form-control-sm"
+                          placeholder="tax"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-      
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              id="PunchDetailModalCloser"
+              className="btn btn-danger light"
+              data-bs-dismiss="modal"
+              onClick={() => {
+                setPunchDetailData({});
+                setFormData({
+                  Notes: "",
+                  Address: "",
+                  isComplete: false,
+                  isAfterPhoto: false,
+                });
+
+                // document.getElementById("formFile").value = "";
+                // document.getElementById("afterFile").value = "";
+                setItemsList([]);
+              }}
+            >
+              Close
+            </button>
+            {/* <NavLink to='/PunchlistPreview'> */}
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSubmit}
+            >
+              Save
+            </button>
+            {/* </NavLink> */}
+          </div>
         </div>
       </div>
     </div>

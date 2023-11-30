@@ -58,6 +58,7 @@ import BillIndex from "./components/Bill/BillIndex";
 import BillPreview from "./components/Bill/BillPreview";
 import AddBill from "./components/Bill/AddBill";
 import UpdateEstimateForm from "./components/Estimates/UpdateEstimateForm";
+import SummaryReportPreview from "./components/Reports/SummaryReportPreview";
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -132,6 +133,8 @@ function App() {
               element={<PunchlistPreview />}
             />
             <Route path="SummaryReport" element={<SummaryReport />} />
+            <Route path="SummaryReportPreview" element={<SummaryReportPreview />} />
+            
             <Route path="ProposalSummary" element={<ProposalSummary />} />
             <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
               <Route path="" element={<WeeklyReportlist />} />
@@ -142,7 +145,7 @@ function App() {
               <Route path="" element={<Landscapelist />} />
               <Route path="Add-Landscape" element={<LandscapeForm />} />
             </Route>
-            <Route path="Landscape/PunchList-Report" element={<Landscape />} />
+            <Route path="Landscape/Landscape-Report" element={<Landscape />} />
           </Route>
           <Route path="*" element={<ErrorPage />} />
         </Routes>

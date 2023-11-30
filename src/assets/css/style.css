@@ -53846,3 +53846,7 @@ padding: 0px !important;
 .selected-Card{
     background-color: #e6f5e8;
 }
+.css-cldqnq-MuiButtonBase-root-MuiButton-root{
+    min-width: 3px !important;
+    padding: 3px !important;
+}
