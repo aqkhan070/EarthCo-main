@@ -9,6 +9,7 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import { Autocomplete, TextField } from "@mui/material";
 import Cookies from "js-cookie";
 
+
 const LandscapeForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -464,7 +465,9 @@ const LandscapeForm = () => {
                         <input
                           name="WeepscreeninspectedandcleanedinrotationsectionId"
                           onChange={handleInputChange}
-                          value={formData.WeepscreeninspectedandcleanedinrotationsectionId}
+                          value={
+                            formData.WeepscreeninspectedandcleanedinrotationsectionId
+                          }
                           className="datepicker-default form-control form-control-sm"
                           id="datepicker"
                         />

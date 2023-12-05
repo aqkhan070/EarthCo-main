@@ -11,12 +11,13 @@ const PunchlistModal2 = ({
   handleChange,
   staffData,
   sLList,
-  fetchFilterdPunchList,
+
   contactList,
   inputValue,
   setInputValue,
   headers,
   setAddPunchListData,
+  fetchFilterdPunchList,
 
   selectedPL,
   setselectedPL,
@@ -50,6 +51,7 @@ const PunchlistModal2 = ({
   }, [selectedPL]);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
+    fetchName(newValue.UserId);
     // Construct an event-like object with the structure expected by handleInputChange
     const simulatedEvent = {
       target: {
@@ -134,8 +136,9 @@ const PunchlistModal2 = ({
       );
       // Handle success - maybe redirect or show a message
       console.log("successfully posted punch list", addPunchListData);
-      document.getElementById("punchListcloser").click();
+      setselectedPL(0);
       fetchFilterdPunchList();
+      document.getElementById("punchListcloser").click();
     } catch (error) {
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
@@ -160,7 +163,7 @@ const PunchlistModal2 = ({
           <div className="modal-header">
             <h5 className="modal-title">Punchlist</h5>
             <button
-              type="button"
+              // type="button"
               className="btn-close"
               onClick={() => {
                 document.getElementById("punchListcloser").click();

@@ -49,7 +49,14 @@ const theme = createTheme({
   },
 });
 
-const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setPlDetailId,totalRecords}) => {
+const PunchTR = ({
+  punchData,
+  fetchFilterdPunchList,
+  setselectedPL,
+  statusId,
+  setPlDetailId,
+  totalRecords,
+}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -69,11 +76,11 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
 
   const columnFieldMapping = {
     "#": "PunchlistId",
-    "Title": "Title",
+    Title: "Title",
     "Assigned To": "AssignedTo",
     "Date Created": "CreatedDate",
-    "Status": "Status",
-    "Reports": "Reports",
+    Status: "Status",
+    Reports: "Reports",
   };
 
   const handleSearch = (data) => {
@@ -86,14 +93,12 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
       const response = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Customer/DeleteCustomer?id=${id}`,
         {
-         headers
-          
+          headers,
         }
       );
-      
 
       // Handle the response. For example, you can reload the customers or show a success message
-     
+
       // window.location.reload();
     } catch (error) {
       console.error("There was an error deleting the pl :", error);
@@ -101,8 +106,8 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
   };
 
   const [tablePage, setTablePage] = useState(0);
-  const [searchPL, setSearchPL] = useState("")
-  
+  const [searchPL, setSearchPL] = useState("");
+
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterdPunchList();
@@ -112,11 +117,10 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
     // Fetch estimates when the tablePage changes
     fetchFilterdPunchList(searchPL, tablePage + 1, rowsPerPage, statusId);
   }, [searchPL, tablePage, rowsPerPage, statusId]);
-  
+
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
   };
-
 
   const sortedAndSearchedCustomers = handleSearch([...punchData]).sort(
     (a, b) => {
@@ -142,9 +146,7 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
           headers,
         }
       );
-
-      
-
+      fetchFilterdPunchList();
       const data = await response.json();
 
       // Handle the response. For example, you can reload the customers or show a success message
@@ -156,9 +158,7 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      deletePunchList(id);
-    }
+    deletePunchList(id);
   };
 
   return (
@@ -190,7 +190,6 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
               </div>
             </div>
             <br />
-            
 
             <Table>
               <TableHead>
@@ -203,7 +202,6 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
                     "Date Created",
                     "Status",
                     "Report",
-                    "Actions",
                   ].map((column, index) => (
                     <TableCell key={index}>
                       {index < 5 ? (
@@ -228,84 +226,91 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
                       )}
                     </TableCell>
                   ))}
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedAndSearchedCustomers
-                
-                  .map((item, rowIndex) => (
-                    <>
-                      <TableRow key={rowIndex} hover>
-                        <TableCell>
-                          <IconButton
-                            aria-label="expand row"
-                            size="small"
-                            onClick={(e) => {
-                              e.stopPropagation(); // This prevents the TableRow's onClick from being called
-                              setExpandedRow(
-                                rowIndex === expandedRow ? -1 : rowIndex
-                              );
-                            }}
-                          >
-                            {expandedRow ? (
-                              <KeyboardArrowDownIcon />
-                            ) : (
-                              <KeyboardArrowUpIcon />
-                            )}
-                          </IconButton>
-                        </TableCell>
-                        <TableCell>{item.CustomerName}</TableCell>
-                        <TableCell>{item.Data.Title}</TableCell>
-                        <TableCell>{item.AssignToName}</TableCell>
-                        <TableCell>{formatDate(item.Data.CreatedDate)}</TableCell>
-                        <TableCell><span className="badge badge-pill badge-success ">{item.Status}</span></TableCell>
-                        <TableCell>{item.Reports}</TableCell>
+                {sortedAndSearchedCustomers.map((item, rowIndex) => (
+                  <>
+                    <TableRow key={rowIndex} hover>
+                      <TableCell>
+                        <IconButton
+                          aria-label="expand row"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation(); // This prevents the TableRow's onClick from being called
+                            setExpandedRow(
+                              rowIndex === expandedRow ? -1 : rowIndex
+                            );
+                          }}
+                        >
+                          {expandedRow ? (
+                            <KeyboardArrowDownIcon />
+                          ) : (
+                            <KeyboardArrowUpIcon />
+                          )}
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>{item.Data.CompanyName}</TableCell>
+                      <TableCell>{item.Data.Title}</TableCell>
+                      <TableCell>{item.AssignToName}</TableCell>
+                      <TableCell>{formatDate(item.Data.CreatedDate)}</TableCell>
+                      <TableCell>
+                        <span className="badge badge-pill badge-success ">
+                          {item.Status}
+                        </span>
+                      </TableCell>
+                      <TableCell>{item.Reports}</TableCell>
 
-                        <TableCell>
-                          <Button
-                            className="delete-button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#addPhotos"
-                            onClick={() => {
-                              setselectedPL(item.Data.PunchlistId)
-                            }}
-                          >
-                            <Add />
-                          </Button>
-                          <Button
+                      <TableCell align="right">
+                        <Button
+                          className="delete-button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addPhotos"
+                          onClick={() => {
+                            setselectedPL(item.Data.PunchlistId);
+                          }}
+                        >
+                          <Add />
+                        </Button>
+                        <Button
                           //  className=" btn btn-primary  btn-icon-xxs me-2"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editPunch"
-                            onClick={() => {
-                              setselectedPL(item.Data.PunchlistId)
-                            }}
-                          >
-                             {/* <i className="fas fa-pencil-alt"></i> */}
-                             <Create></Create>
-                          </Button>
+                          data-bs-toggle="modal"
+                          data-bs-target="#editPunch"
+                          onClick={() => {
+                            setselectedPL(item.Data.PunchlistId);
+                          }}
+                        >
+                          {/* <i className="fas fa-pencil-alt"></i> */}
+                          <Create></Create>
+                        </Button>
 
-                          <Button
-                             data-bs-toggle="modal"
-                             data-bs-target={`#deleteModal${item.Data.PunchlistId}`}
-                            className="btn btn-danger btn-icon-xxs "
-                           
-                          >
-                            {/* <i className="fas fa-trash-alt"></i> */}
-                            <Delete color="error"></Delete>
-                          </Button>
+                        <Button
+                          data-bs-toggle="modal"
+                          data-bs-target={`#deleteModal${item.Data.PunchlistId}`}
+                          className="btn btn-danger btn-icon-xxs "
+                        >
+                          {/* <i className="fas fa-trash-alt"></i> */}
+                          <Delete color="error"></Delete>
+                        </Button>
 
-                          <div
+                        <div
                           className="modal fade"
                           id={`deleteModal${item.Data.PunchlistId}`}
                           tabIndex="-1"
                           aria-labelledby="deleteModalLabel"
                           aria-hidden="true"
                         >
-                          <div className="modal-dialog modal-dialog-centered" role="document">
+                          <div
+                            className="modal-dialog modal-dialog-centered"
+                            role="document"
+                          >
                             <div className="modal-content">
                               <div className="modal-header">
-                                <h5 className="modal-title">Punch List  Delete</h5>
-                                
+                                <h5 className="modal-title">
+                                  Punch List Delete
+                                </h5>
+
                                 <button
                                   type="button"
                                   className="btn-close"
@@ -313,61 +318,61 @@ const PunchTR = ({ punchData,fetchFilterdPunchList, setselectedPL,statusId, setP
                                 ></button>
                               </div>
                               <div className="modal-body">
-                              
-                                  <p >
+                                <p>
                                   Are you sure you want to delete{" "}
                                   {item.Data.PunchlistId}
                                 </p>
-                                  
-                                
                               </div>
 
                               <div className="modal-footer">
                                 <button
-                                    type="button"
-                                    id="closer"
-                                    className="btn btn-danger light "
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Close
-                                  </button>
-                                  <button
-                                    className="btn btn-primary "
-                                    data-bs-dismiss="modal"
-                                    onClick={() => {
-                                      handleDelete(item.Data.PunchlistId);
-                                    }}
-                                  >
-                                    Yes
-                                  </button>
+                                  type="button"
+                                  id="closer"
+                                  className="btn btn-danger light "
+                                  data-bs-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                                <button
+                                  className="btn btn-primary "
+                                  data-bs-dismiss="modal"
+                                  onClick={() => {
+                                    handleDelete(item.Data.PunchlistId);
+                                  }}
+                                >
+                                  Yes
+                                </button>
                               </div>
                             </div>
                           </div>
                         </div>
-                        </TableCell>
-                      </TableRow>
+                      </TableCell>
+                    </TableRow>
 
-
-                      <PunchListDetailRow headers={headers} item={item} rowIndex={rowIndex} expandedRow={expandedRow} setPlDetailId={setPlDetailId} />
-
-                     
-                    </>
-                  ))}
+                    <PunchListDetailRow
+                      headers={headers}
+                      item={item}
+                      rowIndex={rowIndex}
+                      expandedRow={expandedRow}
+                      setPlDetailId={setPlDetailId}
+                    />
+                  </>
+                ))}
               </TableBody>
             </Table>
 
             <TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={totalRecords.totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={totalRecords.totalRecords}
+              rowsPerPage={rowsPerPage}
+              page={tablePage} // Use tablePage for the table rows
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+              }}
+            />
           </div>
         </div>
       </ThemeProvider>

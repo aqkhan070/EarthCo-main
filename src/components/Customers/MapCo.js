@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { DataContext } from "../../context/AppData";
-
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   GoogleMap,
   LoadScript,
   Marker,
   InfoWindow,
 } from "@react-google-maps/api";
+import { DataContext } from "../../context/AppData";
 
 const containerStyle = {
   width: "100%",
@@ -14,36 +13,24 @@ const containerStyle = {
 };
 
 const defaultCenter = {
-  lat: 31.4237697,
-  lng: 74.2678971,
+  lat: 31.558,
+  lng: 74.35,
 };
 
 function GoogleMapApi() {
-  const { maplatLngs, setMaplatLngs } = useContext(DataContext);
-
-  const [map, setMap] = React.useState(null);
-  const [markers, setMarkers] = React.useState([
-    {
-      lat: 31.4237697,
-      lng: 74.2678971,
-    },
-  ]);
-  const [selectedMarker, setSelectedMarker] = React.useState(null);
+  const [map, setMap] = useState(null);
+  const [markers, setMarkers] = useState({});
+  const [selectedMarker, setSelectedMarker] = useState(null);
   const searchInputRef = useRef(null);
+
+  const { serviceLocationAddress, setServiceLocationAddress } =
+    useContext(DataContext);
 
   useEffect(() => {
     // Load markers from localStorage on component mount
-
-    const savedMarkers = maplatLngs || [];
-    console.log("map lat longs", markers);
-    const newMarkers = {
-      lat: maplatLngs.lat,
-      lng: maplatLngs.lng,
-    };
-
-    setMarkers(newMarkers);
-    console.log("map lat longs after", markers);
-  }, [maplatLngs]);
+    const savedMarkers = JSON.parse(localStorage.getItem("markers")) || [];
+    setMarkers(savedMarkers);
+  }, []);
 
   const saveMarkersToLocalStorage = (markers) => {
     localStorage.setItem("markers", JSON.stringify(markers));
@@ -59,7 +46,7 @@ function GoogleMapApi() {
     setMap(null);
   }, []);
 
-  const handleSearch = () => {
+  const handleSearch = (e) => {
     const input = searchInputRef.current;
 
     if (
@@ -72,36 +59,41 @@ function GoogleMapApi() {
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
         if (place.geometry) {
-          const newMarkers = [
-            ...markers,
-            {
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng(),
-            },
-          ];
-          // setMarkers(newMarkers);
-          // saveMarkersToLocalStorage(newMarkers);
+          const newMarkers = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+          };
+
+          setMarkers(newMarkers);
+          saveMarkersToLocalStorage(newMarkers);
 
           // Center the map on the selected place
           if (map) {
             map.panTo(place.geometry.location);
           }
+          setServiceLocationAddress((prevData) => ({
+            ...prevData,
+            Address: e.target.value,
+            lat: newMarkers.lat,
+            lng: newMarkers.lng,
+          }));
+          console.log("mapesss", serviceLocationAddress);
         }
       });
     }
+
+    console.log("map input is", e.target.value);
   };
 
   const handleMapClick = (event) => {
     const clickedLat = event.latLng.lat();
     const clickedLng = event.latLng.lng();
 
-    // setMarkers((prevMarkers) => {
-    //   // Ensure prevMarkers is an array, or initialize it as an empty array if it's null or undefined
-    //   const newMarkers = Array.isArray(prevMarkers) ? [...prevMarkers] : [];
-    //   newMarkers.push({ lat: clickedLat, lng: clickedLng });
-    //   // saveMarkersToLocalStorage(newMarkers);
-    //   return newMarkers;
-    // });
+    setMarkers((prevMarkers) => {
+      const newMarkers = [...prevMarkers, { lat: clickedLat, lng: clickedLng }];
+      saveMarkersToLocalStorage(newMarkers);
+      return newMarkers;
+    });
   };
 
   const handleMarkerClick = (marker) => {
@@ -118,38 +110,31 @@ function GoogleMapApi() {
       libraries={["places"]}
     >
       <div>
-        {/* <input
+        <input
           ref={searchInputRef}
           type="text"
-          placeholder="Search for a place"
+          value={serviceLocationAddress.Address}
+          placeholder="Address"
           onChange={handleSearch}
-          style={{
-            width: "300px", // Set the width as needed
-            padding: "10px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            margin: "10px 0",
-          }}
-        /> */}
+          className="form-control"
+        />
 
-        <GoogleMap
+        {/* <GoogleMap
           mapContainerStyle={containerStyle}
           center={defaultCenter}
-          zoom={1}
+          zoom={3}
           onLoad={onLoad}
           onUnmount={onUnmount}
           onClick={handleMapClick}
         >
-          {/* Render markers for all clicked locations */}
-
-          {/* {markers.map((marker, index) => ( */}
-          <Marker
-            // key={index}
-            position={{ lat: markers.lat, lng: markers.lng }}
-            // onClick={() => handleMarkerClick(marker)}
-          />
-          {/* ))} */}
+         
+          {markers.map((marker, index) => (
+            <Marker
+              key={index}
+              position={marker}
+              onClick={() => handleMarkerClick(marker)}
+            />
+          ))}
 
           {selectedMarker && (
             <InfoWindow
@@ -161,7 +146,7 @@ function GoogleMapApi() {
               </div>
             </InfoWindow>
           )}
-        </GoogleMap>
+        </GoogleMap> */}
       </div>
     </LoadScript>
   );

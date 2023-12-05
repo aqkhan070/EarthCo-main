@@ -16,6 +16,7 @@ import {
   TablePagination,
   TableSortLabel,
   TextField,
+  CircularProgress,
 } from "@mui/material";
 import { Delete, Create } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
@@ -49,6 +50,7 @@ const Items = () => {
   };
   const [totalRecords, setTotalRecords] = useState(0);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const getFilteredItemsList = async (
     Search = "",
@@ -63,8 +65,11 @@ const Items = () => {
       console.log("filtered items data", res.data);
       setItemsList(res.data.Data);
       setTotalRecords(res.data.totalRecords);
+      setLoading(false);
     } catch (error) {
       setItemsList([]);
+      setLoading(false);
+
       console.log("Api call error", error);
     }
   };
@@ -131,169 +136,183 @@ const Items = () => {
             <div className="col-xl-12">
               <div className="card" id="bootstrap-table2">
                 {successRes && <Alert security="success">{successRes}</Alert>}
-
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-3 mb-2 text-left">
-                      <TextField
-                        label="Search"
-                        variant="standard"
-                        size="small"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="col-md-9 text-right">
-                      <button
-                        className="btn btn-primary btn-sm "
-                        onClick={() => setShowContent(false)}
-                      >
-                        + Add New
-                      </button>
-                    </div>
+                {loading ? (
+                  <div className="center-loader">
+                    <CircularProgress />
                   </div>
+                ) : (
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-3 mb-2 text-left">
+                        <TextField
+                          label="Search"
+                          variant="standard"
+                          size="small"
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                        />
+                      </div>
 
-                  <Table>
-                    <TableHead className="table-header">
-                      <TableRow>
-                        <TableCell>
-                          <TableSortLabel
-                            active={orderBy === "ItemName"}
-                            direction={orderBy === "ItemName" ? order : "asc"}
-                            onClick={() => handleSortRequest("ItemName")}
-                          >
-                            Name
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell>
-                          <TableSortLabel
-                            active={orderBy === "SKU"}
-                            direction={orderBy === "SKU" ? order : "asc"}
-                            onClick={() => handleSortRequest("SKU")}
-                          >
-                            SKU
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell>
-                          <TableSortLabel
-                            active={orderBy === "IncomeAccount"}
-                            direction={
-                              orderBy === "IncomeAccount" ? order : "asc"
-                            }
-                            onClick={() => handleSortRequest("IncomeAccount")}
-                          >
-                            Account #
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell className="text-end">Actions</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {(rowsPerPage > 0
-                        ? filteredItems.slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                        : filteredItems
-                      ).map((item, index) => (
-                        <TableRow key={index} hover>
-                          <TableCell>{item.ItemName}</TableCell>
-                          <TableCell>{item.SKU}</TableCell>
-                          <TableCell>{item.IncomeAccount}</TableCell>
-                          <TableCell className="text-end">
-                            <Button
-                              //  className=" btn btn-primary  btn-icon-xxs me-2"
-                              size="small"
-                              onClick={() => {
-                                setSelectedItem(item.ItemId);
-                                setShowContent(false);
-                              }}
-                            >
-                              {/* <i className="fa fa-pencil"></i> */}
-                              <Create></Create>
-                            </Button>
-                            <Button
-                              //  className="btn btn-danger btn-icon-xxs "
-                              size="small"
-                              data-bs-toggle="modal"
-                              // className="btn btn-danger btn-icon-xxs mr-2"
-                              data-bs-target={`#deleteItemModal${item.ItemId}`}
-                            >
-                              {/* <i className="fa fa-trash"></i> */}
-                              <Delete color="error" />
-                            </Button>
+                      <div className="col-md-9 text-right">
+                        <button
+                          className="btn btn-primary btn-sm "
+                          onClick={() => setShowContent(false)}
+                        >
+                          + Add New
+                        </button>
+                      </div>
+                    </div>
 
-                            <div
-                              className="modal fade"
-                              id={`deleteItemModal${item.ItemId}`}
-                              tabIndex="-1"
-                              aria-labelledby="deleteModalLabel"
-                              aria-hidden="true"
+                    <Table>
+                      <TableHead className="table-header">
+                        <TableRow>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "ItemName"}
+                              direction={orderBy === "ItemName" ? order : "asc"}
+                              onClick={() => handleSortRequest("ItemName")}
                             >
-                              <div
-                                className="modal-dialog modal-dialog-centered"
-                                role="document"
+                              Name
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "SKU"}
+                              direction={orderBy === "SKU" ? order : "asc"}
+                              onClick={() => handleSortRequest("SKU")}
+                            >
+                              SKU
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "IncomeAccount"}
+                              direction={
+                                orderBy === "IncomeAccount" ? order : "asc"
+                              }
+                              onClick={() => handleSortRequest("IncomeAccount")}
+                            >
+                              Account #
+                            </TableSortLabel>
+                          </TableCell>
+                          {/* <TableCell className="text-end">Actions</TableCell> */}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {(rowsPerPage > 0
+                          ? filteredItems.slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                          : filteredItems
+                        ).map((item, index) => (
+                          <TableRow
+                            onDoubleClick={() => {
+                              setSelectedItem(item.ItemId);
+                              setShowContent(false);
+                            }}
+                            key={index}
+                            hover
+                          >
+                            <TableCell>{item.ItemName}</TableCell>
+                            <TableCell>{item.SKU}</TableCell>
+                            <TableCell>{item.IncomeAccount}</TableCell>
+                            {/* <TableCell className="text-end">
+                              <Button
+                                //  className=" btn btn-primary  btn-icon-xxs me-2"
+                                size="small"
+                                onClick={() => {
+                                  setSelectedItem(item.ItemId);
+                                  setShowContent(false);
+                                }}
                               >
-                                <div className="modal-content">
-                                  <div className="modal-header">
-                                    <h5 className="modal-title">Delete Item</h5>
-                                    <button
-                                      type="button"
-                                      className="btn-close"
-                                      data-bs-dismiss="modal"
-                                    ></button>
-                                  </div>
-                                  <div className="modal-body text-center">
-                                    <p>
-                                      Are you sure you want to delete{" "}
-                                      {item.ItemName}
-                                    </p>
-                                  </div>
-                                  <div className="modal-footer">
-                                    <button
-                                      type="button"
-                                      id="closer"
-                                      className="btn btn-danger light me-"
-                                      data-bs-dismiss="modal"
-                                    >
-                                      Close
-                                    </button>
-                                    <button
-                                      className="btn btn-primary"
-                                      data-bs-dismiss="modal"
-                                      onClick={() => deleteItem(item.ItemId)}
-                                    >
-                                      Yes
-                                    </button>
+                            <i className="fa fa-pencil"></i> 
+                                <Create></Create>
+                              </Button>
+                              <Button
+                                //  className="btn btn-danger btn-icon-xxs "
+                                size="small"
+                                data-bs-toggle="modal"
+                                // className="btn btn-danger btn-icon-xxs mr-2"
+                                data-bs-target={`#deleteItemModal${item.ItemId}`}
+                              >
+                            <i className="fa fa-trash"></i>
+                                <Delete color="error" />
+                              </Button>
+
+                              <div
+                                className="modal fade"
+                                id={`deleteItemModal${item.ItemId}`}
+                                tabIndex="-1"
+                                aria-labelledby="deleteModalLabel"
+                                aria-hidden="true"
+                              >
+                                <div
+                                  className="modal-dialog modal-dialog-centered"
+                                  role="document"
+                                >
+                                  <div className="modal-content">
+                                    <div className="modal-header">
+                                      <h5 className="modal-title">
+                                        Delete Item
+                                      </h5>
+                                      <button
+                                        type="button"
+                                        className="btn-close"
+                                        data-bs-dismiss="modal"
+                                      ></button>
+                                    </div>
+                                    <div className="modal-body text-center">
+                                      <p>
+                                        Are you sure you want to delete{" "}
+                                        {item.ItemName}
+                                      </p>
+                                    </div>
+                                    <div className="modal-footer">
+                                      <button
+                                        type="button"
+                                        id="closer"
+                                        className="btn btn-danger light me-"
+                                        data-bs-dismiss="modal"
+                                      >
+                                        Close
+                                      </button>
+                                      <button
+                                        className="btn btn-primary"
+                                        data-bs-dismiss="modal"
+                                        onClick={() => deleteItem(item.ItemId)}
+                                      >
+                                        Yes
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      {emptyRows > 0 && (
-                        <TableRow style={{ height: 53 * emptyRows }}>
-                          <TableCell colSpan={5} />
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                            </TableCell> */}
+                          </TableRow>
+                        ))}
+                        {emptyRows > 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
 
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={totalRecords}
-                    rowsPerPage={rowsPerPage}
-                    page={tablePage} // Use tablePage for the table rows
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={(event) => {
-                      setRowsPerPage(parseInt(event.target.value, 10));
-                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                    }}
-                  />
-                </div>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="div"
+                      count={totalRecords}
+                      rowsPerPage={rowsPerPage}
+                      page={tablePage} // Use tablePage for the table rows
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={(event) => {
+                        setRowsPerPage(parseInt(event.target.value, 10));
+                        setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -305,6 +324,7 @@ const Items = () => {
           selectedItem={selectedItem}
           setShowContent={setShowContent}
           setSuccessRes={setSuccessRes}
+          setSelectedItem={setSelectedItem}
         />
       )}
     </>

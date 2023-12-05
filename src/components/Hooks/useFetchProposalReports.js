@@ -27,7 +27,7 @@ const useFetchProposalReports = () => {
       setLoading(false)
       setReportError(true)
 
-      console.log("report api call error", error);
+      console.log("report api call error fetching summary report", error);
     }
   };
 

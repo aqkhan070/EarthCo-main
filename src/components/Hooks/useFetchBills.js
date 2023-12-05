@@ -51,7 +51,7 @@ const [totalRecords, setTotalRecords] = useState(0)
   };
 
   useEffect(() => {
-    fetchBills();
+    // fetchBills();
   }, []);
 
   return { billError, billList, loading, fetchBills, fetchFilterBills,filteredBillsList,totalRecords };

@@ -94,7 +94,7 @@ const PunchListIndex = () => {
     fetchStaffList();
     fetchCustomers();
     // fetchPunchList();
-    // fetchFilterdPunchList()
+    fetchFilterdPunchList();
   }, []);
   useEffect(() => {
     fetchServiceLocations(addPunchListData.CustomerId);
@@ -146,11 +146,11 @@ const PunchListIndex = () => {
     document.getElementById("subRow").classList.toggle("dispNone");
   };
 
-  if (isLoading) {
-    <div className="center-loader">
-      <CircularProgress />
-    </div>;
-  }
+  // if (isLoading) {
+  //   <div className="center-loader">
+  //     <CircularProgress />
+  //   </div>;
+  // }
 
   return (
     <>
@@ -162,22 +162,28 @@ const PunchListIndex = () => {
             statusId={statusId}
             totalRecords={totalRecords}
           />
-          <div className="col-xl-12">
-            <div className="card">
-              <div className="card-body">
-                <div>
-                  <PunchTR
-                    punchData={punchData}
-                    fetchFilterdPunchList={fetchFilterdPunchList}
-                    statusId={statusId}
-                    totalRecords={totalRecords}
-                    setselectedPL={setselectedPL}
-                    setPlDetailId={setPlDetailId}
-                  />
+          {isLoading ? (
+            <div className="center-loader">
+              <CircularProgress />
+            </div>
+          ) : (
+            <div className="col-xl-12">
+              <div className="card">
+                <div className="card-body">
+                  <div>
+                    <PunchTR
+                      punchData={punchData}
+                      fetchFilterdPunchList={fetchFilterdPunchList}
+                      statusId={statusId}
+                      totalRecords={totalRecords}
+                      setselectedPL={setselectedPL}
+                      setPlDetailId={setPlDetailId}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* modal */}
@@ -200,6 +206,7 @@ const PunchListIndex = () => {
           headers={headers}
           setAddPunchListData={setAddPunchListData}
           setselectedPL={setselectedPL}
+          fetchFilterdPunchList={fetchFilterdPunchList}
         />
       </div>
     </>

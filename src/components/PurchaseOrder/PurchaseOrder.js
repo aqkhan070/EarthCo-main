@@ -30,7 +30,7 @@ const PurchaseOrder = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  
+
   const {
     PoList,
     loading,
@@ -69,7 +69,7 @@ const PurchaseOrder = () => {
   useEffect(() => {
     // Fetch estimates when the tablePage changes
     fetchFilterPo(searchPo, tablePage + 1, rowsPerPage, statusId);
-    console.log("search is" , searchPo)
+    console.log("search is", searchPo);
   }, [searchPo, tablePage, rowsPerPage, statusId]);
 
   const handleChangePage = (event, newPage) => {
@@ -121,6 +121,11 @@ const PurchaseOrder = () => {
   const emptyRows =
     rowsPerPage -
     Math.min(rowsPerPage, sortedPoList.length - page * rowsPerPage);
+
+  const goToPrint = (data) => {
+    setPOData(data);
+    navigate("/Dashboard/Purchase-Order/Purchase-Order-Preview");
+  };
 
   return (
     <>
@@ -212,12 +217,12 @@ const PurchaseOrder = () => {
                               <TableCell>Estimate#</TableCell>
                               <TableCell>Bill#</TableCell>
                               <TableCell>Invoice#</TableCell>
-                              <TableCell>Amount</TableCell>
-                              <TableCell>Actions</TableCell>
+                              <TableCell className="text-end">Amount</TableCell>
+                              {/* <TableCell>Actions</TableCell> */}
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {!filteredPo ? (
+                            {error ? (
                               <TableRow>
                                 {" "}
                                 <TableCell className="text-center" colSpan={9}>
@@ -227,11 +232,23 @@ const PurchaseOrder = () => {
                               </TableRow>
                             ) : (
                               filteredPo.map((po) => (
-                                <TableRow hover key={po.EstimateNumber}>
+                                <TableRow
+                                  onDoubleClick={() => {
+                                    setShowContent(false);
+                                    setselectedPo(po.PurchaseOrderId);
+                                  }}
+                                  hover
+                                  key={po.EstimateNumber}
+                                >
                                   <TableCell>{po.SupplierName}</TableCell>
                                   <TableCell>{formatDate(po.Date)}</TableCell>
                                   <TableCell>
-                                    <span className="badge badge-pill badge-success ">
+                                    <span
+                                      onClick={() => {
+                                        goToPrint(po);
+                                      }}
+                                      className=" span-hover-pointer badge badge-pill badge-success "
+                                    >
                                       {po.Status}
                                     </span>
                                   </TableCell>
@@ -240,19 +257,16 @@ const PurchaseOrder = () => {
                                   <TableCell>{po.EstimateNumber}</TableCell>
                                   <TableCell>{po.BillNumber}</TableCell>
                                   <TableCell>{po.InvoiceNumber}</TableCell>
-                                  <TableCell>{po.Amount}</TableCell>
-                                  <TableCell>
+                                  <TableCell className="text-end">{po.Amount}</TableCell>
+                                  {/* <TableCell>
                                     <div className="button-container">
                                       <Button
                                         // className="btn btn-primary btn-icon-xxs me-2"
                                         onClick={() => {
-                                          setPOData(po);
-                                          navigate(
-                                            "/Dashboard/Purchase-Order/Purchase-Order-Preview"
-                                          );
+                                          goToPrint(po);
                                         }}
                                       >
-                                        {/* <i className="fa-solid fa-eye"></i> */}
+                                       <i className="fa-solid fa-eye"></i> 
 
                                         <Visibility />
                                       </Button>
@@ -263,7 +277,7 @@ const PurchaseOrder = () => {
                                           setselectedPo(po.PurchaseOrderId);
                                         }}
                                       >
-                                        {/* <i className="fas fa-pencil-alt"></i> */}
+                                      <i className="fas fa-pencil-alt"></i>
                                         <Create></Create>
                                       </Button>
                                       <Button
@@ -271,7 +285,7 @@ const PurchaseOrder = () => {
                                         data-bs-toggle="modal"
                                         data-bs-target={`#deleteModal${po.PurchaseOrderId}`}
                                       >
-                                        {/* <i className="fas fa-trash-alt"></i> */}
+                                       <i className="fas fa-trash-alt"></i> 
                                         <Delete color="error"></Delete>
                                       </Button>
                                       <div
@@ -325,7 +339,7 @@ const PurchaseOrder = () => {
                                         </div>
                                       </div>
                                     </div>
-                                  </TableCell>
+                                  </TableCell> */}
                                 </TableRow>
                               ))
                             )}

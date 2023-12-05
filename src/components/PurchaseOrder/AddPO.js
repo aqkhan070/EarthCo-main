@@ -30,6 +30,7 @@ export const AddPO = ({
   setPostSuccess,
   fetchPo,
   fetchFilterPo,
+  setPOData,
 }) => {
   const token = Cookies.get("token");
   const headers = {

@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import { Create, Delete } from "@mui/icons-material";
 import AddStaff from "./AddStaff";
 import Alert from "@mui/material/Alert";
-import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   TableContainer,
   Table,
@@ -35,7 +35,7 @@ const StaffList = () => {
   const [updateStaffSuccess, setUpdateStaffSuccess] = useState(false);
   const [deleteStaffSuccess, setDeleteStaffSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [staffFetchError, setstaffFetchError] = useState(false)
+  const [staffFetchError, setstaffFetchError] = useState(false);
 
   const icon = (
     <svg
@@ -55,7 +55,7 @@ const StaffList = () => {
         `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`,
         { headers }
       );
-      setstaffFetchError(false)
+      setstaffFetchError(false);
       setStaffData(response.data);
       if (response.data != null) {
         setIsLoading(false);
@@ -63,7 +63,7 @@ const StaffList = () => {
       console.log("staff list iss", response.data);
     } catch (error) {
       console.log("error getting staff list", error);
-      setstaffFetchError(true)
+      setstaffFetchError(true);
       setIsLoading(false);
     }
   };
@@ -91,7 +91,7 @@ const StaffList = () => {
 
   // Pagination
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -131,175 +131,190 @@ const StaffList = () => {
             </div>
           ) : (
             <div className="container-fluid">
-              <div className="row">
-                <div className="col-xl-12">
-                  <div className="card">
-                    <div className="card-body">
-                      {addStaffSuccess && (
-                        <Alert severity="success">Staff Added Successfully</Alert>
-                      )}
-                      {updateStaffSuccess && (
-                        <Alert severity="success">Staff Updated Successfully</Alert>
-                      )}
-                      {deleteStaffSuccess && (
-                        <Alert severity="success">Staff Deleted Successfully</Alert>
-                      )}
-                      <div className="table-responsive active-projects style-1">
-                        <div className="tbl-caption mb-3">
-                          <h4 className="heading mb-0">Staff</h4>
-                          <div>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              role="button"
-                              onClick={() => {
-                                setSelectedStaff(0);
-                                settoggleAddStaff(false);
-                              }}
+              <div className="card">
+                <div className="card-body p-0">
+                  {addStaffSuccess && (
+                    <Alert severity="success">Staff Added Successfully</Alert>
+                  )}
+                  {updateStaffSuccess && (
+                    <Alert severity="success">Staff Updated Successfully</Alert>
+                  )}
+                  {deleteStaffSuccess && (
+                    <Alert severity="success">Staff Deleted Successfully</Alert>
+                  )}
+
+                  <div className="row search-row">
+                    <dix className="col-md-12">
+                      <div className="text-right mt-2 me-3">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => {
+                            setSelectedStaff(0);
+                            settoggleAddStaff(false);
+                          }}
+                        >
+                          + Add Staff
+                        </Button>
+                      </div>
+                    </dix>
+                  </div>
+                  <div className="text-center m-3">
+                    <Table>
+                      <TableHead className="table-header">
+                        <TableRow>
+                          <TableCell className="ms-3">#</TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "FirstName"}
+                              direction={
+                                orderBy === "FirstName" ? order : "asc"
+                              }
+                              onClick={() => handleSortRequest("FirstName")}
                             >
-                              + Add Staff
-                            </button>
-                          </div>
-                        </div>
-                        <TableContainer component={Paper}>
-                          <Table id="customerTbl">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell className="ms-3">#</TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "FirstName"}
-                                    direction={orderBy === "FirstName" ? order : "asc"}
-                                    onClick={() => handleSortRequest("FirstName")}
-                                  >
-                                    First Name
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "LastName"}
-                                    direction={orderBy === "LastName" ? order : "asc"}
-                                    onClick={() => handleSortRequest("LastName")}
-                                  >
-                                    Last Name
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "Email"}
-                                    direction={orderBy === "Email" ? order : "asc"}
-                                    onClick={() => handleSortRequest("Email")}
-                                  >
-                                    User Name
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>
-                                  <TableSortLabel
-                                    active={orderBy === "Role"}
-                                    direction={orderBy === "Role" ? order : "asc"}
-                                    onClick={() => handleSortRequest("Role")}
-                                  >
-                                    Role
-                                  </TableSortLabel>
-                                </TableCell>
-                                <TableCell>Actions</TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {staffFetchError? <TableRow><TableCell className="text-center" colSpan={12}>No Record Found</TableCell></TableRow>: null}
-                              {sortedData
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((staff) => (
-                                  <TableRow hover key={staff.UserId}>
-                                    <TableCell className="ms-3">{staff.UserId}</TableCell>
-                                    <TableCell>{staff.FirstName}</TableCell>
-                                    <TableCell>{staff.LastName}</TableCell>
-                                    <TableCell>{staff.Email}</TableCell>
-                                    <TableCell>{staff.Role}</TableCell>
-                                    <TableCell>
-                                      <Button
-                                      // className=" btn btn-primary  btn-icon-xxs me-2"
-                                        
-                                        onClick={() => {
-                                          settoggleAddStaff(false);
-                                          setSelectedStaff(staff.UserId);
-                                        }}
-                                      >
-                                        <Create  />
-                                        {/* <i className="fas fa-pencil-alt"></i> */}
-                                      </Button>
-                                      <Button
-                                        color="error"
-                                        // className="btn btn-danger btn-icon-xxs "
-                                        data-bs-toggle="modal"
-                                        data-bs-target={`#deleteModal${staff.UserId}`}
-                                      >
-                                        <Delete color="error" />
-                                        {/* <i className="fas fa-trash-alt"></i> */}
-                                      </Button>
-                                      <div
-                                      className="modal fade"
-                                      id={`deleteModal${staff.UserId}`}
-                                      tabIndex="-1"
-                                      aria-labelledby="deleteModalLabel"
-                                      aria-hidden="true"
-                                    >
-                                      <div
-                                        className="modal-dialog"
-                                        role="document"
-                                      >
-                                        <div className="modal-content">
-                                          <div className="modal-header">
-                                            <h5 className="modal-title">
-                                              Are you sure you want to delete{" "}
-                                              {staff.FirstName}
-                                            </h5>
-                                            <button
-                                              type="button"
-                                              className="btn-close"
-                                              data-bs-dismiss="modal"
-                                            ></button>
-                                          </div>
-                                          <div className="modal-body">
-                                            <div className="basic-form text-center">
-                                              <button
-                                                type="button"
-                                                id="closer"
-                                                className="btn btn-danger light m-3"
-                                                data-bs-dismiss="modal"
-                                              >
-                                                Close
-                                              </button>
-                                              <button
-                                                className="btn btn-primary m-3"
-                                                data-bs-dismiss="modal"
-                                                onClick={() => {
-                                                  deleteStaff(staff.UserId);
-                                                }}
-                                              >
-                                                Yes
-                                              </button>
-                                            </div>
-                                          </div>
+                              First Name
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "LastName"}
+                              direction={orderBy === "LastName" ? order : "asc"}
+                              onClick={() => handleSortRequest("LastName")}
+                            >
+                              Last Name
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "Email"}
+                              direction={orderBy === "Email" ? order : "asc"}
+                              onClick={() => handleSortRequest("Email")}
+                            >
+                              User Name
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "Role"}
+                              direction={orderBy === "Role" ? order : "asc"}
+                              onClick={() => handleSortRequest("Role")}
+                            >
+                              Role
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>Actions</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {staffFetchError ? (
+                          <TableRow>
+                            <TableCell className="text-center" colSpan={12}>
+                              No Record Found
+                            </TableCell>
+                          </TableRow>
+                        ) : null}
+                        {sortedData
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((staff) => (
+                            <TableRow hover key={staff.UserId}>
+                              <TableCell className=" tablecell-padding-staff ms-3">
+                                {staff.UserId}
+                              </TableCell>
+                              <TableCell className=" tablecell-padding-staff">
+                                {staff.FirstName}
+                              </TableCell>
+                              <TableCell className=" tablecell-padding-staff">
+                                {staff.LastName}
+                              </TableCell>
+                              <TableCell className=" tablecell-padding-staff">
+                                {staff.Email}
+                              </TableCell>
+                              <TableCell className=" tablecell-padding-staff">
+                                {staff.Role}
+                              </TableCell>
+                              <TableCell className=" tablecell-padding-staff">
+                                <Button
+                                  // className=" btn btn-primary  btn-icon-xxs me-2"
+
+                                  onClick={() => {
+                                    settoggleAddStaff(false);
+                                    setSelectedStaff(staff.UserId);
+                                  }}
+                                >
+                                  <Create />
+                                  {/* <i className="fas fa-pencil-alt"></i> */}
+                                </Button>
+                                <Button
+                                  color="error"
+                                  // className="btn btn-danger btn-icon-xxs "
+                                  data-bs-toggle="modal"
+                                  data-bs-target={`#deleteModal${staff.UserId}`}
+                                >
+                                  <Delete color="error" />
+                                  {/* <i className="fas fa-trash-alt"></i> */}
+                                </Button>
+                                <div
+                                  className="modal fade"
+                                  id={`deleteModal${staff.UserId}`}
+                                  tabIndex="-1"
+                                  aria-labelledby="deleteModalLabel"
+                                  aria-hidden="true"
+                                >
+                                  <div className="modal-dialog" role="document">
+                                    <div className="modal-content">
+                                      <div className="modal-header">
+                                        <h5 className="modal-title">
+                                          Are you sure you want to delete{" "}
+                                          {staff.FirstName}
+                                        </h5>
+                                        <button
+                                          type="button"
+                                          className="btn-close"
+                                          data-bs-dismiss="modal"
+                                        ></button>
+                                      </div>
+                                      <div className="modal-body">
+                                        <div className="basic-form text-center">
+                                          <button
+                                            type="button"
+                                            id="closer"
+                                            className="btn btn-danger light m-3"
+                                            data-bs-dismiss="modal"
+                                          >
+                                            Close
+                                          </button>
+                                          <button
+                                            className="btn btn-primary m-3"
+                                            data-bs-dismiss="modal"
+                                            onClick={() => {
+                                              deleteStaff(staff.UserId);
+                                            }}
+                                          >
+                                            Yes
+                                          </button>
                                         </div>
                                       </div>
                                     </div>
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                        <TablePagination
-                          rowsPerPageOptions={[5, 10, 25]}
-                          component="div"
-                          count={staffData.length}
-                          rowsPerPage={rowsPerPage}
-                          page={page}
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                      </div>
-                    </div>
+                                  </div>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="div"
+                      count={staffData.length}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                   </div>
                 </div>
               </div>

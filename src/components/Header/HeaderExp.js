@@ -8,7 +8,9 @@ import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 
 const HeaderExp = () => {
-  const  [loggedUser, setLoggenUser ]  = useState(sessionStorage.getItem("userEmail"));
+  const [loggedUser, setLoggenUser] = useState(
+    sessionStorage.getItem("userEmail")
+  );
   const { mainControl, setMainControl, setShowSM, eliminate } =
     useContext(StyleContext);
 
@@ -153,7 +155,6 @@ const HeaderExp = () => {
                   </div>
                 </div>
                 <ul className="navbar-nav header-right">
-                
                   <li className="nav-item dropdown notification_dropdown">
                     <NavLink
                       className="nav-link"
@@ -367,14 +368,14 @@ const HeaderExp = () => {
                       </NavLink>
                     </div>
                   </li>
-                
-                    <li className="nav-item align-items-center header-border">
-                  <NavLink to="/" style={{ display: "contents" }}>
+
+                  <li className="nav-item align-items-center header-border">
+                    <NavLink to="/" style={{ display: "contents" }}>
                       <button href="/" className="btn btn-primary btn-sm">
                         Logout
                       </button>
-                  </NavLink>
-                    </li>
+                    </NavLink>
+                  </li>
                   <li className="nav-item ps-3">
                     <div className="dropdown header-profile2">
                       <NavLink
@@ -388,7 +389,9 @@ const HeaderExp = () => {
                             <img src={profilePic} alt="" />
                           </div>
                           <div className="header-info">
-                            <h6 className="admin-header">Admin</h6>
+                            <h6 className="admin-header">
+                              {sessionStorage.getItem("userName")}
+                            </h6>
                             <p className="admin-header">{loggedUser}</p>
                           </div>
                         </div>
@@ -403,8 +406,12 @@ const HeaderExp = () => {
                                 alt=""
                               />
                               <div>
-                                <h6> admin</h6>
-                                <span>Web Designer</span>
+                                <h6> {sessionStorage.getItem("userName")}</h6>
+                                <span>
+                                  {sessionStorage.getItem("userRole") == 1
+                                    ? " Admin"
+                                    : "Staff"}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -440,7 +447,7 @@ const HeaderExp = () => {
 
                                 <span className="ms-2">Profile </span>
                               </li>
-                        
+
                               <li className="dropdown-item ai-icon ">
                                 <svg
                                   width="20"
@@ -503,8 +510,8 @@ const HeaderExp = () => {
                                 <span className="ms-2">Settings </span>
                               </li>
                             </ul>
-                              <NavLink to="/">
-                            <ul>
+                            <NavLink to="/">
+                              <ul>
                                 <li className="dropdown-item ai-icon ">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -523,7 +530,7 @@ const HeaderExp = () => {
                                   </svg>
                                   <span className="ms-2">Logout </span>
                                 </li>
-                            </ul>
+                              </ul>
                             </NavLink>
                           </div>
                         </div>

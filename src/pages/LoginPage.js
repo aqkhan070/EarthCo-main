@@ -70,6 +70,8 @@ const LoginPage = () => {
       if (response.data.status === "success") {
         // if (response.status === 200){
         sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userName", response.data.Data.FirstName);
+        sessionStorage.setItem("userRole", response.data.Data.RoleId);
         setBtndisable(false);
         setError("");
         const token = response.data.token.data;

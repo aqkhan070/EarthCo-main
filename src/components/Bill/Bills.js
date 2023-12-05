@@ -199,11 +199,11 @@ const Bills = () => {
                                   Due Date
                                 </TableSortLabel>
                               </TableCell>
-                              <TableCell>Amount</TableCell>
+                              <TableCell className="text-end">Amount</TableCell>
                               <TableCell>Memo</TableCell>
                               <TableCell>Currency</TableCell>
                               <TableCell>Tags</TableCell>
-                              <TableCell>Actions</TableCell>
+                              <TableCell>Preview</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -220,12 +220,21 @@ const Bills = () => {
                                 page * rowsPerPage + rowsPerPage
                               )
                               .map((bill) => (
-                                <TableRow hover key={bill.BillId}>
+                                <TableRow
+                                  onDoubleClick={() => {
+                                    setshowContent(false);
+                                    setselectedBill(bill.BillId);
+                                  }}
+                                  hover
+                                  key={bill.BillId}
+                                >
                                   <TableCell>{bill.SupplierName}</TableCell>
                                   <TableCell>
                                     {formatDate(bill.DueDate)}
                                   </TableCell>
-                                  <TableCell>{bill.Amount}</TableCell>
+                                  <TableCell className="text-end ">
+                                    {bill.Amount}
+                                  </TableCell>
                                   <TableCell>{bill.Memo}</TableCell>
                                   <TableCell>{bill.Currency}</TableCell>
                                   <TableCell>{bill.Tags}</TableCell>
@@ -244,24 +253,24 @@ const Bills = () => {
 
                                       <Visibility />
                                     </Button>
-                                    <Button
+                                    {/* <Button
                                       // className="btn btn-primary btn-icon-xxs me-2"
                                       onClick={() => {
                                         setshowContent(false);
                                         setselectedBill(bill.BillId);
                                       }}
                                     >
-                                      {/* <i className="fas fa-pencil-alt"></i> */}
+                                       <i className="fas fa-pencil-alt"></i>
                                       <Create></Create>
-                                    </Button>
-                                    <Button
+                                    </Button> */}
+                                    {/*  <Button
                                       data-bs-toggle="modal"
                                       // className="btn btn-danger btn-icon-xxs mr-2"
                                       data-bs-target={`#deleteModal${bill.BillId}`}
                                     >
-                                      {/* <i className="fas fa-trash-alt"></i> */}
+                                     <i className="fas fa-trash-alt"></i>
                                       <Delete color="error"></Delete>
-                                    </Button>
+                                    </Button> */}
 
                                     <div
                                       className="modal fade"

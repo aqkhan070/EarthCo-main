@@ -219,13 +219,16 @@ const Irrigationlist = () => {
                           </TableCell>
                           <TableCell>Controller Number</TableCell>
                           <TableCell>Report</TableCell>
-                          <TableCell>Actions</TableCell>
+                          {/* <TableCell align="center">Actions</TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {irrigationlist ? (
                           irrigationlist.map((irr, index) => (
-                            <TableRow hover key={index}>
+                            <TableRow  onDoubleClick={() => {
+                              setShowContent(false);
+                              setSelectedIrr(irr.IrrigationId);
+                            }} hover key={index}>
                               <TableCell>{irr.IrrigationId}</TableCell>
                               <TableCell>{irr.CustomerName}</TableCell>
                               <TableCell>
@@ -241,7 +244,7 @@ const Irrigationlist = () => {
                                   </span>
                                 </NavLink>
                               </TableCell>
-                              <TableCell>
+                              {/* <TableCell>
                                 <div className="flex-box">
                                   <Button
                                     title="Edit"
@@ -252,7 +255,7 @@ const Irrigationlist = () => {
                                       setSelectedIrr(irr.IrrigationId);
                                     }}
                                   >
-                                    {/* <i className="fa fa-pen"></i> */}
+                                     <i className="fa fa-pen"></i> 
                                     <Create></Create>
                                   </Button>
 
@@ -263,7 +266,7 @@ const Irrigationlist = () => {
                                     data-bs-target={`#deleteModal${irr.IrrigationId}`}
                                     // className="btn btn-danger btn-icon-xxs mx-1"
                                   >
-                                    {/* <i className="fa fa-trash"></i> */}
+                               <i className="fa fa-trash"></i> 
                                     <Delete color="error"></Delete>
                                   </Button>
 
@@ -290,7 +293,7 @@ const Irrigationlist = () => {
                                             data-bs-dismiss="modal"
                                           ></button>
                                         </div>
-                                        <div className="modal-body text-center">
+                                        <div className="modal-body text-left">
                                           <p>
                                             Are you sure you want to delete{" "}
                                             {irr.IrrigationId}
@@ -322,7 +325,7 @@ const Irrigationlist = () => {
                                     </div>
                                   </div>
                                 </div>
-                              </TableCell>
+                              </TableCell> */}
                             </TableRow>
                           ))
                         ) : (

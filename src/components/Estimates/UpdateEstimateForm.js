@@ -23,6 +23,8 @@ import { useNavigate } from "react-router-dom";
 import { useEstimateContext } from "../../context/EstimateContext";
 import useDeleteFile from "../Hooks/useDeleteFile";
 import { DataContext } from "../../context/AppData";
+import { RoutingContext } from "../../context/RoutesContext";
+
 const UpdateEstimateForm = ({
   headers,
   setShowContent,
@@ -43,6 +45,8 @@ const UpdateEstimateForm = ({
     EstimateStatusId: 1,
     tblEstimateItems: [],
   });
+
+  const { setestmPreviewId } = useContext(RoutingContext);
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -51,21 +55,20 @@ const UpdateEstimateForm = ({
 
   const { PunchListData, setPunchListData } = useContext(DataContext);
 
-  // useEffect(() => {
-  //   if (PunchListData) {
-  //     fetchName(PunchListData.CustomerId);
+  useEffect(() => {
+    if (PunchListData) {
+      fetchName(PunchListData.CustomerId);
 
-  //     // Combine EstimateItemData and EstimateCostItemData into tblEstimateItems
-
-  //     setFormData((prevState) => ({
-  //       ...prevState,
-  //       ...PunchListData,
-  //       tblEstimateItems: PunchListData.ItemData,
-  //     }));
-  //   }
-
-  //   console.log("PunchList Data link", PunchListData);
-  // }, [PunchListData]);
+      setFormData((prevState) => ({
+        ...prevState,
+        ...PunchListData,
+        tblEstimateItems: PunchListData.ItemData,
+      }));
+    }
+    fetchStaffList();
+    fetctContacts(PunchListData.CustomerId);
+    console.log("PunchList Data link", PunchListData);
+  }, [PunchListData]);
 
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
@@ -480,7 +483,7 @@ const UpdateEstimateForm = ({
       setShowStatusCards(false);
     }
   }, []);
-  
+
   useEffect(() => {
     fetchServiceLocations(formData.CustomerId);
     fetctContacts(formData.CustomerId);
@@ -797,8 +800,8 @@ const UpdateEstimateForm = ({
 
   return (
     <>
-      <div className="">
-        <div className="">
+      
+       
           <div className="card row mx-4">
             <div className="itemtitleBar ">
               <h4>Estimate Details</h4>
@@ -1063,7 +1066,7 @@ const UpdateEstimateForm = ({
                           aria-label="Contact select"
                         />
                       </div>
-                      <div className="col-md-3 mt-2"> 
+                      <div className="col-md-3 mt-2">
                         <label className="form-label">
                           Contact<span className="text-danger">*</span>
                         </label>
@@ -1294,7 +1297,11 @@ const UpdateEstimateForm = ({
                                         }
                                       />
                                     </td>
-                                    <td>{(item.Qty * item.Rate).toFixed(2)}</td>
+                                    <td>
+                                      {item
+                                        ? (item.Qty * item.Rate).toFixed(2)
+                                        : 0}
+                                    </td>
                                     <td>NaN</td>
                                     <td>
                                       <div className="badgeBox">
@@ -1427,7 +1434,11 @@ const UpdateEstimateForm = ({
                               </td>
                               <td>
                                 <h5 style={{ margin: "0" }}>
-                                  {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                                  {itemInput
+                                    ? (itemInput.Rate * itemInput.Qty).toFixed(
+                                        2
+                                      )
+                                    : 0}
                                 </h5>
                               </td>
                               <td>
@@ -1502,7 +1513,11 @@ const UpdateEstimateForm = ({
                                         }
                                       />
                                     </td>
-                                    <td>{(item.Qty * item.Rate).toFixed(2)}</td>
+                                    <td>
+                                      {item
+                                        ? (item.Qty * item.Rate).toFixed(2)
+                                        : 0}
+                                    </td>
                                     <td>
                                       <div className="badgeBox">
                                         <Button
@@ -1636,7 +1651,9 @@ const UpdateEstimateForm = ({
                               </td>
                               <td>
                                 <h5 style={{ margin: "0" }}>
-                                  {(aCInput.Rate * aCInput.Qty).toFixed(2)}
+                                  {aCInput
+                                    ? (aCInput.Rate * aCInput.Qty).toFixed(2)
+                                    : 0}
                                 </h5>
                               </td>
                               <td></td>
@@ -1773,7 +1790,7 @@ const UpdateEstimateForm = ({
                               <strong>Subtotal</strong>
                             </td>
                             <td className="right text-right">
-                              ${subtotal.toFixed(2)}
+                              ${subtotal?.toFixed(2)}
                             </td>
                           </tr>
                           <tr>
@@ -1838,7 +1855,7 @@ const UpdateEstimateForm = ({
                               <strong>Total</strong>
                             </td>
                             <td className="right text-right">
-                              <strong>${totalItemAmount.toFixed(2)}</strong>
+                              <strong>${totalItemAmount?.toFixed(2)}</strong>
                             </td>
                           </tr>
                           <tr>
@@ -1860,7 +1877,7 @@ const UpdateEstimateForm = ({
                           <tr>
                             <td className="left">Total Profit(%)</td>
                             <td className="right text-right">
-                              {profitPercentage.toFixed(2) || 0}%
+                              {profitPercentage?.toFixed(2) || 0}%
                             </td>
                           </tr>
                           <tr>
@@ -1989,8 +2006,8 @@ const UpdateEstimateForm = ({
                       </div>
                     </div>
                   </div>
-                  <div className="mb-2 row text-end">
-                    <div className="col-md-6">
+                  <div className="mb-2 row text-right">
+                    <div className="col-md-6 col-sm-4">
                       {submitError && (
                         <Alert severity="error">
                           {errorMessage
@@ -2005,72 +2022,78 @@ const UpdateEstimateForm = ({
                       )}
                     </div>
 
-                    <div className="col-md-2 mt-2">
+                    <div className="col-md-4 col-sm-5">
                       {estimateId ? (
-                        <FormControl>
-                          <InputLabel size="small" id="estimateLink">
-                            Create
-                          </InputLabel>
-                          <Select
-                            labelId="estimateLink"
-                            aria-label="Default select example"
-                            variant="outlined"
-                            className="estimate-Link-Button"
-                            // color="success"
+                        <div>
+                          <FormControl>
+                            <InputLabel size="small" id="estimateLink">
+                              Create
+                            </InputLabel>
+                            <Select
+                              labelId="estimateLink"
+                              aria-label="Default select example"
+                              variant="outlined"
+                              className="text-left estimate-Link-Button"
+                              // color="success"
 
-                            name="Status"
-                            size="small"
-                            placeholder="Select Status"
-                            fullWidth
+                              name="Status"
+                              size="small"
+                              placeholder="Select Status"
+                              fullWidth
+                            >
+                              <MenuItem
+                                onClick={() => {
+                                  // setEstimateLinkData("PO clicked")
+                                  LinkToPO();
+                                  navigate("/Dashboard/Purchase-Order/AddPO");
+                                }}
+                                value={2}
+                              >
+                                Purchase Order
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() => {
+                                  LinkToPO();
+                                  navigate("/Dashboard/Invoices/AddInvioces");
+                                }}
+                                value={3}
+                              >
+                                Invoice
+                              </MenuItem>
+                            </Select>
+                          </FormControl>
+
+                          <button
+                            type="button"
+                            className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           >
-                            <MenuItem
-                              onClick={() => {
-                                // setEstimateLinkData("PO clicked")
-                                LinkToPO();
-                                navigate("/Dashboard/Purchase-Order/AddPO");
-                              }}
-                              value={2}
-                            >
-                              Purchase Order
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() => {
-                                LinkToPO();
-                                navigate("/Dashboard/Invoices/AddInvioces");
-                              }}
-                              value={3}
-                            >
-                              Invoice
-                            </MenuItem>
-                          </Select>
-                        </FormControl>
+                            <Email />
+                          </button>
+                          <button
+                            type="button"
+                            className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                            onClick={() => {
+                              navigate("/Dashboard/Estimates/Estimate-Preview");
+                              setestmPreviewId(estimateId);
+                              // console.log(estimate.EstimateId);
+                            }}
+                          >
+                            <Print></Print>
+                          </button>
+                          <button
+                            type="button"
+                            className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                            // style={{ minWidth: "120px" }}
+                          >
+                            <Download />
+                          </button>
+                        </div>
                       ) : (
                         <></>
                       )}{" "}
                     </div>
 
-                    <div className="col-md-2 flex-right ">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn"
-                      >
-                        <Email />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn"
-                      >
-                        <Print></Print>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn"
-                        // style={{ minWidth: "120px" }}
-                      >
-                        <Download />
-                      </button>
-                    </div>
-                    <div className="col-md-2 flex-right">
+                    <div className="col-md-2 col-sm-3 p-0 ">
                       <button
                         type="submit"
                         className="btn btn-primary me-1"
@@ -2084,6 +2107,7 @@ const UpdateEstimateForm = ({
                           onClick={() => {
                             if (isEstimateUpdateRoute) {
                               navigate(`/Dashboard/Estimates`);
+                              setPunchListData({});
                               return;
                             }
                             setShowContent(true);
@@ -2099,8 +2123,8 @@ const UpdateEstimateForm = ({
               )}
             </>
           </div>
-        </div>
-      </div>
+       
+      
     </>
   );
 };

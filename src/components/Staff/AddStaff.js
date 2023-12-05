@@ -9,9 +9,8 @@ import { TextField } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import validator from 'validator';
+import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
-
 
 const AddStaff = ({
   headers,
@@ -54,18 +53,16 @@ const AddStaff = ({
   const [alertSuccess, setAlertSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
 
-
   const [formValid, setFormValid] = useState(false);
 
   const [passwordMatch, setPasswordMatch] = useState(false);
-  
+
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [emailError, setEmailError] = useState(false)
-  const [phoneError, setPhoneError] = useState(false)
-  const [firstNameError, setFirstNameError] = useState(false)
-  const [lastNameError, setLastNameError] = useState(false)
- 
+  const [emailError, setEmailError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [lastNameError, setLastNameError] = useState(false);
 
   const getRoles = async () => {
     try {
@@ -105,10 +102,10 @@ const AddStaff = ({
 
   const handleCustomerInfo = (event) => {
     setEmptyFieldsError(false);
-    setEmailError(false)
-    setPhoneError(false)
-    setFirstNameError("")
-    setLastNameError("")
+    setEmailError(false);
+    setPhoneError(false);
+    setFirstNameError("");
+    setLastNameError("");
     const { name, value } = event.target;
 
     const newValue = name === "RoleId" ? parseInt(value, 10) : value;
@@ -144,7 +141,7 @@ const AddStaff = ({
 
   const addStaff = async () => {
     setSubmitClicked(true);
-  
+
     if (
       !customerInfo.FirstName ||
       !customerInfo.LastName ||
@@ -155,13 +152,13 @@ const AddStaff = ({
       console.log("Required fields are empty");
       return;
     }
-  
+
     if (selectedStaff === 0 && !customerInfo.Password) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
     }
-  
+
     if (
       selectedStaff === 0 &&
       customerInfo.Password !== customerInfo.ConfirmPassword
@@ -171,59 +168,58 @@ const AddStaff = ({
       console.log("Password and Confirm Password do not match");
       return; // Terminate the function here
     }
-  
-    if (
-      !validator.isLength(customerInfo.FirstName, { min: 3, max: 30 })
-    ) {
+
+    if (!validator.isLength(customerInfo.FirstName, { min: 3, max: 30 })) {
       setFirstNameError("First name should be between 3 and 30 characters");
       console.log("First name should be between 3 and 30 characters");
       return;
     }
-  
-    if (
-      !validator.isLength(customerInfo.LastName, { min: 3, max: 30 })
-    ) {
+
+    if (!validator.isLength(customerInfo.LastName, { min: 3, max: 30 })) {
       setLastNameError("Last name should be between 3 and 30 characters");
       console.log("Last name should be between 3 and 30 characters");
       return;
     }
-  
+
     if (!validator.isEmail(customerInfo.Email)) {
       setEmailError(true);
       console.log("Email must contain the @ symbol");
       return;
     }
-  
-    if (customerInfo.Phone && !validator.isMobilePhone(customerInfo.Phone, 'any', { max: 20 })) {
+
+    if (
+      customerInfo.Phone &&
+      !validator.isMobilePhone(customerInfo.Phone, "any", { max: 20 })
+    ) {
       setPhoneError(true);
       console.log("Phone number is not valid");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
         customerInfo,
         { headers }
       );
-  
+
       setTimeout(() => {
         setAlertSuccess(false);
       }, 3000);
-  
+
       setTimeout(() => {
         setAddStaffSuccess(false);
         setUpdateStaffSuccess(false);
       }, 4000);
-      
+
       selectedStaff !== 0
         ? setUpdateStaffSuccess(true)
         : setAddStaffSuccess(true);
-      
+
       setAlertSuccess(true);
       getStaffList();
       settoggleAddStaff(true);
-  
+
       console.log("Staff added successfully", customerInfo);
     } catch (error) {
       if (error.response.status === 409) {
@@ -232,14 +228,11 @@ const AddStaff = ({
       console.log("Roles API call error", error.response.status);
     }
   };
-  
-  
-  
 
   const getStaffData = async () => {
     if (selectedStaff === 0) {
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
     try {
       const response = await axios.get(
@@ -262,203 +255,203 @@ const AddStaff = ({
   return (
     <>
       <TitleBar icon={icon} title="Add Staff" />
-      {loading? <div className="center-loader">
-                  <CircularProgress style={{ color: "#789a3d" }} />
-                </div>: <div className="container-fluid">
-        <div className="card">
-          <div className="itemtitleBar">
-            <h4>User Info</h4>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-          >
-            <div className="card-body">
-              <div className="row">
-                <div className="col-md-3 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput1"
-                    className="form-label"
-                  >
-                    First Name <span className="text-danger">*</span>
-                  </label>
-                  <TextField
-                    type="text"
-                    className="form-control"
-                    name="FirstName"
-                    id="exampleFormControlInput1"
-                    variant="outlined"
-                    size="small"
-                    onChange={handleCustomerInfo}
-                    value={customerInfo.FirstName}
-                    error={submitClicked && !customerInfo.FirstName}
-                    placeholder="First Name"
-                    
-                  />
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Last Name<span className="text-danger">*</span>
-                  </label>
-                  <TextField
-                    type="text"
-                    className="form-control"
-                    variant="outlined"
-                    size="small"
-                    onChange={handleCustomerInfo}
-                    name="LastName"
-                    value={customerInfo.LastName}
-                    error={submitClicked && !customerInfo.LastName}
-                    id="exampleFormControlInput4"
-                    placeholder="Last Name"
-                    
-                  />
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label className="form-label">
-                    Email / User Name<span className="text-danger">*</span>
-                  </label>
-                  <TextField
-                   
-                    className="form-control"
-                    variant="outlined"
-                    size="small"
-                    onChange={handleCustomerInfo}
-                    name="Email"
-                    value={customerInfo.Email}
-                    error={ emailError || submitClicked && !customerInfo.Email}
-                    id="exampleFormControlInput3"
-                    placeholder="Email / User Name"
-                    
-                  />
-                </div>
-                <div className="col-md-3 mb-3">
-                  <FormControl fullWidth variant="outlined">
+      {loading ? (
+        <div className="center-loader">
+          <CircularProgress style={{ color: "#789a3d" }} />
+        </div>
+      ) : (
+        <div className="container-fluid">
+          <div className="card">
+            <div className="itemtitleBar">
+              <h4>User Info</h4>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-3 mb-3">
+                    <label
+                      htmlFor="exampleFormControlInput1"
+                      className="form-label"
+                    >
+                      First Name <span className="text-danger">*</span>
+                    </label>
+                    <TextField
+                      type="text"
+                      className="form-control"
+                      name="FirstName"
+                      id="exampleFormControlInput1"
+                      variant="outlined"
+                      size="small"
+                      onChange={handleCustomerInfo}
+                      value={customerInfo.FirstName}
+                      error={submitClicked && !customerInfo.FirstName}
+                      placeholder="First Name"
+                    />
+                  </div>
+                  <div className="col-md-3 mb-3">
                     <label
                       htmlFor="exampleFormControlInput4"
                       className="form-label"
                     >
-                      User Role <span className="text-danger">*</span>
+                      Last Name<span className="text-danger">*</span>
                     </label>
-
-                    <Select
-                      labelId="role-label"
-                      id="role-select"
-                      name="RoleId"
-                      value={customerInfo.RoleId}
-                      error={submitClicked && !customerInfo.RoleId}
-                      onChange={handleCustomerInfo}
-                      label=""
+                    <TextField
+                      type="text"
+                      className="form-control"
+                      variant="outlined"
                       size="small"
+                      onChange={handleCustomerInfo}
+                      name="LastName"
+                      value={customerInfo.LastName}
+                      error={submitClicked && !customerInfo.LastName}
+                      id="exampleFormControlInput4"
+                      placeholder="Last Name"
+                    />
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label">
+                      Email / User Name<span className="text-danger">*</span>
+                    </label>
+                    <TextField
+                      className="form-control"
+                      variant="outlined"
+                      size="small"
+                      onChange={handleCustomerInfo}
+                      name="Email"
+                      value={customerInfo.Email}
+                      error={
+                        emailError || (submitClicked && !customerInfo.Email)
+                      }
+                      id="exampleFormControlInput3"
+                      placeholder="Email / User Name"
+                    />
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <FormControl fullWidth variant="outlined">
+                      <label
+                        htmlFor="exampleFormControlInput4"
+                        className="form-label"
+                      >
+                        User Role <span className="text-danger">*</span>
+                      </label>
+
+                      <Select
+                        labelId="role-label"
+                        id="role-select"
+                        name="RoleId"
+                        value={customerInfo.RoleId}
+                        error={submitClicked && !customerInfo.RoleId}
+                        onChange={handleCustomerInfo}
+                        label=""
+                        size="small"
+                      >
+                        {userRoles.map((roles) => (
+                          <MenuItem key={roles.RoleId} value={roles.RoleId}>
+                            {roles.Role}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label">
+                      Password<span className="text-danger">*</span>
+                    </label>
+                    <TextField
+                      type="password"
+                      className="form-control"
+                      variant="outlined"
+                      size="small"
+                      error={
+                        selectedStaff === 0 &&
+                        submitClicked &&
+                        !customerInfo.Password
+                      }
+                      onChange={handleCustomerInfo}
+                      name="Password"
+                      id="passwordInput"
+                      placeholder="Password"
+                    />
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label">
+                      Confirm Password<span className="text-danger">*</span>
+                    </label>
+                    <TextField
+                      type="password"
+                      className="form-control"
+                      variant="outlined"
+                      size="small"
+                      onChange={handleCustomerInfo}
+                      // error={selectedStaff !== 0 && submitClicked && !customerInfo.ConfirmPassword}
+                      id="confirmPasswordInput"
+                      name="ConfirmPassword"
+                      placeholder="Confirm Password"
+                    />
+                    {passwordMatch && (
+                      <div style={{ color: "red" }}>
+                        Passwords do not match.
+                      </div>
+                    )}
+                    {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label
+                      htmlFor="exampleFormControlInput4"
+                      className="form-label"
                     >
-                      {userRoles.map((roles) => (
-                        <MenuItem key={roles.RoleId} value={roles.RoleId}>
-                          {roles.Role}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label className="form-label">
-                    Password<span className="text-danger">*</span>
-                  </label>
-                  <TextField
-                    type="password"
-                    className="form-control"
-                    variant="outlined"
-                    size="small"
-                    error={selectedStaff === 0 && submitClicked && !customerInfo.Password}
-                    onChange={handleCustomerInfo}
-                    name="Password"
-                    id="passwordInput"
-                    placeholder="Password"
-                   
-                  />
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label className="form-label">
-                    Confirm Password<span className="text-danger">*</span>
-                  </label>
-                  <TextField
-                    type="password"
-                    className="form-control"
-                    variant="outlined"
-                    size="small"
-                    onChange={handleCustomerInfo}
-                    // error={selectedStaff !== 0 && submitClicked && !customerInfo.ConfirmPassword}
-                    id="confirmPasswordInput"
-                    name="ConfirmPassword"
-                    placeholder="Confirm Password"
-                    
-                  />
-                  {passwordMatch && (
-                    <div style={{ color: "red" }}>Passwords do not match.</div>
-                  )}
-                  {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Phone 
-                  </label>
-                  <TextField
-                    type="tel"
-                    className="form-control"
-                    onChange={handleCustomerInfo}
-                    name="Phone"
-                    variant="outlined"
-                    size="small"
-                    error={phoneError}
-                    value={customerInfo.Phone}
-                    id="exampleFormControlInput4"
-                    placeholder="Phone 1"
-                    
-                  />
-                </div>
-                <div className="col-md-3 mb-3">
-                  <label
-                    htmlFor="exampleFormControlInput4"
-                    className="form-label"
-                  >
-                    Alt Phone
-                  </label>
-                  <TextField
-                    type="tel"
-                    className="form-control"
-                    onChange={handleCustomerInfo}
-                    name="AltPhone"
-                    variant="outlined"
-                    size="small"
-                    value={customerInfo.AltPhone}
-                    id="exampleFormControlInput4"
-                    placeholder="Alt Phone"
-                   
-                  />
-                </div>
-                <div className="col-md-6" style={{ position: "relative" }}>
-                  <label className="form-label">
-                    Address
-                  </label>
-                  <TextField
-                    type="text"
-                    onChange={handleCustomerInfo}
-                    className="form-control "
-                    name="Address"
-                    variant="outlined"
-                    size="small"
-                    value={customerInfo.Address}
-                    id="exampleFormControlInput3"
-                    placeholder="Address"
-                    
-                  />
-                  {/* {showPop1 || (
+                      Phone
+                    </label>
+                    <TextField
+                      type="tel"
+                      className="form-control"
+                      onChange={handleCustomerInfo}
+                      name="Phone"
+                      variant="outlined"
+                      size="small"
+                      error={phoneError}
+                      value={customerInfo.Phone}
+                      id="exampleFormControlInput4"
+                      placeholder="Phone 1"
+                    />
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label
+                      htmlFor="exampleFormControlInput4"
+                      className="form-label"
+                    >
+                      Alt Phone
+                    </label>
+                    <TextField
+                      type="tel"
+                      className="form-control"
+                      onChange={handleCustomerInfo}
+                      name="AltPhone"
+                      variant="outlined"
+                      size="small"
+                      value={customerInfo.AltPhone}
+                      id="exampleFormControlInput4"
+                      placeholder="Alt Phone"
+                    />
+                  </div>
+                  <div className="col-md-6" style={{ position: "relative" }}>
+                    <label className="form-label">Address</label>
+                    <TextField
+                      type="text"
+                      onChange={handleCustomerInfo}
+                      className="form-control "
+                      name="Address"
+                      variant="outlined"
+                      size="small"
+                      value={customerInfo.Address}
+                      id="exampleFormControlInput3"
+                      placeholder="Address"
+                    />
+                    {/* {showPop1 || (
                   <AdressModal
                     topClass="staffAdress"
                     adress={customerAdress}
@@ -467,72 +460,60 @@ const AddStaff = ({
                     handleAdress={setAdress1}
                   />
                 )} */}
-                </div>
-                <div className="col-md-9 mt-4">
-                {alert && (
-                    <Alert severity="error">
-                      The Email/User already exists
-                    </Alert>
-                  )}
-                  {alertSuccess && (
-                    <Alert severity="success">
-                      Successfuly Added/Updated staff
-                    </Alert>
-                  )}
-                  {emptyFieldsError && (
-                    <Alert severity="error">
-                      Please fill all required fields
-                    </Alert>
-                  )}
-                  {emailError && (
-                    <Alert severity="error">
-                     Please enter valid email
-                    </Alert>
-                  )}
-                  {phoneError && (
-                    <Alert severity="error">
-                     Please enter valid Phone
-                    </Alert>
-                  )}
-                  {firstNameError && (
-                    <Alert severity="error">
-                    {firstNameError}
-                    </Alert>
-                  )}
-                  {lastNameError && (
-                    <Alert severity="error">
-                    {lastNameError}
-                    </Alert>
-                  )}
-                </div>
-                
-                <div className=" mt-4 col-md-3 text-end">
-                  <button className="btn btn-primary me-1" onClick={addStaff}>
-                    Submit
-                  </button>
+                  </div>
+                  <div className="col-md-9 mt-4">
+                    {alert && (
+                      <Alert severity="error">
+                        The Email/User already exists
+                      </Alert>
+                    )}
+                    {alertSuccess && (
+                      <Alert severity="success">
+                        Successfuly Added/Updated staff
+                      </Alert>
+                    )}
+                    {emptyFieldsError && (
+                      <Alert severity="error">
+                        Please fill all required fields
+                      </Alert>
+                    )}
+                    {emailError && (
+                      <Alert severity="error">Please enter valid email</Alert>
+                    )}
+                    {phoneError && (
+                      <Alert severity="error">Please enter valid Phone</Alert>
+                    )}
+                    {firstNameError && (
+                      <Alert severity="error">{firstNameError}</Alert>
+                    )}
+                    {lastNameError && (
+                      <Alert severity="error">{lastNameError}</Alert>
+                    )}
+                  </div>
 
-                  <button
-                    className="btn btn-danger light ms-1"
-                    onClick={() => {
-                      settoggleAddStaff(true);
-                    }}
-                  >
-                    Cancel
-                  </button>
+                  <div className=" mt-4 col-md-3 text-end">
+                    <button className="btn btn-primary me-1" onClick={addStaff}>
+                      Submit
+                    </button>
+
+                    <button
+                      className="btn btn-danger light ms-1"
+                      onClick={() => {
+                        settoggleAddStaff(true);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-12"></div>
+                  </div>
                 </div>
               </div>
-              <div className="row">
-                <div className="col-md-12">
-                  
-                </div>
-              </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>}
-
-
-      
+      )}
     </>
   );
 };

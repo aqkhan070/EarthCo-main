@@ -375,9 +375,12 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
           <div className="modal-header">
             <h5 className="modal-title">Add Punchlist</h5>
             <button
-              type="button"
+              // type="button"
               className="btn-close"
-              data-bs-dismiss="modal"
+              onClick={() => {
+                document.getElementById("PunchDetailModalCloser").click();
+              }}
+              // data-bs-dismiss="modal"
             ></button>
           </div>
 

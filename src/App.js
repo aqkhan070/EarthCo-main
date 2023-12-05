@@ -30,6 +30,7 @@ import Landscape from "./components/Landscape/Landscape";
 import { useContext } from "react";
 import { RoutingContext } from "./context/RoutesContext";
 import ServiceRequest from "./components/ServiceRequest/ServiceRequest";
+import UpdateSRForm from "./components/ServiceRequest/UpdateSRForm";
 import SRlist from "./components/ServiceRequest/SRlist";
 import EstimateList from "./components/Estimates/EstimateList";
 import EstimateIDopen from "./components/Estimates/EstimateIDopen";
@@ -94,6 +95,7 @@ function App() {
               <Route path="" element={<SRlist />} />
               <Route path='Service-Request-Preview' element={<SRPreview />} />
               <Route path="Add-SRform" element={<AddSRform />} />
+              <Route path='Update-SRform' element={<UpdateSRForm />} />
               <Route path={SRroute} element={<ServiceRequest />} />
             </Route>
 

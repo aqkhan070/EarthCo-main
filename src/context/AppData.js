@@ -236,9 +236,13 @@ const DataFun = ({ children }) => {
  const [sRProposalData, setsRProposalData] = useState({})
 
  const [sRMapData, setSRMapData] = useState([])
+ const [serviceLocationAddress, setServiceLocationAddress] = useState({})
+ const [maplatLngs, setMaplatLngs] = useState([])
   return (
     <DataContext.Provider
       value={{
+        maplatLngs, setMaplatLngs,
+        serviceLocationAddress, setServiceLocationAddress,
         sRMapData, setSRMapData,
         sRProposalData, setsRProposalData,
         PunchListData, setPunchListData,

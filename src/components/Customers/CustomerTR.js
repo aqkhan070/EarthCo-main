@@ -77,7 +77,12 @@ const CustomerTR = ({
   useEffect(() => {
     // Fetch estimates when the tablePage changes
     fetchCustomers(search, tablePage + 1, rowsPerPage);
-  }, [tablePage, rowsPerPage, search]);
+  }, [tablePage, rowsPerPage]);
+
+  useEffect(() => {
+    // Fetch estimates when the tablePage changes
+    fetchCustomers(search, 1, rowsPerPage);
+  }, [search]);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -119,7 +124,7 @@ const CustomerTR = ({
             <Alert severity="success">Successfully deleted Company</Alert>
           )}
 
-          <div className="card-body">
+          <div className="card-body p-0">
             <div className="search-row">
               <div className="search-container tblsearch-input">
                 <TextField

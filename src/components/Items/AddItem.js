@@ -8,6 +8,7 @@ const AddItem = ({
   headers,
   getFilteredItemsList,
   setSuccessRes,
+  setSelectedItem,
 }) => {
   const [formData, setFormData] = useState({});
   const [incomeAccountList, setIncomeAccountList] = useState([]);
@@ -62,7 +63,7 @@ const AddItem = ({
       !formData.IncomeAccount ||
       !formData.ExpenseAccount
     ) {
-      setemptyFieldError(true)
+      setemptyFieldError(true);
       return;
     }
 
@@ -304,7 +305,11 @@ const AddItem = ({
                 </div>
               </div>
               <div className="col-md-8">
-                {emptyFieldError && <Alert severity="error">Please Fill All Required Fields</Alert>}
+                {emptyFieldError && (
+                  <Alert severity="error">
+                    Please Fill All Required Fields
+                  </Alert>
+                )}
               </div>
               <div className="col-md-4 text-right">
                 <button
@@ -318,7 +323,10 @@ const AddItem = ({
                 <button
                   className="btn btn-danger light ms-1"
                   onClick={() => {
+                    setFormData({});
                     setShowContent(true);
+
+                    setSelectedItem(0);
                   }}
                 >
                   Cancel

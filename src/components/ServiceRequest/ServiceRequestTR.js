@@ -206,23 +206,25 @@ const ServiceRequestTR = ({
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-          <div className="card-body">
-            <div className="row mx-1">
-              <div className=" text-center mb-3">
-                {successAlert && (
-                  <Alert className="mb-3" severity="success">
-                    {successAlert
-                      ? successAlert
-                      : "Successfuly Added/Updated Service request"}
-                  </Alert>
-                )}
-                {deleteSuccess && (
-                  <Alert className="mb-3" severity="success">
-                    Successfuly Deleted Service request
-                  </Alert>
-                )}
-                <div className="col-md-12">
-                  {/* <div>
+          <div className="mx-3">
+            <div className="card">
+              <div className="card-body ">
+                <div className="row">
+                  <div className=" text-center mb-3">
+                    {successAlert && (
+                      <Alert className="mb-3" severity="success">
+                        {successAlert
+                          ? successAlert
+                          : "Successfuly Added/Updated Service request"}
+                      </Alert>
+                    )}
+                    {deleteSuccess && (
+                      <Alert className="mb-3" severity="success">
+                        Successfuly Deleted Service request
+                      </Alert>
+                    )}
+                    <div className="col-md-12">
+                      {/* <div>
                     <Form.Select
                       size="sm"
                       value={filterDate}
@@ -237,206 +239,235 @@ const ServiceRequestTR = ({
                       </option>
                     </Form.Select>
                   </div> */}
-                  <div className="col-3 custom-search-container">
-                    <TextField
-                      label="Search Service Request"
-                      variant="standard"
-                      size="small"
-                      value={sRsearch}
-                      onChange={(e) => setSRsearch(e.target.value)}
-                    />
-                  </div>
+                      <div className="col-3 custom-search-container">
+                        <TextField
+                          label="Search Service Request"
+                          variant="standard"
+                          size="small"
+                          value={sRsearch}
+                          onChange={(e) => setSRsearch(e.target.value)}
+                        />
+                      </div>
 
-                  <div className="custom-button-container">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => {
-                        setShowContent(false);
-                        setServiceRequestId(0);
-                      }}
-                    >
-                      + Add Service Request
-                    </button>
+                      <div className="custom-button-container">
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            setShowContent(false);
+                            setServiceRequestId(0);
+                          }}
+                        >
+                          + Add Service Request
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <br />
+                  <br />
 
-              <Table>
-                <TableHead>
-                  <TableRow className="table-header">
-                    {[
-                      // "Select",
-                      "Service Request #",
-                      "Customer Name",
-                      "Assigned to",
-                      "Status",
-                      "Work Requested",
-                      "Date Created",
-                      "Actions",
-                    ].map((column, index) => (
-                      <TableCell key={index}>
-                        {index < 5 ? (
-                          <TableSortLabel
-                            active={
-                              sorting.field === columnFieldMapping[column]
-                            }
-                            direction={sorting.order}
-                            onClick={() =>
-                              setSorting({
-                                field: columnFieldMapping[column],
-                                order:
-                                  sorting.order === "asc" &&
+                  <Table>
+                    <TableHead>
+                      <TableRow className="table-header">
+                        {[
+                          // "Select",
+                          "Service Request #",
+                          "Customer Name",
+                          "Assigned to",
+                          "Status",
+                          "Work Requested",
+                          "Date Created",
+                        ].map((column, index) => (
+                          <TableCell key={index}>
+                            {index < 5 ? (
+                              <TableSortLabel
+                                active={
                                   sorting.field === columnFieldMapping[column]
-                                    ? "desc"
-                                    : "asc",
-                              })
-                            }
-                          >
-                            {column}
-                          </TableSortLabel>
-                        ) : (
-                          column
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sRfetchError ? (
-                    <TableRow>
-                      <TableCell className="text-center" colSpan={12}>
-                        No Record found
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                  {sortedAndSearchedCustomers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((customer, rowIndex) => (
-                      <TableRow key={rowIndex} hover>
-                        {/* <TableCell>
-                          <Checkbox />
-                        </TableCell> */}
-                        <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                        <TableCell>{customer.CustomerName}</TableCell>
-                        <TableCell>{customer.Assign}</TableCell>
-                        <TableCell>
-                          <span className="badge badge-pill badge-success ">
-                            {customer.Status}
-                          </span>
-                        </TableCell>
-                        <TableCell>{customer.WorkRequest}</TableCell>
-                        <TableCell>
-                          {formatDate(customer.CreatedDate)}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            // className="btn btn-primary btn-icon-xxs me-2"
-                            onClick={() => {
-                              navigate(
-                                "/Dashboard/Service-Requests/Service-Request-Preview"
-                              );
-                              // setestmPreviewId(estimate.EstimateId);
-                              setSRData(customer);
-                            }}
-                          >
-                            {/* <i className="fa-solid fa-eye"></i> */}
-
-                            <Visibility />
-                          </Button>
-                          <Button
-                            // className="btn btn-primary btn-icon-xxs me-2"
-                            onClick={() => {
+                                }
+                                direction={sorting.order}
+                                onClick={() =>
+                                  setSorting({
+                                    field: columnFieldMapping[column],
+                                    order:
+                                      sorting.order === "asc" &&
+                                      sorting.field ===
+                                        columnFieldMapping[column]
+                                        ? "desc"
+                                        : "asc",
+                                  })
+                                }
+                              >
+                                {column}
+                              </TableSortLabel>
+                            ) : (
+                              column
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {sRfetchError ? (
+                        <TableRow>
+                          <TableCell className="text-center" colSpan={12}>
+                            No Record found
+                          </TableCell>
+                        </TableRow>
+                      ) : null}
+                      {sortedAndSearchedCustomers
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((customer, rowIndex) => (
+                          <TableRow
+                            onDoubleClick={() => {
                               setServiceRequestId(customer.ServiceRequestId);
                               setShowContent(false);
                               console.log("////////", serviceRequestId);
-                              // console.log("////////",customer.ServiceRequestId);
                             }}
+                            key={rowIndex}
+                            hover
                           >
-                            <Create />
-                            {/* <i className="fas fa-pencil-alt"></i> */}
-                          </Button>
+                            {/* <TableCell>
+                          <Checkbox />
+                        </TableCell> */}
+                            <TableCell>
+                              {customer.ServiceRequestNumber}
+                            </TableCell>
+                            <TableCell>{customer.CustomerName}</TableCell>
+                            <TableCell>{customer.Assign}</TableCell>
+                            <TableCell>
+                              <span
+                                onClick={() => {
+                                  navigate(
+                                    "/Dashboard/Service-Requests/Service-Request-Preview"
+                                  );
+                                  // setestmPreviewId(estimate.EstimateId);
+                                  setSRData(customer);
+                                }}
+                                className="span-hover-pointer badge badge-pill badge-success "
+                              >
+                                {customer.Status}
+                              </span>
+                            </TableCell>
+                            <TableCell>{customer.WorkRequest}</TableCell>
+                            <TableCell>
+                              {formatDate(customer.CreatedDate)}
+                            </TableCell>
+                            {/* <TableCell>
+                              <Button
+                                // className="btn btn-primary btn-icon-xxs me-2"
+                                onClick={() => {
+                                  navigate(
+                                    "/Dashboard/Service-Requests/Service-Request-Preview"
+                                  );
+                                  // setestmPreviewId(estimate.EstimateId);
+                                  setSRData(customer);
+                                }}
+                              >
+                               <i className="fa-solid fa-eye"></i> 
 
-                          <Button
-                            // className="btn btn-danger btn-icon-xxs mr-2"
-                            data-bs-toggle="modal"
-                            data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
-                          >
-                            <Delete color="error" />
-                            {/* <i className="fas fa-trash-alt"></i> */}
-                          </Button>
-                          <div
-                            className="modal fade"
-                            id={`deleteModal${customer.ServiceRequestId}`}
-                            tabIndex="-1"
-                            aria-labelledby="deleteModalLabel"
-                            aria-hidden="true"
-                          >
-                            <div
-                              className="modal-dialog modal-dialog-centered"
-                              role="document"
-                            >
-                              <div className="modal-content">
-                                <div className="modal-header">
-                                  <h5 className="modal-title">
-                                    Delete Service Request
-                                  </h5>
-                                  <button
-                                    type="button"
-                                    className="btn-close"
-                                    data-bs-dismiss="modal"
-                                  ></button>
-                                </div>
-                                <div className="modal-body">
-                                  <p>
-                                    {" "}
-                                    Are you sure you want to delete Service
-                                    Request No {customer.ServiceRequestNumber}
-                                  </p>
-                                </div>
-                                <div className="modal-footer">
-                                  <button
-                                    type="button"
-                                    id="closer"
-                                    className="btn btn-danger light "
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Close
-                                  </button>
-                                  <button
-                                    className="btn btn-primary "
-                                    data-bs-dismiss="modal"
-                                    onClick={() => {
-                                      handleDelete(customer.ServiceRequestId);
-                                      console.log(
-                                        "delete id",
-                                        customer.ServiceRequestId
-                                      );
-                                    }}
-                                  >
-                                    Yes
-                                  </button>
+                                <Visibility />
+                              </Button>
+                              <Button
+                                // className="btn btn-primary btn-icon-xxs me-2"
+                                onClick={() => {
+                                  setServiceRequestId(
+                                    customer.ServiceRequestId
+                                  );
+                                  setShowContent(false);
+                                  console.log("////////", serviceRequestId);
+                                  // console.log("////////",customer.ServiceRequestId);
+                                }}
+                              >
+                                <Create />
+                               <i className="fas fa-pencil-alt"></i> 
+                              </Button>
+
+                              <Button
+                                // className="btn btn-danger btn-icon-xxs mr-2"
+                                data-bs-toggle="modal"
+                                data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
+                              >
+                                <Delete color="error" />
+                              <i className="fas fa-trash-alt"></i> 
+                              </Button>
+                              <div
+                                className="modal fade"
+                                id={`deleteModal${customer.ServiceRequestId}`}
+                                tabIndex="-1"
+                                aria-labelledby="deleteModalLabel"
+                                aria-hidden="true"
+                              >
+                                <div
+                                  className="modal-dialog modal-dialog-centered"
+                                  role="document"
+                                >
+                                  <div className="modal-content">
+                                    <div className="modal-header">
+                                      <h5 className="modal-title">
+                                        Delete Service Request
+                                      </h5>
+                                      <button
+                                        type="button"
+                                        className="btn-close"
+                                        data-bs-dismiss="modal"
+                                      ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                      <p>
+                                        {" "}
+                                        Are you sure you want to delete Service
+                                        Request No{" "}
+                                        {customer.ServiceRequestNumber}
+                                      </p>
+                                    </div>
+                                    <div className="modal-footer">
+                                      <button
+                                        type="button"
+                                        id="closer"
+                                        className="btn btn-danger light "
+                                        data-bs-dismiss="modal"
+                                      >
+                                        Close
+                                      </button>
+                                      <button
+                                        className="btn btn-primary "
+                                        data-bs-dismiss="modal"
+                                        onClick={() => {
+                                          handleDelete(
+                                            customer.ServiceRequestId
+                                          );
+                                          console.log(
+                                            "delete id",
+                                            customer.ServiceRequestId
+                                          );
+                                        }}
+                                      >
+                                        Yes
+                                      </button>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
-                component="div"
-                count={totalRecords.totalRecords}
-                rowsPerPage={rowsPerPage}
-                page={tablePage} // Use tablePage for the table rows
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={(event) => {
-                  setRowsPerPage(parseInt(event.target.value, 10));
-                  setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                }}
-              />
+                            </TableCell> */}
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50]}
+                    component="div"
+                    count={totalRecords.totalRecords}
+                    rowsPerPage={rowsPerPage}
+                    page={tablePage} // Use tablePage for the table rows
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={(event) => {
+                      setRowsPerPage(parseInt(event.target.value, 10));
+                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </ThemeProvider>

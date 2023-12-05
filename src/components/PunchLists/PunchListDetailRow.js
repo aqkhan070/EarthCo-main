@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -41,25 +41,37 @@ const PunchListDetailRow = ({
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedCostItem, setSelectedCostItem] = useState([]);
 
-  const handleCheckboxChange = (item) => {
-    if (selectedItems.includes(item)) {
+  const handleCheckboxChange = (items) => {
+    if (selectedItems.includes(items)) {
       // If item is already in the selectedItems array, remove it
       setSelectedItems(
-        selectedItems.filter((selectedItem) => selectedItem !== item)
+        selectedItems.filter((selectedItem) => selectedItem !== items)
       );
     } else {
       // If item is not in the selectedItems array, add it
-      setSelectedItems([...selectedItems, item]);
+      setSelectedItems([...selectedItems, items]);
     }
 
-    // const updatedSelectedItems = selectedItems.map((item) => ({
-    //   ...item,
-    //   isCost: true,
-    // }));
-    // setSelectedItems(updatedSelectedItems);
-    console.log("selected item is", selectedItems);
+    console.log("selected item is", selectedCostItem);
   };
+
+  useEffect(() => {
+    const updatedSelectedItems = selectedItems.map((items) => ({
+      ...items,
+      isCost: false,
+    }));
+
+    setPunchListData((prevData) => ({
+      ...prevData,
+      AssignTo: item.Data.AssignedTo,
+      ContactId: item.Data.ContactId,
+      PunchlistId: item.Data.PunchlistId,
+      CustomerId: item.Data.CustomerId,
+      ItemData: updatedSelectedItems,
+    }));
+  }, [selectedItems]);
 
   const deletePunchListDetail = async (id) => {
     try {
@@ -99,7 +111,6 @@ const PunchListDetailRow = ({
                   <Table size="small" aria-label="purchases">
                     <TableBody>
                       <TableRow>
-                        <TableCell></TableCell>
                         <TableCell rowSpan={2} component="th" scope="row">
                           <div className="products">
                             <img
@@ -113,24 +124,22 @@ const PunchListDetailRow = ({
                             </div>
                           </div>
                         </TableCell>
+
                         <TableCell>
-                          {" "}
-                          <TableCell>
-                            {detail.ItemData.map((item) => {
-                              return (
-                                <div key={item.ItemId}>
-                                  <Checkbox
-                                    checked={selectedItems.includes(item)}
-                                    onChange={() => handleCheckboxChange(item)}
-                                  />
-                                  <span>{item.Name}</span>
-                                </div>
-                              );
-                            })}
-                          </TableCell>
+                          {detail.ItemData.map((item) => {
+                            return (
+                              <div key={item.ItemId}>
+                                <Checkbox
+                                  checked={selectedItems.includes(item)}
+                                  onChange={() => handleCheckboxChange(item)}
+                                />
+                                <span>{item.Name}</span>
+                              </div>
+                            );
+                          })}
                         </TableCell>
-                        <TableCell></TableCell>
-                        <TableCell rowSpan={2} align="right">
+
+                        <TableCell className="Punch-Detail-Link" colSpan={4}>
                           <FormControl>
                             {/* <InputLabel size="small" id="pLLink">
                               select
@@ -151,14 +160,6 @@ const PunchListDetailRow = ({
                               </MenuItem>
                               <MenuItem
                                 onClick={() => {
-                                  setPunchListData((prevData) => ({
-                                    ...prevData,
-                                    AssignTo: item.Data.AssignedTo,
-                                    ContactId: item.Data.ContactId,
-                                    PunchlistId: item.Data.PunchlistId,
-                                    CustomerId: item.Data.CustomerId,
-                                    ItemData: detail.ItemData,
-                                  }));
                                   console.log("estimate", item);
 
                                   navigate(
@@ -172,6 +173,9 @@ const PunchListDetailRow = ({
                               <MenuItem
                                 onClick={() => {
                                   console.log("service request");
+                                  navigate(
+                                    "/Dashboard/Service-Requests/Update-SRform"
+                                  );
                                 }}
                                 value={4}
                               >
@@ -181,7 +185,7 @@ const PunchListDetailRow = ({
                           </FormControl>
                           <TableCell></TableCell>
                         </TableCell>
-                        <TableCell align="left">
+                        <TableCell align="right">
                           <Button
                             className="delete-button"
                             data-bs-toggle="modal"

@@ -1,15 +1,19 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
 import Cookies from "js-cookie";
 import formatDate from "../../custom/FormatDate";
+import { CircularProgress } from "@mui/material";
+import { Print, Email, Download } from "@mui/icons-material";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { useNavigate } from "react-router-dom";
 
 const Audit = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
@@ -35,12 +39,82 @@ const Audit = () => {
     fetchIrrigation();
   }, []);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = async () => {
+    const input = document.getElementById("irrigation-preview");
+    const pdf = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const scale = 1;
+    const width = pdf.internal.pageSize.getWidth();
+    const height = pdf.internal.pageSize.getHeight() / 2.2;
+
+    try {
+      const canvas = await html2canvas(input);
+
+      // Create an Image object and wait for it to load
+      const img = new Image();
+      img.src = canvas.toDataURL("image/png");
+      console.log("image data is", img.src);
+
+      await new Promise((resolve) => {
+        img.onload = resolve;
+      });
+
+      // Add the image to the PDF
+      pdf.addImage(img, "PNG", 0, 0, width, height);
+
+      // Save the PDF
+      pdf.save("irrigation.pdf");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
+
   if (!irrDetails.IrrigationData) {
-    return <div>Loading...</div>;
+    return (
+      <div className="center-loader">
+        <CircularProgress></CircularProgress>
+      </div>
+    );
   }
 
   return (
-    <>
+    <div style={{ maxWidth: "70em" }} className="container-fluid">
+      <div className="row justify-content-between ">
+        <div className="col-md-3 text-start pb-0">
+          <button
+            className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+            onClick={() => {
+              navigate(`/Dashboard/Irrigation`);
+            }}
+          >
+            &#60; Back
+          </button>
+        </div>
+        <div className="col-md-3 text-end">
+          {" "}
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
+            onClick={handlePrint}
+          >
+            <Print />
+          </button>
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
+            onClick={handleDownload}
+          >
+            <Download />
+          </button>
+        </div>
+      </div>
+
       {irrDetails ? (
         <div className="container-fluid">
           <div className="row">
@@ -48,7 +122,7 @@ const Audit = () => {
               <div className="card mt-3">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                 <strong>Status:</strong> Pending</span> </div> */}
-                <div className="card-body">
+                <div id="irrigation-preview" className="card-body get-preview">
                   <div className="row mb-5">
                     <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                       <div className="brand-logo mb-2 inovice-logo">
@@ -71,14 +145,14 @@ const Audit = () => {
                     className="row mb-2"
                     style={{ padding: "2px", border: "1px solid #789a3d" }}
                   >
-                    <div className="col-md-6">
+                    <div className="col-md-6 col-sm-6">
                       <div>
                         {" "}
                         <strong>Customer Name</strong>{" "}
                       </div>
                       <div>{irrDetails?.IrrigationData.CustomerId}</div>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-6 col-sm-6">
                       <div>
                         {" "}
                         <strong>Created</strong>{" "}
@@ -129,7 +203,7 @@ const Audit = () => {
                                 <br />
                                 <strong>Satellite Based?:</strong>
                                 <br />
-                                {item.isSatelliteBased? "yes": "No"}
+                                {item.isSatelliteBased ? "yes" : "No"}
                                 <br />
                                 <strong>Type of Water:</strong>
                                 <br />
@@ -237,7 +311,7 @@ const Audit = () => {
       ) : (
         <div>Loading....</div>
       )}
-    </>
+    </div>
   );
 };
 

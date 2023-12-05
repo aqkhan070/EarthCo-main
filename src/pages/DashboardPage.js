@@ -7,6 +7,7 @@ import Footer from "../components/Footer";
 import CustomerIndex from "../components/Customers/CustomerIndex";
 import EstimateIndex from "../components/Estimates/EstimateIndex";
 import ServiceIndex from "../components/ServiceRequest/ServiceIndex";
+import UpdateSRForm from "../components/ServiceRequest/UpdateSRForm";
 import IrrigationIndex from "../components/Irrigation/IrrigationIndex";
 import CustomersTable from "../components/Customers/CustomersTable";
 import AddCutomer from "../components/Customers/AddCutomer";
@@ -77,32 +78,37 @@ const DashboardPage = () => {
     "Purchase-Order-Preview"
   );
 
+  const isIrrPreviewRoute = window.location.pathname.includes("Audit-Report");
+  const isSummeryPreviewRoute = window.location.pathname.includes(
+    "SummaryReportPreview"
+  );
+  const isProposalPreviewRoute =
+    window.location.pathname.includes("ProposalSummary");
+  const isLandscapPreviewRoute =
+    window.location.pathname.includes("Landscape-Report");
+  const isWeeklyReportPreviewRoute =
+    window.location.pathname.includes("WeeklyReport");
+
+  const isPreview =
+    !isEstimatePreviewRoute &&
+    !isSRPreviewRoute &&
+    !isBillPreviewRoute &&
+    !isInvoicePreviewRoute &&
+    !isPOPreviewRoute &&
+    !isIrrPreviewRoute &&
+    !isSummeryPreviewRoute &&
+    !isProposalPreviewRoute &&
+    !isLandscapPreviewRoute &&
+    !isWeeklyReportPreviewRoute;
+
   return (
     <>
       {token ? (
         <>
-          {!isEstimatePreviewRoute &&
-            !isSRPreviewRoute &&
-            !isBillPreviewRoute &&
-            !isInvoicePreviewRoute &&
-            !isPOPreviewRoute && <HeaderExp />}
-          {!isEstimatePreviewRoute &&
-            !isSRPreviewRoute &&
-            !isBillPreviewRoute &&
-            !isInvoicePreviewRoute &&
-            !isPOPreviewRoute && <SideBar />}
+          {isPreview && <HeaderExp />}
+          {isPreview && <SideBar />}
 
-          <div
-            className={
-              !isEstimatePreviewRoute &&
-              !isSRPreviewRoute &&
-              !isBillPreviewRoute &&
-              !isInvoicePreviewRoute &&
-              !isPOPreviewRoute &&
-              "content-body"
-            }
-            id="contentBody"
-          >
+          <div className={isPreview && "content-body"} id="contentBody">
             <Routes>
               <Route path="" element={<DashBoard />} />
               <Route
@@ -125,12 +131,16 @@ const DashboardPage = () => {
               <Route path="Estimates" element={<EstimateIndex />}>
                 <Route path="" element={<EstimateList />} />
                 <Route path="Add-Estimate" element={<AddEstimate />} />
-                <Route path='Update-Estimate' element={<UpdateEstimateForm />} />
+                <Route
+                  path="Update-Estimate"
+                  element={<UpdateEstimateForm />}
+                />
                 <Route path="Estimate-Preview" element={<EstimatePreview />} />
                 <Route path={estimateRoute} element={<EstimateIDopen />} />
               </Route>
               <Route path="Service-Requests" element={<ServiceIndex />}>
                 <Route path="" element={<SRlist />} />
+                <Route path="Update-SRform" element={<UpdateSRForm />} />
                 <Route path="Service-Request-Preview" element={<SRPreview />} />
                 <Route path="Add-SRform" element={<AddSRform />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
@@ -148,7 +158,7 @@ const DashboardPage = () => {
 
               <Route path="Bills/*" element={<BillIndex />}>
                 <Route path="" element={<Bills />}></Route>
-                <Route path='AddBill' element={<AddBill />} />
+                <Route path="AddBill" element={<AddBill />} />
                 <Route path="Bill-Preview" element={<BillPreview />} />
               </Route>
 
@@ -172,7 +182,10 @@ const DashboardPage = () => {
                 element={<PunchlistPreview />}
               />
               <Route path="SummaryReport" element={<SummaryReport />} />
-              <Route path="SummaryReportPreview" element={<SummaryReportPreview />} />
+              <Route
+                path="SummaryReportPreview"
+                element={<SummaryReportPreview />}
+              />
               <Route path="ProposalSummary" element={<ProposalSummary />} />
               <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />

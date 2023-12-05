@@ -3,9 +3,9 @@ import React from "react";
 const InvoiceCards = () => {
   return (
     <>
-      <div className="col-lg-2 col-sm-3">
+      <div className="col-lg-2 ">
         <div className="widget-stat card">
-          <div className="card-body p-3">
+          <div className="card-body ">
             <div className="media ai-icon smaller-widget">
               <span className=" bgl-primary text-primary smaller-widget">
                 <i className="la la-edit smaller-widget"></i>
@@ -18,9 +18,9 @@ const InvoiceCards = () => {
           </div>
         </div>
       </div>
-      <div className="col-lg-2 col-sm-3">
+      <div className="col-lg-2 ">
         <div className="widget-stat card">
-          <div className="card-body p-3">
+          <div className="card-body ">
             <div className="media ai-icon smaller-widget">
               <span className=" bgl-warning text-warning smaller-widget">
                 <i className="la la-send smaller-widget"></i>
@@ -35,7 +35,7 @@ const InvoiceCards = () => {
       </div>
       <div className="col-xl-2  ">
         <div className="widget-stat card">
-          <div className="card-body  p-3 ">
+          <div className="card-body   ">
             <div className="media ai-icon smaller-widget">
               <span className=" bgl-danger text-danger smaller-widget">
                 <i className="la la-stack-overflow "></i>
@@ -50,7 +50,7 @@ const InvoiceCards = () => {
       </div>
       <div className="col-xl-2  ">
         <div className="widget-stat card">
-          <div className="card-body  p-3">
+          <div className="card-body  ">
             <div className="media ai-icon smaller-widget">
               <span className=" bgl-success text-success smaller-widget">
                 <i className="la la-thumbs-up"></i>
@@ -65,7 +65,7 @@ const InvoiceCards = () => {
       </div>
       <div className="col-xl-2  ">
         <div className="widget-stat card">
-          <div className="card-body  p-3">
+          <div className="card-body  ">
             <div className="media ai-icon smaller-widget">
               <span className=" bgl-secondary text-secondary smaller-widget">
                 <i className="la la-dollar-sign"></i>

@@ -15,14 +15,13 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { Delete, Create,Visibility } from "@mui/icons-material";
+import { Delete, Create, Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
 import { DataContext } from "../../context/AppData";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../../custom/FormatDate";
-
 
 const Invoices = () => {
   const token = Cookies.get("token");
@@ -31,8 +30,16 @@ const Invoices = () => {
   };
 
   const navigate = useNavigate();
-  const {setInvoiceData} = useContext(DataContext);
-  const { invoiceList, loading, error, fetchInvoices, fetchFilterInvoice, filteredInvoiceList,totalRecords } = useFetchInvoices();
+  const { setInvoiceData } = useContext(DataContext);
+  const {
+    invoiceList,
+    loading,
+    error,
+    fetchInvoices,
+    fetchFilterInvoice,
+    filteredInvoiceList,
+    totalRecords,
+  } = useFetchInvoices();
   const [showContent, setShowContent] = useState(true);
 
   const [selectedInvoice, setSelectedInvoice] = useState(0);
@@ -44,9 +51,8 @@ const Invoices = () => {
 
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [deleteRes, setDeleteRes] = useState("");
-  const [submitRes, setSubmitRes] = useState("")
+  const [submitRes, setSubmitRes] = useState("");
 
- 
   useEffect(() => {
     fetchInvoices();
   }, []);
@@ -58,8 +64,8 @@ const Invoices = () => {
   };
 
   const [tablePage, setTablePage] = useState(0);
-  const [statusId, setStatusId] = useState(0)
-  const [search, setSearch] = useState("")
+  const [statusId, setStatusId] = useState(0);
+  const [search, setSearch] = useState("");
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterInvoice();
@@ -69,12 +75,10 @@ const Invoices = () => {
     // Fetch estimates when the tablePage changes
     fetchFilterInvoice(search, tablePage + 1, rowsPerPage, statusId);
   }, [search, tablePage, rowsPerPage, statusId]);
-  
+
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
   };
-
-
 
   // const handleChangePage = (event, newPage) => {
   //   setPage(newPage);
@@ -85,7 +89,7 @@ const Invoices = () => {
     setPage(0);
   };
 
-  const filteredInvoices = filteredInvoiceList
+  const filteredInvoices = filteredInvoiceList;
 
   const sortedInvoices = filteredInvoices.sort((a, b) => {
     if (order === "asc") {
@@ -134,10 +138,11 @@ const Invoices = () => {
                   )}
                   {submitRes && (
                     <Alert className="mb-3" severity="success">
-                      {submitRes ? submitRes : "Successfuly Added/Updated Invoice"}
+                      {submitRes
+                        ? submitRes
+                        : "Successfuly Added/Updated Invoice"}
                     </Alert>
                   )}
-                 
 
                   {loading ? (
                     <div className="center-loader">
@@ -150,7 +155,7 @@ const Invoices = () => {
                           label="Search Invoices"
                           variant="standard"
                           size="small"
-                          style={{  width: "15em" }}
+                          style={{ width: "15em" }}
                           fullWidth
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
@@ -216,16 +221,30 @@ const Invoices = () => {
                                     </TableSortLabel>
                                   </TableCell>
                                   <TableCell>Customer</TableCell>
-                                  <TableCell>Balance</TableCell>
-                                  <TableCell>Total</TableCell>
+                                  <TableCell className="text-end">
+                                    Balance
+                                  </TableCell>
+                                  <TableCell className="text-end">
+                                    Total
+                                  </TableCell>
                                   <TableCell>Service#</TableCell>
                                   <TableCell>Status</TableCell>
-                                  <TableCell>Actions</TableCell>
+                                  {/* <TableCell>Actions</TableCell> */}
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 <TableRow>
-                                  {error ? <TableCell className="text-center" colSpan={9}> <div className="text-center">No Record Found</div></TableCell>: null}
+                                  {error ? (
+                                    <TableCell
+                                      className="text-center"
+                                      colSpan={9}
+                                    >
+                                      {" "}
+                                      <div className="text-center">
+                                        No Record Found
+                                      </div>
+                                    </TableCell>
+                                  ) : null}
                                 </TableRow>
 
                                 {sortedInvoices
@@ -234,7 +253,14 @@ const Invoices = () => {
                                     page * rowsPerPage + rowsPerPage
                                   )
                                   .map((invoice, index) => (
-                                    <TableRow  hover key={index}>
+                                    <TableRow
+                                      onDoubleClick={() => {
+                                        setSelectedInvoice(invoice.InvoiceId);
+                                        setShowContent(false);
+                                      }}
+                                      hover
+                                      key={index}
+                                    >
                                       {/* <TableCell>
                                         <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                           <input
@@ -248,24 +274,33 @@ const Invoices = () => {
                                       <TableCell>
                                         {invoice.InvoiceNumber}
                                       </TableCell>
-                                      <TableCell>{formatDate(invoice.IssueDate)}</TableCell>
+                                      <TableCell>
+                                        {formatDate(invoice.IssueDate)}
+                                      </TableCell>
                                       <TableCell>
                                         {invoice.CustomerName}
                                       </TableCell>
-                                      <TableCell>
+                                      <TableCell className="text-end">
                                         {invoice.BalanceAmount}
                                       </TableCell>
-                                      <TableCell>
-                                      {invoice.TotalAmount.toFixed(2)}
+                                      <TableCell className="text-end">
+                                        {invoice.TotalAmount.toFixed(2)}
                                       </TableCell>
                                       <TableCell></TableCell>
                                       <TableCell>
-                                      <span className="badge badge-pill badge-success ">
-                                         
+                                        <span
+                                          onClick={() => {
+                                            setInvoiceData(invoice);
+                                            navigate(
+                                              "/Dashboard/Invoices/Invoice-Preview"
+                                            );
+                                          }}
+                                          className="  span-hover-pointer badge badge-pill badge-success "
+                                        >
                                           Open
                                         </span>
                                       </TableCell>
-                                      <TableCell>
+                                      {/* <TableCell>
                                       <Button
                             // className="btn btn-primary btn-icon-xxs me-2"
                             onClick={() => {
@@ -275,7 +310,7 @@ const Invoices = () => {
                               );
                             }}
                           >
-                            {/* <i className="fa-solid fa-eye"></i> */}
+                            <i className="fa-solid fa-eye"></i> 
 
                             <Visibility />
                           </Button>
@@ -318,7 +353,7 @@ const Invoices = () => {
                                                 ></button>
                                               </div>
                                               <div className="modal-body">
-                                                <p className="text-center">
+                                                <p className="text-left">
                                                 Are you sure you want to
                                                   delete {invoice.InvoiceNumber}
                                                 </p>
@@ -352,28 +387,30 @@ const Invoices = () => {
                                             </div>
                                           </div>
                                         </div>
-                                      </TableCell>
+                                      </TableCell> */}
                                     </TableRow>
                                   ))}
                                 {emptyRows > 0 && (
-                                  <TableRow >
+                                  <TableRow>
                                     <TableCell colSpan={9} />
                                   </TableRow>
                                 )}
                               </TableBody>
                             </Table>
                             <TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
+                              rowsPerPageOptions={[10, 25, 50]}
+                              component="div"
+                              count={totalRecords}
+                              rowsPerPage={rowsPerPage}
+                              page={tablePage} // Use tablePage for the table rows
+                              onPageChange={handleChangePage}
+                              onRowsPerPageChange={(event) => {
+                                setRowsPerPage(
+                                  parseInt(event.target.value, 10)
+                                );
+                                setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -386,7 +423,7 @@ const Invoices = () => {
         </>
       ) : (
         <AddInvioces
-        setSelectedInvoice={setSelectedInvoice}
+          setSelectedInvoice={setSelectedInvoice}
           setShowContent={setShowContent}
           selectedInvoice={selectedInvoice}
           fetchInvoices={fetchInvoices}

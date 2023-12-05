@@ -10,7 +10,7 @@ const useFetchPo = () => {
 
   const [PoList, setPoList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const [filteredPo, setFilteredPo] = useState([]);
   const [totalRecords, setTotalRecords] = useState({});
   const fetchPo = async () => {
@@ -44,11 +44,11 @@ const useFetchPo = () => {
       setFilteredPo(res.data.Data);
       setTotalRecords(res.data);
       setLoading(false);
-      setError("");
+      // setError("");
       console.log("purchase order", res.data);
     } catch (error) {
       setLoading(false);
-      setError(error.message);
+      setError(true);
       setFilteredPo([]);
       console.log("api call error", error.message);
     }

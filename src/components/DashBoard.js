@@ -16,10 +16,10 @@ import useFetchDashBoardData from './Hooks/useFetchDashBoardData'
 
 
 const DashBoard = () => {
-  const {dashBoardData, getDashboardData} = useFetchDashBoardData() ;
-    useEffect(() => {
-        getDashboardData()
-    },[])
+  const { dashBoardData, getDashboardData } = useFetchDashBoardData();
+  useEffect(() => {
+    getDashboardData()
+  }, [])
 
   const { estimates, setSingleObj, serviceRequests, setSingleSR } = useContext(DataContext);
   const { setEstimateRoute, setSRroute } = useContext(RoutingContext);
@@ -35,7 +35,7 @@ const DashBoard = () => {
     setSingleObj(updatedArr);
   };
 
- 
+
 
   const icon = (
     <svg
@@ -70,18 +70,18 @@ const DashBoard = () => {
               <DashBoardSR dashBoardData={dashBoardData} />
             </div>
             <div className="">
-            <DashboardEstm dashBoardData={dashBoardData} />
+              <DashboardEstm dashBoardData={dashBoardData} />
             </div>
           </div>
 
           <div className="col-md-3">
             <div className="card">
-              <div className="card-header border-0 pb-1">
-                <h4 className="heading mb-0">Upcoming Schedules</h4>
+              <div className="card-header border-0 pb-1 bg-primary">
+                <h4 className="heading mb-0" style={{ color: "white" }}>Upcoming Schedules</h4>
               </div>
               <div className="card-body schedules-cal p-2">
                 <Calendar style={{ width: "100%" }} />
-                <div className="events">
+                {/* <div className="events">
                   <h6>events</h6>
                   <div className="dz-scroll event-scroll">
                     <div className="event-media">
@@ -130,16 +130,16 @@ const DashBoard = () => {
                       <span className="text-secondary">12:05 PM</span>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
 
           <DashBoardCards dashBoardData={dashBoardData} />
 
-         
 
-         
+
+
         </div>
       </div>
     </>

@@ -53833,11 +53833,11 @@ padding: 0px !important;
 
 .css-1ygcj2i-MuiTableCell-root{
     padding: 0.5em !important;
-}
+}*/
 
 .css-10fi992-MuiButtonBase-root-MuiButton-root{
  min-width: 0.2em !important;
-} */
+} 
 
 .table-cell-align{
     white-space: nowrap;
@@ -53849,4 +53849,54 @@ padding: 0px !important;
 .css-cldqnq-MuiButtonBase-root-MuiButton-root{
     min-width: 3px !important;
     padding: 3px !important;
+}
+
+/* .css-1nrlq1o-MuiFormControl-root{
+    min-width: 100% !important;
+}
+.css-q34dxg
+    {
+    padding: 2px !important;
+} */
+
+
+.tablecell-padding-staff
+    {
+    padding: 2px !important;
+}
+
+
+
+.preview-Logo{
+    width: 100%;
+}
+
+.preview-table{
+    width: 100%;
+}
+
+.text-wrap-preview {
+    max-width: 10em;
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
+  }
+  .span-hover-pointer{
+    cursor: pointer;
+  }
+
+@media print{
+    body * {
+        visibility: hidden;
+    }
+   .get-preview, .get-preview * {
+        visibility: visible;
+        /* width: 100%; */
+    }
+    .preview-Logo ,.preview-Logo *{
+        width: 100%;
+    }
+    /* .preview-table ,.preview-table *{
+        width: 40%;
+    } */
 }

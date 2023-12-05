@@ -9,8 +9,7 @@ import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 import { useState, useRef, useEffect } from "react";
 
-
-const GOOGLE_MAPS_API_KEY = "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE";
+const GOOGLE_MAPS_API_KEY = "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE"; // Replace with your API key
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -23,15 +22,19 @@ function loadScript(src, position, id) {
   script.src = src;
   position.appendChild(script);
 }
+
 const autocompleteService = { current: null };
 
-const AddressInputs = () => {
+const AddressInputs = ({ setCustomerAddress }) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const loaded = useRef(false);
 
-  useEffect(() => {console.log("address iss",value )},[value])
+  useEffect(() => {
+    setCustomerAddress(value);
+    console.log("address iss", value);
+  }, [value]);
 
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
@@ -82,6 +85,7 @@ const AddressInputs = () => {
         }
 
         setOptions(newOptions);
+        console.log("address results are", results);
       }
     });
 
@@ -90,10 +94,29 @@ const AddressInputs = () => {
     };
   }, [value, inputValue, fetch]);
 
+  const handleSelect = (event, newValue) => {
+    if (newValue) {
+      // Retrieve latitude and longitude for the selected address
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: newValue.description }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          const { lat, lng } = results[0].geometry.location;
+          setValue({
+            address: newValue.description,
+            latitude: lat(),
+            longitude: lng(),
+          });
+        }
+      });
+    } else {
+      setValue(null);
+    }
+  };
+
   return (
     <Autocomplete
       id="google-map-demo"
-      sx={{ width: 300 }}
+      // sx={{ width: 300 }}
       getOptionLabel={(option) =>
         typeof option === "string" ? option : option.description
       }
@@ -104,15 +127,18 @@ const AddressInputs = () => {
       filterSelectedOptions
       value={value}
       noOptionsText="No locations"
-      onChange={(event, newValue) => {
-        setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-      }}
+      onChange={handleSelect}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} size="small" multiline placeholder="Address" fullWidth />
+        <TextField
+          {...params}
+          size="small"
+          multiline
+          placeholder="Address"
+          fullWidth
+        />
       )}
       renderOption={(props, option) => {
         const matches =

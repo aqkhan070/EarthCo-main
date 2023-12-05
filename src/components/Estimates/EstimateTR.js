@@ -48,7 +48,6 @@ const theme = createTheme({
 });
 
 const EstimateTR = ({
-  
   headers,
   estimates,
   statusId,
@@ -57,7 +56,8 @@ const EstimateTR = ({
   setestmPreviewId,
 }) => {
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
-  const {estmRecords, tableError, filterdEstm, getFilteredEstimate} = useGetEstimate();
+  const { estmRecords, tableError, filterdEstm, getFilteredEstimate } =
+    useGetEstimate();
 
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
@@ -136,12 +136,12 @@ const EstimateTR = ({
   }
 
   // const filteredEstimates = estimates
-  const filteredEstimates = filterdEstm
-    // .filter((e) =>
-    //   e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-    // )
-    // .filter((e) => filterByDate(e.Date, filterDate))
-    // .sort(getSorting(order, orderBy));
+  const filteredEstimates = filterdEstm;
+  // .filter((e) =>
+  //   e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+  // )
+  // .filter((e) => filterByDate(e.Date, filterDate))
+  // .sort(getSorting(order, orderBy));
 
   // ... Pagination, Sorting logic ...
   function desc(a, b, orderBy) {
@@ -174,7 +174,7 @@ const EstimateTR = ({
       setDeleteSuccess(true);
       setTimeout(() => {
         setDeleteSuccess(false);
-        getFilteredEstimate()
+        getFilteredEstimate();
       }, 4000);
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
@@ -197,11 +197,10 @@ const EstimateTR = ({
     console.log("selected ids are", selectedEstimateIds);
   };
 
-  
-  const [pages, setpages] = useState(1)
+  const [pages, setpages] = useState(1);
 
   const [tablePage, setTablePage] = useState(0);
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
   useEffect(() => {
     // Initial fetch of estimates
     getFilteredEstimate();
@@ -209,13 +208,12 @@ const EstimateTR = ({
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    getFilteredEstimate(search,tablePage + 1, rowsPerPage, statusId);
+    getFilteredEstimate(search, tablePage + 1, rowsPerPage, statusId);
   }, [search, tablePage, rowsPerPage, statusId]);
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
     setTablePage(newPage);
   };
-
 
   const [selectAll, setSelectAll] = useState(false);
   const handleSelectAll = () => {
@@ -238,9 +236,6 @@ const EstimateTR = ({
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-           <div className="container-fluid">
-      <div className="row">
-
           <div className="card">
             <div className="card-body">
               <div className="row ">
@@ -354,7 +349,6 @@ const EstimateTR = ({
                     </div>
                   </div>
                 </div>
-
                 <div
                   className="modal fade"
                   id="updateAllModal"
@@ -399,7 +393,6 @@ const EstimateTR = ({
                     </div>
                   </div>
                 </div>
-
                 <TableContainer>
                   <Table>
                     <TableHead className="table-header">
@@ -409,19 +402,31 @@ const EstimateTR = ({
                             checked={selectAll}
                             onChange={handleSelectAll}
                           /></TableCell> */}
-                          <TableCell>#</TableCell>
-                          <TableCell>Customer</TableCell>
-                          <TableCell className="table-cell-align">Regional Manager</TableCell>
-                          <TableCell>Date</TableCell>
-                          <TableCell>Status</TableCell>
-                          <TableCell>Estimate #</TableCell>
-                          <TableCell  className="table-cell-align">Description Of Work</TableCell>
-                          <TableCell className="table-cell-align" >PO #</TableCell>
-                          <TableCell  className="table-cell-align">Bill #</TableCell>
-                          <TableCell  className="table-cell-align">Invoice #</TableCell>
-                          <TableCell>Profit %</TableCell>
-                          <TableCell>Amount</TableCell>
-                          <TableCell>Actions</TableCell>
+                        <TableCell>#</TableCell>
+                        <TableCell>Customer</TableCell>
+                        <TableCell className="table-cell-align">
+                          Regional Manager
+                        </TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell className="table-cell-align">
+                          Estimate #
+                        </TableCell>
+                        <TableCell className="table-cell-align">
+                          Description Of Work
+                        </TableCell>
+                        <TableCell className="table-cell-align">PO #</TableCell>
+                        <TableCell className="table-cell-align">
+                          Bill #
+                        </TableCell>
+                        <TableCell className="table-cell-align">
+                          Invoice #
+                        </TableCell>
+                        <TableCell className= " text-end table-cell-align">
+                          Profit %
+                        </TableCell>
+                        <TableCell className="text-end">Amount</TableCell>
+                        {/* <TableCell>Actions</TableCell> */}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -431,14 +436,23 @@ const EstimateTR = ({
                             No record Found
                           </TableCell>
                         </TableRow>
-                      ) : filteredEstimates
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((estimate, index) => (
-                          <TableRow key={estimate.EstimateId} hover>
-                            {/* <TableCell padding="checkbox">
+                      ) : (
+                        filteredEstimates
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((estimate, index) => (
+                            <TableRow
+                              onDoubleClick={() => {
+                                setSelectedItem(estimate.EstimateId);
+                                console.log(",,,,,,,,,,", selectedItem);
+                                setShowContent(false);
+                              }}
+                              key={estimate.EstimateId}
+                              hover
+                            >
+                              {/* <TableCell padding="checkbox">
                               <Checkbox
                                 checked={
                                   selectAll ||
@@ -451,31 +465,18 @@ const EstimateTR = ({
                                 }
                               />
                             </TableCell> */}
-                            <TableCell>{estimate.EstimateId}</TableCell>
-                            <TableCell className="table-cell-align" >{estimate.CustomerName}</TableCell>
-                            <TableCell  className="table-cell-align" >{estimate.RegionalManager}</TableCell>
-                            <TableCell  className="table-cell-align">{formatDate(estimate.Date)}</TableCell>
-                            <TableCell>
-                              <span className="badge badge-pill badge-success ">
-                                {estimate.Status}
-                              </span>
-                            </TableCell>
-                            <TableCell  className="table-cell-align">{estimate.EstimateNumber}</TableCell>
-                            {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
-                            <TableCell>{estimate.DescriptionofWork}</TableCell>
-                            <TableCell>
-                              {estimate.PurchaseOrderNumber}
-                            </TableCell>
-                            <TableCell>{estimate.BillNumber}</TableCell>
-                            <TableCell>{estimate.InvoiceNumber}</TableCell>
-                            <TableCell>{estimate.ProfitPercentage}</TableCell>
-                            <TableCell>
-                              {estimate.EstimateAmount.toFixed(2)}
-                            </TableCell>
-                            <TableCell>
-                              <div className="button-container">
-                                <Button
-                                  // className="btn btn-primary btn-icon-xxs me-2"
+                              <TableCell>{estimate.EstimateId}</TableCell>
+                              <TableCell className="table-cell-align">
+                                {estimate.CustomerName}
+                              </TableCell>
+                              <TableCell className="table-cell-align">
+                                {estimate.RegionalManager}
+                              </TableCell>
+                              <TableCell className="table-cell-align">
+                                {formatDate(estimate.Date)}
+                              </TableCell>
+                              <TableCell>
+                                <span
                                   onClick={() => {
                                     navigate(
                                       "/Dashboard/Estimates/Estimate-Preview"
@@ -483,94 +484,127 @@ const EstimateTR = ({
                                     setestmPreviewId(estimate.EstimateId);
                                     console.log(estimate.EstimateId);
                                   }}
+                                  className="badge badge-pill badge-success span-hover-pointer"
                                 >
-                                  {/* <i className="fa-solid fa-eye"></i> */}
-
-                                  <Visibility />
-                                </Button>
-                                <Button
-                                  // className="btn btn-primary btn-icon-xxs me-2"
-                                  onClick={() => {
-                                    setSelectedItem(estimate.EstimateId);
-                                    console.log(",,,,,,,,,,", selectedItem);
-                                    setShowContent(false);
-                                  }}
-                                >
-                                  {/* <i className="fas fa-pencil-alt"></i> */}
-                                  <Create></Create>
-                                </Button>
-                                <Button
-                                  // className="btn btn-danger btn-icon-xxs mr-2"
-                                  data-bs-toggle="modal"
-                                  data-bs-target={`#deleteModal${estimate.EstimateId}`}
-                                >
-                                  <Delete color="error" />
-                                  {/* <i className="fas fa-trash-alt"></i> */}
-                                </Button>
-                                <div
-                                  className="modal fade"
-                                  id={`deleteModal${estimate.EstimateId}`}
-                                  tabIndex="-1"
-                                  aria-labelledby="deleteModalLabel"
-                                  aria-hidden="true"
-                                >
-                                  <div
-                                    className="modal-dialog modal-dialog-centered"
-                                    role="document"
+                                  {estimate.Status}
+                                </span>
+                              </TableCell>
+                              <TableCell className="table-cell-align">
+                                {estimate.EstimateNumber}
+                              </TableCell>
+                              {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
+                              <TableCell>
+                                {estimate.DescriptionofWork}
+                              </TableCell>
+                              <TableCell>
+                                {estimate.PurchaseOrderNumber}
+                              </TableCell>
+                              <TableCell>{estimate.BillNumber}</TableCell>
+                              <TableCell>{estimate.InvoiceNumber}</TableCell>
+                              <TableCell className="text-end">
+                                {estimate.ProfitPercentage.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-end">
+                                {estimate.EstimateAmount.toFixed(2)}
+                              </TableCell>
+                              {/* <TableCell>
+                                <div className="button-container">
+                                  <Button
+                                    // className="btn btn-primary btn-icon-xxs me-2"
+                                    onClick={() => {
+                                      navigate(
+                                        "/Dashboard/Estimates/Estimate-Preview"
+                                      );
+                                      setestmPreviewId(estimate.EstimateId);
+                                      console.log(estimate.EstimateId);
+                                    }}
                                   >
-                                    <div className="modal-content">
-                                      <div className="modal-header">
-                                        <h5 className="modal-title">
-                                          Delete Estimate
-                                        </h5>
-                                        <button
-                                          type="button"
-                                          className="btn-close"
-                                          data-bs-dismiss="modal"
-                                        ></button>
-                                      </div>
-                                      <div className="modal-body">
-                                        <p>
-                                          Are you sure you want to delete
-                                          Estimate No {estimate.EstimateNumber}
-                                        </p>
-                                      </div>
+                                     <i className="fa-solid fa-eye"></i> 
 
-                                      <div className="modal-footer">
-                                        <button
-                                          type="button"
-                                          id="closer"
-                                          className="btn btn-danger light"
-                                          data-bs-dismiss="modal"
-                                        >
-                                          Close
-                                        </button>
-                                        <button
-                                          className="btn btn-primary "
-                                          data-bs-dismiss="modal"
-                                          onClick={() => {
-                                            handleDelete(estimate.EstimateId);
-                                            console.log(
-                                              "delete id",
-                                              estimate.EstimateId
-                                            );
-                                          }}
-                                        >
-                                          Yes
-                                        </button>
+                                    <Visibility />
+                                  </Button>
+                                  <Button
+                                    // className="btn btn-primary btn-icon-xxs me-2"
+                                    onClick={() => {
+                                      setSelectedItem(estimate.EstimateId);
+                                      console.log(",,,,,,,,,,", selectedItem);
+                                      setShowContent(false);
+                                    }}
+                                  >
+                                  <i className="fas fa-pencil-alt"></i> 
+                                    <Create></Create>
+                                  </Button>
+                                  <Button
+                                    // className="btn btn-danger btn-icon-xxs mr-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target={`#deleteModal${estimate.EstimateId}`}
+                                  >
+                                    <Delete color="error" />
+                                    <i className="fas fa-trash-alt"></i> 
+                                  </Button>
+                                  <div
+                                    className="modal fade"
+                                    id={`deleteModal${estimate.EstimateId}`}
+                                    tabIndex="-1"
+                                    aria-labelledby="deleteModalLabel"
+                                    aria-hidden="true"
+                                  >
+                                    <div
+                                      className="modal-dialog modal-dialog-centered"
+                                      role="document"
+                                    >
+                                      <div className="modal-content">
+                                        <div className="modal-header">
+                                          <h5 className="modal-title">
+                                            Delete Estimate
+                                          </h5>
+                                          <button
+                                            type="button"
+                                            className="btn-close"
+                                            data-bs-dismiss="modal"
+                                          ></button>
+                                        </div>
+                                        <div className="modal-body">
+                                          <p>
+                                            Are you sure you want to delete
+                                            Estimate No{" "}
+                                            {estimate.EstimateNumber}
+                                          </p>
+                                        </div>
+
+                                        <div className="modal-footer">
+                                          <button
+                                            type="button"
+                                            id="closer"
+                                            className="btn btn-danger light"
+                                            data-bs-dismiss="modal"
+                                          >
+                                            Close
+                                          </button>
+                                          <button
+                                            className="btn btn-primary "
+                                            data-bs-dismiss="modal"
+                                            onClick={() => {
+                                              handleDelete(estimate.EstimateId);
+                                              console.log(
+                                                "delete id",
+                                                estimate.EstimateId
+                                              );
+                                            }}
+                                          >
+                                            Yes
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )) }
-                     
+                              </TableCell> */}
+                            </TableRow>
+                          ))
+                      )}
                     </TableBody>
                   </Table>
-                  
-
                 </TableContainer>
                 {/* <div className="row text-end">
                   <div className="col-md-9"></div>
@@ -588,18 +622,18 @@ const EstimateTR = ({
                     >&#8658;</button>
                     </div>
                   </div> */}
-                  <TablePagination
-  rowsPerPageOptions={[10, 25, 50]}
-  component="div"
-  count={estmRecords.totalRecords}
-  rowsPerPage={rowsPerPage}
-  page={tablePage} // Use tablePage for the table rows
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={(event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-  }}
-/>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 50]}
+                  component="div"
+                  count={estmRecords.totalRecords}
+                  rowsPerPage={rowsPerPage}
+                  page={tablePage} // Use tablePage for the table rows
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={(event) => {
+                    setRowsPerPage(parseInt(event.target.value, 10));
+                    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                  }}
+                />
                 {/* <TablePagination
                   rowsPerPageOptions={[10, 25, 50]}
                   component="div"
@@ -614,19 +648,18 @@ const EstimateTR = ({
                 /> */}
               </div>
             </div>
-          </div></div></div>
+          </div>
         </ThemeProvider>
       ) : (
         <UpdateEstimateForm
           headers={headers}
           setShowContent={setShowContent}
           estimateId={selectedItem}
-         
           setShowStatusCards={setShowStatusCards}
           setSubmitsuccess={setSubmitsuccess}
           setUpdateSuccess={setUpdateSuccess}
           getEstimate={getEstimate}
-          getFilteredEstimate={ getFilteredEstimate}
+          getFilteredEstimate={getFilteredEstimate}
         />
       )}
     </>
