@@ -55,6 +55,8 @@ const SummaryReport = () => {
 
   const navigate = useNavigate();
 
+
+
   const { sRProposalData, setsRProposalData } = useContext(DataContext);
 
   const [toggleReport, setToggleReport] = useState(false);
@@ -118,6 +120,24 @@ const SummaryReport = () => {
   };
 
   const [submitClicked, setSubmitClicked] = useState(false);
+
+  const getGeneralReportData = () => {
+    setSubmitClicked(true);
+    if (!formData.CustomerId || !formData.Year || !formData.Month) {
+      return;
+    }
+
+    setsRProposalData((prevData) => ({
+      ...prevData,
+      formData,
+    }));
+    //   fetchReport(
+
+    //     "Service Request"
+    //   );
+    navigate(`/GeneralReport`);
+  };
+
   const getReportData = () => {
     setSubmitClicked(true);
     if (!formData.CustomerId || !formData.Year || !formData.Month) {
@@ -132,8 +152,10 @@ const SummaryReport = () => {
 
     //     "Service Request"
     //   );
-    navigate("/Dashboard/SummaryReportPreview");
+    navigate("/SummaryReportPreview");
   };
+
+
 
   const getProposalReportData = () => {
     setSubmitClicked(true);
@@ -144,7 +166,7 @@ const SummaryReport = () => {
       ...prevData,
       formData,
     }));
-    navigate("/Dashboard/ProposalSummary");
+    navigate("/ProposalSummary");
   };
 
   const getLandscapeReportData = () => {
@@ -156,7 +178,7 @@ const SummaryReport = () => {
       ...prevData,
       formData,
     }));
-    navigate(`/Dashboard/Landscape/Landscape-Report`);
+    navigate(`/Landscape/Landscape-Report`);
   };
 
   return (
@@ -247,12 +269,22 @@ const SummaryReport = () => {
                     </Select>
                   </FormControl>
                 </div>
+                <div className="col-md-3 mt-4 pt-1">
+                  <button
+                    className="btn btn-primary btn-sm ms-2"
+                    onClick={() => {
+                      getGeneralReportData()
+                    }}
+                  >
+                    Generate Report
+                  </button>
+                </div>
                 <div className="row mt-2">
                   <div className="col-md-12">
                     {" "}
                     <button
                       onClick={() => {
-                        navigate("/Dashboard/Landscape/Add-Landscape");
+                        navigate("/Landscape/Add-Landscape");
                       }}
                       className="btn btn-info btn-sm me-2"
                     >

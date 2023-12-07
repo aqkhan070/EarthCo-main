@@ -293,7 +293,7 @@ const UpdateCustomer = ({
         : setCustomerUpdateSuccess(true);
 
       fetchCustomers();
-      // navigate("/Dashboard/Customers");
+      // navigate("/Customers");
       setShowContent(true);
       setDisableButton(false);
       // window.location.reload();
@@ -1209,7 +1209,7 @@ const UpdateCustomer = ({
                     >
                       Submit
                     </button>
-                    <NavLink to="/Dashboard/Customers">
+                    <NavLink to="/Customers">
                       <button
                         className="btn btn-danger light  m-1 "
                         onClick={() => {

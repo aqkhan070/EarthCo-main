@@ -209,7 +209,7 @@ const ServiceRequestTR = ({
           <div className="mx-3">
             <div className="card">
               <div className="card-body ">
-                <div className="row">
+                <div className="row mx-2">
                   <div className=" text-center mb-3">
                     {successAlert && (
                       <Alert className="mb-3" severity="success">
@@ -253,8 +253,9 @@ const ServiceRequestTR = ({
                         <button
                           className="btn btn-primary btn-sm"
                           onClick={() => {
-                            setShowContent(false);
-                            setServiceRequestId(0);
+                            // setShowContent(false);
+                            // setServiceRequestId(0);
+                            navigate(`/Service-Requests/Add-SRform`);
                           }}
                         >
                           + Add Service Request
@@ -319,10 +320,14 @@ const ServiceRequestTR = ({
                         )
                         .map((customer, rowIndex) => (
                           <TableRow
+                          className="pe-auto"
                             onDoubleClick={() => {
-                              setServiceRequestId(customer.ServiceRequestId);
-                              setShowContent(false);
-                              console.log("////////", serviceRequestId);
+                              // setServiceRequestId(customer.ServiceRequestId);
+                              // setShowContent(false);
+                              // console.log("////////", serviceRequestId);
+                              navigate(
+                                `/Service-Requests/Add-SRform?id=${customer.ServiceRequestId}`
+                              );
                             }}
                             key={rowIndex}
                             hover
@@ -339,7 +344,7 @@ const ServiceRequestTR = ({
                               <span
                                 onClick={() => {
                                   navigate(
-                                    "/Dashboard/Service-Requests/Service-Request-Preview"
+                                    "/Service-Requests/Service-Request-Preview"
                                   );
                                   // setestmPreviewId(estimate.EstimateId);
                                   setSRData(customer);
@@ -358,7 +363,7 @@ const ServiceRequestTR = ({
                                 // className="btn btn-primary btn-icon-xxs me-2"
                                 onClick={() => {
                                   navigate(
-                                    "/Dashboard/Service-Requests/Service-Request-Preview"
+                                    "/Service-Requests/Service-Request-Preview"
                                   );
                                   // setestmPreviewId(estimate.EstimateId);
                                   setSRData(customer);

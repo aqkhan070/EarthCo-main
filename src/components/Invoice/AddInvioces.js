@@ -57,10 +57,9 @@ const AddInvioces = ({
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
 
-
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [profitPercentage, setProfitPercentage] = useState(0);
-  
+
   // const { estimates, getEstimate } = useGetEstimate();
   const { billList, fetchBills } = useFetchBills();
   const { deleteInvoiceFile } = useDeleteFile();
@@ -98,19 +97,19 @@ const AddInvioces = ({
   };
 
   const getInvoice = async () => {
-    if ( idParam===0 && selectedInvoice===0 ) {
+    if (idParam === 0) {
       return;
     }
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoice?id=${selectedInvoice || idParam}`,
+        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoice?id=${idParam}`,
         { headers }
       );
       console.log("selected invoice is", res.data);
       // setFormData(res.data.Data);
       setInputValue(res.data.Data.CustomerId);
-      setPrevFiles(res.data.FileData)
+      setPrevFiles(res.data.FileData);
       setLoading(false);
       // setItemsList(res.data.ItemData)
       const combinedItems = [...res.data.CostItemData, ...res.data.ItemData];
@@ -376,15 +375,15 @@ const AddInvioces = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
-  
+
     let InvoiceData = {}; // Declare InvoiceData in the outer scope
-  
+
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
     }
-  
+
     // Merge the current items with the new items for EstimateData
     if (idParam) {
       InvoiceData = {
@@ -396,27 +395,26 @@ const AddInvioces = ({
     } else {
       InvoiceData = {
         ...formData,
-        InvoiceId: selectedInvoice || 0,
+        InvoiceId: idParam || 0,
         TotalAmount: totalItemAmount || 0,
         ProfitPercentage: profitPercentage || 0,
       };
     }
-  
+
     console.log("InvoiceData:", InvoiceData);
-  
+
     const postData = new FormData();
     postData.append("InvoiceData", JSON.stringify(InvoiceData));
-  
+
     console.log(JSON.stringify(InvoiceData));
-  
+
     // Appending files to postData
     selectedFiles.forEach((fileObj) => {
       postData.append("Files", fileObj);
     });
-  
+
     submitData(postData);
   };
-  
 
   // const appendFilesToFormData = (formData) => {
   //   Files.forEach((fileObj) => {
@@ -439,23 +437,14 @@ const AddInvioces = ({
       );
 
       if (idParam) {
-        navigate("/Dashboard/Invoices");
-        return
+        navigate("/Invoices");
+        return;
       }
 
       setEstimateLinkData({});
-      if (!estimateLinkData.EstimateId ) {
-        setSubmitRes(response.data.Message);
-        setTimeout(() => {
-          setSubmitRes("");
-        }, 4000);
-        fetchFilterInvoice();
-        setShowContent(true);
-      }
-      if (estimateLinkData.EstimateId) {
-        setEstimateLinkData({});
-        navigate("/Dashboard/Invoices");
-      }
+
+      setEstimateLinkData({});
+      navigate("/Invoices");
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
@@ -588,8 +577,6 @@ const AddInvioces = ({
   const [shippingCost, setShippingCost] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalACAmount, setTotalACAmount] = useState(0);
-
-
 
   useEffect(() => {
     const filteredACItems = formData.tblInvoiceItems?.filter(
@@ -756,7 +743,6 @@ const AddInvioces = ({
 
   const [PrevFiles, setPrevFiles] = useState([]);
 
-
   const handleFileChange = (e) => {
     const files = e.target.files[0];
     const newFileObjects = [];
@@ -780,8 +766,10 @@ const AddInvioces = ({
 
   const handleDeleteFile = (indexToDelete) => {
     // Create a new array without the file to be deleted
-    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToDelete);
-  
+    const updatedFiles = selectedFiles.filter(
+      (_, index) => index !== indexToDelete
+    );
+
     // Update the selectedFiles state with the new array
     setSelectedFiles(updatedFiles);
     console.log("Deleted file at index:", indexToDelete);
@@ -945,52 +933,53 @@ const AddInvioces = ({
                   </div>
                 </div>
                 <div className=" col-md-3">
-                  <label className="form-label">Linked Estimate
-                  
-                  {formData.EstimateId? 
-                        <><br />
-                        <a href="" style={{color: "blue"}}
-                        onClick={() => {
-
-                          navigate(`/Dashboard/Estimates/Update-Estimate?id=${formData.EstimateId}`)                      
-                          
-
-                        }}
+                  <label className="form-label">
+                    Linked Estimate
+                    {formData.EstimateId ? (
+                      <>
+                        <br />
+                        <a
+                          href=""
+                          style={{ color: "blue" }}
+                          onClick={() => {
+                            navigate(
+                              `/Estimates/Update-Estimate?id=${formData.EstimateId}`
+                            );
+                          }}
                         >
-                      Go to Estimate
-                      </a></>
-                        : ""
-
-                        }
-                  
+                          Go to Estimate
+                        </a>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </label>
-                  <div className="input-group mb-2">
-                    <Autocomplete
-                      id="inputState19"
-                      size="small"
-                      options={estimates}
-                      getOptionLabel={(option) => option.EstimateNumber || ""}
-                      value={
-                        estimates.find(
-                          (customer) =>
-                            customer.EstimateNumber === formData.EstimateNumber
-                        ) || null
-                      }
-                      onChange={handleEstimatesAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.EstimateId === value.EstimateNumber
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          style={{ width: "20.5em" }}
-                          placeholder="Estimate No"
-                        />
-                      )}
-                      aria-label="Default select example"
-                    />
-                  </div>
+
+                  <Autocomplete
+                    id="inputState19"
+                    size="small"
+                    options={estimates}
+                    getOptionLabel={(option) => option.EstimateNumber || ""}
+                    value={
+                      estimates.find(
+                        (customer) =>
+                          customer.EstimateNumber === formData.EstimateNumber
+                      ) || null
+                    }
+                    onChange={handleEstimatesAutocompleteChange}
+                    isOptionEqualToValue={(option, value) =>
+                      option.EstimateId === value.EstimateNumber
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        style={{ width: "20.5em" }}
+                        placeholder="Estimate No"
+                      />
+                    )}
+                    aria-label="Default select example"
+                  />
                 </div>
                 <div className="col-md-3"></div>
                 <div className="col-md-3">
@@ -1037,22 +1026,26 @@ const AddInvioces = ({
                       />
                     </div>
                     <div className=" col-md-6">
-                      <label className="form-label">Related Bills
-                      {formData.BillId? 
-                        <><br />
-                        <a href="" style={{color: "blue"}}
-                        onClick={() => {
-
-                          navigate(`/Dashboard/Bills/addbill?id=${formData.BillId}`)                      
-                          
-
-                        }}
-                        >
-                      Go to Bill
-                      </a></>
-                        : ""
-
-                        }
+                      <label className="form-label">
+                        Related Bills
+                        {formData.BillId ? (
+                          <>
+                            <br />
+                            <a
+                              href=""
+                              style={{ color: "blue" }}
+                              onClick={() => {
+                                navigate(
+                                  `/Bills/addbill?id=${formData.BillId}`
+                                );
+                              }}
+                            >
+                              Go to Bill
+                            </a>
+                          </>
+                        ) : (
+                          ""
+                        )}
                       </label>
                       <Autocomplete
                         size="small"
@@ -1201,369 +1194,301 @@ const AddInvioces = ({
                 </div>
               </div> */}
               </div>
-              </div>
+            </div>
 
-              {/* item table */}
-             
-                    <div className="itemtitleBar">
-                      <h4>Items</h4>
-                    </div>
-                <div className="card-body">
-                  <div className="estDataBox">
-                    <div className="table-responsive active-projects style-1 mt-2">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th className="itemName-width">Item</th>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Tax</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {formData.tblInvoiceItems &&
-                          formData.tblInvoiceItems.length > 0 ? (
-                            formData.tblInvoiceItems
-                              .filter((item) => item.isCost === false) // Filter items with isCost equal to false
-                              .map((item, index) => (
-                                <tr colSpan={2} key={item.ItemId}>
-                                  <td className="itemName-width">
-                                    {item.Name}
-                                  </td>
-                                  <td>{item.Description}</td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      style={{ width: "7em" }}
-                                      className="form-control form-control-sm"
-                                      value={item.Qty}
-                                      onChange={(e) =>
-                                        handleQuantityChange(item.ItemId, e)
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      style={{ width: "7em" }}
-                                      className="form-control form-control-sm"
-                                      value={item.Rate}
-                                      onChange={(e) =>
-                                        handleRateChange(item.ItemId, e)
-                                      }
-                                    />
-                                  </td>
-                                  <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                                  <td>NaN</td>
-                                  <td>
-                                    <div className="badgeBox">
-                                      <Button
-                                        onClick={() => {
-                                          deleteItem(item.ItemId);
-                                        }}
-                                      >
-                                        <Delete color="error" />
-                                      </Button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                          ) : (
-                            <></>
-                          )}
-                          <tr>
-                            <td className="itemName-width">
-                              <>
-                                <Autocomplete
-                                  id="search-items"
-                                  options={searchResults}
-                                  getOptionLabel={(item) => item.ItemName}
-                                  value={selectedItem} // This should be the selected item, not searchText
-                                  onChange={(event, newValue) => {
-                                    if (newValue) {
-                                      handleItemClick(newValue);
-                                    } else {
-                                      setSelectedItem(null);
-                                    }
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      label="Search for items..."
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      onChange={handleItemChange}
-                                    />
-                                  )}
-                                  renderOption={(props, item) => (
-                                    <li
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "30em",
-                                      }}
-                                      {...props}
-                                      onClick={() => handleItemClick(item)}
-                                    >
-                                      <div className="customer-dd-border">
-                                        <h5> {item.ItemName}</h5>
-                                        <p>{item.Type}</p>
-                                        <small>{item.SaleDescription}</small>
-                                      </div>
-                                    </li>
-                                  )}
-                                  onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                      // Handle item addition when Enter key is pressed
-                                      e.preventDefault(); // Prevent form submission
-                                      handleAddItem();
-                                    }
-                                  }}
-                                />
-                              </>
-                            </td>
-                            <td>
-                              <p>{selectedItem?.SaleDescription || " "}</p>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="Qty"
-                                value={itemInput.Qty}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Qty: Number(e.target.value),
-                                  })
-                                }
-                                style={{ width: "7em" }}
-                                className="form-control form-control-sm"
-                                placeholder="Quantity"
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
-                              />
-                            </td>
-                            <td>
-                              <div className="col-sm-9">
+            {/* item table */}
+
+            <div className="itemtitleBar">
+              <h4>Items</h4>
+            </div>
+            <div className="card-body">
+              <div className="estDataBox">
+                <div className="table-responsive active-projects style-1 mt-2">
+                  <table id="empoloyees-tblwrapper" className="table">
+                    <thead>
+                      <tr>
+                        <th className="itemName-width">Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Tax</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.tblInvoiceItems &&
+                      formData.tblInvoiceItems.length > 0 ? (
+                        formData.tblInvoiceItems
+                          .filter((item) => item.isCost === false) // Filter items with isCost equal to false
+                          .map((item, index) => (
+                            <tr colSpan={2} key={item.ItemId}>
+                              <td className="itemName-width">{item.Name}</td>
+                              <td>{item.Description}</td>
+                              <td>
                                 <input
                                   type="number"
-                                  name="Rate"
                                   style={{ width: "7em" }}
                                   className="form-control form-control-sm"
-                                  value={
-                                    selectedItem?.SalePrice ||
-                                    itemInput.Rate ||
-                                    ""
-                                  }
+                                  value={item.Qty}
                                   onChange={(e) =>
-                                    setItemInput({
-                                      ...itemInput,
-                                      Rate: Number(e.target.value),
-                                    })
+                                    handleQuantityChange(item.ItemId, e)
                                   }
-                                  onClick={(e) => {
-                                    setSelectedItem({
-                                      ...selectedItem,
-                                      SalePrice: 0,
-                                    });
-                                  }}
-                                  onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                      // Handle item addition when Enter key is pressed
-                                      e.preventDefault(); // Prevent form submission
-                                      handleAddItem();
-                                    }
-                                  }}
                                 />
-                              </div>
-                            </td>
-                            <td>
-                              <h5 style={{ margin: "0" }}>
-                                {(itemInput.Rate * itemInput.Qty).toFixed(2)}
-                              </h5>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="tax"
-                                style={{ width: "7em" }}
-                                disabled
-                                className="form-control form-control-sm"
-                                placeholder="tax"
-                              />
-                            </td>
-                            <td></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-            
-
-                <div className="itemtitleBar">
-                      <h4>Additional Costs</h4>
-                    </div>
-                <div className="card-body ">
-                  <div className="estDataBox">
-                  
-                    <div className="table-responsive active-projects style-1 mt-2">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th className="itemName-width">Item</th>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {formData.tblInvoiceItems &&
-                          formData.tblInvoiceItems.length > 0 ? (
-                            formData.tblInvoiceItems
-                              .filter((item) => item.isCost === true) // Filter items with isCost equal to true
-                              .map((item, index) => (
-                                <tr
-                                  className="itemName-width"
-                                  key={item.ItemId}
-                                >
-                                  <td>{item.Name}</td>
-                                  <td>{item.Description}</td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      style={{ width: "7em" }}
-                                      className="form-control form-control-sm"
-                                      value={item.Qty}
-                                      onChange={(e) =>
-                                        handleACQuantityChange(item.ItemId, e)
-                                      }
-                                    />
-                                  </td>
-                                  <td>
-                                    <input
-                                      type="number"
-                                      style={{ width: "7em" }}
-                                      className="form-control form-control-sm"
-                                      value={item.Rate}
-                                      onChange={(e) =>
-                                        handleACRateChange(item.ItemId, e)
-                                      }
-                                    />
-                                  </td>
-                                  <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                                  <td>
-                                    <div className="badgeBox">
-                                      <Button
-                                        onClick={() => {
-                                          deleteItem(item.ItemId);
-                                        }}
-                                      >
-                                        <Delete color="error" />
-                                      </Button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))
-                          ) : (
-                            <></>
-                          )}
-                          <tr>
-                            <td className="itemName-width">
-                              <>
-                                <Autocomplete
-                                  id="search-ac-items"
-                                  options={searchACResults}
-                                  getOptionLabel={(item) => item.ItemName}
-                                  value={selectedACItem}
-                                  onChange={(event, newValue) => {
-                                    if (newValue) {
-                                      handleACItemClick(newValue);
-                                    } else {
-                                      setSelectedACItem(null);
-                                    }
-                                  }}
-                                  inputValue={searchACText}
-                                  onInputChange={(event, newInputValue) => {
-                                    setShowACItem(true);
-                                    setSearchACText(newInputValue);
-                                    setSelectedACItem(null); // Clear selected item when input changes
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      label="Search for items..."
-                                      variant="outlined"
-                                      size="small"
-                                      onKeyPress={(e) => {
-                                        if (e.key === "Enter") {
-                                          // Handle item addition when Enter key is pressed
-                                          e.preventDefault(); // Prevent form submission
-                                          handleACAddItem();
-                                        }
-                                      }}
-                                      fullWidth
-                                    />
-                                  )}
-                                  renderOption={(props, item) => (
-                                    <li
-                                      style={{ cursor: "pointer" }}
-                                      {...props}
-                                      onClick={() => handleACItemClick(item)}
-                                    >
-                                      <div className="customer-dd-border">
-                                        <p>
-                                          <strong>{item.ItemName}</strong>{" "}
-                                        </p>
-                                        <p>{item.Type}</p>
-                                        <small>{item.SaleDescription}</small>
-                                      </div>
-                                    </li>
-                                  )}
-                                />
-                              </>
-                            </td>
-                            <td>
-                              <p>{selectedACItem?.SaleDescription || " "}</p>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="Qty"
-                                value={aCInput.Qty}
-                                onChange={(e) =>
-                                  setACInput({
-                                    ...aCInput,
-                                    Qty: Number(e.target.value),
-                                  })
-                                }
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleACAddItem();
-                                  }
-                                }}
-                                style={{ width: "7em" }}
-                                className="form-control form-control-sm"
-                                placeholder="Quantity"
-                              />
-                            </td>
-                            <td>
-                              <div className="col-sm-9">
+                              </td>
+                              <td>
                                 <input
                                   type="number"
-                                  name="Rate"
+                                  style={{ width: "7em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.Rate}
+                                  onChange={(e) =>
+                                    handleRateChange(item.ItemId, e)
+                                  }
+                                />
+                              </td>
+                              <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                              <td>NaN</td>
+                              <td>
+                                <div className="badgeBox">
+                                  <Button
+                                    onClick={() => {
+                                      deleteItem(item.ItemId);
+                                    }}
+                                  >
+                                    <Delete color="error" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                      ) : (
+                        <></>
+                      )}
+                      <tr>
+                        <td className="itemName-width">
+                          <>
+                            <Autocomplete
+                              id="search-items"
+                              options={searchResults}
+                              getOptionLabel={(item) => item.ItemName}
+                              value={selectedItem} // This should be the selected item, not searchText
+                              onChange={(event, newValue) => {
+                                if (newValue) {
+                                  handleItemClick(newValue);
+                                } else {
+                                  setSelectedItem(null);
+                                }
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Search for items..."
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  onChange={handleItemChange}
+                                />
+                              )}
+                              renderOption={(props, item) => (
+                                <li
+                                  style={{
+                                    cursor: "pointer",
+                                    width: "30em",
+                                  }}
+                                  {...props}
+                                  onClick={() => handleItemClick(item)}
+                                >
+                                  <div className="customer-dd-border">
+                                    <h5> {item.ItemName}</h5>
+                                    <p>{item.Type}</p>
+                                    <small>{item.SaleDescription}</small>
+                                  </div>
+                                </li>
+                              )}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </>
+                        </td>
+                        <td>
+                          <p>{selectedItem?.SaleDescription || " "}</p>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="Qty"
+                            value={itemInput.Qty}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Qty: Number(e.target.value),
+                              })
+                            }
+                            style={{ width: "7em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Quantity"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="col-sm-9">
+                            <input
+                              type="number"
+                              name="Rate"
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={
+                                selectedItem?.SalePrice || itemInput.Rate || ""
+                              }
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  SalePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <h5 style={{ margin: "0" }}>
+                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                          </h5>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="tax"
+                            style={{ width: "7em" }}
+                            disabled
+                            className="form-control form-control-sm"
+                            placeholder="tax"
+                          />
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="itemtitleBar">
+              <h4>Additional Costs</h4>
+            </div>
+            <div className="card-body ">
+              <div className="estDataBox">
+                <div className="table-responsive active-projects style-1 mt-2">
+                  <table id="empoloyees-tblwrapper" className="table">
+                    <thead>
+                      <tr>
+                        <th className="itemName-width">Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.tblInvoiceItems &&
+                      formData.tblInvoiceItems.length > 0 ? (
+                        formData.tblInvoiceItems
+                          .filter((item) => item.isCost === true) // Filter items with isCost equal to true
+                          .map((item, index) => (
+                            <tr className="itemName-width" key={item.ItemId}>
+                              <td>{item.Name}</td>
+                              <td>{item.Description}</td>
+                              <td>
+                                <input
+                                  type="number"
+                                  style={{ width: "7em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.Qty}
+                                  onChange={(e) =>
+                                    handleACQuantityChange(item.ItemId, e)
+                                  }
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  style={{ width: "7em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.Rate}
+                                  onChange={(e) =>
+                                    handleACRateChange(item.ItemId, e)
+                                  }
+                                />
+                              </td>
+                              <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                              <td>
+                                <div className="badgeBox">
+                                  <Button
+                                    onClick={() => {
+                                      deleteItem(item.ItemId);
+                                    }}
+                                  >
+                                    <Delete color="error" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                      ) : (
+                        <></>
+                      )}
+                      <tr>
+                        <td className="itemName-width">
+                          <>
+                            <Autocomplete
+                              id="search-ac-items"
+                              options={searchACResults}
+                              getOptionLabel={(item) => item.ItemName}
+                              value={selectedACItem}
+                              onChange={(event, newValue) => {
+                                if (newValue) {
+                                  handleACItemClick(newValue);
+                                } else {
+                                  setSelectedACItem(null);
+                                }
+                              }}
+                              inputValue={searchACText}
+                              onInputChange={(event, newInputValue) => {
+                                setShowACItem(true);
+                                setSearchACText(newInputValue);
+                                setSelectedACItem(null); // Clear selected item when input changes
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Search for items..."
+                                  variant="outlined"
+                                  size="small"
                                   onKeyPress={(e) => {
                                     if (e.key === "Enter") {
                                       // Handle item addition when Enter key is pressed
@@ -1571,393 +1496,440 @@ const AddInvioces = ({
                                       handleACAddItem();
                                     }
                                   }}
-                                  onChange={(e) =>
-                                    setACInput({
-                                      ...aCInput,
-                                      Rate: Number(e.target.value),
-                                    })
-                                  }
-                                  onClick={(e) => {
-                                    setSelectedACItem({
-                                      ...selectedACItem,
-                                      PurchasePrice: 0,
-                                    });
-                                  }}
-                                  style={{ width: "7em" }}
-                                  className="form-control form-control-sm"
-                                  value={
-                                    selectedACItem?.PurchasePrice ||
-                                    aCInput.Rate ||
-                                    " "
-                                  }
+                                  fullWidth
                                 />
-                              </div>
-                            </td>
-
-                            <td>
-                              <h5 style={{ margin: "0" }}>
-                                {(aCInput.Rate * aCInput.Qty).toFixed(2)}
-                              </h5>
-                            </td>
-                            <td></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-           
-
-              <div className="card">
-                <div className="card-body row">
-                  <div className="col-md-4">
-                    <div className="row">
-                      <div className="col-xl-12 col-lg-12">
-                        <div className="basic-form">
-                          <form>
-                            <h4 className="card-title">Memo Internal</h4>
-                            <div className="mb-3">
-                              <textarea
-                                className="form-txtarea form-control"
-                                rows="2"
-                                id="comment"
-                                name="MemoInternal"
-                                value={formData.MemoInternal}
-                                onChange={handleChange}
-                              ></textarea>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-lg-12">
-                        <div className="basic-form">
-                          <form>
-                            <h4 className="card-title">Customer Message</h4>
-                            <div className="mb-3">
-                              <textarea
-                                className="form-txtarea form-control"
-                                rows="2"
-                                id="comment"
-                                name="CustomerMessage"
-                                value={formData.CustomerMessage}
-                                onChange={handleChange}
-                              ></textarea>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                      <div className="col-xl-12 col-lg-12">
-                        <div className="basic-form">
-                          <h4 className="card-title">Attachments</h4>
-                          <div className="dz-default dlab-message upload-img mb-3">
-                            <form action="#" className="dropzone">
-                              <svg
-                                width="41"
-                                height="40"
-                                viewBox="0 0 41 40"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M20.5 20V35"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                                <path
-                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                  stroke="#DADADA"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                ></path>
-                              </svg>
-                              <div className="fallback">
-                                <input
-                                  name="file"
-                                  type="file"
-                                  onChange={handleFileChange}
-                                />
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-md-4 ms-auto sub-total">
-                    <table className="table table-clear table-borderless">
-                      <tbody>
-                        <tr>
-                          <td className="left">
-                            <strong>Subtotal</strong>
-                          </td>
-                          <td className="right">
-                            {subtotal !== undefined
-                              ? `$${subtotal.toFixed(2)}`
-                              : "$0.00"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <label className="form-label">Taxes</label>
-                            <div
-                              style={{ width: "10em" }}
-                              className="input-group"
-                            >
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="Taxes"
-                                placeholder=""
-                              />
-                            </div>
-                          </td>
-                          <td className="right">$00</td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <label className="form-label">Discount(%)</label>
-                            <div
-                              style={{ width: "10em" }}
-                              className="input-group"
-                            >
-                              <input
-                                type="text"
-                                className="form-control form-control-sm"
-                                name="Discount"
-                                placeholder=""
-                              />
-                            </div>
-                          </td>
-                          <td className="right">$0.00</td>
-                        </tr>
-
-                        <tr>
-                          <td className="left">
-                            <strong>Total</strong>
-                          </td>
-                          <td className="right">
-                            <strong>
-                              {" "}
-                              {totalItemAmount !== undefined
-                                ? `$${totalItemAmount.toFixed(2)}`
-                                : "$0.00"}
-                            </strong>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">Payment/Credit</td>
-                          <td className="right">$0.00</td>
-                        </tr>
-                        <tr>
-                          <td className="left">
-                            <h3>Balance due</h3>
-                          </td>
-                          <td className="right">
-                            <h3>$0.00</h3>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">Total Expenses</td>
-                          <td className="right">$0.00</td>
-                        </tr>
-                        <tr>
-                          <td className="left">Total Profit(%)</td>
-                          <td className="right">
-                            {" "}
-                            {profitPercentage !== undefined
-                              ? `${profitPercentage.toFixed(2)}%`
-                              : "0.00%"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="left">Profit Margin(%)</td>
-                          <td className="right">$0.00</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div className="row mx-2">
-
-                {PrevFiles.map((file, index) => (
-                        <div
-                          key={index}
-                          className="col-md-2 col-md-2 mt-3 image-container"
-                          style={{
-                            width: "150px", // Set the desired width
-                            height: "120px", // Set the desired height
-                            margin: "1em",
-                            position: "relative",
-                          }}
-                        >
-                          <img
-                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                            alt={file.FileName}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
+                              )}
+                              renderOption={(props, item) => (
+                                <li
+                                  style={{ cursor: "pointer" }}
+                                  {...props}
+                                  onClick={() => handleACItemClick(item)}
+                                >
+                                  <div className="customer-dd-border">
+                                    <p>
+                                      <strong>{item.ItemName}</strong>{" "}
+                                    </p>
+                                    <p>{item.Type}</p>
+                                    <small>{item.SaleDescription}</small>
+                                  </div>
+                                </li>
+                              )}
+                            />
+                          </>
+                        </td>
+                        <td>
+                          <p>{selectedACItem?.SaleDescription || " "}</p>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="Qty"
+                            value={aCInput.Qty}
+                            onChange={(e) =>
+                              setACInput({
+                                ...aCInput,
+                                Qty: Number(e.target.value),
+                              })
+                            }
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleACAddItem();
+                              }
                             }}
+                            style={{ width: "7em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Quantity"
                           />
-                          <p
-                            className="file-name-overlay"
-                            style={{
-                              position: "absolute",
-                              bottom: "0",
-                              left: "13px",
-                              right: "0",
-                              backgroundColor: "rgba(0, 0, 0, 0.3)",
-                              textAlign: "center",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              width: "100%",
-                              textOverflow: "ellipsis",
-                              padding: "5px",
-                            }}
-                          >
-                            {file.FileName}
-                          </p>
-                          <span
-                            className="file-delete-button"
-                            style={{
-                              left: "140px",
-                            }}
-                            onClick={() => {
-                              deleteInvoiceFile(file.BillFileId);
+                        </td>
+                        <td>
+                          <div className="col-sm-9">
+                            <input
+                              type="number"
+                              name="Rate"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleACAddItem();
+                                }
+                              }}
+                              onChange={(e) =>
+                                setACInput({
+                                  ...aCInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedACItem({
+                                  ...selectedACItem,
+                                  PurchasePrice: 0,
+                                });
+                              }}
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={
+                                selectedACItem?.PurchasePrice ||
+                                aCInput.Rate ||
+                                " "
+                              }
+                            />
+                          </div>
+                        </td>
 
-                              setTimeout(() => {
-                                getInvoice();
-                                
-                              }, 1000);
-                            }}
-                          >
-                            <span>
-                              <Delete color="error" />
-                            </span>
-                          </span>
+                        <td>
+                          <h5 style={{ margin: "0" }}>
+                            {(aCInput.Rate * aCInput.Qty).toFixed(2)}
+                          </h5>
+                        </td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-body row">
+                <div className="col-md-4">
+                  <div className="row">
+                    <div className="col-xl-12 col-lg-12">
+                      <div className="basic-form">
+                        <form>
+                          <h4 className="card-title">Memo Internal</h4>
+                          <div className="mb-3">
+                            <textarea
+                              className="form-txtarea form-control"
+                              rows="2"
+                              id="comment"
+                              name="MemoInternal"
+                              value={formData.MemoInternal}
+                              onChange={handleChange}
+                            ></textarea>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div className="col-xl-12 col-lg-12">
+                      <div className="basic-form">
+                        <form>
+                          <h4 className="card-title">Customer Message</h4>
+                          <div className="mb-3">
+                            <textarea
+                              className="form-txtarea form-control"
+                              rows="2"
+                              id="comment"
+                              name="CustomerMessage"
+                              value={formData.CustomerMessage}
+                              onChange={handleChange}
+                            ></textarea>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    <div className="col-xl-12 col-lg-12">
+                      <div className="basic-form">
+                        <h4 className="card-title">Attachments</h4>
+                        <div className="dz-default dlab-message upload-img mb-3">
+                          <form action="#" className="dropzone">
+                            <svg
+                              width="41"
+                              height="40"
+                              viewBox="0 0 41 40"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M20.5 20V35"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="fallback">
+                              <input
+                                name="file"
+                                type="file"
+                                onChange={handleFileChange}
+                              />
+                            </div>
+                          </form>
                         </div>
-                      ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
+                <div className="col-md-4 ms-auto sub-total">
+                  <table className="table table-clear table-borderless">
+                    <tbody>
+                      <tr>
+                        <td className="left">
+                          <strong>Subtotal</strong>
+                        </td>
+                        <td className="right">
+                          {subtotal !== undefined
+                            ? `$${subtotal.toFixed(2)}`
+                            : "$0.00"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="left">
+                          <label className="form-label">Taxes</label>
+                          <div
+                            style={{ width: "10em" }}
+                            className="input-group"
+                          >
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              name="Taxes"
+                              placeholder=""
+                            />
+                          </div>
+                        </td>
+                        <td className="right">$00</td>
+                      </tr>
+                      <tr>
+                        <td className="left">
+                          <label className="form-label">Discount(%)</label>
+                          <div
+                            style={{ width: "10em" }}
+                            className="input-group"
+                          >
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              name="Discount"
+                              placeholder=""
+                            />
+                          </div>
+                        </td>
+                        <td className="right">$0.00</td>
+                      </tr>
 
-                {selectedFiles.map((file, index) => (
-  <div
-    key={index}
-    className="col-md-2 col-md-2 mt-3 image-container"
-    style={{
-      width: "150px", // Set the desired width
-      height: "120px", // Set the desired height
-      margin: "1em",
-      position: "relative",
-    }}
-  >
-    <img
-       src={file.url}
-      alt={file.name}
-      style={{
-        width: "150px",
-        height: "120px",
-        objectFit: "cover",
-      }}
-    />
-    <p
-      className="file-name-overlay"
-      style={{
-        position: "absolute",
-        bottom: "0",
-        left: "13px",
-        right: "0",
-        backgroundColor: "rgba(0, 0, 0, 0.3)",
-        textAlign: "center",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        width: "100%",
-        textOverflow: "ellipsis",
-        padding: "5px",
-      }}
-    >
-      {file.name}
-    </p>
-    <span
-      className="file-delete-button"
-      style={{
-        left: "140px",
-      }}
-      onClick={() => {handleDeleteFile(index)}}
-    >
-      <span>
-        <Delete color="error" />
-      </span>
-    </span>
-  </div>
-))}
+                      <tr>
+                        <td className="left">
+                          <strong>Total</strong>
+                        </td>
+                        <td className="right">
+                          <strong>
+                            {" "}
+                            {totalItemAmount !== undefined
+                              ? `$${totalItemAmount.toFixed(2)}`
+                              : "$0.00"}
+                          </strong>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="left">Payment/Credit</td>
+                        <td className="right">$0.00</td>
+                      </tr>
+                      <tr>
+                        <td className="left">
+                          <h3>Balance due</h3>
+                        </td>
+                        <td className="right">
+                          <h3>$0.00</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="left">Total Expenses</td>
+                        <td className="right">$0.00</td>
+                      </tr>
+                      <tr>
+                        <td className="left">Total Profit(%)</td>
+                        <td className="right">
+                          {" "}
+                          {profitPercentage !== undefined
+                            ? `${profitPercentage.toFixed(2)}%`
+                            : "0.00%"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="left">Profit Margin(%)</td>
+                        <td className="right">$0.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
-              <div className="mb-3 row ">
-                <div className="col-md-8">
-                  {emptyFieldsError && (
-                    <Alert severity="error">
-                      Please fill all required fields
-                    </Alert>
-                  )}
-                  {error && (
-                    <Alert severity="error">
-                      {errorMessage
-                        ? errorMessage
-                        : "Error Adding/Updating Invoice"}-
-                    </Alert>
-                  )}
-                </div>
-
-                <div className="col-md-4 text-right">
-                  <button
-                    type="button"
-                    className="btn btn-primary me-1"
-                    onClick={handleSubmit}
-                  >
-                    Save
-                  </button>
-
-                  <button
-                    className="btn btn-danger light me-3 ms-1"
-                    
-                    onClick={() => {
-                      navigate("/Dashboard/Invoices");
-                      if (idParam) {
-                        return
-                      }
-                      if (!estimateLinkData.EstimateId ) {
-                        setShowContent(true);
-                        setFormData({});
-                        setSelectedInvoice(0);
-                      }
-                      setEstimateLinkData({});
+              <div className="row mx-2">
+                {PrevFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="col-md-2 col-md-2 mt-3 image-container"
+                    style={{
+                      width: "150px", // Set the desired width
+                      height: "120px", // Set the desired height
+                      margin: "1em",
+                      position: "relative",
                     }}
                   >
-                    Cancel
-                  </button>
-                </div>
+                    <img
+                      src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                      alt={file.FileName}
+                      style={{
+                        width: "150px",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <p
+                      className="file-name-overlay"
+                      style={{
+                        position: "absolute",
+                        bottom: "0",
+                        left: "13px",
+                        right: "0",
+                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                        textAlign: "center",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        width: "100%",
+                        textOverflow: "ellipsis",
+                        padding: "5px",
+                      }}
+                    >
+                      {file.FileName}
+                    </p>
+                    <span
+                      className="file-delete-button"
+                      style={{
+                        left: "140px",
+                      }}
+                      onClick={() => {
+                        deleteInvoiceFile(file.BillFileId);
+
+                        setTimeout(() => {
+                          getInvoice();
+                        }, 1000);
+                      }}
+                    >
+                      <span>
+                        <Delete color="error" />
+                      </span>
+                    </span>
+                  </div>
+                ))}
+
+                {selectedFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="col-md-2 col-md-2 mt-3 image-container"
+                    style={{
+                      width: "150px", // Set the desired width
+                      height: "120px", // Set the desired height
+                      margin: "1em",
+                      position: "relative",
+                    }}
+                  >
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      style={{
+                        width: "150px",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <p
+                      className="file-name-overlay"
+                      style={{
+                        position: "absolute",
+                        bottom: "0",
+                        left: "13px",
+                        right: "0",
+                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                        textAlign: "center",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        width: "100%",
+                        textOverflow: "ellipsis",
+                        padding: "5px",
+                      }}
+                    >
+                      {file.name}
+                    </p>
+                    <span
+                      className="file-delete-button"
+                      style={{
+                        left: "140px",
+                      }}
+                      onClick={() => {
+                        handleDeleteFile(index);
+                      }}
+                    >
+                      <span>
+                        <Delete color="error" />
+                      </span>
+                    </span>
+                  </div>
+                ))}
               </div>
-         
+            </div>
+
+            <div className="mb-3 row ">
+              <div className="col-md-8">
+                {emptyFieldsError && (
+                  <Alert severity="error">
+                    Please fill all required fields
+                  </Alert>
+                )}
+                {error && (
+                  <Alert severity="error">
+                    {errorMessage
+                      ? errorMessage
+                      : "Error Adding/Updating Invoice"}
+                    -
+                  </Alert>
+                )}
+              </div>
+
+              <div className="col-md-4 text-right">
+                <button
+                  type="button"
+                  className="btn btn-primary me-1"
+                  onClick={handleSubmit}
+                >
+                  Save
+                </button>
+
+                <button
+                  className="btn btn-danger light me-3 ms-1"
+                  onClick={() => {
+                    navigate("/Invoices");
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

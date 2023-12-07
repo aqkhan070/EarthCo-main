@@ -5,7 +5,7 @@ import Alert from "@mui/material/Alert";
 import { TextField } from "@mui/material";
 
 
-const IrrigationControler = ({ setAddSucces, selectedIrr , toggleShowForm, fetchIrrigation }) => {
+const IrrigationControler = ({ setAddSucces, idParam , toggleShowForm, fetchIrrigation }) => {
     const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ const IrrigationControler = ({ setAddSucces, selectedIrr , toggleShowForm, fetch
     setFormData((prevData) => ({
       ...prevData,
       [name]: parsedValue,
-      IrrigationId: selectedIrr,
+      IrrigationId: idParam,
     }));
     console.log("main payload is", formData);
   };
@@ -119,7 +119,7 @@ const IrrigationControler = ({ setAddSucces, selectedIrr , toggleShowForm, fetch
 
       setFormData({      
       })
-      fetchIrrigation(selectedIrr)
+      fetchIrrigation(idParam)
       setTimeout(() => {
       setAddSucces("")
         

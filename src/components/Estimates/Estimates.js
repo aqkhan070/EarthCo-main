@@ -147,7 +147,7 @@ const Estimates = ({ setestmPreviewId }) => {
       serviceLocation !== ""
     ) {
       document.getElementById("closer").click();
-      navigate("/Dashboard/Estimates/Add-Estimate");
+      navigate("/Estimates/Add-Estimate");
     }
   };
 
@@ -261,7 +261,7 @@ const Estimates = ({ setestmPreviewId }) => {
                   <button
                     type="button"
                     onClick={() => {
-                      navigate("/Dashboard/Estimates/Add-Estimate");
+                      navigate("/Estimates/Add-Estimate");
                     }}
                     style={{ opacity: opacity }}
                     className="btn btn-primary"

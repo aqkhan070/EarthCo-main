@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import UpdateCustomer from "./UpdateCustomer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -47,6 +47,8 @@ const CustomerTR = ({
   customerFetchError,
   totalRecords,
 }) => {
+  const navigate = useNavigate();
+
   const [selectedItem, setSelectedItem] = useState(null);
   const [showContent, setShowContent] = useState(true);
 
@@ -141,9 +143,10 @@ const CustomerTR = ({
                   variant="contained"
                   color="primary"
                   onClick={() => {
+                    navigate(`/Customers/Add-Customer`);
                     setSelectedItem(0);
                     console.log(",,,,,,,,,,", selectedItem);
-                    setShowContent(false);
+                    // setShowContent(false);
                   }}
                 >
                   + Add Customer
@@ -221,20 +224,20 @@ const CustomerTR = ({
                         <TableCell>{customer.Address}</TableCell>
                         <TableCell>{customer.Email}</TableCell>
                         <TableCell className="table-cell-align">
-                          <Link
-                          // to={"/Dashboard/Customers/Update-Customer"}
+                          <Button
+                            onClick={() => {
+                              // setSelectedItem(customer.CustomerId);
+                              // console.log(",,,,,,,,,,", selectedItem);
+                              navigate(
+                                `/Customers/Add-Customer?id=${customer.CustomerId}`
+                              );
+                              // setShowContent(false);
+                            }}
                           >
-                            <Button
-                              onClick={() => {
-                                setSelectedItem(customer.CustomerId);
-                                console.log(",,,,,,,,,,", selectedItem);
-                                setShowContent(false);
-                              }}
-                            >
-                              <Create />
-                              {/* <i className="fas fa-pencil-alt"></i> */}
-                            </Button>
-                          </Link>
+                            <Create />
+                            {/* <i className="fas fa-pencil-alt"></i> */}
+                          </Button>
+
                           <Button
                             // className="btn btn-danger btn-icon-xxs "
                             data-bs-toggle="modal"

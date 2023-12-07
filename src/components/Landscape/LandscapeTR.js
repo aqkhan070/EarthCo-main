@@ -196,7 +196,7 @@ const LandscapeTR = () => {
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={() => {
-                        navigate("/Dashboard/Landscape/Add-Landscape");
+                        navigate("/Landscape/Add-Landscape");
                       }}
                     >
                       + Add

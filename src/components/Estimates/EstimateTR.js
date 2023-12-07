@@ -296,8 +296,9 @@ const EstimateTR = ({
                       <button
                         className="btn btn-primary btn-sm"
                         onClick={() => {
-                          setSelectedItem(0);
-                          setShowContent(false);
+                          // setSelectedItem(0);
+                          // setShowContent(false);
+                          navigate("/Estimates/Add-Estimate");
                         }}
                       >
                         + Add Estimates
@@ -422,7 +423,7 @@ const EstimateTR = ({
                         <TableCell className="table-cell-align">
                           Invoice #
                         </TableCell>
-                        <TableCell className= " text-end table-cell-align">
+                        <TableCell className=" text-end table-cell-align">
                           Profit %
                         </TableCell>
                         <TableCell className="text-end">Amount</TableCell>
@@ -444,10 +445,12 @@ const EstimateTR = ({
                           )
                           .map((estimate, index) => (
                             <TableRow
+                            className="pe-auto"
                               onDoubleClick={() => {
-                                setSelectedItem(estimate.EstimateId);
-                                console.log(",,,,,,,,,,", selectedItem);
-                                setShowContent(false);
+                                // setSelectedItem(estimate.EstimateId);
+                                // console.log(",,,,,,,,,,", selectedItem);
+                                // setShowContent(false);
+                                navigate(`/Estimates/Add-Estimate?id=${estimate.EstimateId}`);
                               }}
                               key={estimate.EstimateId}
                               hover
@@ -478,9 +481,7 @@ const EstimateTR = ({
                               <TableCell>
                                 <span
                                   onClick={() => {
-                                    navigate(
-                                      "/Dashboard/Estimates/Estimate-Preview"
-                                    );
+                                    navigate("/Estimates/Estimate-Preview");
                                     setestmPreviewId(estimate.EstimateId);
                                     console.log(estimate.EstimateId);
                                   }}
@@ -513,7 +514,7 @@ const EstimateTR = ({
                                     // className="btn btn-primary btn-icon-xxs me-2"
                                     onClick={() => {
                                       navigate(
-                                        "/Dashboard/Estimates/Estimate-Preview"
+                                        "/Estimates/Estimate-Preview"
                                       );
                                       setestmPreviewId(estimate.EstimateId);
                                       console.log(estimate.EstimateId);

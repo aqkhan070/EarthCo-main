@@ -163,7 +163,7 @@ const PunchListDetailRow = ({
                                   console.log("estimate", item);
 
                                   navigate(
-                                    "/Dashboard/Estimates/Update-Estimate"
+                                    "/Estimates/Update-Estimate"
                                   );
                                 }}
                                 value={5}
@@ -174,7 +174,7 @@ const PunchListDetailRow = ({
                                 onClick={() => {
                                   console.log("service request");
                                   navigate(
-                                    "/Dashboard/Service-Requests/Update-SRform"
+                                    "/Service-Requests/Update-SRform"
                                   );
                                 }}
                                 value={4}

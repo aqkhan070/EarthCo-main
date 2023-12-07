@@ -11,15 +11,18 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+const AddStaff = ({}) => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  const navigate = useNavigate();
 
-const AddStaff = ({
-  headers,
-  selectedStaff,
-  settoggleAddStaff,
-  setAddStaffSuccess,
-  setUpdateStaffSuccess,
-  getStaffList,
-}) => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
   const icon = (
     <svg
       width="22"
@@ -153,14 +156,14 @@ const AddStaff = ({
       return;
     }
 
-    if (selectedStaff === 0 && !customerInfo.Password) {
+    if (idParam === 0 && !customerInfo.Password) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
       return;
     }
 
     if (
-      selectedStaff === 0 &&
+      idParam === 0 &&
       customerInfo.Password !== customerInfo.ConfirmPassword
     ) {
       // Handle password and confirm password mismatch
@@ -203,22 +206,13 @@ const AddStaff = ({
         { headers }
       );
 
+      navigate(`/Staff`);
+
       setTimeout(() => {
         setAlertSuccess(false);
       }, 3000);
 
-      setTimeout(() => {
-        setAddStaffSuccess(false);
-        setUpdateStaffSuccess(false);
-      }, 4000);
-
-      selectedStaff !== 0
-        ? setUpdateStaffSuccess(true)
-        : setAddStaffSuccess(true);
-
       setAlertSuccess(true);
-      getStaffList();
-      settoggleAddStaff(true);
 
       console.log("Staff added successfully", customerInfo);
     } catch (error) {
@@ -230,13 +224,13 @@ const AddStaff = ({
   };
 
   const getStaffData = async () => {
-    if (selectedStaff === 0) {
+    if (idParam === 0) {
       setLoading(false);
       return;
     }
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaff?id=${selectedStaff}`,
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaff?id=${idParam}`,
         { headers }
       );
 
@@ -250,7 +244,7 @@ const AddStaff = ({
   };
   useEffect(() => {
     getStaffData();
-  }, [selectedStaff]);
+  }, [idParam]);
 
   return (
     <>
@@ -367,9 +361,7 @@ const AddStaff = ({
                       variant="outlined"
                       size="small"
                       error={
-                        selectedStaff === 0 &&
-                        submitClicked &&
-                        !customerInfo.Password
+                        idParam === 0 && submitClicked && !customerInfo.Password
                       }
                       onChange={handleCustomerInfo}
                       name="Password"
@@ -387,7 +379,7 @@ const AddStaff = ({
                       variant="outlined"
                       size="small"
                       onChange={handleCustomerInfo}
-                      // error={selectedStaff !== 0 && submitClicked && !customerInfo.ConfirmPassword}
+                      // error={idParam !== 0 && submitClicked && !customerInfo.ConfirmPassword}
                       id="confirmPasswordInput"
                       name="ConfirmPassword"
                       placeholder="Confirm Password"
@@ -499,7 +491,7 @@ const AddStaff = ({
                     <button
                       className="btn btn-danger light ms-1"
                       onClick={() => {
-                        settoggleAddStaff(true);
+                        navigate(`/Staff`);
                       }}
                     >
                       Cancel

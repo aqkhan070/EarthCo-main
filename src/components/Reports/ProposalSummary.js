@@ -10,8 +10,14 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 
 const ProposalSummary = () => {
-  const { sRProposalData, setsRProposalData } = useContext(DataContext);
+  const {
+    sRProposalData,
+    setsRProposalData,
+    toggleFullscreen,
+    setToggleFullscreen,
+  } = useContext(DataContext);
   const navigate = useNavigate();
+  const isGeneralReport = window.location.pathname.includes("GeneralReport");
 
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
@@ -27,7 +33,13 @@ const ProposalSummary = () => {
   }, []);
 
   const handlePrint = () => {
-    window.print();
+    setToggleFullscreen(false);
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
   const handleDownload = () => {
     const input = document.getElementById("PS-preview");
@@ -75,34 +87,38 @@ const ProposalSummary = () => {
           <CircularProgress style={{ color: "#789a3d" }} />
         </div>
       ) : (
-        <div style={{ maxWidth: "70em" }} className="container-fluid">
-          <div className="row justify-content-between ">
-            <div className="col-md-3 text-start pb-0">
-              <button
-                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-                onClick={() => {
-                  navigate(`/Dashboard/SummaryReport`);
-                }}
-              >
-                &#60; Back
-              </button>
+        <div  className="container-fluid">
+          {toggleFullscreen && !isGeneralReport ? (
+            <div className="row justify-content-between ">
+              <div className="col-md-3 text-start pb-0">
+                <button
+                  className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                  onClick={() => {
+                    navigate(`/SummaryReport`);
+                  }}
+                >
+                  &#60; Back
+                </button>
+              </div>
+              <div className="col-md-3 text-end">
+                {" "}
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handlePrint}
+                >
+                  <Print />
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handleDownload}
+                >
+                  <Download />
+                </button>
+              </div>
             </div>
-            <div className="col-md-3 text-end">
-              {" "}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <Print />
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <Download />
-              </button>
-            </div>
-          </div>
+          ) : (
+            <></>
+          )}
 
           <div className="row">
             <div className="card mt-3">
@@ -110,20 +126,27 @@ const ProposalSummary = () => {
                                     <strong>Status:</strong> Pending</span> </div> */}
               <div id="PS-preview" className="card-body get-preview">
                 <div className="row mb-5">
-                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-4">
-                    <div>
-                      <strong>{reportData[0].CompanyName}</strong>{" "}
+                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                    <div style={{ color: "black" }}>
+                      <strong>EarthCo</strong>{" "}
                     </div>
-                    <div>{reportData[0].Address}</div>
+                    <div style={{ color: "black" }}>
+                      <strong>
+                        {reportData[0].CustomerId} {reportData[0].CompanyName}
+                      </strong>{" "}
+                    </div>
+                    <div style={{ color: "black" }}>
+                      {reportData[0].Address}
+                    </div>
                   </div>
-                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-4 text-center">
+                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
                     <h3>
                       {" "}
                       <strong>Proposal Summary Report</strong>{" "}
                     </h3>
                     <h3>Grandview Crest</h3>
                   </div>
-                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-4 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                     <div className="brand-logo mb-2 inovice-logo">
                       <img className="preview-Logo" src={logo} alt="" />
                     </div>
@@ -133,7 +156,7 @@ const ProposalSummary = () => {
                 <div className="table-responsive">
                   <table className="text-center table table-bordered ">
                     <thead>
-                      <tr>
+                      <tr className="preview-table-head">
                         <th>SUBMITTED:</th>
                         <th>PROPOSAL #:</th>
                         <th>DESCRIPTION:</th>
@@ -144,13 +167,13 @@ const ProposalSummary = () => {
                     <tbody>
                       {reportData.map((report, index) => {
                         return (
-                          <tr key={index}>
+                          <tr className="preview-table-row" key={index}>
                             <td>{formatDate(report.CreatedDate)}</td>
                             <td className="left strong">
                               {report.EstimateNumber}
                             </td>
                             <td>{report.EstimateNotes}</td>
-                            <td>${report.TotalAmount}</td>
+                            <td>{report.TotalAmount.toFixed(2)}</td>
                             <td>{report.Status}</td>
                           </tr>
                         );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import formatDate from "../../../custom/FormatDate";
@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Print, Email, Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { DataContext } from "../../../context/AppData";
 
 const WeeklyReport = () => {
   const token = Cookies.get("token");
@@ -15,6 +16,9 @@ const WeeklyReport = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
+
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
@@ -35,7 +39,13 @@ const WeeklyReport = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    setToggleFullscreen(false);
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
 
   const handleDownload = () => {
@@ -74,34 +84,39 @@ const WeeklyReport = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "70em" }} className="container-fluid">
-        <div className="row justify-content-between ">
-          <div className="col-md-3 text-start pb-0">
-            <button
-              className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-              onClick={() => {
-                navigate(`/Dashboard/Weekly-Reports`);
-              }}
-            >
-              &#60; Back
-            </button>
+      <div  className="container-fluid">
+        {toggleFullscreen ? (
+          <div className="row justify-content-between ">
+            <div className="col-md-3 text-start pb-0">
+              <button
+                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                onClick={() => {
+                  navigate(`/Weekly-Reports`);
+                }}
+              >
+                &#60; Back
+              </button>
+            </div>
+            <div className="col-md-3 text-end">
+              {" "}
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                onClick={handlePrint}
+              >
+                <Print />
+              </button>
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                onClick={handleDownload}
+              >
+                <Download />
+              </button>
+            </div>
           </div>
-          <div className="col-md-3 text-end">
-            {" "}
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handlePrint}
-            >
-              <Print />
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handleDownload}
-            >
-              <Download />
-            </button>
-          </div>
-        </div>
+        ) : (
+          <></>
+        )}
+
         <div className="card">
           <div id="WR-preview" className="card-body get-preview">
             <div className="row mb-5">

@@ -10,14 +10,27 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 
 const SummaryReportPreview = () => {
-  const { sRProposalData, setsRProposalData } = useContext(DataContext);
+  const {
+    sRProposalData,
+    setsRProposalData,
+    toggleFullscreen,
+    setToggleFullscreen,
+  } = useContext(DataContext);
   const navigate = useNavigate();
 
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
 
+  const isGeneralReport = window.location.pathname.includes("GeneralReport");
+
   const handlePrint = () => {
-    window.print();
+    setToggleFullscreen(false);
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
   const handleDownload = () => {
     const input = document.getElementById("summeryReport-preview");
@@ -42,7 +55,7 @@ const SummaryReportPreview = () => {
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight() / 1.9;
+      const height = pdf.internal.pageSize.getHeight() / 1.8;
 
       pdf.addImage(imgData, "PNG", 0, 0, width, height);
       pdf.save("Summery Report.pdf");
@@ -76,70 +89,81 @@ const SummaryReportPreview = () => {
           <CircularProgress style={{ color: "#789a3d" }} />
         </div>
       ) : (
-        <div style={{ maxWidth: "70em" }} className="container-fluid">
-          <div className="row justify-content-between ">
-            <div className="col-md-3 text-start pb-0">
-              <button
-                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-                onClick={() => {
-                  navigate(`/Dashboard/SummaryReport`);
-                }}
-              >
-                &#60; Back
-              </button>
+        <div className="container-fluid a4-size-preview">
+          {toggleFullscreen && !isGeneralReport ? (
+            <div className="row justify-content-between ">
+              <div className="col-md-3 text-start pb-0">
+                <button
+                  className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                  onClick={() => {
+                    navigate(`/SummaryReport`);
+                  }}
+                >
+                  &#60; Back
+                </button>
+              </div>
+              <div className="col-md-3 text-end">
+                {" "}
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handlePrint}
+                >
+                  <Print />
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handleDownload}
+                >
+                  <Download />
+                </button>
+              </div>
             </div>
-            <div className="col-md-3 text-end">
-              {" "}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <Print />
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <Download />
-              </button>
-            </div>
-          </div>
+          ) : (
+            <></>
+          )}
 
           <div className="row">
-            <div className="card mt-3">
+            <div
+              id="summeryReport-preview"
+              className={toggleFullscreen ? "card get-preview" : "get-preview"}
+            >
               {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-              <div id="summeryReport-preview" className="card-body get-preview">
+              <div className={toggleFullscreen ? "card-body" : ""}>
                 <div className="row mb-5">
-                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-4">
-                    <div>
+                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                    <div style={{ color: "black" }}>
                       {" "}
-                      <strong>{reportData[0].CompanyName}</strong>{" "}
+                      <strong>
+                        {reportData[0].CustomerId} {reportData[0].CompanyName}
+                      </strong>{" "}
                     </div>
-                    <div>{reportData[0].Address}</div>
+                    <div style={{ color: "black" }}>
+                      {reportData[0].Address}
+                    </div>
 
-                    <div>Submitted To: </div>
-                    <div>Christian Walton</div>
-                    <div>Optimum</div>
+                    <div style={{ color: "black" }}>Submitted To: </div>
+                    <div style={{ color: "black" }}>Christian Walton</div>
+                    <div style={{ color: "black" }}>Optimum</div>
                   </div>
-                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-4 text-center">
-                    <h3>
+                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
+                    <h3 className="table-cell-align">
                       {" "}
                       <strong>Service Request Summary Report</strong>{" "}
                     </h3>
                     <h3>Grandview Crest</h3>
                   </div>
-                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-4 text-right d-flex justify-content-lg-end justify-content-md-center">
+                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 text-right d-flex justify-content-lg-end justify-content-md-center">
                     <div className="brand-logo mb-2 inovice-logo">
                       <img className="preview-Logo" src={logo} alt="" />
                     </div>
                   </div>
                 </div>
                 <hr />
-                <div className="col-sm-12 me-1">
+                <div className="col-sm-12 col-md-12">
                   <table className="text-center table table-bordered ">
                     <thead>
-                      <tr>
+                      <tr className="preview-table-head">
                         <th>RECEIVED:</th>
                         <th>W/O #:</th>
                         <th>REQUESTED WORK:</th>
@@ -151,7 +175,7 @@ const SummaryReportPreview = () => {
                     <tbody>
                       {reportData.map((report, index) => {
                         return (
-                          <tr key={index}>
+                          <tr className="preview-table-row" key={index}>
                             <td>{formatDate(report.CreatedDate)}</td>
                             <td className="left strong">
                               {report.ServiceRequestNumber}

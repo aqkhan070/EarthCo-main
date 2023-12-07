@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AddItem from "./AddItem";
-import ItemTitle from "./ItemTitle";
+
 import Cookies from "js-cookie";
 import axios from "axios";
 import {
@@ -20,11 +20,15 @@ import {
 } from "@mui/material";
 import { Delete, Create } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
+import { useNavigate } from "react-router";
 
 const Items = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
+
+  const navigate = useNavigate();
+
   const [showContent, setShowContent] = useState(true);
   const [itemsList, setItemsList] = useState([]);
   const [page, setPage] = useState(0);
@@ -129,7 +133,6 @@ const Items = () => {
 
   return (
     <>
-      <ItemTitle />
       {showContent ? (
         <>
           <div className="container-fluid">
@@ -156,7 +159,7 @@ const Items = () => {
                       <div className="col-md-9 text-right">
                         <button
                           className="btn btn-primary btn-sm "
-                          onClick={() => setShowContent(false)}
+                          onClick={() => navigate(`/Items/Add-Item`)}
                         >
                           + Add New
                         </button>
@@ -208,8 +211,9 @@ const Items = () => {
                         ).map((item, index) => (
                           <TableRow
                             onDoubleClick={() => {
-                              setSelectedItem(item.ItemId);
-                              setShowContent(false);
+                              // setSelectedItem(item.ItemId);
+                              // setShowContent(false);
+                              navigate(`/Items/Add-Item?id=${item.ItemId}`);
                             }}
                             key={index}
                             hover

@@ -6,6 +6,10 @@ import {
   InfoWindow,
 } from "@react-google-maps/api";
 import { DataContext } from "../../context/AppData";
+import html2canvas from "html2canvas";
+import { saveAs } from "file-saver";
+import { toPng } from "html-to-image";
+import { TextField } from "@mui/material";
 
 const containerStyle = {
   width: "100%",
@@ -24,6 +28,7 @@ function GoogleMapApi() {
   const [markers, setMarkers] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
   const searchInputRef = useRef(null);
+  const divRef = useRef(null);
 
   useEffect(() => {
     // Load markers from localStorage on component mount
@@ -32,6 +37,19 @@ function GoogleMapApi() {
     setMarkers(savedMarkers);
     setSRMapData(savedMarkers);
   }, []);
+
+  const htmlToImageConvert = () => {
+    toPng(divRef.current, { cacheBust: false })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "map_image.png";
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const saveMarkersToLocalStorage = (markers) => {
     localStorage.setItem("markers", JSON.stringify(markers));
@@ -111,48 +129,49 @@ function GoogleMapApi() {
       libraries={["places"]}
     >
       <div>
-        <input
+        <TextField
           ref={searchInputRef}
           type="text"
           placeholder="Search for a place"
           onChange={handleSearch}
-          style={{
-            width: "300px", // Set the width as needed
-            padding: "10px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            margin: "10px 0",
-          }}
+          size="small"
+          variant="outlined"
+          className="my-3"
         />
 
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={defaultCenter}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-          onClick={handleMapClick}
-        >
-          {/* Render markers for all clicked locations */}
-          {markers.map((marker, index) => (
-            <Marker
-              key={index}
-              position={marker}
-              onClick={() => handleMarkerClick(marker)}
-            />
-          ))}
+        <div ref={divRef}>
+          {" "}
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={defaultCenter}
+            onLoad={onLoad}
+            onUnmount={onUnmount}
+            onClick={handleMapClick}
+          >
+            {/* Render markers for all clicked locations */}
+            {markers.map((marker, index) => (
+              <Marker
+                key={index}
+                position={marker}
+                onClick={() => handleMarkerClick(marker)}
+              />
+            ))}
 
-          {selectedMarker && (
-            <InfoWindow
-              position={selectedMarker}
-              onCloseClick={handleInfoWindowClose}
-            >
-              <div>
-                <p>Marker Info</p>
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
+            {selectedMarker && (
+              <InfoWindow
+                position={selectedMarker}
+                onCloseClick={handleInfoWindowClose}
+              >
+                <div>
+                  <p>Marker Info</p>
+                </div>
+              </InfoWindow>
+            )}
+          </GoogleMap>
+        </div>
+        <button onClick={htmlToImageConvert} className="btn btn-primary mt-2">
+          save
+        </button>
       </div>
     </LoadScript>
   );

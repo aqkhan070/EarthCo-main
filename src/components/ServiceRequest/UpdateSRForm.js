@@ -339,7 +339,7 @@ const UpdateSRForm = ({
       console.log(response.data.Message);
 
       if (isSRUpdateRoute) {
-        navigate("/Dashboard/Service-Requests");
+        navigate("/Service-Requests");
         return;
       }
 
@@ -360,7 +360,7 @@ const UpdateSRForm = ({
     } catch (error) {
       console.error("API Call Error:", error.response.data);
       if (isSRUpdateRoute) {
-        navigate("/Dashboard/Service-Requests");
+        navigate("/Service-Requests");
         return;
       }
       setBtnDisable(false);
@@ -575,7 +575,7 @@ const UpdateSRForm = ({
                 {/* Add service form */}
                 <div className="row mt-3 mx-2 ">
                   <div className="col-lg-12 col-md-12 mb-2">
-                    <NavLink to="/Dashboard/Estimates">
+                    <NavLink to="/Estimates">
                       {" "}
                       <button
                         type="button"
@@ -589,7 +589,7 @@ const UpdateSRForm = ({
                     <button
                       type="button"
                       onClick={() => {
-                        navigate("/Dashboard/Invoices");
+                        navigate("/Invoices");
                       }}
                       className="btn btn-sm btn-secondary mx-2"
                     >
@@ -817,20 +817,8 @@ const UpdateSRForm = ({
                             placeholder="DueDate"
                           />
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Assign and scedule */}
-                <div className="">
-                  <div className=" mt-3">
-                    <div className="itemtitleBar">
-                      <h4>Assign & Schedule</h4>
-                    </div>
-                    <br />
-                    <div className="">
-                      <div className="row">
-                        <div className="col-md-4 mx-3 mb-3">
+
+                        <div className="col-xl-3 col-md-4">
                           {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">
@@ -867,15 +855,29 @@ const UpdateSRForm = ({
                             )}
                           />
                         </div>
-                        {/* <div className="col-md-6 pt-4">
-                        {" "}
-                         Adjust the column size as needed
-                        <button className="btn schedule-btn">Schedule</button>
-                      </div> */}
                       </div>
                     </div>
                   </div>
                 </div>
+                {/* Assign and scedule */}
+                {/* <div className="">
+                  <div className=" mt-3">
+                    <div className="itemtitleBar">
+                      <h4>Assign & Schedule</h4>
+                    </div>
+                    <br />
+                    <div className="">
+                      <div className="row">
+                       
+                        {/* <div className="col-md-6 pt-4">
+                        {" "}
+                         Adjust the column size as needed
+                        <button className="btn schedule-btn">Schedule</button>
+                      </div> 
+                      </div>
+                    </div>
+                  </div>
+                </div> */}
 
                 {/* item table */}
                 <div className="itemtitleBar">
@@ -1142,6 +1144,7 @@ const UpdateSRForm = ({
                               placeholder="Completed Date "
                             />
                           </div>
+
                           <div className="col-md-12">
                             {SRData.ServiceRequestData.SRTypeId === 3 ? (
                               <MapCo />
@@ -1356,7 +1359,7 @@ const UpdateSRForm = ({
                     onClick={() => {
                       if (isSRUpdateRoute) {
                         setPunchListData({});
-                        navigate("/Dashboard/Service-Requests");
+                        navigate("/Service-Requests");
                         return;
                       }
                       setShowContent(true);

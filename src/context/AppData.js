@@ -238,9 +238,13 @@ const DataFun = ({ children }) => {
  const [sRMapData, setSRMapData] = useState([])
  const [serviceLocationAddress, setServiceLocationAddress] = useState({})
  const [maplatLngs, setMaplatLngs] = useState([])
+
+ const [toggleFullscreen, setToggleFullscreen] = useState(true)
+
   return (
     <DataContext.Provider
       value={{
+        toggleFullscreen, setToggleFullscreen,
         maplatLngs, setMaplatLngs,
         serviceLocationAddress, setServiceLocationAddress,
         sRMapData, setSRMapData,

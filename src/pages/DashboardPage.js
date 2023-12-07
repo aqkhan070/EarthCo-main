@@ -44,7 +44,7 @@ import CustomerData from "../context/CustomerData";
 import PurchaseOrder from "../components/PurchaseOrder/PurchaseOrder";
 import { AddPO } from "../components/PurchaseOrder/AddPO";
 import PurchaseOrderIndex from "../components/PurchaseOrder/PurchaseOrderIndex";
-
+import AddItem from "../components/Items/AddItem";
 import Bills from "../components/Bill/Bills";
 import Invoices from "../components/Invoice/Invoices";
 import InvoiceIndex from "../components/Invoice/InvoiceIndex";
@@ -60,10 +60,16 @@ import BillIndex from "../components/Bill/BillIndex";
 import AddBill from "../components/Bill/AddBill";
 import UpdateEstimateForm from "../components/Estimates/UpdateEstimateForm";
 import SummaryReportPreview from "../components/Reports/SummaryReportPreview";
+import { DataContext } from "../context/AppData";
+import ItemIndex from "../components/Items/ItemIndex";
+import GenralReport from "../components/Reports/GenralReport";
 
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
+  const { toggleFullscreen } = useContext(DataContext);
+
   const token = Cookies.get("token");
+
   const navigate = useNavigate();
 
   const isEstimatePreviewRoute =
@@ -105,12 +111,15 @@ const DashboardPage = () => {
     <>
       {token ? (
         <>
-          {isPreview && <HeaderExp />}
-          {isPreview && <SideBar />}
+          {toggleFullscreen && isPreview &&  <HeaderExp />}
+          {toggleFullscreen && isPreview && <SideBar />}
 
-          <div className={isPreview && "content-body"} id="contentBody">
+          <div
+            className={toggleFullscreen && isPreview ? "content-body" : "print-body-color"}
+            id="contentBody"
+          >
             <Routes>
-              <Route path="" element={<DashBoard />} />
+              <Route path="/DashBoard" element={<DashBoard />} />
               <Route
                 path="/Customers/*"
                 element={
@@ -169,7 +178,10 @@ const DashboardPage = () => {
                 <Route path="AddInvioces" element={<AddInvioces />}></Route>
               </Route>
 
-              <Route path="Items" element={<Items />}></Route>
+              <Route path="Items/*" element={<ItemIndex />}>
+                <Route path="" element={<Items />} />
+                <Route path="Add-Item" element={<AddItem />} />
+              </Route>
 
               <Route path="Irrigation" element={<IrrigationIndex />}>
                 <Route path="" element={<Irrigationlist />} />
@@ -185,6 +197,10 @@ const DashboardPage = () => {
               <Route
                 path="SummaryReportPreview"
                 element={<SummaryReportPreview />}
+              />
+               <Route
+                path="GeneralReport"
+                element={<GenralReport />}
               />
               <Route path="ProposalSummary" element={<ProposalSummary />} />
               <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
@@ -209,7 +225,7 @@ const DashboardPage = () => {
         </div>
       )}
 
-      <Footer />
+      {toggleFullscreen && <Footer />}
     </>
   );
 };

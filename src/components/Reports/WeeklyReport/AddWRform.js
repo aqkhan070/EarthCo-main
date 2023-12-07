@@ -267,7 +267,7 @@ const AddWRform = () => {
         }
       );
 
-      navigate(`/Dashboard/Weekly-Reports/WeeklyReport?id=${response.data.Id}`);
+      navigate(`/Weekly-Reports/WeeklyReport?id=${response.data.Id}`);
 
       console.log("Data submitted successfully:", response.data.Id);
     } catch (error) {
@@ -724,7 +724,7 @@ const AddWRform = () => {
             <button
               className="btn btn-danger light me-2"
               onClick={() => {
-                navigate("/Dashboard/Weekly-Reports");
+                navigate("/Weekly-Reports");
               }}
             >
               Cancel

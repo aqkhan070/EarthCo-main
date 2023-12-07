@@ -16,10 +16,17 @@ const Landscape = () => {
   };
   const navigate = useNavigate();
 
-  const { sRProposalData, setsRProposalData } = useContext(DataContext);
+  const {
+    sRProposalData,
+    setsRProposalData,
+    toggleFullscreen,
+    setToggleFullscreen,
+  } = useContext(DataContext);
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
+
+  const isGeneralReport = window.location.pathname.includes("GeneralReport");
 
   const [landscapeData, setLandscapeData] = useState({});
 
@@ -36,7 +43,13 @@ const Landscape = () => {
     }
   };
   const handlePrint = () => {
-    window.print();
+    setToggleFullscreen(false);
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
   const handleDownload = () => {
     const input = document.getElementById("landscape-preview");
@@ -92,281 +105,334 @@ const Landscape = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "70em" }} className="container-fluid">
-        <div className="row justify-content-between ">
-          <div className="col-md-3 text-start pb-0">
-            <button
-              className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-              onClick={() => {
-                navigate(`/Dashboard/SummaryReport`);
-              }}
-            >
-              &#60; Back
-            </button>
+      <div  className="container-fluid">
+        {toggleFullscreen && !isGeneralReport ? (
+          <div className="row justify-content-between ">
+            <div className="col-md-3 text-start pb-0">
+              <button
+                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                onClick={() => {
+                  navigate(`/SummaryReport`);
+                }}
+              >
+                &#60; Back
+              </button>
+            </div>
+            <div className="col-md-3 text-end">
+              {" "}
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                onClick={handlePrint}
+              >
+                <Print />
+              </button>
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                onClick={handleDownload}
+              >
+                <Download />
+              </button>
+            </div>
           </div>
-          <div className="col-md-3 text-end">
-            {" "}
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handlePrint}
-            >
-              <Print />
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handleDownload}
-            >
-              <Download />
-            </button>
-          </div>
-        </div>
-
-        <div className="card mt-3">
-          {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
+        ) : (
+          <></>
+        )}
+        <div className="row">
+          <div className="card">
+            {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-          <div id="landscape-preview" className="card-body get-preview">
-            <div className="row mb-5">
-              <div className="mt-4 col-xl-10 col-lg-10 col-md-10 col-sm-6 text-start">
-                <div>
+            <div id="landscape-preview" className="card-body get-preview">
+              <div className="row mb-5">
+                <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
+                  <div style={{ color: "black" }}>
+                    {" "}
+                    <strong>Earthco</strong>{" "}
+                  </div>
+                  <div style={{ color: "black" }}>
+                    {landscapeData.CompanyName}
+                  </div>
+                  <div style={{ color: "black" }}>{landscapeData.Address}</div>
+
+                  <div style={{ color: "black" }}>
+                    <strong>Phone:</strong> {landscapeData.Phone}{" "}
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6 mt-5">
                   {" "}
-                  <strong>Earthco</strong>{" "}
+                  <h2 className="text-center">Landscape Report</h2>
                 </div>
-                <div>{landscapeData.CompanyName}</div>
-                <div>{landscapeData.Address}</div>
 
-                <div>
-                  <strong>Phone:</strong> {landscapeData.Phone}{" "}
+                <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 text-end d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                  <div className="brand-logo mb-2 inovice-logo">
+                    <img className="preview-Logo" src={logo} alt="" />
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-6 text-end d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
-                <div className="brand-logo mb-2 inovice-logo">
-                  <img className="preview-Logo" src={logo} alt="" />
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="table-responsive">
+                    <table className="text-center table-striped table table-bordered ">
+                      <thead>
+                        <tr
+                          style={{ backgroundColor: "gray" }}
+                          className="preview-table-head"
+                        >
+                          <th className="landscap-preview-heading">
+                            Requested By:
+                          </th>
+                          <th className="landscap-preview-heading">
+                            Service Location:
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="preview-table-row">
+                          <td style={{ color: "black" }}>
+                            {landscapeData.RequestByName}
+                          </td>
+                          <td
+                            style={{ color: "black" }}
+                            className="left strong"
+                          >
+                            {landscapeData.ServiceLocationName}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>{" "}
+                </div>
+                <div
+                  style={{ color: "black" }}
+                  className="col-md-2 col-sm-1 text-end"
+                >
+                  {" "}
+                </div>
+                <div
+                  style={{ color: "black" }}
+                  className="col-md-2 col-sm-3 text-end"
+                >
+                  {" "}
+                  <strong>Date Created:</strong>
+                </div>
+                <div className="col-md-2 col-sm-2">
+                  <div style={{ color: "black" }} className="text-start">
+                    <p className=""> {formatDate(landscapeData.CreatedDate)}</p>
+                  </div>
                 </div>
               </div>
+              <div className="table-responsive">
+                <table className="table-bordered table  ">
+                  <thead></thead>
+                  <tbody>
+                    <tr>
+                      <td className="landscap-preview-heading" colSpan={2}>
+                        <>Maintenance Report</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Supervisor visited the job weekly:</strong>{" "}
+                      </td>
+                      <td> {landscapeData.SupervisorVisitedthejobweekly}</td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Completed litter pickup of grounds areas:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.CompletedLitterpickupofgroundareas}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Completed sweeping or blowing of walkways:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.Completedsweepingorblowingofwalkways}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          High priority areas were visited weekly:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.HighpriorityareaswereVisitedweekly}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>V ditches were cleaned and inspected: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.VDitcheswerecleanedandinspected}</td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Weep screens inspected and cleaned in rotation
+                          section:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {
+                          landscapeData.WeepscreeninspectedandcleanedinrotationsectionId
+                        }
+                      </td>
+                    </tr>
+
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Lawn Maintenance</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Fertilization of turf occurred: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.Fertilizationoftrufoccoured}</td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Turf was mowed and edged weekly: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.Trufwasmovedandedgedweekly}</td>
+                    </tr>
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Shrub Maintenance</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Shrubs trimmed according to rotation schedule:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.Shrubstrimmedaccordingtorotationschedule}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Fertilization of shrubs occurred: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.FertilizationofShrubsoccoured}</td>
+                    </tr>
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Ground Cover and Flowerbed Maint.</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Watering of flowerbeds was completed and checked:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.WateringofflowerbedsCompletedandchecked}
+                      </td>
+                    </tr>
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Irrigation System</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Heads were adjusted for maximum coverage:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.Headswereadjustedformaximumcoverage}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Repairs were made to maintain an effective system:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {
+                          landscapeData.Repairsweremadetomaintainaneffectivesystem
+                        }
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          Controllers were inspected and adjusted:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.Controllerswereinspectedandadjusted}
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Main line was repaired: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.Mainlinewasrepaired}</td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Valve(s) was repaired: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.Valvewasrepaired}</td>
+                    </tr>
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Rotation</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>
+                          This months expected rotation schedule:{" "}
+                        </strong>{" "}
+                      </td>
+                      <td>
+                        {" "}
+                        {landscapeData.Thismonthexpectedrotationschedule}
+                      </td>
+                    </tr>
+                    <tr className="landscap-preview-heading">
+                      <td colSpan={2}>
+                        <>Extra Information</>
+                      </td>
+                    </tr>
+                    <tr className="preview-table-row">
+                      <td>
+                        <strong>Notes: </strong>{" "}
+                      </td>
+                      <td> {landscapeData.Notes}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="mt-5">
+                *Note Beginning October 1, Earthco will commence annual skip
+                mowing of the grass due to the winter season
+              </p>
             </div>
-            <h2 className="text-center">Landscape Report</h2>
-            <div className="row">
-              <div className="col-md-6">
-                <div className="table-responsive">
-                  <table className="text-center table-striped table table-bordered ">
-                    <thead>
-                      <tr>
-                        <th>Requested By:</th>
-                        <th>Service Location: </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{landscapeData.RequestByName}</td>
-                        <td className="left strong">
-                          {landscapeData.ServiceLocationName}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>{" "}
-              </div>
-              <div className="col-md-6">
-                <div className="text-right">
-                  <strong>Date Created:</strong>{" "}
-                  {formatDate(landscapeData.CreatedDate)}
-                </div>
-              </div>
-            </div>
-            <div className="table-responsive">
-              <table className="table-bordered table  ">
-                <thead></thead>
-                <tbody>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Maintenance Report</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Supervisor visited the job weekly:</strong>{" "}
-                    </td>
-                    <td> {landscapeData.SupervisorVisitedthejobweekly}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Completed litter pickup of grounds areas:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td> {landscapeData.CompletedLitterpickupofgroundareas}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Completed sweeping or blowing of walkways:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.Completedsweepingorblowingofwalkways}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>High priority areas were visited weekly: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.HighpriorityareaswereVisitedweekly}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>V ditches were cleaned and inspected: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.VDitcheswerecleanedandinspected}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Weep screens inspected and cleaned in rotation section:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {
-                        landscapeData.WeepscreeninspectedandcleanedinrotationsectionId
-                      }
-                    </td>
-                  </tr>
-
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Lawn Maintenance</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Fertilization of turf occurred: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Fertilizationoftrufoccoured}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Turf was mowed and edged weekly: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Trufwasmovedandedgedweekly}</td>
-                  </tr>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Shrub Maintenance</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Shrubs trimmed according to rotation schedule:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.Shrubstrimmedaccordingtorotationschedule}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Fertilization of shrubs occurred: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.FertilizationofShrubsoccoured}</td>
-                  </tr>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Ground Cover and Flowerbed Maint.</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Watering of flowerbeds was completed and checked:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.WateringofflowerbedsCompletedandchecked}
-                    </td>
-                  </tr>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Irrigation System</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Heads were adjusted for maximum coverage:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.Headswereadjustedformaximumcoverage}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        Repairs were made to maintain an effective system:{" "}
-                      </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.Repairsweremadetomaintainaneffectivesystem}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Controllers were inspected and adjusted: </strong>{" "}
-                    </td>
-                    <td>
-                      {" "}
-                      {landscapeData.Controllerswereinspectedandadjusted}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Main line was repaired: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Mainlinewasrepaired}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Valve(s) was repaired: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Valvewasrepaired}</td>
-                  </tr>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Rotation</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>This months expected rotation schedule: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Thismonthexpectedrotationschedule}</td>
-                  </tr>
-                  <tr style={{ backgroundColor: "#cccccc", color: "black" }}>
-                    <td colSpan={2}>
-                      <strong>Extra Information</strong>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Notes: </strong>{" "}
-                    </td>
-                    <td> {landscapeData.Notes}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p className="mt-5">
-              *Note Beginning October 1, Earthco will commence annual skip
-              mowing of the grass due to the winter season
-            </p>
           </div>
         </div>
       </div>

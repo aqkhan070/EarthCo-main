@@ -10,11 +10,14 @@ import { Print, Email, Download } from "@mui/icons-material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
+import { DataContext } from "../../context/AppData";
 
 const EstimatePreview = () => {
   const { name, setName, fetchName } = useFetchCustomerName();
   const navigate = useNavigate();
   const { estmPreviewId } = useContext(RoutingContext);
+  const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
+
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -26,10 +29,13 @@ const EstimatePreview = () => {
   const [printClicked, setPrintClicked] = useState(false);
 
   const handlePrint = () => {
-    setPrintClicked(true);
+    setToggleFullscreen(false);
     setTimeout(() => {
       window.print();
     }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
 
   const handleDownload = () => {
@@ -55,7 +61,7 @@ const EstimatePreview = () => {
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight() / 2.2;
+      const height = pdf.internal.pageSize.getHeight();
 
       pdf.addImage(imgData, "PNG", 0, 0, width, height);
       pdf.save("estimate.pdf");
@@ -109,57 +115,65 @@ const EstimatePreview = () => {
 
   return (
     <>
-      <div style={{ maxWidth: "70em" }} className="container-fluid">
-        <div className="row justify-content-between ">
-          <div className="col-md-3 text-start pb-0">
-            <button
-              className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-              onClick={() => {
-                navigate(`/Dashboard/Estimates`);
-              }}
-            >
-              &#60; Back
-            </button>
+      <div
+        style={{ maxWidth: "21cm" }}
+        className={toggleFullscreen ? "container-fluid custom-font-style" : ""}
+      >
+        {toggleFullscreen ? (
+          <div
+            className={toggleFullscreen ? "row justify-content-between" : ""}
+          >
+            <div className="col-md-3 text-start pb-0">
+              <button
+                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                onClick={() => {
+                  navigate(`/Estimates`);
+                }}
+              >
+                &#60; Back
+              </button>
+            </div>
+            <div className="col-md-3 text-end">
+              {" "}
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3  estm-action-btn"
+                onClick={handlePrint}
+              >
+                <Print />
+              </button>
+              <button
+                className="btn btn-sm btn-outline-primary mb-2 mt-3  estm-action-btn"
+                onClick={handleDownload}
+              >
+                <Download />
+              </button>
+            </div>
           </div>
-          <div className="col-md-3 text-end">
-            {" "}
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handlePrint}
-            >
-              <Print />
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-              onClick={handleDownload}
-            >
-              <Download />
-            </button>
-          </div>
-        </div>
+        ) : (
+          <></>
+        )}
         <div className="card">
-          <div className={!printClicked ? "mx-3  mt-3" : ""}>
+          <div className={toggleFullscreen ? "" : ""}>
             <div id="estimate-preview" className=" get-preview ">
               <div className="card-body">
-                <div
+                <div className="row mt-2">
+                  {/* <div className="col-md-12 mb-5"
                   style={{
-                    borderBottom: "5px solid #0394fc",
-                    margin: "1em 0em 3em 0em",
+                    borderBottom: "5px solid #5d9dd5",
+                 
                   }}
-                ></div>
-
-                <div className="row">
+                ></div> */}
                   <div className="col-md-2 col-sm-5">
                     {" "}
                     <img className="preview-Logo" src={logo} alt="" />
                   </div>
                   <div className="col-md-7 col-sm-2"></div>
                   <div className="col-md-3 col-sm-4 text-center table-cell-align">
-                    <h1>Estimate</h1>
+                    <h1>ESTIMATE</h1>
                   </div>
                 </div>
 
-                <div className="row">
+                <div className="row mt-2">
                   <div className="col-md-8  col-sm-6">
                     <table>
                       <tbody>
@@ -167,8 +181,11 @@ const EstimatePreview = () => {
                           <td className="p-0">
                             {" "}
                             <h5 className="mb-0">EarthCo</h5>{" "}
-                            <h6 className="mb-0">{name || ""}</h6>{" "}
                             <h6 className="mb-0">
+                              {previewData.EstimateData.CustomerId}.{" "}
+                              {name || ""}
+                            </h6>{" "}
+                            <h6 className="mb-2">
                               {previewData.EstimateData.Address}
                             </h6>
                           </td>
@@ -181,25 +198,37 @@ const EstimatePreview = () => {
                         </tr>
                         <tr>
                           <td className="me-5 pe-2">
-                            <h6 className="mb-0">
-                              <strong>Bill to</strong>
-                            </h6>
+                            <h5 className="mb-0">
+                              <strong>BILL TO</strong>
+                            </h5>
                           </td>
 
                           <td>
-                            <h6 className="mb-0">
-                              <strong>Ship to</strong>
-                            </h6>
+                            <h5 className="mb-0">
+                              <strong>SHIP To</strong>
+                            </h5>
                           </td>
                         </tr>
-                        <tr>
-                          <td>
-                            <h6 className="me-5 pe-2">
+                        <tr style={{ maxHeight: "3em" }}>
+                          <td
+                            style={{
+                              verticalAlign: "top",
+                              maxWidth: "15em",
+                              width: "15em",
+                            }}
+                          >
+                            <h6 className="me-3 pe-1 pt-0">
                               <>{previewData.EstimateData.Address}</>
                             </h6>
                           </td>
 
-                          <td>
+                          <td
+                            style={{
+                              verticalAlign: "top",
+                              maxWidth: "15em",
+                              width: "15em",
+                            }}
+                          >
                             <h6>
                               <>{previewData.EstimateData.Address}</>
                             </h6>
@@ -209,17 +238,17 @@ const EstimatePreview = () => {
                     </table>
                   </div>
 
-                  <div className="col-md-4 col-sm-6 text-right">
+                  <div className="col-md-4 col-sm-6 ">
                     <table className="preview-table">
                       <thead>
                         <tr>
                           <th>
                             {" "}
-                            <h6>Date</h6>{" "}
+                            <h6 className="mb-0">Date</h6>{" "}
                           </th>
                           <th>
                             {" "}
-                            <h6>
+                            <h6 className="text-right mb-0">
                               {formatDate(previewData.EstimateData.CreatedDate)}
                             </h6>
                           </th>
@@ -231,7 +260,7 @@ const EstimatePreview = () => {
                             <h6>Estimate #</h6>{" "}
                           </td>
 
-                          <td className="table-cell-align">
+                          <td className="table-cell-align text-right">
                             <h6>{previewData.EstimateData.EstimateNumber}</h6>
                           </td>
                         </tr>
@@ -241,18 +270,26 @@ const EstimatePreview = () => {
                 </div>
                 <table id="empoloyees-tblwrapper" className="table ">
                   <thead className="table-header">
-                    <tr>
-                      <th>Description</th>
-                      <th className="text-right">Qty</th>
-                      <th className="text-right">Rate</th>
+                    <tr className="preview-table-head">
+                      <th>
+                        <strong>DESCRIPTION</strong>
+                      </th>
+                      <th className="text-right">
+                        <strong>QTY</strong>
+                      </th>
+                      <th className="text-right">
+                        <strong>RATE</strong>
+                      </th>
 
-                      <th className="text-right">Amount</th>
+                      <th className="text-right">
+                        <strong>AMOUNT</strong>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {previewData.EstimateItemData.map((item, index) => {
                       return (
-                        <tr key={index}>
+                        <tr className="preview-table-row" key={index}>
                           <td>{item.Description}</td>
                           <td className="text-right">{item.Qty}</td>
                           <td className="text-right">{item.Rate}</td>
@@ -265,26 +302,35 @@ const EstimatePreview = () => {
                   </tbody>
                 </table>
               </div>
+
               <div className="card-body">
-                <div className="row text-end">
+                <div className="row ">
                   <div className="col-md-8 col-sm-6"></div>
                   <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">SubTotal:</h6>
+                    <h6 className="mb-0">
+                      {" "}
+                      <strong>SUBTOTAL:</strong>
+                    </h6>
                   </div>
                   <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">{totalAmount.toFixed(2)}</h6>
+                    <h6 className="mb-0 text-end">{totalAmount.toFixed(2)}</h6>
                   </div>
                   <div className="col-md-8 col-sm-6"></div>
-                  <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">Discount:</h6>
-                  </div>{" "}
-                  <hr className="mb-0" />
-                  <div className="col-md-8 col-sm-6"></div>
-                  <div className="col-md-2 col-sm-3 mb-0">
-                    <h6 className="table-cell-align mb-0">Total Amount:</h6>
+                  {/* <div className="col-md-2 col-sm-3">
+                    <h6 className="mb-0">
+                      {" "}
+                      <strong>DISCOUNT:</strong>
+                    </h6>
+                  </div>{" "} */}
+                  <hr className="mb-1" />
+                  <div className="col-md-8 col-sm-6 text-end"></div>
+                  <div className="col-md-2 col-sm-3 ">
+                    <h6 className="table-cell-align mt-2">
+                      <strong>TOTAL USD</strong>
+                    </h6>
                   </div>
-                  <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">{totalAmount.toFixed(2)}</h6>
+                  <div className="col-md-2 col-sm-3 mt-2">
+                    <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
                   </div>
                   <div
                     style={{

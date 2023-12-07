@@ -169,7 +169,7 @@ const LandscapeForm = () => {
 
       // Log the response or handle success
       console.log("Response:", response.data);
-      navigate(`/Dashboard/Landscape/Landscape-Report?id=${response.data.Id}`);
+      navigate(`/Landscape/Landscape-Report?id=${response.data.Id}`);
     } catch (error) {
       // Handle the error
       console.error("API Post Error:", error);

@@ -164,7 +164,7 @@ const Invoices = () => {
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={() => {
-                              setShowContent(false);
+                              navigate(`/Invoices/AddInvioces`);
                             }}
                           >
                             + Add New Invoice
@@ -254,9 +254,13 @@ const Invoices = () => {
                                   )
                                   .map((invoice, index) => (
                                     <TableRow
+                                    className="pe-auto"
                                       onDoubleClick={() => {
-                                        setSelectedInvoice(invoice.InvoiceId);
-                                        setShowContent(false);
+                                        // setSelectedInvoice(invoice.InvoiceId);
+                                        // setShowContent(false);
+                                        navigate(
+                                          `/Invoices/AddInvioces?id=${invoice.InvoiceId}`
+                                        );
                                       }}
                                       hover
                                       key={index}
@@ -292,7 +296,7 @@ const Invoices = () => {
                                           onClick={() => {
                                             setInvoiceData(invoice);
                                             navigate(
-                                              "/Dashboard/Invoices/Invoice-Preview"
+                                              "/Invoices/Invoice-Preview"
                                             );
                                           }}
                                           className="  span-hover-pointer badge badge-pill badge-success "
@@ -306,7 +310,7 @@ const Invoices = () => {
                             onClick={() => {
                               setInvoiceData(invoice)
                               navigate(
-                                "/Dashboard/Invoices/Invoice-Preview"
+                                "/Invoices/Invoice-Preview"
                               );
                             }}
                           >

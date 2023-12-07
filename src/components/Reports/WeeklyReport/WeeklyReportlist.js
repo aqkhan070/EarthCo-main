@@ -146,7 +146,7 @@ const WeeklyReportlist = () => {
                 <div className="tbl-caption">
                   <div className="row text-right mb-2">
                     <div className="text-right col-md-12">
-                      <NavLink to="/Dashboard/Weekly-Reports/Add-Weekly-Report">
+                      <NavLink to="/Weekly-Reports/Add-Weekly-Report">
                         <a href="/" className="btn btn-primary btn-sm">
                           + Add Weekly Report
                         </a>
@@ -224,7 +224,7 @@ const WeeklyReportlist = () => {
                                   className="btn p-0"
                                   onClick={() => {
                                     navigate(
-                                      `/Dashboard/Weekly-Reports/WeeklyReport?id=${staff.WeeklyReportId}`
+                                      `/Weekly-Reports/WeeklyReport?id=${staff.WeeklyReportId}`
                                     );
                                   }}
                                 >

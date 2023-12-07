@@ -17,7 +17,8 @@ const POPreview = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const { POData } = useContext(DataContext);
+  const { POData, toggleFullscreen, setToggleFullscreen } =
+    useContext(DataContext);
   const [PoPreviewData, setPoPreviewData] = useState({});
   const [printClicked, setPrintClicked] = useState(false);
 
@@ -68,10 +69,13 @@ const POPreview = () => {
   }
 
   const handlePrint = () => {
-    setPrintClicked(true);
+    setToggleFullscreen(false);
     setTimeout(() => {
       window.print();
     }, 1000);
+    setTimeout(() => {
+      setToggleFullscreen(true);
+    }, 3000);
   };
 
   const handleDownload = () => {
@@ -97,7 +101,7 @@ const POPreview = () => {
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight() / 2.2;
+      const height = pdf.internal.pageSize.getHeight();
 
       pdf.addImage(imgData, "PNG", 0, 0, width, height);
       pdf.save("purchase order.pdf");
@@ -105,120 +109,135 @@ const POPreview = () => {
   };
 
   return (
-    <div style={{ maxWidth: "70em" }} className="container-fluid">
-      <div className="row justify-content-between ">
-        <div className="col-md-3 text-start pb-0">
-          <button
-            className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-            onClick={() => {
-              navigate(`/Dashboard/Purchase-Order`);
-            }}
-          >
-            &#60; Back
-          </button>
+    <div
+      
+      className={toggleFullscreen ? "container-fluid custom-font-style" : ""}
+    >
+      {toggleFullscreen ? (
+        <div className={toggleFullscreen ? "row justify-content-between" : ""}>
+          <div className="col-md-3 text-start pb-0">
+            <button
+              className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+              onClick={() => {
+                navigate(`/Purchase-Order`);
+              }}
+            >
+              &#60; Back
+            </button>
+          </div>
+          <div className="col-md-3 text-end">
+            {" "}
+            <button
+              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+              onClick={handlePrint}
+            >
+              <Print />
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+              onClick={handleDownload}
+            >
+              <Download />
+            </button>
+          </div>
         </div>
-        <div className="col-md-3 text-end">
-          {" "}
-          <button
-            className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-            onClick={handlePrint}
-          >
-            <Print />
-          </button>
-          <button
-            className="btn btn-sm btn-outline-primary mb-2 mt-3 mx-3 estm-action-btn"
-            onClick={handleDownload}
-          >
-            <Download />
-          </button>
-        </div>
-      </div>
-
-      <div className="card ">
-        <div className={!printClicked ? "mx-3  mt-3" : ""}>
+      ) : (
+        <></>
+      )}
+      <div className="card">
+        <div className={toggleFullscreen ? "" : ""}>
           <div id="PO-preview" className=" get-preview ">
             <div className="card-body">
-              <div
-                style={{
-                  borderBottom: "5px solid #0394fc",
-                  margin: "1em 0em 3em 0em",
-                }}
-              ></div>
-              <div className="row">
+              <div className="row mt-2">
+                {/* <div className="col-md-12 mb-5"
+                  style={{
+                    borderBottom: "5px solid #5d9dd5",
+                 
+                  }}
+                ></div> */}
                 <div className="col-md-2 col-sm-5">
                   {" "}
                   <img className="preview-Logo" src={logo} alt="" />
                 </div>
                 <div className="col-md-6 col-sm-2"></div>
-                <div className="col-md-4  col-sm-5 text-center  table-cell-align">
-                  <h2>Purchase order</h2>
+                <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                  <h2 className="table-cell-align">Purchase Order</h2>
                 </div>
               </div>
 
-              <div className="row">
-                <div className="col-md-8 col-sm-6">
+              <div className="row mt-2">
+                <div className="col-md-8  col-sm-6">
                   <table>
-                    <thead>
-                      <tr>
-                        <th>
-                          {" "}
-                          <h5 className="mb-0">EarthCo</h5>
-                        </th>
-                      </tr>
-                    </thead>
                     <tbody>
                       <tr>
-                        <td>
-                          <h6 className="mb-0">{POData.SupplierName}</h6>
+                        <td className="p-0">
+                          {" "}
+                          <h5 className="mb-0">EarthCo</h5>{" "}
+                          <h6 className="mb-0">
+                            {POData.SupplierId}. {POData.SupplierName || ""}
+                          </h6>{" "}
+                          <h6 className="mb-2">{PoPreviewData.Data.Address}</h6>
                         </td>
                       </tr>
+                      {/* <tr>
+                        <td className="p-0"></td>
+                      </tr>
                       <tr>
+                        <td className="p-0"> </td>
+                      </tr>
+                      <tr>
+                        <td className="me-5 pe-2">
+                          <h5 className="mb-0">
+                            <strong>BILL TO</strong>
+                          </h5>
+                        </td>
+
                         <td>
-                          {" "}
-                          <h6 className="mb-0 text-wrap-preview">
+                          <h5 className="mb-0">
+                            <strong>SHIP To</strong>
+                          </h5>
+                        </td>
+                      </tr>
+                      <tr style={{ maxHeight: "3em" }}>
+                        <td
+                          style={{
+                            verticalAlign: "top",
+                            maxWidth: "15em",
+                            width: "15em",
+                          }}
+                        >
+                          <h6 className="me-3 pe-1 pt-0">
                             {PoPreviewData.Data.Address}
                           </h6>
                         </td>
-                      </tr>
-                      <tr>
-                        <td className="me-5">
-                          <h6 className="mb-0">
-                            <strong>Bill to</strong> 
-                          </h6>
+
+                        <td
+                          style={{
+                            verticalAlign: "top",
+                            maxWidth: "15em",
+                            width: "15em",
+                          }}
+                        >
+                          <h6>{PoPreviewData.Data.Address}</h6>
                         </td>
-                        <td>
-                          <h6 className="mb-0">
-                            <strong>Ship to</strong>
-                          </h6>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="me-5 text-wrap-preview">
-                          <h6>
-                            <>{PoPreviewData.Data.Address}</>
-                          </h6>
-                        </td>
-                        <td className="text-wrap-preview">
-                          <h6>
-                            <>{PoPreviewData.Data.Address}</>
-                          </h6>
-                        </td>
-                      </tr>
+                      </tr> */}
                     </tbody>
                   </table>
                 </div>
 
-                <div className="col-md-4 col-sm-6 text-right">
+                <div className="col-md-4 col-sm-6 ">
                   <table className="preview-table">
                     <thead>
                       <tr>
                         <th>
                           {" "}
-                          <h6>Date</h6>{" "}
+                          <h6 className="mb-0">Date</h6>{" "}
                         </th>
                         <th>
                           {" "}
-                          <h6>{formatDate(POData.Date)}</h6>
+                          <h6 className="text-right mb-0">
+                            {formatDate(POData.Date)}
+                          </h6>
                         </th>
                       </tr>
                     </thead>
@@ -228,8 +247,8 @@ const POPreview = () => {
                           <h6>Purchase Order #</h6>{" "}
                         </td>
 
-                        <td>
-                          <h6>{POData.PurchaseOrderNumber}</h6>
+                        <td className="table-cell-align text-right">
+                          <h6> {POData.PurchaseOrderNumber}</h6>
                         </td>
                       </tr>
                     </tbody>
@@ -238,18 +257,26 @@ const POPreview = () => {
               </div>
               <table id="empoloyees-tblwrapper" className="table ">
                 <thead className="table-header">
-                  <tr>
-                    <th>Description</th>
-                    <th className="text-right">Qty</th>
-                    <th className="text-right">Rate</th>
+                  <tr className="preview-table-head">
+                    <th>
+                      <strong>DESCRIPTION</strong>
+                    </th>
+                    <th className="text-right">
+                      <strong>QTY</strong>
+                    </th>
+                    <th className="text-right">
+                      <strong>RATE</strong>
+                    </th>
 
-                    <th className="text-right">Amount</th>
+                    <th className="text-right">
+                      <strong>AMOUNT</strong>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {PoPreviewData?.ItemData.map((item, index) => {
                     return (
-                      <tr key={index}>
+                      <tr className="preview-table-row" key={index}>
                         <td>{item.Description}</td>
                         <td className="text-right">{item.Qty}</td>
                         <td className="text-right">{item.Rate}</td>
@@ -260,40 +287,47 @@ const POPreview = () => {
                 </tbody>
               </table>
             </div>
+
             <div className="card-body">
-                <div className="row  text-end">
-                  <div className="col-md-8  col-sm-6"></div>
-                  <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">SubTotal:</h6>
-                  </div>
-                  <div className="col-md-2 col-sm-3">
+              <div className="row ">
+                <div className="col-md-8 col-sm-6"></div>
+                <div className="col-md-2 col-sm-3">
+                  <h6 className="mb-0">
                     {" "}
-                    <h6 className="mb-0">{totalAmount.toFixed(2)}</h6>
-                  </div>
-                  <div className="col-md-8 col-sm-6"></div>
-                  <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">Discount:</h6>
-                  </div>{" "}
-                  <hr className="mb-0" />
-                  <div className="col-md-8 col-sm-6"></div>
-                  <div className="col-md-2 col-sm-3">
-                    <h6 className="table-cell-align mb-0">Total Amount:</h6>
-                  </div>
-                  <div className="col-md-2 col-sm-3">
-                    {" "}
-                    <h6 className="mb-0">{totalAmount.toFixed(2)}</h6>
-                  </div>
-                  <div
-                    style={{
-                      borderBottom: "5px solid #012a47",
-                      margin: "0em 0em 3em 0em",
-                    }}
-                  ></div>
+                    <strong>SUBTOTAL:</strong>
+                  </h6>
                 </div>
+                <div className="col-md-2 col-sm-3">
+                  <h6 className="mb-0 text-end">{totalAmount.toFixed(2)}</h6>
+                </div>
+
+                {/* <div className="col-md-2 col-sm-3">
+                    <h6 className="mb-0">
+                      {" "}
+                      <strong>DISCOUNT:</strong>
+                    </h6>
+                  </div>{" "} */}
+                <hr className="mb-1" />
+                <div className="col-md-8 col-sm-6 text-end"></div>
+                <div className="col-md-2 col-sm-3 ">
+                  <h6 className="table-cell-align mt-2">
+                    <strong>TOTAL USD</strong>
+                  </h6>
+                </div>
+                <div className="col-md-2 col-sm-3 mt-2">
+                  <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
+                </div>
+                <div
+                  style={{
+                    borderBottom: "5px solid #012a47",
+                    margin: "0em 0em 3em 0em",
+                  }}
+                ></div>
               </div>
+            </div>
           </div>
         </div>
-      </div>
+      </div>{" "}
     </div>
   );
 };

@@ -1,11 +1,13 @@
 import { Alert, FormControl, MenuItem, Select, TextField } from "@mui/material";
 import axios from "axios";
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 const AddItem = ({
   selectedItem,
   setShowContent,
-  headers,
+
   getFilteredItemsList,
   setSuccessRes,
   setSelectedItem,
@@ -13,10 +15,22 @@ const AddItem = ({
   const [formData, setFormData] = useState({});
   const [incomeAccountList, setIncomeAccountList] = useState([]);
 
+  const headers = {
+    Authorization: `Bearer ${Cookies.get("token")}`,
+  };
+  const navigate = useNavigate();
+
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
   const getItem = async () => {
+    if (!idParam) {
+      return;
+    }
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Item/GetItem?id=${selectedItem}`,
+        `https://earthcoapi.yehtohoga.com/api/Item/GetItem?id=${idParam}`,
         { headers }
       );
       console.log("selectedItem iss", res.data);
@@ -73,13 +87,8 @@ const AddItem = ({
         formData,
         { headers }
       );
+      navigate(`/Items`)
       console.log("successfuly posted item", res.data.Message);
-      setSuccessRes(res.data.Message);
-      setTimeout(() => {
-        setSuccessRes("");
-      }, 4000);
-      getFilteredItemsList();
-      setShowContent(true);
     } catch (error) {
       console.log("api call error", error.response.data.Message);
       console.log("api call error2", error);
@@ -324,9 +333,7 @@ const AddItem = ({
                   className="btn btn-danger light ms-1"
                   onClick={() => {
                     setFormData({});
-                    setShowContent(true);
-
-                    setSelectedItem(0);
+                    navigate(`/Items`)
                   }}
                 >
                   Cancel

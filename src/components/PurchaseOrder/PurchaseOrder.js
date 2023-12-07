@@ -124,7 +124,7 @@ const PurchaseOrder = () => {
 
   const goToPrint = (data) => {
     setPOData(data);
-    navigate("/Dashboard/Purchase-Order/Purchase-Order-Preview");
+    navigate("/Purchase-Order/Purchase-Order-Preview");
   };
 
   return (
@@ -187,7 +187,8 @@ const PurchaseOrder = () => {
                           <button
                             className="btn btn-primary btn-sm"
                             onClick={() => {
-                              setShowContent(false);
+                              navigate("/Purchase-Order/AddPO");
+                              // setShowContent(false);
                             }}
                           >
                             + Add New Purchase Order
@@ -233,9 +234,11 @@ const PurchaseOrder = () => {
                             ) : (
                               filteredPo.map((po) => (
                                 <TableRow
+                                className="pe-auto"
                                   onDoubleClick={() => {
-                                    setShowContent(false);
-                                    setselectedPo(po.PurchaseOrderId);
+                                    // setShowContent(false);
+                                    // setselectedPo(po.PurchaseOrderId);
+                                    navigate(`/Purchase-Order/AddPO?id=${po.PurchaseOrderId}`)
                                   }}
                                   hover
                                   key={po.EstimateNumber}

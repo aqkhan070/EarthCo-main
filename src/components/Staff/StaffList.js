@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TitleBar from "../TitleBar";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Create, Delete } from "@mui/icons-material";
 import AddStaff from "./AddStaff";
 import Alert from "@mui/material/Alert";
@@ -21,6 +21,7 @@ import {
   TableSortLabel,
   TextField,
 } from "@mui/material";
+
 
 const StaffList = () => {
   const token = Cookies.get("token");
@@ -48,6 +49,8 @@ const StaffList = () => {
       {/* ... Your SVG Path Data */}
     </svg>
   );
+
+  const navigate = useNavigate();
 
   const getStaffList = async () => {
     try {
@@ -150,8 +153,9 @@ const StaffList = () => {
                           variant="contained"
                           color="primary"
                           onClick={() => {
-                            setSelectedStaff(0);
-                            settoggleAddStaff(false);
+                            // setSelectedStaff(0);
+                            // settoggleAddStaff(false);
+                            navigate(`/Staff/Add-Staff`)
                           }}
                         >
                           + Add Staff
@@ -240,8 +244,9 @@ const StaffList = () => {
                                   // className=" btn btn-primary  btn-icon-xxs me-2"
 
                                   onClick={() => {
-                                    settoggleAddStaff(false);
-                                    setSelectedStaff(staff.UserId);
+                                    // settoggleAddStaff(false);
+                                    // setSelectedStaff(staff.UserId);
+                                    navigate(`/Staff/Add-Staff?id=${staff.UserId}`)
                                   }}
                                 >
                                   <Create />

@@ -5,20 +5,16 @@ import { Form } from "react-bootstrap";
 import axios from "axios";
 import Cookies from "js-cookie";
 import ControllerTable from "./ControllerTable";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import IrrigationControler from "./IrrigationControler";
 import Alert from "@mui/material/Alert";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import { CircularProgress } from "@mui/material";
+const IrrigationForm = () => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
 
-const IrrigationForm = ({
-  getIrrigationList,
-  setShowContent,
-  selectedIrr,
-  setSelectedIrr,
-  setSuccessres,
-}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -38,6 +34,8 @@ const IrrigationForm = ({
   const { customerSearch, fetchCustomers } = useCustomerSearch();
 
   const [addSucces, setAddSucces] = useState("");
+
+  const navigate = useNavigate();
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
@@ -145,12 +143,8 @@ const IrrigationForm = ({
         formData,
         { headers }
       );
-      getIrrigationList();
-      setShowContent(true);
-      setSuccessres(res.data.Message);
-      setTimeout(() => {
-        setSuccessres("");
-      }, 4000);
+      navigate(`/Irrigation`);
+
       console.log("data submitted successfuly", res.data);
     } catch (error) {
       console.log("error submitting data", error);
@@ -168,12 +162,12 @@ const IrrigationForm = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchIrrigation = async () => {
-    if (selectedIrr === 0) {
+    if (idParam === 0) {
       return;
     }
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigation?id=${selectedIrr}`,
+        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigation?id=${idParam}`,
         { headers }
       );
       console.log("selected irrigation is", res.data);
@@ -191,7 +185,7 @@ const IrrigationForm = ({
 
   useEffect(() => {
     fetchIrrigation();
-  }, [selectedIrr]);
+  }, [idParam]);
   useEffect(() => {
     fetchCustomers();
   }, []);
@@ -335,7 +329,7 @@ const IrrigationForm = ({
                   </div>
                   <div className="col-md-6 text-right mt-3">
                     <div>
-                      {selectedIrr === 0 ? null : (
+                      {idParam === 0 ? null : (
                         <button
                           className="btn btn-dark btn-sm me-2"
                           onClick={toggleShowForm}
@@ -350,13 +344,14 @@ const IrrigationForm = ({
                       >
                         Submit
                       </button>
-                      {/* <NavLink to="/Dashboard/Irrigation">
+                      {/* <NavLink to="/Irrigation">
                   </NavLink> */}
 
                       <button
                         onClick={() => {
-                          setShowContent(true);
-                          setSelectedIrr(0);
+                          // setShowContent(true);
+                          // setSelectedIrr(0);
+                          navigate(`/Irrigation`);
                         }}
                         className="btn btn-danger btn-sm light ms-1"
                       >
@@ -375,7 +370,7 @@ const IrrigationForm = ({
             setAddSucces={setAddSucces}
             fetchIrrigation={fetchIrrigation}
             toggleShowForm={toggleShowForm}
-            selectedIrr={selectedIrr}
+            idParam={idParam}
           />
         )}
 

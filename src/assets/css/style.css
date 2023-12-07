@@ -1010,8 +1010,10 @@ progress {
     display: flex;
     flex-wrap: wrap;
     margin-top: calc(-1 * var(--bs-gutter-y));
-    margin-right: calc(-.5 * var(--bs-gutter-x));
-    margin-left: calc(-.5 * var(--bs-gutter-x));
+    margin-left: 0px;
+    margin-right: 0px;
+    /* margin-right: calc(-.5 * var(--bs-gutter-x)); */
+    /* margin-left: calc(-.5 * var(--bs-gutter-x)); */
 }
 
 .row>* {
@@ -53870,6 +53872,12 @@ padding: 0px !important;
 .preview-Logo{
     width: 100%;
 }
+.irr-preview-Logo{
+    width: 50%;
+}
+.SRP-preview-Logo{
+    width: 100%;
+}
 
 .preview-table{
     width: 100%;
@@ -53884,7 +53892,61 @@ padding: 0px !important;
   .span-hover-pointer{
     cursor: pointer;
   }
+  .preview-table-head th{
+    color: #2e2e2e;
+    
+  }
 
+  .preview-table-row td{
+    color: black;
+   
+  }
+
+  .Irr-preview-table-row td{
+    color: black;
+    vertical-align: top;
+   
+  }
+
+  .print-body-color{
+    background-color: white !important;
+  }
+  .landscap-preview-heading{
+    background-color: #cccccc !important;
+    color: #000 !important;
+    font-weight: bold !important;
+  }
+
+  .full-page-print-height{
+    height: 80em;
+  }
+
+
+  /* .get-preview {
+    position: relative;    
+    overflow: auto;
+    height: 75em;
+}
+
+
+.get-preview .card-body:last-child {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+  
+} */
+
+.a4-size-preview{
+    max-width: 21cm;
+    max-height: 29.7cm;
+}
+
+tr{
+    cursor: pointer;
+}
+
+ 
+ 
 @media print{
     body * {
         visibility: hidden;
@@ -53895,6 +53957,20 @@ padding: 0px !important;
     }
     .preview-Logo ,.preview-Logo *{
         width: 100%;
+    }
+    .irr-preview-Logo ,.irr-preview-Logo *{
+        width: 70%;
+    }
+    .SRP-preview-Logo, .SRP-preview-Logo *{
+        width: 50%;
+    }
+    .table-header, .table-header *{
+        background-color:#F0F4F9 ;
+    }
+    body, body *{
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        background-color: white;
     }
     /* .preview-table ,.preview-table *{
         width: 40%;

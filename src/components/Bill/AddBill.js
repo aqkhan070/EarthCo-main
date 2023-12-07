@@ -8,15 +8,19 @@ import formatDate from "../../custom/FormatDate";
 import Alert from "@mui/material/Alert";
 import useFetchPo from "../Hooks/useFetchPo";
 import { Delete, Create } from "@mui/icons-material";
-import {
-  Button
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { Print, Email, Download } from "@mui/icons-material";
 import useDeleteFile from "../Hooks/useDeleteFile";
 import { useNavigate, NavLink } from "react-router-dom";
 
-
-const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,setselectedBill,fetchFilterBills }) => {
+const AddBill = ({
+  setshowContent,
+  fetchBills,
+  selectedBill,
+  setSubmitSuccess,
+  setselectedBill,
+  fetchFilterBills,
+}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -29,8 +33,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
   const [formData, setFormData] = useState({
     BillDate: currentDate,
     DueDate: null,
-    PurchaseOrderId : null
-
+    PurchaseOrderId: null,
   });
   const [customersList, setCustomersList] = useState([]);
   const [showCustomersList, setShowCustomersList] = useState(true);
@@ -50,28 +53,31 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
   const { PoList, fetchPo } = useFetchPo();
   const { deleteBillFile } = useDeleteFile();
 
-
   const getBill = async () => {
-    if (selectedBill === 0 &&  idParam === 0) {
-      return
+    if (selectedBill === 0 && idParam === 0) {
+      return;
     }
 
     try {
-      const res = await axios.get( `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${selectedBill || idParam}`,{headers})
-      setFormData(res.data.Data)
-      setItemsList(res.data.ItemData)
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${
+          selectedBill || idParam
+        }`,
+        { headers }
+      );
+      setFormData(res.data.Data);
+      setItemsList(res.data.ItemData);
       setFormData((prevData) => ({ ...prevData, BillId: selectedBill }));
-      setPrevFiles(res.data.FileData)
-      console.log("selected bill is",res.data)
+      setPrevFiles(res.data.FileData);
+      console.log("selected bill is", res.data);
     } catch (error) {
-      console.log("api call error", error)
+      console.log("api call error", error);
     }
   };
   useEffect(() => {
-    
-    getBill()
-    console.log("selectedBill izzzz", selectedBill )
-  },[selectedBill])
+    getBill();
+    console.log("selectedBill izzzz", selectedBill);
+  }, [selectedBill]);
 
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
@@ -255,8 +261,8 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
   };
 
   const handleInputChange = (e, newValue) => {
-    setSubmitClicked(false)
-    setEmptyFieldsError(false)
+    setSubmitClicked(false);
+    setEmptyFieldsError(false);
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -264,11 +270,15 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
 
-    setFormData((prevData) => ({ ...prevData, [name]: value, BillId: selectedBill, }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      BillId: selectedBill,
+    }));
   };
   const handleChange = (e) => {
-    setSubmitClicked(false)
-    setEmptyFieldsError(false)
+    setSubmitClicked(false);
+    setEmptyFieldsError(false);
 
     // Extract the name and value from the event target
     const { name, value } = e.target;
@@ -277,7 +287,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     const updatedFormData = {
       ...formData,
       [name]: value,
-   
+
       Amount: 0.0,
       Currency: "usd",
       BillId: selectedBill,
@@ -333,7 +343,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     }
   }, [searchText]);
 
-  const handleAddItem =() => {
+  const handleAddItem = () => {
     // Adding the new item to the itemsList
     setItemsList((prevItems) => [
       ...prevItems,
@@ -347,7 +357,8 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
       Qty: 1,
       Description: "",
       Rate: null,
-    })}
+    });
+  };
 
   const handleItemChange = (event) => {
     setShowItem(true);
@@ -396,7 +407,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     });
     setItemsList(updatedItemsList);
   };
-  
+
   const handleRateChange = (itemId, event) => {
     const updatedItemsList = itemsList.map((item) => {
       if (item.ItemId === itemId) {
@@ -409,7 +420,7 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     });
     setItemsList(updatedItemsList);
   };
-  
+
   useEffect(() => {
     // Calculate the total amount and update the state
     const total = calculateTotalAmount();
@@ -420,7 +431,6 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
 
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [PrevFiles, setPrevFiles] = useState([]);
-
 
   const handleFileChange = (e) => {
     const files = e.target.files[0];
@@ -444,13 +454,14 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
 
   const handleDeleteFile = (indexToDelete) => {
     // Create a new array without the file to be deleted
-    const updatedFiles = selectedFiles.filter((_, index) => index !== indexToDelete);
-  
+    const updatedFiles = selectedFiles.filter(
+      (_, index) => index !== indexToDelete
+    );
+
     // Update the selectedFiles state with the new array
     setSelectedFiles(updatedFiles);
     console.log("Deleted file at index:", indexToDelete);
   };
-
 
   // submit handler
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
@@ -462,12 +473,11 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
     e.preventDefault();
     setSubmitClicked(true);
 
-    if (!formData.SupplierId  || !formData.BillDate ) {
-      setEmptyFieldsError(true)
-      return
+    if (!formData.SupplierId || !formData.BillDate) {
+      setEmptyFieldsError(true);
+      return;
     }
 
-    
     const postData = new FormData();
 
     // Merge the current items with the new items for EstimateData
@@ -515,22 +525,16 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
         }
       );
 
-      if(idParam){
-        navigate(`/Dashboard/Bills`)  
-        return
-      }
+    
+        navigate(`/Bills`);
+      
 
-      fetchFilterBills();
-      setshowContent(true);
-      setSubmitSuccess(response.data.Message)
-      setTimeout(() => {
-      setSubmitSuccess("")
-        
-      }, 4000);
+      
+      
+    
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
-      
       setErrorMessage(error.response.data);
       console.error("API Call Error:", error);
     }
@@ -561,12 +565,11 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
           </button>
         </div> */}
 
-        <div className="card"><div className="itemtitleBar ">
-              <h4>Bill Details</h4>
-            </div>
+        <div className="card">
+          <div className="itemtitleBar ">
+            <h4>Bill Details</h4>
+          </div>
           <div className="">
-        
-            
             {/* <div className="row mb-2 mx-1">
               <div className="col-xl-3">
                 <label className="form-label">Customer</label>
@@ -662,7 +665,9 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                   <div className="row">
                     <div className="mb-3 col-md-3">
                       <div className="col-md-12">
-                        <label className="form-label">Vendor<span className="text-danger">*</span></label>
+                        <label className="form-label">
+                          Vendor<span className="text-danger">*</span>
+                        </label>
                         <Autocomplete
                           id="inputState19"
                           size="small"
@@ -716,7 +721,6 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                               value={formData.BillNumber}
                               onChange={handleChange}
                               size="small"
-                            
                               className="form-control"
                               placeholder="Bill No"
                             />
@@ -752,7 +756,9 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                           />
                         </div>
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Date<span className="text-danger">*</span></label>
+                          <label className="form-label">
+                            Date<span className="text-danger">*</span>
+                          </label>
                           <div className="input-group mb-2">
                             <TextField
                               type="date"
@@ -779,47 +785,54 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                         </div>
 
                         <div className="mb-3 col-md-4">
-                          <label className="form-label">Purchase Order
-                          {formData.PurchaseOrderId? 
-                        <><br />
-                        <a href="" style={{color: "blue"}}
-                        onClick={() => {
-
-                          navigate(`/Dashboard/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`)                      
-                          
-
-                        }}
-                        >
-                      Go to Purchase Order
-                      </a></>
-                        : ""
-
-                        }
+                          <label className="form-label">
+                            Purchase Order
+                            {formData.PurchaseOrderId ? (
+                              <>
+                                <br />
+                                <a
+                                  href=""
+                                  style={{ color: "blue" }}
+                                  onClick={() => {
+                                    navigate(
+                                      `/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`
+                                    );
+                                  }}
+                                >
+                                  Go to Purchase Order
+                                </a>
+                              </>
+                            ) : (
+                              ""
+                            )}
                           </label>
-                          <Autocomplete                      
-                      size="small"
-                      options={PoList}
-                      getOptionLabel={(option) => option.PurchaseOrderNumber || ""}
-                      value={
-                        PoList.find(
-                          (po) => po.PurchaseOrderId === formData.PurchaseOrderId
-                        ) || null
-                      }
-                      onChange={handlePoAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.PurchaseOrderId === value.PurchaseOrderId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          
-                          placeholder="Purchase order No"
-                          className="bg-white"
-                        />
-                      )}
-                      aria-label="Contact select"
-                    />
+                          <Autocomplete
+                            size="small"
+                            options={PoList}
+                            getOptionLabel={(option) =>
+                              option.PurchaseOrderNumber || ""
+                            }
+                            value={
+                              PoList.find(
+                                (po) =>
+                                  po.PurchaseOrderId ===
+                                  formData.PurchaseOrderId
+                              ) || null
+                            }
+                            onChange={handlePoAutocompleteChange}
+                            isOptionEqualToValue={(option, value) =>
+                              option.PurchaseOrderId === value.PurchaseOrderId
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label=""
+                                placeholder="Purchase order No"
+                                className="bg-white"
+                              />
+                            )}
+                            aria-label="Contact select"
+                          />
                         </div>
                         <div className="mb-3 col-md-4">
                           <label className="form-label">Terms</label>
@@ -856,441 +869,443 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
               </div>
             </div>
 
-
-
             <div className="itemtitleBar">
-                    <h4>Items</h4>
-                  </div>
-              <div className="card-body">
-                <div className="estDataBox">
-                
-
-                  <div className="table-responsive active-projects style-1 mt-2">
-                    <table id="empoloyees-tblwrapper" className="table">
-                      <thead>
-                         <tr>
-                            <th className="itemName-width">Item</th>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>Rate</th>
-                            <th>Amount</th>
-                            <th>Tax</th>
-                            <th>Action</th>
-                          </tr>
-                      </thead>
-                      <tbody>
+              <h4>Items</h4>
+            </div>
+            <div className="card-body">
+              <div className="estDataBox">
+                <div className="table-responsive active-projects style-1 mt-2">
+                  <table id="empoloyees-tblwrapper" className="table">
+                    <thead>
+                      <tr>
+                        <th className="itemName-width">Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Tax</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {itemsList && itemsList.length > 0 ? (
-    itemsList.map((item, index) => (
-      <tr colSpan={2} key={item.ItemId}>
-        <td className="itemName-width">{item.Name}</td>
-        <td>{item.Description}</td>
-        <td>
-          <input
-            type="number"
-            style={{ width: "7em" }}
-        className="form-control form-control-sm"
-            value={item.Qty}
-            onChange={(e) => handleQuantityChange(item.ItemId, e)}
-          />
-        </td>
-        <td>
-          <input
-            type="number"
-            value={item.Rate}
-            style={{ width: "7em" }}
-        className="form-control form-control-sm"
-            onChange={(e) => handleRateChange(item.ItemId, e)}
-          />
-        </td>
-        <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-        <td>NaN</td>
-        <td>
-          <div className="badgeBox">
-            <Button
-              onClick={() => {
-                deleteItem(item.ItemId);
-              }}
-            >
-              <Delete color="error" />
-            </Button>
-          </div>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <></>
-  )}
-                          <tr>
-                            <td className="itemName-width">
-                              <>
-                                <Autocomplete
-                                  id="search-items"
-                                  options={searchResults || null}
-                                  getOptionLabel={(item) => item.ItemName}
-                                  value={selectedItem} // This should be the selected item, not searchText
-                                  onChange={(event, newValue) => {
-                                    if (newValue) {
-                                      handleItemClick(newValue);
-                                    } else {
-                                      setSelectedItem(null);
-                                    }
-                                  }}
-                                  renderInput={(params) => (
-                                    <TextField
-                                      {...params}
-                                      label="Search for items..."
-                                      variant="outlined"
-                                      size="small"
-                                      fullWidth
-                                      onChange={handleItemChange}
-                                    />
-                                  )}
-                                  renderOption={(props, item) => (
-                                    <li
-                                      style={{
-                                        cursor: "pointer",
-                                        width: "30em",
-                                      }}
-                                      {...props}
-                                      onClick={() => handleItemClick(item)}
-                                    >
-                                      <div className="customer-dd-border">
-                                      <p><strong>{item.ItemName}</strong> </p>
-                                       <small>{item.Type}</small><br />
-                                        <small>{item.SaleDescription}</small>
-                                      </div>
-                                    </li>
-                                  )}
-                                  onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                      // Handle item addition when Enter key is pressed
-                                      e.preventDefault(); // Prevent form submission
-                                      handleAddItem();
-                                    }
-                                  }}
-                                />
-                              </>
-                            </td>
+                        itemsList.map((item, index) => (
+                          <tr colSpan={2} key={item.ItemId}>
+                            <td className="itemName-width">{item.Name}</td>
+                            <td>{item.Description}</td>
                             <td>
-                              <p>{selectedItem?.SaleDescription || " "}</p>
+                              <input
+                                type="number"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={item.Qty}
+                                onChange={(e) =>
+                                  handleQuantityChange(item.ItemId, e)
+                                }
+                              />
                             </td>
                             <td>
                               <input
                                 type="number"
-                                name="Qty"
-                                value={itemInput.Qty}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Qty: Number(e.target.value),
-                                  })
-                                }
+                                value={item.Rate}
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                placeholder="Quantity"
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
+                                onChange={(e) =>
+                                  handleRateChange(item.ItemId, e)
+                                }
                               />
                             </td>
+                            <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                            <td>NaN</td>
                             <td>
-                              <div className="col-sm-9">
-                                <input type="number" 
-                                name="Rate"
-                                style={{ width: "7em" }}
-                                className="form-control form-control-sm"
-                                value={selectedItem?.SalePrice || itemInput.Rate ||""}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Rate: Number(e.target.value),
-                                  })
-                                }
-                                onClick={(e) => {
-                                  setSelectedItem({
-                                    ...selectedItem,
-                                    SalePrice: 0,
-                                  })
-                                }}
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
-                                />
-                            
+                              <div className="badgeBox">
+                                <Button
+                                  onClick={() => {
+                                    deleteItem(item.ItemId);
+                                  }}
+                                >
+                                  <Delete color="error" />
+                                </Button>
                               </div>
                             </td>
-                            <td>
-                              <h5 style={{ margin: "0" }}>
-                                {(itemInput.Rate * itemInput.Qty).toFixed(2)}
-                              </h5>
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="tax"
-                                style={{ width: "7em" }}
-                                disabled
-                                className="form-control form-control-sm"
-                                placeholder="tax"
-                              />
-                            </td>
                           </tr>
-                        </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-        
-
-         
-              <div className="card-body row">
-                <div className="col-md-4">
-                  <div className="row">
-                    <div className="col-xl-12 col-lg-12">
-                      <div className="basic-form">
-                        <form>
-                          <h4 className="card-title">Memo</h4>
-                          <div className="mb-3">
-                            <textarea
-                              className="form-txtarea form-control"
-                              rows="2"
-                              id="comment"
-                              name="Memo"
-                              value={formData.Memo}
-                              onChange={handleChange}
-                            ></textarea>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                      <tr>
+                        <td className="itemName-width">
+                          <>
+                            <Autocomplete
+                              id="search-items"
+                              options={searchResults || null}
+                              getOptionLabel={(item) => item.ItemName}
+                              value={selectedItem} // This should be the selected item, not searchText
+                              onChange={(event, newValue) => {
+                                if (newValue) {
+                                  handleItemClick(newValue);
+                                } else {
+                                  setSelectedItem(null);
+                                }
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Search for items..."
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  onChange={handleItemChange}
+                                />
+                              )}
+                              renderOption={(props, item) => (
+                                <li
+                                  style={{
+                                    cursor: "pointer",
+                                    width: "30em",
+                                  }}
+                                  {...props}
+                                  onClick={() => handleItemClick(item)}
+                                >
+                                  <div className="customer-dd-border">
+                                    <p>
+                                      <strong>{item.ItemName}</strong>{" "}
+                                    </p>
+                                    <small>{item.Type}</small>
+                                    <br />
+                                    <small>{item.SaleDescription}</small>
+                                  </div>
+                                </li>
+                              )}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </>
+                        </td>
+                        <td>
+                          <p>{selectedItem?.SaleDescription || " "}</p>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="Qty"
+                            value={itemInput.Qty}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Qty: Number(e.target.value),
+                              })
+                            }
+                            style={{ width: "7em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Quantity"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <div className="col-sm-9">
+                            <input
+                              type="number"
+                              name="Rate"
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={
+                                selectedItem?.SalePrice || itemInput.Rate || ""
+                              }
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  SalePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
                           </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div className="col-xl-12 col-lg-12">
-                      <div className="basic-form">
-                        <h4 className="card-title">Attachments</h4>
-                        <div className="dz-default dlab-message upload-img mb-3">
-                          <form action="#" className="dropzone">
-                            <svg
-                              width="41"
-                              height="40"
-                              viewBox="0 0 41 40"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M20.5 20V35"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                            </svg>
-                            <div className="fallback">
-                              <input
-                                name="file"
-                                type="file"
-                                onChange={handleFileChange}
-                              />
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                     
-                    </div>
-                  </div>
-                </div>
-         
-                <div className="col-md-4  ms-auto sub-total">
-                  <table className="table table-borderless table-clear">
-                    <tbody>
-                      <tr>
-                        <td className="left">
-                          <strong>Subtotal</strong>
                         </td>
-                        <td className="right">${(totalAmount).toFixed(2)}</td>
-                      </tr>
-                      <tr>
-                        <td className="left">
-                          <strong>Discount (20%)</strong>
+                        <td>
+                          <h5 style={{ margin: "0" }}>
+                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                          </h5>
                         </td>
-                        <td className="right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td className="left">
-                          <strong>VAT (10%)</strong>
-                        </td>
-                        <td className="right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td className="left">
-                          <strong>Total</strong>
-                        </td>
-                        <td className="right">
-                          <strong>${(totalAmount).toFixed(2)}</strong>
+                        <td>
+                          <input
+                            type="number"
+                            name="tax"
+                            style={{ width: "7em" }}
+                            disabled
+                            className="form-control form-control-sm"
+                            placeholder="tax"
+                          />
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+            </div>
 
-              <div className="row mx-2">
-
-              {PrevFiles.map((file, index) => (
-                        <div
-                          key={index}
-                          className="col-md-2 col-md-2 mt-3 image-container"
-                          style={{
-                            width: "150px", // Set the desired width
-                            height: "120px", // Set the desired height
-                            margin: "1em",
-                            position: "relative",
-                          }}
-                        >
-                          <img
-                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                            alt={file.FileName}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
-                            }}
-                          />
-                          <p
-                            className="file-name-overlay"
-                            style={{
-                              position: "absolute",
-                              bottom: "0",
-                              left: "13px",
-                              right: "0",
-                              backgroundColor: "rgba(0, 0, 0, 0.3)",
-                              textAlign: "center",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              width: "100%",
-                              textOverflow: "ellipsis",
-                              padding: "5px",
-                            }}
-                          >
-                            {file.FileName}
-                          </p>
-                          <span
-                            className="file-delete-button"
-                            style={{
-                              left: "140px",
-                            }}
-                            onClick={() => {
-                              deleteBillFile(file.BillFileId);
-
-                              setTimeout(() => {
-                                getBill();
-                                
-                              }, 1000);
-                            }}
-                          >
-                            <span>
-                              <Delete color="error" />
-                            </span>
-                          </span>
+            <div className="card-body row">
+              <div className="col-md-4">
+                <div className="row">
+                  <div className="col-xl-12 col-lg-12">
+                    <div className="basic-form">
+                      <form>
+                        <h4 className="card-title">Memo</h4>
+                        <div className="mb-3">
+                          <textarea
+                            className="form-txtarea form-control"
+                            rows="2"
+                            id="comment"
+                            name="Memo"
+                            value={formData.Memo}
+                            onChange={handleChange}
+                          ></textarea>
                         </div>
-                      ))}
-                      
-              {selectedFiles.map((file, index) => (
-  <div
-    key={index}
-    className="col-md-2 col-md-2 mt-3 image-container"
-    style={{
-      width: "150px", // Set the desired width
-      height: "120px", // Set the desired height
-      margin: "1em",
-      position: "relative",
-    }}
-  >
-    <img
-        src={URL.createObjectURL(file)}
-      alt={file.name}
-      style={{
-        width: "150px",
-        height: "120px",
-        objectFit: "cover",
-      }}
-    />
-    <p
-      className="file-name-overlay"
-      style={{
-        position: "absolute",
-        bottom: "0",
-        left: "13px",
-        right: "0",
-        backgroundColor: "rgba(0, 0, 0, 0.3)",
-        textAlign: "center",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        width: "100%",
-        textOverflow: "ellipsis",
-        padding: "5px",
-      }}
-    >
-      {file.name}
-    </p>
-    <span
-      className="file-delete-button"
-      style={{
-        left: "140px",
-      }}
-      onClick={() => {handleDeleteFile(index)}}
-    >
-      <span>
-        <Delete color="error" />
-      </span>
-    </span>
-  </div>
-))}
+                      </form>
                     </div>
-
-              <div className="row mb-3 mx-3">
-                <div className="col-md-9">
-                {errorMessage && (
-                    <Alert severity="error">
-                      {errorMessage? errorMessage: "Error Submitting Bill Data"}
-                    </Alert>
-                  )}
-                  {
-                    emptyFieldsError && <Alert severity="error">
-                  please fill all required fields
-                  </Alert>
-                  }
+                  </div>
+                  <div className="col-xl-12 col-lg-12">
+                    <div className="basic-form">
+                      <h4 className="card-title">Attachments</h4>
+                      <div className="dz-default dlab-message upload-img mb-3">
+                        <form action="#" className="dropzone">
+                          <svg
+                            width="41"
+                            height="40"
+                            viewBox="0 0 41 40"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M20.5 20V35"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                          </svg>
+                          <div className="fallback">
+                            <input
+                              name="file"
+                              type="file"
+                              onChange={handleFileChange}
+                            />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-<div className=" col-md-3 text-end">
-              <div>
-              <button
+              </div>
+
+              <div className="col-md-4  ms-auto sub-total">
+                <table className="table table-borderless table-clear">
+                  <tbody>
+                    <tr>
+                      <td className="left">
+                        <strong>Subtotal</strong>
+                      </td>
+                      <td className="right">${totalAmount.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                      <td className="left">
+                        <strong>Discount (20%)</strong>
+                      </td>
+                      <td className="right">$0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="left">
+                        <strong>VAT (10%)</strong>
+                      </td>
+                      <td className="right">$0.00</td>
+                    </tr>
+                    <tr>
+                      <td className="left">
+                        <strong>Total</strong>
+                      </td>
+                      <td className="right">
+                        <strong>${totalAmount.toFixed(2)}</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="row mx-2">
+              {PrevFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="col-md-2 col-md-2 mt-3 image-container"
+                  style={{
+                    width: "150px", // Set the desired width
+                    height: "120px", // Set the desired height
+                    margin: "1em",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                    alt={file.FileName}
+                    style={{
+                      width: "150px",
+                      height: "120px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <p
+                    className="file-name-overlay"
+                    style={{
+                      position: "absolute",
+                      bottom: "0",
+                      left: "13px",
+                      right: "0",
+                      backgroundColor: "rgba(0, 0, 0, 0.3)",
+                      textAlign: "center",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      width: "100%",
+                      textOverflow: "ellipsis",
+                      padding: "5px",
+                    }}
+                  >
+                    {file.FileName}
+                  </p>
+                  <span
+                    className="file-delete-button"
+                    style={{
+                      left: "140px",
+                    }}
+                    onClick={() => {
+                      deleteBillFile(file.BillFileId);
+
+                      setTimeout(() => {
+                        getBill();
+                      }, 1000);
+                    }}
+                  >
+                    <span>
+                      <Delete color="error" />
+                    </span>
+                  </span>
+                </div>
+              ))}
+
+              {selectedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="col-md-2 col-md-2 mt-3 image-container"
+                  style={{
+                    width: "150px", // Set the desired width
+                    height: "120px", // Set the desired height
+                    margin: "1em",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    style={{
+                      width: "150px",
+                      height: "120px",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <p
+                    className="file-name-overlay"
+                    style={{
+                      position: "absolute",
+                      bottom: "0",
+                      left: "13px",
+                      right: "0",
+                      backgroundColor: "rgba(0, 0, 0, 0.3)",
+                      textAlign: "center",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      width: "100%",
+                      textOverflow: "ellipsis",
+                      padding: "5px",
+                    }}
+                  >
+                    {file.name}
+                  </p>
+                  <span
+                    className="file-delete-button"
+                    style={{
+                      left: "140px",
+                    }}
+                    onClick={() => {
+                      handleDeleteFile(index);
+                    }}
+                  >
+                    <span>
+                      <Delete color="error" />
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="row mb-3 mx-3">
+              <div className="col-md-6">
+                {errorMessage && (
+                  <Alert severity="error">
+                    {errorMessage ? errorMessage : "Error Submitting Bill Data"}
+                  </Alert>
+                )}
+                {emptyFieldsError && (
+                  <Alert severity="error">
+                    please fill all required fields
+                  </Alert>
+                )}
+              </div>
+              <div className=" col-md-6 text-end">
+                <div>
+                  <button
                     type="button"
                     className="btn btn-sm btn-outline-primary estm-action-btn"
                   >
@@ -1302,34 +1317,29 @@ const AddBill = ({ setshowContent, fetchBills, selectedBill, setSubmitSuccess,se
                   >
                     <Print></Print>
                   </button>
-               
-               
-                  <button type="button" className="btn btn-primary me-1" onClick={handleSubmit}>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary me-1"
+                    onClick={handleSubmit}
+                  >
                     Save
                   </button>
-              
-            
-            
+
                   <button
                     className="btn btn-danger light ms-1"
                     onClick={() => {
-                      if(idParam){
-                        navigate(`/Dashboard/Bills`)   
-                        return
-                      }
-                      setselectedBill(0)
-                      setshowContent(true);
+                      
+                        navigate(`/Bills`);
+                      
+                     
                     }}
                   >
                     Cancel
                   </button>
-               
+                </div>
               </div>
             </div>
-              </div>
-            
-          
-
           </div>
         </div>
       </div>

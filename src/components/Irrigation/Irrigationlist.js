@@ -16,7 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import formatDate from "../../custom/FormatDate";
@@ -26,6 +26,7 @@ const Irrigationlist = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const navigate = useNavigate();
 
   const [irrigationlist, setIrrigationlist] = useState([]);
   const [showContent, setShowContent] = useState(true);
@@ -168,7 +169,8 @@ const Irrigationlist = () => {
                         className="btn btn-primary btn-sm"
                         role="button"
                         onClick={() => {
-                          setShowContent(false);
+                          navigate(`/Irrigation/Add-Irrigation`);
+                          // setShowContent(false);
                         }}
                       >
                         + Add New
@@ -225,10 +227,18 @@ const Irrigationlist = () => {
                       <TableBody>
                         {irrigationlist ? (
                           irrigationlist.map((irr, index) => (
-                            <TableRow  onDoubleClick={() => {
-                              setShowContent(false);
-                              setSelectedIrr(irr.IrrigationId);
-                            }} hover key={index}>
+                            <TableRow
+                            className="pe-auto"
+                              onDoubleClick={() => {
+                                // setShowContent(false);
+                                // setSelectedIrr(irr.IrrigationId);
+                                navigate(
+                                  `/Irrigation/Add-Irrigation?id=${irr.IrrigationId}`
+                                );
+                              }}
+                              hover
+                              key={index}
+                            >
                               <TableCell>{irr.IrrigationId}</TableCell>
                               <TableCell>{irr.CustomerName}</TableCell>
                               <TableCell>
@@ -237,7 +247,7 @@ const Irrigationlist = () => {
                               <TableCell>Controller Number</TableCell>
                               <TableCell>
                                 <NavLink
-                                  to={`/Dashboard/Irrigation/Audit-Report?id=${irr.IrrigationId}`}
+                                  to={`/Irrigation/Audit-Report?id=${irr.IrrigationId}`}
                                 >
                                   <span className="badge badge-pill badge-success ">
                                     Open

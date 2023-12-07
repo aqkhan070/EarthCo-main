@@ -167,7 +167,8 @@ const Bills = () => {
                             <button
                               className="btn btn-primary btn-sm"
                               onClick={() => {
-                                setshowContent(false);
+                                // setshowContent(false);
+                                navigate(`/Bills/AddBill`);
                               }}
                             >
                               + Add New Bill
@@ -221,9 +222,13 @@ const Bills = () => {
                               )
                               .map((bill) => (
                                 <TableRow
+                                className="pe-auto"
                                   onDoubleClick={() => {
-                                    setshowContent(false);
-                                    setselectedBill(bill.BillId);
+                                    // setshowContent(false);
+                                    // setselectedBill(bill.BillId);
+                                    navigate(
+                                      `/Bills/AddBill?id=${bill.BillId}`
+                                    );
                                   }}
                                   hover
                                   key={bill.BillId}
@@ -242,9 +247,7 @@ const Bills = () => {
                                     <Button
                                       // className="btn btn-primary btn-icon-xxs me-2"
                                       onClick={() => {
-                                        navigate(
-                                          "/Dashboard/Bills/Bill-Preview"
-                                        );
+                                        navigate("/Bills/Bill-Preview");
                                         setBillData(bill);
                                         // console.log(estimate.EstimateId);
                                       }}
