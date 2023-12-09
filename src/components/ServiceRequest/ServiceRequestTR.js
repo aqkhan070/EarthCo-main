@@ -266,8 +266,8 @@ const ServiceRequestTR = ({
                   <br />
 
                   <Table>
-                    <TableHead>
-                      <TableRow className="table-header">
+                    <TableHead className="table-header">
+                      <TableRow className="material-tbl-alignment">
                         {[
                           // "Select",
                           "Service Request #",
@@ -320,7 +320,7 @@ const ServiceRequestTR = ({
                         )
                         .map((customer, rowIndex) => (
                           <TableRow
-                          className="pe-auto"
+                          className="material-tbl-alignment"
                             onDoubleClick={() => {
                               // setServiceRequestId(customer.ServiceRequestId);
                               // setShowContent(false);
@@ -344,7 +344,7 @@ const ServiceRequestTR = ({
                               <span
                                 onClick={() => {
                                   navigate(
-                                    "/Service-Requests/Service-Request-Preview"
+                                    `/Service-Requests/Service-Request-Preview?id=${customer.ServiceRequestId}`
                                   );
                                   // setestmPreviewId(estimate.EstimateId);
                                   setSRData(customer);

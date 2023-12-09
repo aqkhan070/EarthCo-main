@@ -430,9 +430,9 @@ const AddEstimateForm = () => {
           headers,
         }
       );
-     
-        navigate(`/Estimates`);
-      
+
+      navigate(`/Estimates`);
+
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
       console.error("API Call Error:", error);
@@ -511,14 +511,10 @@ const AddEstimateForm = () => {
     }
   }, [searchText]);
 
-  const deleteItem = (itemId) => {
+  const deleteItem = (itemId, isCost) => {
     const updatedArr = formData.tblEstimateItems.filter(
-      (item) => item.ItemId !== itemId
+      (item) => item.ItemId !== itemId || item.isCost !== isCost
     );
-
-    console.log("Item to delete:", itemId);
-    console.log("Updated Array:", updatedArr);
-
     setFormData((prevData) => ({
       ...prevData,
       tblEstimateItems: updatedArr,
@@ -578,38 +574,70 @@ const AddEstimateForm = () => {
     console.log("new items are", formData);
   };
 
-  const handleQuantityChange = (itemId, event) => {
-    const updatedItems = formData.tblEstimateItems.map((item) => {
-      if (item.ItemId === itemId) {
-        const updatedItem = { ...item };
-        updatedItem.Qty = parseInt(event.target.value, 10);
-        updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
-        return updatedItem;
-      }
-      return item;
-    });
-
-    setFormData((prevData) => ({
-      ...prevData,
-      tblEstimateItems: updatedItems,
-    }));
+  const handleQuantityChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Qty = parseInt(event.target.value, 10);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Qty = parseInt(event.target.value, 10);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
   };
 
-  const handleRateChange = (itemId, event) => {
-    const updatedItems = formData.tblEstimateItems.map((item) => {
-      if (item.ItemId === itemId) {
-        const updatedItem = { ...item };
-        updatedItem.Rate = parseFloat(event.target.value);
-        updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
-        return updatedItem;
-      }
-      return item;
-    });
-
-    setFormData((prevData) => ({
-      ...prevData,
-      tblEstimateItems: updatedItems,
-    }));
+  const handleRateChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Rate = parseFloat(event.target.value);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Rate = parseFloat(event.target.value);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
   };
 
   useEffect(() => {
@@ -699,6 +727,23 @@ const AddEstimateForm = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalACAmount, setTotalACAmount] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+
+  const shippingcostChange = (e) => {
+    if (parseFloat(e.target.value) > 0) {
+      setShippingCost(parseFloat(e.target.value));
+    } else {
+      setShippingCost(0);
+    }
+  };
+
+  const discountChange = (e) => {
+    if (parseFloat(e.target.value) > 0) {
+      setTotalDiscount(parseFloat(e.target.value));
+    } else {
+      setTotalDiscount(0);
+    }
+  };
 
   useEffect(() => {
     const filteredACItems = formData.tblEstimateItems?.filter(
@@ -720,14 +765,18 @@ const AddEstimateForm = () => {
 
     setSubtotal(newTotalAmount);
     setTotalACAmount(newACTotalAmount);
-    const calculatedTotalProfit = newTotalAmount - newACTotalAmount;
+    const calculatedTotalProfit =
+      newTotalAmount - newACTotalAmount - (totalDiscount / subtotal) * 100;
     setTotalProfit(calculatedTotalProfit);
-    setTotalItemAmount(newTotalAmount + shippingCost);
+    setTotalItemAmount(
+      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100
+    );
     const calculatedProfitPercentage =
-      (calculatedTotalProfit / newACTotalAmount) * 100;
+      (newACTotalAmount / calculatedTotalProfit) * 100;
     setProfitPercentage(calculatedProfitPercentage);
+
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
-  }, [formData.tblEstimateItems]);
+  }, [formData.tblEstimateItems, shippingCost, totalDiscount]);
 
   // filesss........
 
@@ -775,7 +824,7 @@ const AddEstimateForm = () => {
 
   return (
     <>
-      <div className="card row mx-4">
+      <div className="card">
         <div className="itemtitleBar ">
           <h4>Estimate Details</h4>
         </div>
@@ -788,7 +837,7 @@ const AddEstimateForm = () => {
           ) : (
             <>
               <div className="card-body">
-                <div className="row mt-2">
+                <div className="row ">
                   <div className="col-md-3">
                     <label className="form-label">
                       Customers <span className="text-danger">*</span>
@@ -828,7 +877,7 @@ const AddEstimateForm = () => {
                       )}
                     />
                   </div>
-                  <div className="col-md-3 ">
+                  <div className="col-md-3  ">
                     <label className="form-label">Estimate No.</label>
                     <TextField
                       value={formData.EstimateNumber}
@@ -841,7 +890,7 @@ const AddEstimateForm = () => {
                       fullWidth
                     />
                   </div>
-                  <div className="col-md-3">
+                  <div className="col-md-3 ">
                     <label className="form-label">Tags</label>
                     <Autocomplete
                       id="inputState19"
@@ -870,7 +919,9 @@ const AddEstimateForm = () => {
                       aria-label="Default select example"
                     />
                   </div>
-                  <div className=" col-md-3">
+                  <div className="col-md-3 "></div>
+
+                  <div className=" col-md-3 mt-2">
                     <label className="form-label">
                       Date<span className="text-danger">*</span>
                     </label>
@@ -892,9 +943,68 @@ const AddEstimateForm = () => {
                       fullWidth
                     />
                   </div>
-                </div>
-                <div className="row mt-2 mb-3">
-                  <div className="col-md-3 ">
+
+                  <div className="col-md-3 mt-2">
+                    <label className="form-label">
+                      Assigned To<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.AssignTo
+                        ) || null
+                      }
+                      onChange={handleStaffAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.AssignTo
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={submitClicked && !formData.AssignTo}
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-2 ">
+                    <label className="form-label">
+                      Regional Manager<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.RegionalManagerId
+                        ) || null
+                      }
+                      onChange={handleRMAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.RegionalManagerId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={submitClicked && !formData.RegionalManagerId}
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-md-3 mt-2"></div>
+
+                  <div className="col-md-3  mt-2">
                     <label className="form-label">
                       Service location <span className="text-danger">*</span>
                     </label>
@@ -926,64 +1036,7 @@ const AddEstimateForm = () => {
                       aria-label="Default select example"
                     />
                   </div>
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Assigned To<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={staffData}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        staffData.find(
-                          (staff) => staff.UserId === formData.AssignTo
-                        ) || null
-                      }
-                      onChange={handleStaffAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.AssignTo
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          error={submitClicked && !formData.AssignTo}
-                          placeholder="Choose..."
-                          className="bg-white"
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="col-md-3 ">
-                    <label className="form-label">
-                      Regional Manager<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={staffData}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        staffData.find(
-                          (staff) => staff.UserId === formData.RegionalManagerId
-                        ) || null
-                      }
-                      onChange={handleRMAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.RegionalManagerId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          error={submitClicked && !formData.RegionalManagerId}
-                          placeholder="Choose..."
-                          className="bg-white"
-                        />
-                      )}
-                    />
-                  </div>
+
                   <div className="col-md-3 mt-2">
                     <label className="form-label">
                       Requested by <span className="text-danger">*</span>
@@ -1013,75 +1066,23 @@ const AddEstimateForm = () => {
                       )}
                     />
                   </div>
-                
-                  <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      Contact<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="inputState299"
-                      size="small"
-                      options={contactList}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        contactList.find(
-                          (contact) => contact.ContactId === formData.ContactId
-                        ) || null
-                      }
-                      onChange={handleContactAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.ContactId === value.ContactId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          placeholder="Contacts"
-                          error={submitClicked && !formData.ContactId}
-                          className="bg-white"
-                        />
-                      )}
-                      aria-label="Contact select"
-                    />
-                  </div>
-                  <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      Status<span className="text-danger">*</span>
-                    </label>
-                    <Select
-                      aria-label="Default select example"
-                      variant="outlined"
-                      value={formData.EstimateStatusId || 1}
-                      onChange={handleStatusChange}
-                      name="Status"
-                      size="small"
-                      error={submitClicked && !formData.EstimateStatusId}
-                      placeholder="Select Status"
-                      fullWidth
-                    >
-                      <MenuItem value={1}>Accepted</MenuItem>
-                      <MenuItem value={2}>Closed</MenuItem>
-                      <MenuItem value={3}>Converted</MenuItem>
-                      <MenuItem value={4}>Pending</MenuItem>
-                      <MenuItem value={5}>Rejected</MenuItem>
-                    </Select>
-                  </div>
-                  <div className="col-md-3 ">
+
+                  <div className="col-md-3  mt-2">
                     <label className="form-label">
                       Linked Invoice
                       {formData.InvoiceId ? (
                         <>
-                          <br />
                           <a
                             href=""
                             style={{ color: "blue" }}
+                            className="ms-2"
                             onClick={() => {
                               navigate(
                                 `/Invoices/AddInvioces?id=${formData.InvoiceId}`
                               );
                             }}
                           >
-                            Go to Invoice
+                            View
                           </a>
                         </>
                       ) : (
@@ -1112,22 +1113,77 @@ const AddEstimateForm = () => {
                       aria-label="Contact select"
                     />
                   </div>
-                  
+
+                  <div className="col-md-3 mt-2"></div>
+
+                  <div className="col-md-3  mt-2">
+                    <label className="form-label">
+                      Contact<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="inputState299"
+                      size="small"
+                      options={contactList}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        contactList.find(
+                          (contact) => contact.ContactId === formData.ContactId
+                        ) || null
+                      }
+                      onChange={handleContactAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.ContactId === value.ContactId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Contacts"
+                          error={submitClicked && !formData.ContactId}
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
+                  </div>
+
+                  <div className="col-md-3  mt-2">
+                    <label className="form-label">
+                      Status<span className="text-danger">*</span>
+                    </label>
+                    <Select
+                      aria-label="Default select example"
+                      variant="outlined"
+                      value={formData.EstimateStatusId || 1}
+                      onChange={handleStatusChange}
+                      name="Status"
+                      size="small"
+                      error={submitClicked && !formData.EstimateStatusId}
+                      placeholder="Select Status"
+                      fullWidth
+                    >
+                      <MenuItem value={1}>Accepted</MenuItem>
+                      <MenuItem value={2}>Closed</MenuItem>
+                      <MenuItem value={3}>Converted</MenuItem>
+                      <MenuItem value={4}>Pending</MenuItem>
+                      <MenuItem value={5}>Rejected</MenuItem>
+                    </Select>
+                  </div>
 
                   <div className="col-md-3 mt-2 ">
                     <label className="form-label">
                       Linked Bill
                       {formData.BillId ? (
                         <>
-                          <br />
                           <a
                             href=""
                             style={{ color: "blue" }}
+                            className="ms-2"
                             onClick={() => {
                               navigate(`/Bills/addbill?id=${formData.BillId}`);
                             }}
                           >
-                            Go to Bill
+                            View
                           </a>
                         </>
                       ) : (
@@ -1158,26 +1214,24 @@ const AddEstimateForm = () => {
                       aria-label="Contact select"
                     />
                   </div>
+                  <div className="col-md-3 mt-2"></div>
 
-                  
-                  
-                  
-                  <div className="col-md-3 mt-2 ">
+                  <div className="col-md-3  mt-2 ">
                     <label className="form-label">
-                      Linked To purchase order
+                      Linked To Purchase Order
                       {formData.PurchaseOrderId ? (
                         <>
-                          <br />
                           <a
                             href=""
                             style={{ color: "blue" }}
+                            className="ms-2"
                             onClick={() => {
                               navigate(
                                 `/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`
                               );
                             }}
                           >
-                            Go to Purchase order
+                            View
                           </a>
                         </>
                       ) : (
@@ -1213,11 +1267,12 @@ const AddEstimateForm = () => {
                   </div>
                 </div>
               </div>
+
               {/* item table */}
               <div className="itemtitleBar">
                 <h4>Items</h4>
               </div>
-              <div className="card-body">
+              <div className="card-body pt-0">
                 <div className="estDataBox">
                   <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper" className="table">
@@ -1248,7 +1303,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Qty}
                                     onChange={(e) =>
-                                      handleQuantityChange(item.ItemId, e)
+                                      handleQuantityChange(item.ItemId, e, 0)
                                     }
                                   />
                                 </td>
@@ -1259,7 +1314,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Rate}
                                     onChange={(e) =>
-                                      handleRateChange(item.ItemId, e)
+                                      handleRateChange(item.ItemId, e, 0)
                                     }
                                   />
                                 </td>
@@ -1271,7 +1326,7 @@ const AddEstimateForm = () => {
                                   <div className="badgeBox">
                                     <Button
                                       onClick={() => {
-                                        deleteItem(item.ItemId);
+                                        deleteItem(item.ItemId, item.isCost);
                                       }}
                                     >
                                       <Delete color="error" />
@@ -1424,7 +1479,7 @@ const AddEstimateForm = () => {
               <div className="itemtitleBar">
                 <h4>Additional Costs</h4>
               </div>
-              <div className="card-body">
+              <div className="card-body  pt-0">
                 <div className="estDataBox">
                   <div className="table-responsive active-projects style-1 mt-2">
                     <table id="empoloyees-tblwrapper mx-2" className="table">
@@ -1454,7 +1509,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Qty}
                                     onChange={(e) =>
-                                      handleQuantityChange(item.ItemId, e)
+                                      handleQuantityChange(item.ItemId, e, 1)
                                     }
                                   />
                                 </td>
@@ -1465,7 +1520,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Rate}
                                     onChange={(e) =>
-                                      handleRateChange(item.ItemId, e)
+                                      handleRateChange(item.ItemId, e, 1)
                                     }
                                   />
                                 </td>
@@ -1476,7 +1531,7 @@ const AddEstimateForm = () => {
                                   <div className="badgeBox">
                                     <Button
                                       onClick={() => {
-                                        deleteItem(item.ItemId);
+                                        deleteItem(item.ItemId, item.isCost);
                                       }}
                                     >
                                       <Delete color="error" />
@@ -1620,101 +1675,103 @@ const AddEstimateForm = () => {
 
               {/* Files */}
 
-              <div className="row card-body">
-                <div className="col-md-5">
-                  <div className="row">
-                    <div className="col-md-12 col-lg-12">
-                      <div className="basic-form">
-                        <form>
-                          {/* <h4 className="card-title">Estimate Notes</h4> */}
-                          <label className="form-label">Estimate Notes</label>
-                          <div className="mb-3">
-                            <textarea
-                              placeholder=" EstimateNotes"
-                              value={formData.EstimateNotes}
-                              name="EstimateNotes"
-                              onChange={handleInputChange}
-                              className="form-txtarea form-control form-control-sm"
-                              rows="6"
-                            ></textarea>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-lg-12">
-                      <div className="basic-form">
-                        <form>
-                          {/* <h4 className="card-title">Service Location Notes</h4> */}
-                          <label className="form-label">
-                            Service Location Notes
-                          </label>
-                          <div className="mb-3">
-                            <textarea
-                              placeholder="Service Location Notes"
-                              value={formData.ServiceLocationNotes}
-                              name="ServiceLocationNotes"
-                              onChange={handleInputChange}
-                              className="form-txtarea form-control form-control-sm"
-                              rows="6"
-                            ></textarea>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-lg-12">
-                      <div className="basic-form">
-                        <h4 className="card-title">Attachments</h4>
-                        <div className="dz-default dlab-message upload-img mb-3">
-                          <form action="#" className="dropzone">
-                            <svg
-                              width="41"
-                              height="40"
-                              viewBox="0 0 41 40"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M20.5 20V35"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                              <path
-                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                                stroke="#DADADA"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              ></path>
-                            </svg>
-                            <div className="fallback mb-3">
-                              <input
-                                name="file"
-                                type="file"
-                                onChange={trackFile}
-                              />
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-5">
+                    <div className="row">
+                      <div className="col-md-12 col-lg-12">
+                        <div className="basic-form">
+                          <form>
+                            {/* <h4 className="card-title">Estimate Notes</h4> */}
+                            <label className="form-label">Estimate Notes</label>
+                            <div className="mb-3">
+                              <textarea
+                                placeholder=" EstimateNotes"
+                                value={formData.EstimateNotes}
+                                name="EstimateNotes"
+                                onChange={handleInputChange}
+                                className=" form-control"
+                                rows="5"
+                              ></textarea>
                             </div>
                           </form>
                         </div>
                       </div>
-                    </div>
+                      <div className="col-md-12 col-lg-12">
+                        <div className="basic-form">
+                          <form>
+                            {/* <h4 className="card-title">Service Location Notes</h4> */}
+                            <label className="form-label">
+                              Service Location Notes
+                            </label>
+                            <div className="mb-3">
+                              <textarea
+                                placeholder="Service Location Notes"
+                                value={formData.ServiceLocationNotes}
+                                name="ServiceLocationNotes"
+                                onChange={handleInputChange}
+                                className=" form-control "
+                                rows="5"
+                              ></textarea>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div className="col-md-12 col-lg-12">
+                        <div className="basic-form">
+                        <label className="form-label">Attachments</label>
+                     
+                          <div className="dz-default dlab-message upload-img mb-3">
+                            <form action="#" className="dropzone">
+                              <svg
+                                width="41"
+                                height="40"
+                                viewBox="0 0 41 40"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                  stroke="#DADADA"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                ></path>
+                                <path
+                                  d="M20.5 20V35"
+                                  stroke="#DADADA"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                ></path>
+                                <path
+                                  d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                  stroke="#DADADA"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                ></path>
+                                <path
+                                  d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                  stroke="#DADADA"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                ></path>
+                              </svg>
+                              <div className="fallback mb-3">
+                                <input
+                                  name="file"
+                                  type="file"
+                                  onChange={trackFile}
+                                />
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/*<div className="col-md-12 col-lg-12">
+                      {/*<div className="col-md-12 col-lg-12">
                         <div className="basic-form">
                           <form>
                              <h4 className="card-title">Private Notes</h4>
@@ -1732,339 +1789,348 @@ const AddEstimateForm = () => {
                           </form>
                         </div>
                       </div> */}
-                  </div>
-                </div>
-                <div className="col-md-4 ms-auto sub-total">
-                  <table className="table table-clear table-borderless custom-table custom-table-row">
-                    <tbody>
-                      <tr>
-                        <td className="left">
-                          <strong>Subtotal</strong>
-                        </td>
-                        <td className="right text-right">
-                          ${subtotal?.toFixed(2)}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="left custom-table-row">
-                          <label className="form-label">Taxes</label>
-                          <div
-                            style={{ width: "10em" }}
-                            className="input-group"
-                          >
-                            <input
-                              style={{ width: "10em" }}
-                              type="text"
-                              className="form-control form-control-sm "
-                              name="Taxes"
-                              placeholder="Taxes"
-                            />
-                          </div>
-                        </td>
-                        <td className="right text-right">$0.00</td>
-                      </tr>
-                      {/* <tr>
-                            <td className="left custom-table-row">
-                              <label className="form-label">Discount(%)</label>
-                              <div className="input-group">
-                                <input
-                                  type="text"
-                                  className="form-control form-control-sm"
-                                  name="Discount"
-                                  placeholder="Discount"
-                                />
-                              </div>
-                            </td>
-                            <td className="right text-right">$00</td>
-                          </tr> */}
-                      <tr>
-                        <td className="left custom-table-row">
-                          <label className="form-label">Shipping</label>
-                          <div
-                            style={{ width: "10em" }}
-                            className="input-group"
-                          >
-                            <input
-                              type="number"
-                              value={shippingCost}
-                              className="form-control form-control-sm"
-                              onChange={(e) => {
-                                setShippingCost(parseFloat(e.target.value));
-                                setTotalItemAmount(shippingCost + subtotal);
-                              }}
-                              name="Shipping"
-                              placeholder="Shipping"
-                            />
-                          </div>
-                        </td>
-                        <td className="right text-right">
-                          ${shippingCost || 0.0}
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td className="left">
-                          <strong>Total</strong>
-                        </td>
-                        <td className="right text-right">
-                          <strong>${totalItemAmount?.toFixed(2)}</strong>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="left">Payment/Credit</td>
-                        <td className="right text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td className="left">
-                          <h3>Balance due</h3>
-                        </td>
-                        <td className="right text-right">
-                          <h3>$0.00</h3>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="left">Total Expenses</td>
-                        <td className="right text-right">$0.00</td>
-                      </tr>
-                      <tr>
-                        <td className="left">Total Profit(%)</td>
-                        <td className="right text-right">
-                          {profitPercentage?.toFixed(2) || 0}%
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="left">Profit Margin(%)</td>
-                        <td className="right text-right">$0.00</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-xl-12 col-lg-12">
-                  <div className="card-body row">
-                    {PrevFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className="col-md-2 col-md-2 mt-3 image-container"
-                        style={{
-                          width: "150px", // Set the desired width
-                          height: "120px", // Set the desired height
-                          margin: "1em",
-                          position: "relative",
-                        }}
-                      >
-                        <img
-                          src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                          alt={file.FileName}
-                          style={{
-                            width: "150px",
-                            height: "120px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <p
-                          className="file-name-overlay"
-                          style={{
-                            position: "absolute",
-                            bottom: "0",
-                            left: "13px",
-                            right: "0",
-                            backgroundColor: "rgba(0, 0, 0, 0.3)",
-                            textAlign: "center",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                            padding: "5px",
-                          }}
-                        >
-                          {file.FileName}
-                        </p>
-                        <span
-                          className="file-delete-button"
-                          style={{
-                            left: "140px",
-                          }}
-                          // onClick={() => {
-                          //   handleDeleteFile(index);
-                          // }}
-                        >
-                          <span
-                            onClick={() => {
-                              deleteEstmFile(file.EstimateFileId);
-                              fetchEstimates();
-                            }}
-                          >
-                            <Delete color="error" />
-                          </span>
-                        </span>
-                      </div>
-                    ))}
-
-                    {Files.map((file, index) => (
-                      <div
-                        key={index}
-                        className="col-md-2 col-md-2 mt-3 image-container"
-                        style={{
-                          width: "150px", // Set the desired width
-                          height: "120px", // Set the desired height
-                          margin: "1em",
-                          position: "relative",
-                        }}
-                      >
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={file.name}
-                          style={{
-                            width: "150px",
-                            height: "120px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <p
-                          className="file-name-overlay"
-                          style={{
-                            position: "absolute",
-                            bottom: "0",
-                            left: "13px",
-                            right: "0",
-                            backgroundColor: "rgba(0, 0, 0, 0.3)",
-                            textAlign: "center",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                            width: "100%",
-                            textOverflow: "ellipsis",
-                            padding: "5px",
-                          }}
-                        >
-                          {file.name}
-                        </p>
-                        <span
-                          className="file-delete-button"
-                          style={{
-                            left: "140px",
-                          }}
-                          onClick={() => {
-                            handleDeleteFile(index);
-                          }}
-                        >
-                          <span>
-                            <Delete color="error" />
-                          </span>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="mb-2 row text-right">
-                <div className="col-md-5 col-sm-4">
-                  {submitError && (
-                    <Alert severity="error">
-                      {errorMessage ? errorMessage : "Error Adding Estimates"}
-                    </Alert>
-                  )}
-                  {emptyFieldsError && (
-                    <Alert severity="error">
-                      Please fill all required fields
-                    </Alert>
-                  )}
-                </div>
-
-                <div className="col-md-4 col-sm-5">
-                  {idParam ? (
-                    <div>
-                      <FormControl>
-                        <InputLabel size="small" id="estimateLink">
-                          Create
-                        </InputLabel>
-                        <Select
-                          labelId="estimateLink"
-                          aria-label="Default select example"
-                          variant="outlined"
-                          className="text-left estimate-Link-Button"
-                          // color="success"
-
-                          name="Status"
-                          size="small"
-                          placeholder="Select Status"
-                          fullWidth
-                        >
-                          <MenuItem
-                            onClick={() => {
-                              // setEstimateLinkData("PO clicked")
-                              LinkToPO();
-                              navigate("/Purchase-Order/AddPO");
-                            }}
-                            value={2}
-                          >
-                            Purchase Order
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              LinkToPO();
-                              navigate("/Invoices/AddInvioces");
-                            }}
-                            value={3}
-                          >
-                            Invoice
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-
-                      <button
-                        type="button"
-                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                      >
-                        <Email />
-                      </button>
-                      <button
-                        type="button"
-                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                        onClick={() => {
-                          navigate("/Estimates/Estimate-Preview");
-                          setestmPreviewId(idParam);
-                          // console.log(estimate.EstimateId);
-                        }}
-                      >
-                        <Print></Print>
-                      </button>
-                      <button
-                        type="button"
-                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                        // style={{ minWidth: "120px" }}
-                      >
-                        <Download />
-                      </button>
                     </div>
-                  ) : (
-                    <></>
-                  )}{" "}
-                </div>
+                  </div>
 
-                <div className="col-md-3 col-sm-3 p-0 ">
-                  <button
-                    type="submit"
-                    className="btn btn-primary me-1"
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </button>
-                  <NavLink to="/Estimates">
+                  <div className="col-md-4  ms-auto sub-total">
+                    <table className="table table-clear table-borderless custom-table custom-table-row">
+                      <tbody>
+                        <tr>
+                          <td className="left">
+                            <strong>Subtotal</strong>
+                          </td>
+                          <td className="right text-right">
+                            ${subtotal?.toFixed(2)}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left custom-table-row">
+                            <label className="form-label">Taxes</label>
+                            <div
+                              style={{ width: "10em" }}
+                              className="input-group"
+                            >
+                              <input
+                                style={{ width: "10em" }}
+                                type="text"
+                                className="form-control form-control-sm "
+                                name="Taxes"
+                                placeholder="Taxes"
+                              />
+                            </div>
+                          </td>
+                          <td className="right text-right">$0.00</td>
+                        </tr>
+                        <tr>
+                          <td className="left custom-table-row">
+                            <label className="form-label">Discount(%)</label>
+                            <div
+                              style={{ width: "10em" }}
+                              className="input-group"
+                            >
+                              <input
+                                type="text"
+                                className="form-control form-control-sm"
+                                name="Discount"
+                                value={totalDiscount}
+                                onChange={discountChange}
+                                placeholder="Discount"
+                              />
+                            </div>
+                          </td>
+                          <td className="right text-right">
+                            ${((totalDiscount / subtotal) * 100).toFixed(2)}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left custom-table-row">
+                            <label className="form-label">Shipping</label>
+                            <div
+                              style={{ width: "10em" }}
+                              className="input-group"
+                            >
+                              <input
+                                type="number"
+                                value={shippingCost}
+                                className="form-control form-control-sm"
+                                onChange={shippingcostChange}
+                                name="Shipping"
+                                placeholder="Shipping"
+                              />
+                            </div>
+                          </td>
+                          <td className="right text-right">
+                            ${shippingCost || 0.0}
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td className="left">
+                            <strong>Total</strong>
+                          </td>
+                          <td className="right text-right">
+                            <strong>${totalItemAmount?.toFixed(2)}</strong>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">Payment/Credit</td>
+                          <td className="right text-right">$0.00</td>
+                        </tr>
+                        <tr>
+                          <td className="left">
+                            <h3>Balance due</h3>
+                          </td>
+                          <td className="right text-right">
+                            <h3>$0.00</h3>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">Total Expenses</td>
+                          <td className="right text-right">${totalACAmount}</td>
+                        </tr>
+                        <tr>
+                          <td className="left">Total Profit</td>
+                          <td className="right text-right">
+                            ${totalProfit?.toFixed(2) || 0}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="left">Profit Margin(%)</td>
+                          <td className="right text-right">
+                            {profitPercentage ? profitPercentage.toFixed(2) : 0}
+                            %
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-xl-12 col-lg-12">
+                    <div className="card-body row">
+                      {PrevFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.FileName}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            // onClick={() => {
+                            //   handleDeleteFile(index);
+                            // }}
+                          >
+                            <span
+                              onClick={() => {
+                                deleteEstmFile(file.EstimateFileId);
+                                fetchEstimates();
+                              }}
+                            >
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+
+                      {Files.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          >
+                            {file.name}
+                          </p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                            onClick={() => {
+                              handleDeleteFile(index);
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-2 row text-right">
+                  <div className="col-md-5 col-sm-4">
+                    {submitError && (
+                      <Alert severity="error">
+                        {errorMessage ? errorMessage : "Error Adding Estimates"}
+                      </Alert>
+                    )}
+                    {emptyFieldsError && (
+                      <Alert severity="error">
+                        Please fill all required fields
+                      </Alert>
+                    )}
+                  </div>
+
+                  <div className="col-md-4 col-sm-5">
+                    {idParam ? (
+                      <div>
+                        <FormControl>
+                          <InputLabel size="small" id="estimateLink">
+                            Create
+                          </InputLabel>
+                          <Select
+                            labelId="estimateLink"
+                            aria-label="Default select example"
+                            variant="outlined"
+                            className="text-left estimate-Link-Button"
+                            // color="success"
+
+                            name="Status"
+                            size="small"
+                            placeholder="Select Status"
+                            fullWidth
+                          >
+                            <MenuItem
+                              onClick={() => {
+                                // setEstimateLinkData("PO clicked")
+                                LinkToPO();
+                                navigate("/Purchase-Order/AddPO");
+                              }}
+                              value={2}
+                            >
+                              Purchase Order
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => {
+                                LinkToPO();
+                                navigate("/Invoices/AddInvioces");
+                              }}
+                              value={3}
+                            >
+                              Invoice
+                            </MenuItem>
+                          </Select>
+                        </FormControl>
+
+                        <button
+                          type="button"
+                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                        >
+                          <Email />
+                        </button>
+                        <button
+                          type="button"
+                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                          onClick={() => {
+                            navigate("/Estimates/Estimate-Preview");
+                            setestmPreviewId(idParam);
+                            // console.log(estimate.EstimateId);
+                          }}
+                        >
+                          <Print></Print>
+                        </button>
+                        <button
+                          type="button"
+                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                          // style={{ minWidth: "120px" }}
+                        >
+                          <Download />
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}{" "}
+                  </div>
+
+                  <div className="col-md-3 col-sm-3 p-0 ">
+                    <NavLink to="/Estimates">
+                      <button
+                        className="btn btn-danger light ms-1 me-2"
+                        onClick={() => {
+                          if (isEstimateUpdateRoute) {
+                            navigate(`/Estimates`);
+                            setPunchListData({});
+                            return;
+                          }
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </NavLink>
                     <button
-                      className="btn btn-danger light ms-1 me-3"
-                      onClick={() => {
-                        if (isEstimateUpdateRoute) {
-                          navigate(`/Estimates`);
-                          setPunchListData({});
-                          return;
-                        }
-                      }}
+                      type="submit"
+                      className="btn btn-primary me-1"
+                      onClick={handleSubmit}
                     >
-                      Cancel
+                      Submit
                     </button>
-                  </NavLink>
+                  </div>
                 </div>
               </div>
             </>

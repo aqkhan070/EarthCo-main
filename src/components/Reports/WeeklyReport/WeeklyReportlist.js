@@ -177,7 +177,7 @@ const WeeklyReportlist = () => {
                   ) : (
                     <Table>
                       <TableHead className="table-header">
-                        <TableRow>
+                        <TableRow className="material-tbl-alignment">
                           <TableCell className="ms-3">#</TableCell>
 
                           <TableCell>
@@ -208,7 +208,11 @@ const WeeklyReportlist = () => {
                             page * rowsPerPage,
                             page * rowsPerPage + rowsPerPage
                           ).map((staff) => (
-                            <TableRow hover key={staff.WeeklyReportId}>
+                            <TableRow
+                              className="material-tbl-alignment"
+                              hover
+                              key={staff.WeeklyReportId}
+                            >
                               <TableCell className="ms-3">
                                 {staff.WeeklyReportId}
                               </TableCell>

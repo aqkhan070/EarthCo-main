@@ -185,7 +185,7 @@ const Irrigationlist = () => {
                   ) : (
                     <Table>
                       <TableHead className="table-header">
-                        <TableRow>
+                        <TableRow className="material-tbl-alignment">
                           <TableCell>
                             <TableSortLabel
                               active={orderBy === "IrrigationId"}
@@ -228,7 +228,7 @@ const Irrigationlist = () => {
                         {irrigationlist ? (
                           irrigationlist.map((irr, index) => (
                             <TableRow
-                            className="pe-auto"
+                              className="material-tbl-alignment"
                               onDoubleClick={() => {
                                 // setShowContent(false);
                                 // setSelectedIrr(irr.IrrigationId);

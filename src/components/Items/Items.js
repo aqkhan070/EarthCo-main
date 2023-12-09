@@ -168,7 +168,7 @@ const Items = () => {
 
                     <Table>
                       <TableHead className="table-header">
-                        <TableRow>
+                        <TableRow className="material-tbl-alignment">
                           <TableCell>
                             <TableSortLabel
                               active={orderBy === "ItemName"}
@@ -210,6 +210,7 @@ const Items = () => {
                           : filteredItems
                         ).map((item, index) => (
                           <TableRow
+                            className="material-tbl-alignment"
                             onDoubleClick={() => {
                               // setSelectedItem(item.ItemId);
                               // setShowContent(false);

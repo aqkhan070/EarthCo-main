@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import useGetEstimate from "../Hooks/useGetEstimate";
 import { Form } from "react-bootstrap";
 import {
@@ -19,25 +19,17 @@ import {
 import axios from "axios";
 import Cookies from "js-cookie";
 
-
 const DashboardEstm = ({ dashBoardData }) => {
-
-
-
-
-
   return (
     <div className="card">
       <div className="card-header bg-primary">
         <h4 style={{ color: "white" }}>Estimates</h4>
       </div>
 
-
-
       <TableContainer>
         <Table>
           <TableHead className="table-header">
-            <TableRow>
+            <TableRow className="material-tbl-alignment">
               <TableCell>Customer Name</TableCell>
               <TableCell>Assign to</TableCell>
               <TableCell>Estimate #</TableCell>
@@ -48,9 +40,11 @@ const DashboardEstm = ({ dashBoardData }) => {
           </TableHead>
           <TableBody>
             {dashBoardData.EstimateData?.map((estimate, index) => (
-              <TableRow key={estimate.EstimateId} hover>
-
-
+              <TableRow
+                className="material-tbl-alignment"
+                key={estimate.EstimateId}
+                hover
+              >
                 <TableCell>{estimate.CustomerName}</TableCell>
                 <TableCell>{estimate.RegionalManager}</TableCell>
 
@@ -58,19 +52,18 @@ const DashboardEstm = ({ dashBoardData }) => {
                 <TableCell>{estimate.EstimateAmount}</TableCell>
                 <TableCell>{estimate.DescriptionofWork}</TableCell>
 
-                <TableCell><span class="badge badge-pill badge-success ">{estimate.Status}</span></TableCell>
-
-
-
+                <TableCell>
+                  <span class="badge badge-pill badge-success ">
+                    {estimate.Status}
+                  </span>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-
-
     </div>
-  )
-}
+  );
+};
 
-export default DashboardEstm
+export default DashboardEstm;

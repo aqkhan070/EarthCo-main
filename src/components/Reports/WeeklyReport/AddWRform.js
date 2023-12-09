@@ -177,7 +177,7 @@ const AddWRform = () => {
   };
 
   const handleInputChange = (e, newValue) => {
-    setEmptyFieldsError(false)
+    setEmptyFieldsError(false);
     const { name, value, type, checked } = e.target;
 
     setSelectedCustomer(newValue);
@@ -206,19 +206,16 @@ const AddWRform = () => {
     console.log("Weakly payload", formData);
   };
 
-  const [emptyFieldsError, setEmptyFieldsError] = useState(false)
+  const [emptyFieldsError, setEmptyFieldsError] = useState(false);
 
   const handleSubmit = (e) => {
     setSubmitClicked(true);
     e.preventDefault();
     if (
-     
       !formData.CustomerId ||
       !formData.ServiceLocationId ||
-      !formData.ContactId ||     
-   
-      !formData.AssignTo 
-     
+      !formData.ContactId ||
+      !formData.AssignTo
     ) {
       setEmptyFieldsError(true);
       console.log("Required fields are empty");
@@ -524,97 +521,70 @@ const AddWRform = () => {
         </div>
 
         <div className="card">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Proposals</h4>
-              </div>
-              <div className="basic-form">
-                <form className="SRdetailsForm srReportForm">
-                  {/* <div className="col-md-12"> */}
-                  <div className="row" style={{ width: "100%" }}>
-                    <div
-                      className="col-md-3"
-                      style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                      <h5>Proposals Completed</h5>
-                    </div>
-                    <div className="col-md-8">
-                      <div className="basic-form">
-                        <form>
-                          <div className="mb-3">
-                            <textarea
-                              className="form-txtarea form-control"
-                              rows="3"
-                              onChange={handleInputChange}
-                              name="ProposalsCompleted"
-                              id="comment"
-                            ></textarea>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div
-                      className="col-md-3"
-                      style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                      <h5>Proposals Submitted</h5>
-                    </div>
-                    <div className="col-md-8">
-                      <div className="basic-form">
-                        <form>
-                          <div className="mb-3">
-                            <textarea
-                              className="form-txtarea form-control"
-                              rows="3"
-                              onChange={handleInputChange}
-                              name="ProposalsSubmitted"
-                              id="comment"
-                            ></textarea>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                    <div
-                      className="col-md-3"
-                      style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                      <h5>Notes</h5>
-                    </div>
-                    <div className="col-md-8">
-                      <div className="basic-form">
-                        <form>
-                          <div className="mb-3">
-                            <textarea
-                              className="form-txtarea form-control"
-                              rows="3"
-                              onChange={handleInputChange}
-                              name="ProposalsNotes"
-                              id="comment"
-                            ></textarea>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
+          <div className="itemtitleBar">
+            <h4>Proposals</h4>
+          </div>
+          <div className="card-body ">
+            <div className="basic-form">
+              {/* <div className="col-md-12"> */}
+              <div className="row">
+                <div className="col-md-4">
+                  <label className="form-label">Proposals Completed</label>
+                  <div className="mb-3">
+                    <textarea
+                      className=" form-control"
+                      rows="3"
+                      onChange={handleInputChange}
+                      name="ProposalsCompleted"
+                      id="comment"
+                    ></textarea>
                   </div>
-                  {/* </div> */}
-                </form>
+                </div>
+
+                <div className="col-md-4">
+                  <label className="form-label">Proposals Submitted</label>
+
+                  <div className="mb-3">
+                    <textarea
+                      className=" form-control"
+                      rows="3"
+                      onChange={handleInputChange}
+                      name="ProposalsSubmitted"
+                      id="comment"
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="col-md-4">
+                  <label className="form-label">Notes</label>
+
+                  <div className="mb-3">
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      onChange={handleInputChange}
+                      name="ProposalsNotes"
+                      id="comment"
+                    ></textarea>
+                  </div>
+                </div>
               </div>
+              {/* </div> */}
             </div>
           </div>
         </div>
 
         <div className="card">
-          <div className="card-body p-0">
-            <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Files</h4>
-              </div>
+          <div className="estDataBox">
+            <div className="itemtitleBar">
+              <h4>Files</h4>
             </div>
+          </div>
+          <div className="card-body">
             <div className="row mt-2">
               <div className="col-md-4 col-lg-4">
                 <div className="basic-form">
-                  <h4 className="card-title">Attachments</h4>
+                  <label className="form-label">Attachments</label>
                   <div className="dz-default dlab-message upload-img mb-3">
                     <form action="#" className="dropzone">
                       <svg
@@ -719,7 +689,9 @@ const AddWRform = () => {
         </div>
 
         <div className="row text-end">
-        {emptyFieldsError && <Alert severity="error">Please fill all required fields</Alert>}
+          {emptyFieldsError && (
+            <Alert severity="error">Please fill all required fields</Alert>
+          )}
           <div>
             <button
               className="btn btn-danger light me-2"

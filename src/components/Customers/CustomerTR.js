@@ -142,6 +142,7 @@ const CustomerTR = ({
                 <Button
                   variant="contained"
                   color="primary"
+                  size="small"
                   onClick={() => {
                     navigate(`/Customers/Add-Customer`);
                     setSelectedItem(0);
@@ -156,8 +157,8 @@ const CustomerTR = ({
 
             <div className="text-center m-3">
               <Table>
-                <TableHead>
-                  <TableRow className="table-header">
+                <TableHead className="table-header">
+                  <TableRow className="material-tbl-alignment">
                     {/* Map through columns here */}
                     {[
                       // "Select",
@@ -209,7 +210,11 @@ const CustomerTR = ({
                   {filteredCustomers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((customer, rowIndex) => (
-                      <TableRow key={rowIndex} hover>
+                      <TableRow
+                        className="material-tbl-alignment"
+                        key={rowIndex}
+                        hover
+                      >
                         {/* <TableCell>
                     <Checkbox
                       checked={selectedItem === customer.CustomerId}

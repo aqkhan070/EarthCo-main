@@ -105,43 +105,45 @@ const Landscape = () => {
 
   return (
     <>
-      <div  className="container-fluid">
-        {toggleFullscreen && !isGeneralReport ? (
-          <div className="row justify-content-between ">
-            <div className="col-md-3 text-start pb-0">
-              <button
-                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-                onClick={() => {
-                  navigate(`/SummaryReport`);
-                }}
-              >
-                &#60; Back
-              </button>
-            </div>
-            <div className="col-md-3 text-end">
-              {" "}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <Print />
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <Download />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        <div className="row">
+     <div className="container-fluid ">
+     {toggleFullscreen && !isGeneralReport  ? (
+      <div className="row me-4">
+       
+        <div className="col-md-10 text-end">
+          {" "}
+          <button
+            className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+            onClick={() => {
+              navigate(`/SummaryReport`);
+            }}
+          >
+            <i className="fa fa-backward"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+            onClick={handlePrint}
+          >
+           <i className="fa fa-print"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+            onClick={handleDownload}
+          >
+            <i className="fa fa-download"></i>
+          </button>
+        </div>
+      </div>
+    ) : (
+      <></>
+    )}
+
+    <div className="print-page-width">
+        
+        <div className="PageA4 mt-2">
           <div className="card">
             {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-            <div id="landscape-preview" className="card-body get-preview">
+            <div id="landscape-preview" className="card-body perview-pd get-preview">
               <div className="row mb-5">
                 <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
                   <div style={{ color: "black" }}>
@@ -435,7 +437,8 @@ const Landscape = () => {
             </div>
           </div>
         </div>
-      </div>
+      
+      </div></div>
     </>
   );
 };

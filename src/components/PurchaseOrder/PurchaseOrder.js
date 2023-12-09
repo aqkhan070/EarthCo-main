@@ -122,11 +122,7 @@ const PurchaseOrder = () => {
     rowsPerPage -
     Math.min(rowsPerPage, sortedPoList.length - page * rowsPerPage);
 
-  const goToPrint = (data) => {
-    setPOData(data);
-    navigate("/Purchase-Order/Purchase-Order-Preview");
-  };
-
+ 
   return (
     <>
       {showContent ? (
@@ -199,7 +195,7 @@ const PurchaseOrder = () => {
                       <div className="card-body">
                         <Table>
                           <TableHead className="table-header">
-                            <TableRow>
+                            <TableRow className="material-tbl-alignment">
                               <TableCell>
                                 <TableSortLabel
                                   active={orderBy === "Vendor"}
@@ -234,7 +230,7 @@ const PurchaseOrder = () => {
                             ) : (
                               filteredPo.map((po) => (
                                 <TableRow
-                                className="pe-auto"
+                                className="material-tbl-alignment"
                                   onDoubleClick={() => {
                                     // setShowContent(false);
                                     // setselectedPo(po.PurchaseOrderId);
@@ -248,7 +244,7 @@ const PurchaseOrder = () => {
                                   <TableCell>
                                     <span
                                       onClick={() => {
-                                        goToPrint(po);
+                                        navigate(`/Purchase-Order/Purchase-Order-Preview?id=${po.PurchaseOrderId}`);
                                       }}
                                       className=" span-hover-pointer badge badge-pill badge-success "
                                     >

@@ -94,6 +94,8 @@ const DashboardPage = () => {
     window.location.pathname.includes("Landscape-Report");
   const isWeeklyReportPreviewRoute =
     window.location.pathname.includes("WeeklyReport");
+  const isGenetalReportPreviewRoute =
+    window.location.pathname.includes("GeneralReport");
 
   const isPreview =
     !isEstimatePreviewRoute &&
@@ -105,17 +107,22 @@ const DashboardPage = () => {
     !isSummeryPreviewRoute &&
     !isProposalPreviewRoute &&
     !isLandscapPreviewRoute &&
-    !isWeeklyReportPreviewRoute;
+    !isWeeklyReportPreviewRoute &&
+    !isGenetalReportPreviewRoute;
 
   return (
     <>
       {token ? (
         <>
-          {toggleFullscreen && isPreview &&  <HeaderExp />}
+          {toggleFullscreen && isPreview && <HeaderExp />}
           {toggleFullscreen && isPreview && <SideBar />}
 
           <div
-            className={toggleFullscreen && isPreview ? "content-body" : "print-body-color"}
+            className={
+              toggleFullscreen && isPreview
+                ? "content-body"
+                : "print-body-color"
+            }
             id="contentBody"
           >
             <Routes>
@@ -198,10 +205,7 @@ const DashboardPage = () => {
                 path="SummaryReportPreview"
                 element={<SummaryReportPreview />}
               />
-               <Route
-                path="GeneralReport"
-                element={<GenralReport />}
-              />
+              <Route path="GeneralReport" element={<GenralReport />} />
               <Route path="ProposalSummary" element={<ProposalSummary />} />
               <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />

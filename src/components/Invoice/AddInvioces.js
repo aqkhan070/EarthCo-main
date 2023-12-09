@@ -463,6 +463,7 @@ const AddInvioces = ({
   };
 
   // new items
+  // new items
   const [itemInput, setItemInput] = useState({
     Name: "",
     Qty: 1,
@@ -475,6 +476,7 @@ const AddInvioces = ({
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
   const inputRef = useRef(null);
+  const [shippingCost, setShippingCost] = useState(0);
 
   useEffect(() => {
     if (searchText) {
@@ -487,6 +489,7 @@ const AddInvioces = ({
         )
         .then((response) => {
           setSearchResults(response.data);
+          console.log("item list is", response.data);
         })
         .catch((error) => {
           console.error("Error fetching itemss data:", error);
@@ -495,6 +498,16 @@ const AddInvioces = ({
       setSearchResults([]); // Clear the search results when input is empty
     }
   }, [searchText]);
+
+  const deleteItem = (itemId, isCost) => {
+    const updatedArr = formData.tblInvoiceItems.filter(
+      (item) => item.ItemId !== itemId || item.isCost !== isCost
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      tblInvoiceItems: updatedArr,
+    }));
+  };
 
   const handleItemChange = (event) => {
     setShowItem(true);
@@ -512,6 +525,7 @@ const AddInvioces = ({
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
+
       isCost: false,
     });
     itemInput ? setItemBtnDisable(false) : setItemBtnDisable(true);
@@ -541,75 +555,76 @@ const AddInvioces = ({
     }); // Reset the modal input field
     console.log("new items aree", formData);
   };
-  const handleQuantityChange = (itemId, event) => {
-    const updatedItemsList = formData.tblInvoiceItems.map((item) => {
-      if (item.ItemId === itemId) {
-        return {
-          ...item,
-          Qty: Number(event.target.value),
-        };
-      }
-      return item;
-    });
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: updatedItemsList,
-    }));
+
+  const handleQuantityChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Qty = parseInt(event.target.value, 10);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Qty = parseInt(event.target.value, 10);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
   };
 
-  const handleRateChange = (itemId, event) => {
-    const updatedItemsList = formData.tblInvoiceItems.map((item) => {
-      if (item.ItemId === itemId) {
-        return {
-          ...item,
-          Rate: Number(event.target.value),
-        };
-      }
-      return item;
-    });
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: updatedItemsList,
-    }));
+  const handleRateChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Rate = parseFloat(event.target.value);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Rate = parseFloat(event.target.value);
+          updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
   };
-
-  const [subtotal, setSubtotal] = useState(0);
-  const [shippingCost, setShippingCost] = useState(0);
-  const [totalProfit, setTotalProfit] = useState(0);
-  const [totalACAmount, setTotalACAmount] = useState(0);
 
   useEffect(() => {
-    const filteredACItems = formData.tblInvoiceItems?.filter(
-      (item) => item.isCost === true
-    );
-
-    const newACTotalAmount = filteredACItems?.reduce(
-      (acc, item) => acc + item.Rate * item.Qty,
-      0
-    );
-    const filteredItems = formData.tblInvoiceItems?.filter(
-      (item) => item.isCost === false
-    );
-
-    const newTotalAmount = filteredItems?.reduce(
-      (acc, item) => acc + item.Rate * item.Qty,
-      0
-    );
-
-    setSubtotal(newTotalAmount);
-    setTotalACAmount(newACTotalAmount);
-    const calculatedTotalProfit = newTotalAmount - newACTotalAmount;
-    setTotalProfit(calculatedTotalProfit);
-    setTotalItemAmount(newTotalAmount);
-    const calculatedProfitPercentage =
-      (calculatedTotalProfit / newACTotalAmount) * 100;
-    setProfitPercentage(calculatedProfitPercentage);
-
-    // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
-  }, [formData.tblInvoiceItems]);
-
-  // Calculate the total amount when tblInvoiceItems or formData changes
-  useEffect(() => {}, [formData.tblInvoiceItems]);
+    console.log(" testing....", formData);
+  }, [formData]);
 
   // AC
 
@@ -625,28 +640,6 @@ const AddInvioces = ({
   const [showACItem, setShowACItem] = useState(true);
   const [itemACBtnDisable, setItemACBtnDisable] = useState(true);
   const inputACRef = useRef(null);
-
-  const handleACAddItem = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: [
-        ...(prevData.tblInvoiceItems || []), // Initialize as empty array if undefined
-        aCInput,
-      ],
-    }));
-    setSearchACText("");
-    setSelectedACItem({
-      SalePrice: "",
-      SaleDescription: "",
-    });
-    setACInput({
-      Name: "",
-      Qty: 1,
-      Description: "",
-      Rate: 0,
-    }); // Reset the modal input field
-    console.log("new items are", formData);
-  };
 
   useEffect(() => {
     if (searchACText) {
@@ -674,7 +667,25 @@ const AddInvioces = ({
 
     setSelectedACItem(null); // Clear selected item when input changes
   };
-
+  const handleACAddItem = () => {
+    // setTblSRItems([...tblSRItems, itemInput]);
+    setFormData((prevData) => ({
+      ...prevData,
+      tblInvoiceItems: [...prevData.tblInvoiceItems, aCInput],
+    }));
+    setSearchACText("");
+    setSelectedACItem({
+      SalePrice: "",
+      SaleDescription: "",
+    });
+    setACInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: 0,
+    }); // Reset the modal input field
+    console.log("new items aree", formData);
+  };
   const handleACItemClick = (item) => {
     setSelectedACItem(item);
     setSearchACText(item.ItemName); // Set the input text to the selected item's name
@@ -693,51 +704,61 @@ const AddInvioces = ({
     console.log("selected item is", item);
   };
 
-  const handleACQuantityChange = (itemId, event) => {
-    const updatedItemsList = formData.tblInvoiceItems.map((item) => {
-      if (item.ItemId === itemId) {
-        return {
-          ...item,
-          Qty: Number(event.target.value),
-        };
-      }
-      return item;
-    });
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: updatedItemsList,
-    }));
+  // calculations
+
+  const [subtotal, setSubtotal] = useState(0);
+  const [totalProfit, setTotalProfit] = useState(0);
+  const [totalACAmount, setTotalACAmount] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+
+  const shippingcostChange = (e) => {
+    if (parseFloat(e.target.value) > 0) {
+      setShippingCost(parseFloat(e.target.value));
+    } else {
+      setShippingCost(0);
+    }
   };
 
-  const handleACRateChange = (itemId, event) => {
-    const updatedItemsList = formData.tblInvoiceItems.map((item) => {
-      if (item.ItemId === itemId) {
-        return {
-          ...item,
-          Rate: Number(event.target.value),
-        };
-      }
-      return item;
-    });
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: updatedItemsList,
-    }));
+  const discountChange = (e) => {
+    if (parseFloat(e.target.value) > 0) {
+      setTotalDiscount(parseFloat(e.target.value));
+    } else {
+      setTotalDiscount(0);
+    }
   };
 
-  const deleteItem = (itemId) => {
-    const updatedArr = formData.tblInvoiceItems.filter(
-      (item) => item.ItemId !== itemId
+  useEffect(() => {
+    const filteredACItems = formData.tblInvoiceItems?.filter(
+      (item) => item.isCost === true
     );
 
-    console.log("Item to delete:", itemId);
-    console.log("Updated Array:", updatedArr);
+    const newACTotalAmount = filteredACItems?.reduce(
+      (acc, item) => acc + item.Rate * item.Qty,
+      0
+    );
+    const filteredItems = formData.tblInvoiceItems?.filter(
+      (item) => item.isCost === false
+    );
 
-    setFormData((prevData) => ({
-      ...prevData,
-      tblInvoiceItems: updatedArr,
-    }));
-  };
+    const newTotalAmount = filteredItems?.reduce(
+      (acc, item) => acc + item.Rate * item.Qty,
+      0
+    );
+
+    setSubtotal(newTotalAmount);
+    setTotalACAmount(newACTotalAmount);
+    const calculatedTotalProfit =
+      newTotalAmount - newACTotalAmount - (totalDiscount / subtotal) * 100;
+    setTotalProfit(calculatedTotalProfit);
+    setTotalItemAmount(
+      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100
+    );
+    const calculatedProfitPercentage =
+      (newACTotalAmount / calculatedTotalProfit) * 100;
+    setProfitPercentage(calculatedProfitPercentage);
+
+    // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
+  }, [formData.tblInvoiceItems, shippingCost, totalDiscount]);
 
   // files
 
@@ -937,17 +958,17 @@ const AddInvioces = ({
                     Linked Estimate
                     {formData.EstimateId ? (
                       <>
-                        <br />
                         <a
                           href=""
                           style={{ color: "blue" }}
+                          className="ms-2"
                           onClick={() => {
                             navigate(
                               `/Estimates/Update-Estimate?id=${formData.EstimateId}`
                             );
                           }}
                         >
-                          Go to Estimate
+                          View
                         </a>
                       </>
                     ) : (
@@ -1030,17 +1051,17 @@ const AddInvioces = ({
                         Related Bills
                         {formData.BillId ? (
                           <>
-                            <br />
                             <a
                               href=""
                               style={{ color: "blue" }}
+                              className="ms-2"
                               onClick={() => {
                                 navigate(
                                   `/Bills/addbill?id=${formData.BillId}`
                                 );
                               }}
                             >
-                              Go to Bill
+                              View
                             </a>
                           </>
                         ) : (
@@ -1201,7 +1222,7 @@ const AddInvioces = ({
             <div className="itemtitleBar">
               <h4>Items</h4>
             </div>
-            <div className="card-body">
+            <div className="card-body pt-0">
               <div className="estDataBox">
                 <div className="table-responsive active-projects style-1 mt-2">
                   <table id="empoloyees-tblwrapper" className="table">
@@ -1220,7 +1241,7 @@ const AddInvioces = ({
                       {formData.tblInvoiceItems &&
                       formData.tblInvoiceItems.length > 0 ? (
                         formData.tblInvoiceItems
-                          .filter((item) => item.isCost === false) // Filter items with isCost equal to false
+                          .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                           .map((item, index) => (
                             <tr colSpan={2} key={item.ItemId}>
                               <td className="itemName-width">{item.Name}</td>
@@ -1232,7 +1253,7 @@ const AddInvioces = ({
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={(e) =>
-                                    handleQuantityChange(item.ItemId, e)
+                                    handleQuantityChange(item.ItemId, e, 0)
                                   }
                                 />
                               </td>
@@ -1243,17 +1264,19 @@ const AddInvioces = ({
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={(e) =>
-                                    handleRateChange(item.ItemId, e)
+                                    handleRateChange(item.ItemId, e, 0)
                                   }
                                 />
                               </td>
-                              <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                              <td>
+                                {item ? (item.Qty * item.Rate).toFixed(2) : 0}
+                              </td>
                               <td>NaN</td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
                                     onClick={() => {
-                                      deleteItem(item.ItemId);
+                                      deleteItem(item.ItemId, item.isCost);
                                     }}
                                   >
                                     <Delete color="error" />
@@ -1300,7 +1323,9 @@ const AddInvioces = ({
                                   onClick={() => handleItemClick(item)}
                                 >
                                   <div className="customer-dd-border">
-                                    <h5> {item.ItemName}</h5>
+                                    <p>
+                                      <strong>{item.ItemName}</strong>{" "}
+                                    </p>
                                     <p>{item.Type}</p>
                                     <small>{item.SaleDescription}</small>
                                   </div>
@@ -1376,7 +1401,9 @@ const AddInvioces = ({
                         </td>
                         <td>
                           <h5 style={{ margin: "0" }}>
-                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                            {itemInput
+                              ? (itemInput.Rate * itemInput.Qty).toFixed(2)
+                              : 0}
                           </h5>
                         </td>
                         <td>
@@ -1400,10 +1427,10 @@ const AddInvioces = ({
             <div className="itemtitleBar">
               <h4>Additional Costs</h4>
             </div>
-            <div className="card-body ">
+            <div className="card-body  pt-0">
               <div className="estDataBox">
                 <div className="table-responsive active-projects style-1 mt-2">
-                  <table id="empoloyees-tblwrapper" className="table">
+                  <table id="empoloyees-tblwrapper mx-2" className="table">
                     <thead>
                       <tr>
                         <th className="itemName-width">Item</th>
@@ -1418,7 +1445,7 @@ const AddInvioces = ({
                       {formData.tblInvoiceItems &&
                       formData.tblInvoiceItems.length > 0 ? (
                         formData.tblInvoiceItems
-                          .filter((item) => item.isCost === true) // Filter items with isCost equal to true
+                          .filter((item) => item.isCost === true) // Filter items with isCost equal to 1
                           .map((item, index) => (
                             <tr className="itemName-width" key={item.ItemId}>
                               <td>{item.Name}</td>
@@ -1430,7 +1457,7 @@ const AddInvioces = ({
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={(e) =>
-                                    handleACQuantityChange(item.ItemId, e)
+                                    handleQuantityChange(item.ItemId, e, 1)
                                   }
                                 />
                               </td>
@@ -1441,16 +1468,18 @@ const AddInvioces = ({
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={(e) =>
-                                    handleACRateChange(item.ItemId, e)
+                                    handleRateChange(item.ItemId, e, 1)
                                   }
                                 />
                               </td>
-                              <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                              <td>
+                                {item ? (item.Qty * item.Rate).toFixed(2) : 0}
+                              </td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
                                     onClick={() => {
-                                      deleteItem(item.ItemId);
+                                      deleteItem(item.ItemId, item.isCost);
                                     }}
                                   >
                                     <Delete color="error" />
@@ -1572,15 +1601,16 @@ const AddInvioces = ({
                               value={
                                 selectedACItem?.PurchasePrice ||
                                 aCInput.Rate ||
-                                " "
+                                ""
                               }
                             />
                           </div>
                         </td>
-
                         <td>
                           <h5 style={{ margin: "0" }}>
-                            {(aCInput.Rate * aCInput.Qty).toFixed(2)}
+                            {aCInput
+                              ? (aCInput.Rate * aCInput.Qty).toFixed(2)
+                              : 0}
                           </h5>
                         </td>
                         <td></td>
@@ -1591,22 +1621,22 @@ const AddInvioces = ({
               </div>
             </div>
 
-            <div className="card">
-              <div className="card-body row">
-                <div className="col-md-4">
+            <div className="card-body">
+              <div className=" row">
+                <div className="col-md-5">
                   <div className="row">
                     <div className="col-xl-12 col-lg-12">
                       <div className="basic-form">
                         <form>
-                          <h4 className="card-title">Memo Internal</h4>
+                          <label className="form-label">Memo Internal</label>
                           <div className="mb-3">
                             <textarea
-                              className="form-txtarea form-control"
-                              rows="2"
-                              id="comment"
-                              name="MemoInternal"
+                              placeholder=" Memo Internal"
                               value={formData.MemoInternal}
+                              name="MemoInternal"
                               onChange={handleChange}
+                              className=" form-control"
+                              rows="5"
                             ></textarea>
                           </div>
                         </form>
@@ -1615,15 +1645,15 @@ const AddInvioces = ({
                     <div className="col-xl-12 col-lg-12">
                       <div className="basic-form">
                         <form>
-                          <h4 className="card-title">Customer Message</h4>
+                          <label className="form-label">Customer Message</label>
                           <div className="mb-3">
                             <textarea
-                              className="form-txtarea form-control"
-                              rows="2"
-                              id="comment"
-                              name="CustomerMessage"
+                              placeholder=" Customer Message"
                               value={formData.CustomerMessage}
+                              name="CustomerMessage"
                               onChange={handleChange}
+                              className=" form-control"
+                              rows="5"
                             ></textarea>
                           </div>
                         </form>
@@ -1631,7 +1661,8 @@ const AddInvioces = ({
                     </div>
                     <div className="col-xl-12 col-lg-12">
                       <div className="basic-form">
-                        <h4 className="card-title">Attachments</h4>
+                        <label className="form-label">Attachments</label>
+                        {/* <h4 className="card-title">Attachments</h4> */}
                         <div className="dz-default dlab-message upload-img mb-3">
                           <form action="#" className="dropzone">
                             <svg
@@ -1684,38 +1715,37 @@ const AddInvioces = ({
                   </div>
                 </div>
 
-                <div className="col-md-4 ms-auto sub-total">
-                  <table className="table table-clear table-borderless">
+                <div className="col-md-4  ms-auto sub-total">
+                  <table className="table table-clear table-borderless custom-table custom-table-row">
                     <tbody>
                       <tr>
                         <td className="left">
                           <strong>Subtotal</strong>
                         </td>
-                        <td className="right">
-                          {subtotal !== undefined
-                            ? `$${subtotal.toFixed(2)}`
-                            : "$0.00"}
+                        <td className="right text-right">
+                          ${subtotal?.toFixed(2)}
                         </td>
                       </tr>
                       <tr>
-                        <td className="left">
+                        <td className="left custom-table-row">
                           <label className="form-label">Taxes</label>
                           <div
                             style={{ width: "10em" }}
                             className="input-group"
                           >
                             <input
+                              style={{ width: "10em" }}
                               type="text"
-                              className="form-control form-control-sm"
+                              className="form-control form-control-sm "
                               name="Taxes"
-                              placeholder=""
+                              placeholder="Taxes"
                             />
                           </div>
                         </td>
-                        <td className="right">$00</td>
+                        <td className="right text-right">$0.00</td>
                       </tr>
                       <tr>
-                        <td className="left">
+                        <td className="left custom-table-row">
                           <label className="form-label">Discount(%)</label>
                           <div
                             style={{ width: "10em" }}
@@ -1725,54 +1755,73 @@ const AddInvioces = ({
                               type="text"
                               className="form-control form-control-sm"
                               name="Discount"
-                              placeholder=""
+                              value={totalDiscount}
+                              onChange={discountChange}
+                              placeholder="Discount"
                             />
                           </div>
                         </td>
-                        <td className="right">$0.00</td>
+                        <td className="right text-right">
+                          ${((totalDiscount / subtotal) * 100).toFixed(2)}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="left custom-table-row">
+                          <label className="form-label">Shipping</label>
+                          <div
+                            style={{ width: "10em" }}
+                            className="input-group"
+                          >
+                            <input
+                              type="number"
+                              value={shippingCost}
+                              className="form-control form-control-sm"
+                              onChange={shippingcostChange}
+                              name="Shipping"
+                              placeholder="Shipping"
+                            />
+                          </div>
+                        </td>
+                        <td className="right text-right">
+                          ${shippingCost || 0.0}
+                        </td>
                       </tr>
 
                       <tr>
                         <td className="left">
                           <strong>Total</strong>
                         </td>
-                        <td className="right">
-                          <strong>
-                            {" "}
-                            {totalItemAmount !== undefined
-                              ? `$${totalItemAmount.toFixed(2)}`
-                              : "$0.00"}
-                          </strong>
+                        <td className="right text-right">
+                          <strong>${totalItemAmount?.toFixed(2)}</strong>
                         </td>
                       </tr>
                       <tr>
                         <td className="left">Payment/Credit</td>
-                        <td className="right">$0.00</td>
+                        <td className="right text-right">$0.00</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <h3>Balance due</h3>
                         </td>
-                        <td className="right">
+                        <td className="right text-right">
                           <h3>$0.00</h3>
                         </td>
                       </tr>
                       <tr>
                         <td className="left">Total Expenses</td>
-                        <td className="right">$0.00</td>
+                        <td className="right text-right">${totalACAmount}</td>
                       </tr>
                       <tr>
-                        <td className="left">Total Profit(%)</td>
-                        <td className="right">
-                          {" "}
-                          {profitPercentage !== undefined
-                            ? `${profitPercentage.toFixed(2)}%`
-                            : "0.00%"}
+                        <td className="left">Total Profit</td>
+                        <td className="right text-right">
+                          ${totalProfit?.toFixed(2) || 0}
                         </td>
                       </tr>
                       <tr>
                         <td className="left">Profit Margin(%)</td>
-                        <td className="right">$0.00</td>
+                        <td className="right text-right">
+                          {profitPercentage ? profitPercentage.toFixed(2) : 0}%
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -1913,20 +1962,19 @@ const AddInvioces = ({
 
               <div className="col-md-4 text-right">
                 <button
-                  type="button"
-                  className="btn btn-primary me-1"
-                  onClick={handleSubmit}
-                >
-                  Save
-                </button>
-
-                <button
-                  className="btn btn-danger light me-3 ms-1"
+                  className="btn btn-danger light me-2"
                   onClick={() => {
                     navigate("/Invoices");
                   }}
                 >
                   Cancel
+                </button>{" "}
+                <button
+                  type="button"
+                  className="btn btn-primary me-2"
+                  onClick={handleSubmit}
+                >
+                  Save
                 </button>
               </div>
             </div>

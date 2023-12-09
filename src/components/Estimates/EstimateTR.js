@@ -397,7 +397,7 @@ const EstimateTR = ({
                 <TableContainer>
                   <Table>
                     <TableHead className="table-header">
-                      <TableRow>
+                      <TableRow className="material-tbl-alignment">
                         {/*<TableCell padding="checkbox">
                            <Checkbox
                             checked={selectAll}
@@ -445,12 +445,14 @@ const EstimateTR = ({
                           )
                           .map((estimate, index) => (
                             <TableRow
-                            className="pe-auto"
+                              className="material-tbl-alignment"
                               onDoubleClick={() => {
                                 // setSelectedItem(estimate.EstimateId);
                                 // console.log(",,,,,,,,,,", selectedItem);
                                 // setShowContent(false);
-                                navigate(`/Estimates/Add-Estimate?id=${estimate.EstimateId}`);
+                                navigate(
+                                  `/Estimates/Add-Estimate?id=${estimate.EstimateId}`
+                                );
                               }}
                               key={estimate.EstimateId}
                               hover
@@ -481,8 +483,8 @@ const EstimateTR = ({
                               <TableCell>
                                 <span
                                   onClick={() => {
-                                    navigate("/Estimates/Estimate-Preview");
-                                    setestmPreviewId(estimate.EstimateId);
+                                    navigate(`/Estimates/Estimate-Preview?id=${estimate.EstimateId}`);
+                                    // setestmPreviewId(estimate.EstimateId);
                                     console.log(estimate.EstimateId);
                                   }}
                                   className="badge badge-pill badge-success span-hover-pointer"
@@ -490,18 +492,21 @@ const EstimateTR = ({
                                   {estimate.Status}
                                 </span>
                               </TableCell>
-                              <TableCell className="table-cell-align">
+                              <TableCell
+                                align="center"
+                                className="table-cell-align"
+                              >
                                 {estimate.EstimateNumber}
                               </TableCell>
                               {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
                               <TableCell>
                                 {estimate.DescriptionofWork}
                               </TableCell>
-                              <TableCell>
+                              <TableCell align="center">
                                 {estimate.PurchaseOrderNumber}
                               </TableCell>
-                              <TableCell>{estimate.BillNumber}</TableCell>
-                              <TableCell>{estimate.InvoiceNumber}</TableCell>
+                              <TableCell align="center">{estimate.BillNumber}</TableCell>
+                              <TableCell align="center">{estimate.InvoiceNumber}</TableCell>
                               <TableCell className="text-end">
                                 {estimate.ProfitPercentage.toFixed(2)}
                               </TableCell>

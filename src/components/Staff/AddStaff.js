@@ -308,7 +308,7 @@ const AddStaff = ({}) => {
                   </div>
                   <div className="col-md-3 mb-3">
                     <label className="form-label">
-                      Email / User Name<span className="text-danger">*</span>
+                      Email / Username<span className="text-danger">*</span>
                     </label>
                     <TextField
                       className="form-control"
@@ -321,7 +321,7 @@ const AddStaff = ({}) => {
                         emailError || (submitClicked && !customerInfo.Email)
                       }
                       id="exampleFormControlInput3"
-                      placeholder="Email / User Name"
+                      placeholder="Email / Username"
                     />
                   </div>
                   <div className="col-md-3 mb-3">
@@ -408,7 +408,7 @@ const AddStaff = ({}) => {
                       error={phoneError}
                       value={customerInfo.Phone}
                       id="exampleFormControlInput4"
-                      placeholder="Phone 1"
+                      placeholder="Phone"
                     />
                   </div>
                   <div className="col-md-3 mb-3">
@@ -484,9 +484,7 @@ const AddStaff = ({}) => {
                   </div>
 
                   <div className=" mt-4 col-md-3 text-end">
-                    <button className="btn btn-primary me-1" onClick={addStaff}>
-                      Submit
-                    </button>
+                  
 
                     <button
                       className="btn btn-danger light ms-1"
@@ -495,6 +493,8 @@ const AddStaff = ({}) => {
                       }}
                     >
                       Cancel
+                    </button>  <button className="btn btn-primary me-1" onClick={addStaff}>
+                      Submit
                     </button>
                   </div>
                   <div className="row">

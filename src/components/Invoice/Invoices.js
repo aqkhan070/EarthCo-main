@@ -177,7 +177,7 @@ const Invoices = () => {
                           <div>
                             <Table>
                               <TableHead>
-                                <TableRow>
+                                <TableRow className="bill-tbl-alignment">
                                   {/* <TableCell style={{ width: "50px" }}>
                                     <div className="form-check custom-checkbox checkbox-success check-lg me-3">
                                       <input
@@ -254,7 +254,7 @@ const Invoices = () => {
                                   )
                                   .map((invoice, index) => (
                                     <TableRow
-                                    className="pe-auto"
+                                      className="bill-tbl-alignment"
                                       onDoubleClick={() => {
                                         // setSelectedInvoice(invoice.InvoiceId);
                                         // setShowContent(false);
@@ -294,9 +294,9 @@ const Invoices = () => {
                                       <TableCell>
                                         <span
                                           onClick={() => {
-                                            setInvoiceData(invoice);
+                                            // setInvoiceData(invoice);
                                             navigate(
-                                              "/Invoices/Invoice-Preview"
+                                              `/Invoices/Invoice-Preview?id=${invoice.InvoiceId}`
                                             );
                                           }}
                                           className="  span-hover-pointer badge badge-pill badge-success "

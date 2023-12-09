@@ -89,32 +89,30 @@ const SummaryReportPreview = () => {
           <CircularProgress style={{ color: "#789a3d" }} />
         </div>
       ) : (
-        <div className="container-fluid a4-size-preview">
+        <div className="container-fluid ">
           {toggleFullscreen && !isGeneralReport ? (
-            <div className="row justify-content-between ">
-              <div className="col-md-3 text-start pb-0">
+            <div className="row me-3">
+              <div className="col-md-11 text-end">
+                {" "}
                 <button
-                  className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
+                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                   onClick={() => {
                     navigate(`/SummaryReport`);
                   }}
                 >
-                  &#60; Back
+                  <i className="fa fa-backward"></i>
                 </button>
-              </div>
-              <div className="col-md-3 text-end">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={handlePrint}
                 >
-                  <Print />
+                  <i className="fa fa-print"></i>
                 </button>
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={handleDownload}
                 >
-                  <Download />
+                  <i className="fa fa-download"></i>
                 </button>
               </div>
             </div>
@@ -122,73 +120,72 @@ const SummaryReportPreview = () => {
             <></>
           )}
 
-          <div className="row">
-            <div
-              id="summeryReport-preview"
-              className={toggleFullscreen ? "card get-preview" : "get-preview"}
-            >
-              {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
+          <div className="print-page-width">
+            <div className="PageLandscape mt-2">
+              <div id="summeryReport-preview" className="card">
+                {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-              <div className={toggleFullscreen ? "card-body" : ""}>
-                <div className="row mb-5">
-                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
-                    <div style={{ color: "black" }}>
-                      {" "}
-                      <strong>
-                        {reportData[0].CustomerId} {reportData[0].CompanyName}
-                      </strong>{" "}
-                    </div>
-                    <div style={{ color: "black" }}>
-                      {reportData[0].Address}
-                    </div>
+                <div className="card-body perview-pd get-preview">
+                  <div className="row mb-5">
+                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                      <div style={{ color: "black" }}>
+                        {" "}
+                        <strong>
+                          {reportData[0].CustomerId} {reportData[0].CompanyName}
+                        </strong>{" "}
+                      </div>
+                      <div style={{ color: "black" }}>
+                        {reportData[0].Address}
+                      </div>
 
-                    <div style={{ color: "black" }}>Submitted To: </div>
-                    <div style={{ color: "black" }}>Christian Walton</div>
-                    <div style={{ color: "black" }}>Optimum</div>
-                  </div>
-                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
-                    <h3 className="table-cell-align">
-                      {" "}
-                      <strong>Service Request Summary Report</strong>{" "}
-                    </h3>
-                    <h3>Grandview Crest</h3>
-                  </div>
-                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 text-right d-flex justify-content-lg-end justify-content-md-center">
-                    <div className="brand-logo mb-2 inovice-logo">
-                      <img className="preview-Logo" src={logo} alt="" />
+                      <div style={{ color: "black" }}>Submitted To: </div>
+                      <div style={{ color: "black" }}>Christian Walton</div>
+                      <div style={{ color: "black" }}>Optimum</div>
+                    </div>
+                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
+                      <h3 className="table-cell-align">
+                        {" "}
+                        <strong>Service Request Summary Report</strong>{" "}
+                      </h3>
+                      <h3>Grandview Crest</h3>
+                    </div>
+                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 text-right d-flex justify-content-lg-end justify-content-md-center">
+                      <div className="brand-logo mb-2 inovice-logo">
+                        <img className="preview-Logo" src={logo} alt="" />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <hr />
-                <div className="col-sm-12 col-md-12">
-                  <table className="text-center table table-bordered ">
-                    <thead>
-                      <tr className="preview-table-head">
-                        <th>RECEIVED:</th>
-                        <th>W/O #:</th>
-                        <th>REQUESTED WORK:</th>
-                        <th>EARTHCO'S ACTION TAKEN</th>
-                        <th>STATUS: </th>
-                        <th>COMPLETED:</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reportData.map((report, index) => {
-                        return (
-                          <tr className="preview-table-row" key={index}>
-                            <td>{formatDate(report.CreatedDate)}</td>
-                            <td className="left strong">
-                              {report.ServiceRequestNumber}
-                            </td>
-                            <td>{report.WorkRequest}</td>
-                            <td>{report.ActionTaken}</td>
-                            <td>{report.Status}</td>
-                            <td>{formatDate(report.CompletedDate)}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                  <hr />
+                  <div className="col-sm-12 col-md-12">
+                    <table className="text-center table table-bordered ">
+                      <thead>
+                        <tr className="preview-table-head">
+                          <th>RECEIVED:</th>
+                          <th>W/O #:</th>
+                          <th>REQUESTED WORK:</th>
+                          <th>EARTHCO'S ACTION TAKEN</th>
+                          <th>STATUS: </th>
+                          <th>COMPLETED:</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reportData.map((report, index) => {
+                          return (
+                            <tr className="preview-table-row" key={index}>
+                              <td>{formatDate(report.CreatedDate)}</td>
+                              <td className="left strong">
+                                {report.ServiceRequestNumber}
+                              </td>
+                              <td>{report.WorkRequest}</td>
+                              <td>{report.ActionTaken}</td>
+                              <td>{report.Status}</td>
+                              <td>{formatDate(report.CompletedDate)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>

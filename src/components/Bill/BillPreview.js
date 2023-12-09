@@ -17,21 +17,30 @@ const BillPreview = () => {
     Authorization: `Bearer ${token}`,
   };
 
+  
+const queryParams = new URLSearchParams(window.location.search);
+const idParam = Number(queryParams.get("id"));
+
   const { billData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
 
   const [billPreviewData, setBillPreviewData] = useState({});
   const [printClicked, setPrintClicked] = useState(false);
 
-  const handlePrint = () => {
-    setToggleFullscreen(false);
-    setTimeout(() => {
-      window.print();
-    }, 1000);
-    setTimeout(() => {
-      setToggleFullscreen(true);
-    }, 3000);
-  };
+  const [showbuttons, setShowButtons] = useState(true);
+
+const handlePrint = () => {
+  // setToggleFullscreen(false);
+  setShowButtons(false);
+  setTimeout(() => {
+    window.print();
+  }, 1000);
+  setTimeout(() => {
+    //setToggleFullscreen(true);
+    setShowButtons(true);
+  }, 3000);
+};
+
 
   const handleDownload = () => {
     const input = document.getElementById("bill-preview");
@@ -66,7 +75,7 @@ const BillPreview = () => {
   const getBill = async () => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${billData.BillId}`,
+        `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${idParam}`,
         { headers }
       );
 
@@ -104,228 +113,206 @@ const BillPreview = () => {
   }
 
   return (
+    <>
     <div
-      
-      className={toggleFullscreen ? "container-fluid custom-font-style" : ""}
+      className={
+        toggleFullscreen
+          ? "container-fluid custom-font-style print-page-width "
+          : ""
+      }
     >
-      {toggleFullscreen ? (
-        <div className={toggleFullscreen ? "row justify-content-between" : ""}>
-          <div className="col-md-3 text-start pb-0">
-            <button
-              className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-              onClick={() => {
-                navigate(`/Bills`);
-              }}
-            >
-              &#60; Back
-            </button>
-          </div>
-          <div className="col-md-3 text-end">
-            {" "}
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-              onClick={handlePrint}
-            >
-              <Print />
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-              onClick={handleDownload}
-            >
-              <Download />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <></>
-      )}
-      <div className="card">
-        <div className={toggleFullscreen ? "" : ""}>
-          <div id="bill-preview" className=" get-preview ">
-            <div className="card-body">
-              <div className="row mt-2">
-                {/* <div className="col-md-12 mb-5"
-                  style={{
-                    borderBottom: "5px solid #5d9dd5",
-                 
-                  }}
-                ></div> */}
-                <div className="col-md-2 col-sm-5">
-                  {" "}
-                  <img className="preview-Logo" src={logo} alt="" />
-                </div>
-                <div className="col-md-7 col-sm-2"></div>
-                <div className="col-md-3 col-sm-4 text-center table-cell-align">
-                  <h2 className="table-cell-align">BILL</h2>
-                </div>
-              </div>
-
-              <div className="row mt-2">
-                <div className="col-md-8  col-sm-6">
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className="p-0">
-                          {" "}
-                          <h5 className="mb-0">EarthCo</h5>{" "}
-                          <h6 className="mb-0">
-                            {billData.SupplierId}. {billData.SupplierName || ""}
-                          </h6>{" "}
-                          <h6 className="mb-2">
-                            {billPreviewData.Data.Address}
-                          </h6>
-                        </td>
-                      </tr>
-                      {/* <tr>
-                        <td className="p-0"></td>
-                      </tr>
-                      <tr>
-                        <td className="p-0"> </td>
-                      </tr>
-                      <tr>
-                        <td className="me-5 pe-2">
-                          <h5 className="mb-0">
-                            <strong>BILL TO</strong>
-                          </h5>
-                        </td>
-
-                        <td>
-                          <h5 className="mb-0">
-                            <strong>SHIP To</strong>
-                          </h5>
-                        </td>
-                      </tr>
-                      <tr style={{ maxHeight: "3em" }}>
-                        <td
-                          style={{
-                            verticalAlign: "top",
-                            maxWidth: "15em",
-                            width: "15em",
-                          }}
-                        >
-                          <h6 className="me-3 pe-1 pt-0">
-                            {billPreviewData.Data.Address}
-                          </h6>
-                        </td>
-
-                        <td
-                          style={{
-                            verticalAlign: "top",
-                            maxWidth: "15em",
-                            width: "15em",
-                          }}
-                        >
-                          <h6>{billPreviewData.Data.Address}</h6>
-                        </td>
-                      </tr> */}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="col-md-4 col-sm-6 ">
-                  <table className="preview-table">
-                    <thead>
-                      <tr>
-                        <th>
-                          {" "}
-                          <h6 className="mb-0">Date</h6>{" "}
-                        </th>
-                        <th>
-                          {" "}
-                          <h6 className="text-right mb-0">
-                            {formatDate(billPreviewData.Data.BillDate)}
-                          </h6>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="table-cell-align me-2">
-                          <h6>Bill #</h6>{" "}
-                        </td>
-
-                        <td className="table-cell-align text-right">
-                          <h6>{billPreviewData.Data.BillNumber}</h6>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <table id="empoloyees-tblwrapper" className="table ">
-                <thead className="table-header">
-                  <tr className="preview-table-head">
-                    <th>
-                      <strong>DESCRIPTION</strong>
-                    </th>
-                    <th className="text-right">
-                      <strong>QTY</strong>
-                    </th>
-                    <th className="text-right">
-                      <strong>RATE</strong>
-                    </th>
-
-                    <th className="text-right">
-                      <strong>AMOUNT</strong>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {billPreviewData.ItemData.map((item, index) => {
-                    return (
-                      <tr className="preview-table-row" key={index}>
-                        <td>{item.Description}</td>
-                        <td className="text-right">{item.Qty}</td>
-                        <td className="text-right">{item.Rate}</td>
-                        <td className="text-right">{item.Amount.toFixed(2)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="card-body">
-              <div className="row ">
-                <div className="col-md-8 col-sm-6"></div>
-                <div className="col-md-2 col-sm-3">
-                  <h6 className="mb-0">
+      {" "}
+      <div className="row PageA4 mt-2">
+        <div className="card">
+          <div className={toggleFullscreen ? "" : ""}>
+            <div id="estimate-preview" className=" get-preview ">
+              <div className="card-body perview-pd">
+                <div className="row mt-2">
+                  {/* <div className="col-md-12 mb-5"
+                style={{
+                  borderBottom: "5px solid #5d9dd5",
+               
+                }}
+              ></div> */}
+                  <div className="col-md-2 col-sm-5">
                     {" "}
-                    <strong>SUBTOTAL:</strong>
-                  </h6>
+                    <img className="preview-Logo" src={logo} alt="" />
+                  </div>
+                  <div className="col-md-7 col-sm-2"></div>
+                  <div className="col-md-3 col-sm-4 text-center table-cell-align">
+                    <h2 className="table-cell-align">Bills</h2>
+                  </div>
                 </div>
-                <div className="col-md-2 col-sm-3">
-                  <h6 className="mb-0 text-end">{totalAmount.toFixed(2)}</h6>
+
+                <div className="row mt-2">
+                  <div className="col-md-8  col-sm-6">
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td className="p-0">
+                            {" "}
+                            <h5 className="mb-0">EarthCo</h5>{" "}
+                            <h6 className="mb-0">
+                            {billPreviewData.Data.SupplierId}.{" "}
+                              {billPreviewData.Data.SupplierName || ""}
+                            </h6>{" "}
+                            <h6 className="mb-2">
+                            {billPreviewData.Data.SupplierAddress}
+                            </h6>
+                          </td>
+                        </tr>
+                      
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="col-md-4 col-sm-6 ">
+                    <table className="preview-table">
+                      <thead>
+                        <tr>
+                          <th>
+                            {" "}
+                            <h6 className="mb-0">Date</h6>{" "}
+                          </th>
+                          <th>
+                            {" "}
+                            <h6 className="text-right mb-0">
+                              {formatDate(
+                                billPreviewData.Data.CreatedDate
+                              )}
+                            </h6>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="table-cell-align me-2">
+                            <h6>Bill #</h6>{" "}
+                          </td>
+
+                          <td className="table-cell-align text-right">
+                            <h6>{billPreviewData.Data.BillNumber}</h6>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <div className="col-md-8 col-sm-6"></div>
-                {/* <div className="col-md-2 col-sm-3">
+                <table id="empoloyees-tblwrapper" className="table mt-2">
+                  <thead className="table-header">
+                    <tr className="preview-table-head">
+                      <th>
+                        <strong>DESCRIPTION</strong>
+                      </th>
+                      <th className="text-right">
+                        <strong>QTY</strong>
+                      </th>
+                      <th className="text-right">
+                        <strong>RATE</strong>
+                      </th>
+
+                      <th className="text-right">
+                        <strong>AMOUNT</strong>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billPreviewData.ItemData.map((item, index) => {
+                      return (
+                        <tr className="preview-table-row" key={index}>
+                          <td>{item.Description}</td>
+                          <td className="text-right">{item.Qty}</td>
+                          <td className="text-right">{item.Rate}</td>
+                          <td className="text-right">
+                            {(item.Qty * item.Rate).toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+                <div className="row ">
+                  <div className="col-md-8 col-sm-6"></div>
+                  <div className="col-md-2 col-sm-3">
                     <h6 className="mb-0">
                       {" "}
-                      <strong>DISCOUNT:</strong>
+                      <strong>SUBTOTAL:</strong>
                     </h6>
-                  </div>{" "} */}
-                <hr className="mb-1" />
-                <div className="col-md-8 col-sm-6 text-end"></div>
-                <div className="col-md-2 col-sm-3 ">
-                  <h6 className="table-cell-align mt-2">
-                    <strong>TOTAL USD</strong>
+                  </div>
+                  <div className="col-md-2 col-sm-3">
+                    <h6 className="mb-0 text-end">
+                      {totalAmount.toFixed(2)}
+                    </h6>
+                  </div>
+                  <div className="col-md-8 col-sm-6"></div>
+                  {/* <div className="col-md-2 col-sm-3">
+                  <h6 className="mb-0">
+                    {" "}
+                    <strong>DISCOUNT:</strong>
                   </h6>
+                </div>{" "} */}
+                  <hr className="mb-1" />
+                  <div className="col-md-8 col-sm-6 text-end"></div>
+                  <div className="col-md-2 col-sm-3 ">
+                    <h6 className="table-cell-align mt-2">
+                      <strong>TOTAL USD</strong>
+                    </h6>
+                  </div>
+                  <div className="col-md-2 col-sm-3 mt-2">
+                    <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
+                  </div>
+                  <div
+                    style={{
+                      borderBottom: "5px solid #012a47",
+                      margin: "0em 0em 3em 0em",
+                    }}
+                  ></div>
                 </div>
-                <div className="col-md-2 col-sm-3 mt-2">
-                  <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
-                </div>
-                <div
-                  style={{
-                    borderBottom: "5px solid #012a47",
-                    margin: "0em 0em 3em 0em",
-                  }}
-                ></div>
               </div>
             </div>
           </div>
         </div>
       </div>{" "}
+      {showbuttons ? (
+        <div className={toggleFullscreen ? "row ms-2" : ""}>
+          <div className="d-flex align-items-end flex-column bd-highlight mb-3">
+            <div className="p-2 bd-highlight">
+              <button
+                className="btn btn-outline-primary btn-sm estm-action-btn"
+                onClick={() => {
+                  navigate(`/Bills`);
+                }}
+              >
+                <i className="fa fa-backward"></i>
+              </button>
+            </div>
+            <div className="p-2 bd-highlight">
+              {" "}
+              <button
+                className="btn btn-sm btn-outline-primary   estm-action-btn"
+                onClick={handlePrint}
+              >
+                <i className="fa fa-print"></i>
+              </button>
+            </div>
+            <div className="p-2 bd-highlight">
+              {" "}
+              <button
+                className="btn btn-sm btn-outline-primary  estm-action-btn"
+                onClick={handleDownload}
+              >
+                <i className="fa fa-download"></i>
+              </button>
+            </div>
+          </div>
+          ;
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
+  </>
   );
 };
 

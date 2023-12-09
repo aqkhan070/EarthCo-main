@@ -32,39 +32,37 @@ const GenralReport = () => {
 
   return (
     <>
-      {toggleFullscreen ? (
-        <div  className="container-fluid">
-          <div className="row justify-content-between ">
-            <div className="col-md-3 text-start pb-0">
-              <button
-                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-                onClick={() => {
-                  navigate(`/SummaryReport`);
-                }}
-              >
-                &#60; Back
-              </button>
-            </div>
-            <div className="col-md-3 text-end">
-              {" "}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <Print />
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                //   onClick={handleDownload}
-              >
-                <Download />
-              </button>
-            </div>
-          </div>
+    <div className="container-fluid ">
+          {toggleFullscreen  ? (
+      <div className="row me-4">
+       
+        <div className="col-md-11 text-end">
+          {" "}
+          <button
+            className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+            onClick={() => {
+              navigate(`/SummaryReport`);
+            }}
+          >
+            <i className="fa fa-backward"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+            onClick={handlePrint}
+          >
+           <i className="fa fa-print"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+            
+          >
+            <i className="fa fa-download"></i>
+          </button>
         </div>
-      ) : (
-        <></>
-      )}
+      </div>
+    ) : (
+      <></>
+    )}
 
       <div className={toggleFullscreen ? "" : "full-page-print-height"}>
         <SummaryReportPreview />
@@ -74,6 +72,7 @@ const GenralReport = () => {
       </div>
       <div className={toggleFullscreen ? "" : "full-page-print-height"}>
         <Landscape />
+      </div>
       </div>
     </>
   );

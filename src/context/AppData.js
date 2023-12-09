@@ -241,9 +241,12 @@ const DataFun = ({ children }) => {
 
  const [toggleFullscreen, setToggleFullscreen] = useState(true)
 
+ const [customerAddress, setCustomerAddress] = useState("")
+
   return (
     <DataContext.Provider
       value={{
+        customerAddress, setCustomerAddress,
         toggleFullscreen, setToggleFullscreen,
         maplatLngs, setMaplatLngs,
         serviceLocationAddress, setServiceLocationAddress,

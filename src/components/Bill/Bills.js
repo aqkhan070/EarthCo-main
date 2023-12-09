@@ -176,8 +176,8 @@ const Bills = () => {
                           </div>
                         </div>
                         <Table hover>
-                          <TableHead className="table-header">
-                            <TableRow>
+                          <TableHead className="table-header ">
+                            <TableRow className=" bill-tbl-alignment">
                               <TableCell>
                                 <TableSortLabel
                                   active={orderBy === "SupplierName"}
@@ -222,7 +222,7 @@ const Bills = () => {
                               )
                               .map((bill) => (
                                 <TableRow
-                                className="pe-auto"
+                                  className="bill-tbl-alignment"
                                   onDoubleClick={() => {
                                     // setshowContent(false);
                                     // setselectedBill(bill.BillId);
@@ -247,8 +247,8 @@ const Bills = () => {
                                     <Button
                                       // className="btn btn-primary btn-icon-xxs me-2"
                                       onClick={() => {
-                                        navigate("/Bills/Bill-Preview");
-                                        setBillData(bill);
+                                        navigate(`/Bills/Bill-Preview?id=${bill.BillId}`);
+                                        // setBillData(bill);
                                         // console.log(estimate.EstimateId);
                                       }}
                                     >

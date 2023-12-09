@@ -24,6 +24,7 @@ import { ServiceValidation, ValidationCustomer } from "./ValidationCustomer";
 import MapCo from "./MapCo";
 import { DataContext } from "../../context/AppData";
 import Cookies from "js-cookie";
+import CustomerAddress from "./CustomerAddress/CustomerAddress";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -67,8 +68,12 @@ const AddCustomer = () => {
   const idParam = Number(queryParams.get("id"));
   const navigate = useNavigate();
 
-  const { serviceLocationAddress, setServiceLocationAddress } =
-    useContext(DataContext);
+  const {
+    serviceLocationAddress,
+    setServiceLocationAddress,
+    customerAddress,
+    setCustomerAddress,
+  } = useContext(DataContext);
 
   const [customerData, setCustomerData] = useState({});
   const [contacts, setContacts] = useState([]);
@@ -80,8 +85,6 @@ const AddCustomer = () => {
 
   const [showContacts, setShowContacts] = useState(false);
   const [showSRLocation, setShowSRLocation] = useState(false);
-
-  const [customerAddress, setCustomerAddress] = useState("");
 
   // company data
   const [companyData, setCompanyData] = useState({
@@ -122,10 +125,6 @@ const AddCustomer = () => {
   // tabs
   const [value, setValue] = useState(0);
 
-  useEffect(() => {
-    console.log("customer address", customerAddress);
-  }, [customerAddress]);
-
   const getCustomerData = async () => {
     if (idParam === 0) {
       setLoading(false);
@@ -148,6 +147,10 @@ const AddCustomer = () => {
       setCompanyData(response.data.Data);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
+      setServiceLocationAddress((prevData) => ({
+        ...prevData,
+        Address: response.data.Data.Address,
+      }));
       console.log(response.data.ServiceLocationData);
     } catch (error) {
       setLoading(false);
@@ -281,8 +284,12 @@ const AddCustomer = () => {
         }
       );
 
+      setCustomerAddress("");
+      setServiceLocationAddress({});
+
       setDisableButton(false);
-      navigate(`/Customers`)
+      console.log("sussess add customer response", response.data);
+      navigate(`/Customers/Add-Customer?id=${response.data.Id}`);
       // window.location.reload();
     } catch (error) {
       setDisableButton(false);
@@ -308,6 +315,7 @@ const AddCustomer = () => {
         ...prevFormData,
         [name]: value,
         isLoginAllow: allowLogin,
+        Address: serviceLocationAddress.Address,
       };
 
       // Additional checks for the username and password fields
@@ -839,7 +847,7 @@ const AddCustomer = () => {
                         {/* <MapCo /> */}
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="CompanyName"
                           variant="outlined"
                           size="small"
@@ -860,7 +868,7 @@ const AddCustomer = () => {
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="FirstName"
                           variant="outlined"
                           size="small"
@@ -879,7 +887,7 @@ const AddCustomer = () => {
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="LastName"
                           variant="outlined"
                           size="small"
@@ -898,7 +906,7 @@ const AddCustomer = () => {
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="Email"
                           variant="outlined"
                           size="small"
@@ -917,10 +925,10 @@ const AddCustomer = () => {
                         </label>
                         {/* <AddressInputs
                           setCustomerAddress={setCustomerAddress}
-                        /> */}
+                        /> */}{" "}
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="Address"
                           variant="outlined"
                           size="small"
@@ -928,6 +936,7 @@ const AddCustomer = () => {
                           onChange={handleCompanyChange}
                           placeholder="Address"
                         />
+                        {/* <MapCo /> */}
                       </div>
                       <div className="col-xl-4 mb-3">
                         <label
@@ -938,7 +947,7 @@ const AddCustomer = () => {
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="Phone"
                           variant="outlined"
                           size="small"
@@ -953,11 +962,11 @@ const AddCustomer = () => {
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
                         >
-                          AltPhone
+                          Alt Phone
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="AltPhone"
                           variant="outlined"
                           size="small"
@@ -975,7 +984,7 @@ const AddCustomer = () => {
                         </label>
                         <TextField
                           type="text"
-                          className="form-control form-control-sm"
+                          className="form-control"
                           name="Fax"
                           variant="outlined"
                           size="small"
@@ -1019,7 +1028,7 @@ const AddCustomer = () => {
                           name="Notes"
                           value={companyData.Notes}
                           onChange={handleCompanyChange}
-                          className="form-txtarea form-control form-control-sm"
+                          className=" form-control "
                           rows="2"
                         ></textarea>
                       </div>
@@ -1051,7 +1060,7 @@ const AddCustomer = () => {
                             className="form-check-label allow-customer-login"
                             htmlFor="inlineRadio1"
                           >
-                            yes
+                            Yes
                           </label>
                         </div>
                         <div className="form-check form-check-inline">
@@ -1070,7 +1079,7 @@ const AddCustomer = () => {
                             className="form-check-label allow-customer-login"
                             htmlFor="inlineRadio2"
                           >
-                            no
+                            No
                           </label>
                         </div>
                       </div>
@@ -1086,7 +1095,7 @@ const AddCustomer = () => {
                           </label>
                           <TextField
                             type="text"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             name="username"
                             variant="outlined"
                             size="small"
@@ -1105,7 +1114,7 @@ const AddCustomer = () => {
                           </label>
                           <TextField
                             type="password"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             name="Password"
                             variant="outlined"
                             size="small"
@@ -1124,7 +1133,7 @@ const AddCustomer = () => {
                           </label>
                           <TextField
                             type="password"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             name="ConfirmPassword"
                             variant="outlined"
                             size="small"
@@ -1189,6 +1198,16 @@ const AddCustomer = () => {
                     )}
                   </div>
                   <div className="col-md-3 text-end">
+                    <NavLink to="/Customers">
+                      <button
+                        className="btn btn-danger light  m-1 "
+                        onClick={() => {
+                          setServiceLocationAddress({});
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </NavLink>
                     <button
                       className="btn btn-primary m-1"
                       onClick={handleSubmit}
@@ -1196,14 +1215,6 @@ const AddCustomer = () => {
                     >
                       Submit
                     </button>
-                    <NavLink to="/Customers">
-                      <button
-                        className="btn btn-danger light  m-1 "
-                        onClick={() => {}}
-                      >
-                        Cancel
-                      </button>
-                    </NavLink>
                   </div>
                 </div>
               </div>
@@ -1225,7 +1236,7 @@ const AddCustomer = () => {
                       data-bs-dismiss="modal"
                     ></button>
                   </div>
-                  <div style={{ paddingLeft: "0.5em" }} className="modal-body">
+                  <div className="modal-body">
                     <div className="basic-form">
                       <div className="mb-3 row">
                         <label className="col-sm-4 col-form-label">
@@ -1235,7 +1246,7 @@ const AddCustomer = () => {
                           <input
                             type="text"
                             name="CompanyName"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder="Contact Company"
                             // onChange={handleContactChange}
                             value={formik.values.CompanyName}
@@ -1253,13 +1264,13 @@ const AddCustomer = () => {
                       </div>
                       <div className="mb-3 row">
                         <label className="col-sm-4 col-form-label">
-                          FirstName<span className="text-danger">*</span>
+                          First Name<span className="text-danger">*</span>
                         </label>
                         <div className="col-sm-8">
                           <input
                             type="text"
                             name="FirstName"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder="First Name"
                             onChange={formik.handleChange}
                             value={formik.values.FirstName}
@@ -1282,7 +1293,7 @@ const AddCustomer = () => {
                           <input
                             type="text"
                             name="LastName"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder="Last Name"
                             onChange={formik.handleChange}
                             value={formik.values.LastName}
@@ -1305,7 +1316,7 @@ const AddCustomer = () => {
                             type="text"
                             id="contactInp3"
                             name="Phone"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder="Phone"
                             onChange={formik.handleChange}
                             value={formik.values.Phone}
@@ -1328,7 +1339,7 @@ const AddCustomer = () => {
                             type="text"
                             id="contactInp3"
                             name="AltPhone"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder=" Alt Phone"
                             onChange={formik.handleChange}
                             value={formik.values.AltPhone}
@@ -1344,7 +1355,7 @@ const AddCustomer = () => {
                           <input
                             type="email"
                             id="contactInp2"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             name="Email"
                             placeholder="Email"
                             onChange={formik.handleChange}
@@ -1366,7 +1377,7 @@ const AddCustomer = () => {
                         <div className="col-sm-8">
                           <input
                             name="Address"
-                            className="form-control form-control-sm"
+                            className="form-control"
                             placeholder="Address"
                             onChange={formik.handleChange}
                             value={formik.values.Address}
@@ -1387,7 +1398,7 @@ const AddCustomer = () => {
                         <div className="col-sm-8">
                           <textarea
                             name="Comments"
-                            className="form-txtarea form-control form-control-sm"
+                            className="form-txtarea form-control"
                             onChange={formik.handleChange}
                             value={formik.values.Comments}
                             rows="2"
@@ -1460,7 +1471,7 @@ const AddCustomer = () => {
                                 type="text"
                                 name="Name"
                                 onChange={formikAddService.handleChange}
-                                className="form-control form-control-sm"
+                                className="form-control"
                                 placeholder="Name"
                                 value={formikAddService.values.Name}
                                 onBlur={formikAddService.handleBlur}
@@ -1548,7 +1559,7 @@ const AddCustomer = () => {
                                 onChange={formikAddService.handleChange}
                                 name="Address"
                                 value={formikAddService.values.Address}
-                                className="form-control form-control-sm"
+                                className="form-control"
                                 placeholder="Address"
                                 onBlur={formikAddService.handleBlur}
                               />*/}
@@ -1564,7 +1575,7 @@ const AddCustomer = () => {
                                 onChange={formikAddService.handleChange}
                                 value={formikAddService.values.Phone}
                                 name="Phone"
-                                className="form-control form-control-sm"
+                                className="form-control"
                                 placeholder="Phone"
                                 onBlur={formikAddService.handleBlur}
                               />
@@ -1586,7 +1597,7 @@ const AddCustomer = () => {
                                 name="AltPhone"
                                 onChange={formikAddService.handleChange}
                                 value={formikAddService.values.AltPhone}
-                                className="form-control form-control-sm"
+                                className="form-control"
                                 placeholder="Alt Phone"
                               />
                             </div>
@@ -1656,26 +1667,31 @@ const AddCustomer = () => {
                         </h4>
                       </div>
                       <div className="card-body">
-                        {contactAddSuccess && (
-                          <Alert severity="success">
-                            Contact Added/Updated Successfuly
-                          </Alert>
-                        )}
-                        {contactDelSuccess && (
-                          <Alert severity="success">
-                            Contact Deleted Successfuly
-                          </Alert>
-                        )}
-
-                        <button
-                          className="btn btn-primary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#basicModal"
-                          style={{ margin: "0px 20px 12px" }}
-                          onClick={handleAddContactsClick}
-                        >
-                          + Add Contacts
-                        </button>
+                        <div className="row">
+                          <div className="col-md-8">
+                            {contactAddSuccess && (
+                              <Alert severity="success">
+                                Contact Added/Updated Successfuly
+                              </Alert>
+                            )}
+                            {contactDelSuccess && (
+                              <Alert severity="success">
+                                Contact Deleted Successfuly
+                              </Alert>
+                            )}
+                          </div>
+                          <div className="col-md-4 text-end">
+                            <button
+                              className="btn btn-primary btn-sm"
+                              data-bs-toggle="modal"
+                              data-bs-target="#basicModal"
+                              style={{ margin: "0px 20px 12px" }}
+                              onClick={handleAddContactsClick}
+                            >
+                              + Add Contacts
+                            </button>
+                          </div>
+                        </div>
 
                         <div className="col-xl-12">
                           <div className="card">
@@ -1773,6 +1789,11 @@ const AddCustomer = () => {
                                                       id="closer"
                                                       className="btn btn-danger light m-3"
                                                       data-bs-dismiss="modal"
+                                                      onClick={() => {
+                                                        setServiceLocationAddress(
+                                                          {}
+                                                        );
+                                                      }}
                                                     >
                                                       Close
                                                     </button>
@@ -1818,24 +1839,30 @@ const AddCustomer = () => {
                         </h4>
                       </div>
                       <div className="card-body">
-                        {addSLSuccess && (
-                          <Alert severity="success">
-                            Service Location Added/Updated Successfuly
-                          </Alert>
-                        )}
-
-                        <button
-                          className="btn btn-primary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#basicModal2"
-                          style={{ margin: "0px 20px 12px" }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleAddLocationClick();
-                          }}
-                        >
-                          + Add Service Locations
-                        </button>
+                        <div className="row">
+                          <div className="col-md-8">
+                            {addSLSuccess && (
+                              <Alert severity="success">
+                                Service Location Added/Updated Successfuly
+                              </Alert>
+                            )}
+                          </div>
+                          <div className="col-md-4 text-end">
+                            {" "}
+                            <button
+                              className="btn btn-primary btn-sm"
+                              data-bs-toggle="modal"
+                              data-bs-target="#basicModal2"
+                              style={{ margin: "0px 20px 12px" }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleAddLocationClick();
+                              }}
+                            >
+                              + Add Service Locations
+                            </button>
+                          </div>
+                        </div>
 
                         <div className="col-xl-12">
                           <div className="card">

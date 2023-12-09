@@ -865,7 +865,7 @@ const AddSRform = () => {
                 <div className="itemtitleBar">
                   <h4>Items</h4>
                 </div>
-                <div className="card-body row ">
+                <div className="card-body  pt-0 ">
                   <div className="estDataBox">
                     <div className="table-responsive active-projects style-1 mt-2">
                       <table id="empoloyees-tblwrapper" className="table ">
@@ -1147,7 +1147,8 @@ const AddSRform = () => {
 
                     <div className="row card-body">
                       <div className="col-xl-4 col-lg-4">
-                        <h4 className="card-title mt-2">Attachments</h4>
+                        <label className="form-label">Attachments</label>
+                        {/* <h4 className="card-title mt-2">Attachments</h4> */}
                         <div className="dz-default dlab-message upload-img mb-3">
                           <form action="#" className="dropzone">
                             <svg
@@ -1327,16 +1328,7 @@ const AddSRform = () => {
                 </div>
                 <div className="col-md-4 mb-3 text-right">
                   <button
-                    type="button"
-                    className="btn btn-primary me-1"
-                    // disabled={disableSubmit}
-                    onClick={submitHandler}
-                  >
-                    Submit
-                  </button>
-
-                  <button
-                    className="btn btn-danger  light ms-1"
+                    className="btn btn-danger  light me-2"
                     style={{ marginRight: "1em" }}
                     onClick={() => {
                       setPunchListData({});
@@ -1344,6 +1336,14 @@ const AddSRform = () => {
                     }}
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary me-2"
+                    // disabled={disableSubmit}
+                    onClick={submitHandler}
+                  >
+                    Submit
                   </button>
                 </div>
               </div>

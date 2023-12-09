@@ -22,7 +22,6 @@ import {
   TextField,
 } from "@mui/material";
 
-
 const StaffList = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -152,10 +151,11 @@ const StaffList = () => {
                         <Button
                           variant="contained"
                           color="primary"
+                          size="small"
                           onClick={() => {
                             // setSelectedStaff(0);
                             // settoggleAddStaff(false);
-                            navigate(`/Staff/Add-Staff`)
+                            navigate(`/Staff/Add-Staff`);
                           }}
                         >
                           + Add Staff
@@ -166,7 +166,7 @@ const StaffList = () => {
                   <div className="text-center m-3">
                     <Table>
                       <TableHead className="table-header">
-                        <TableRow>
+                        <TableRow className="material-tbl-alignment">
                           <TableCell className="ms-3">#</TableCell>
                           <TableCell>
                             <TableSortLabel
@@ -223,30 +223,26 @@ const StaffList = () => {
                             page * rowsPerPage + rowsPerPage
                           )
                           .map((staff) => (
-                            <TableRow hover key={staff.UserId}>
-                              <TableCell className=" tablecell-padding-staff ms-3">
-                                {staff.UserId}
-                              </TableCell>
-                              <TableCell className=" tablecell-padding-staff">
-                                {staff.FirstName}
-                              </TableCell>
-                              <TableCell className=" tablecell-padding-staff">
-                                {staff.LastName}
-                              </TableCell>
-                              <TableCell className=" tablecell-padding-staff">
-                                {staff.Email}
-                              </TableCell>
-                              <TableCell className=" tablecell-padding-staff">
-                                {staff.Role}
-                              </TableCell>
-                              <TableCell className=" tablecell-padding-staff">
+                            <TableRow
+                              className="staff-tbl-alignment"
+                              hover
+                              key={staff.UserId}
+                            >
+                              <TableCell>{staff.UserId}</TableCell>
+                              <TableCell>{staff.FirstName}</TableCell>
+                              <TableCell>{staff.LastName}</TableCell>
+                              <TableCell>{staff.Email}</TableCell>
+                              <TableCell>{staff.Role}</TableCell>
+                              <TableCell>
                                 <Button
                                   // className=" btn btn-primary  btn-icon-xxs me-2"
 
                                   onClick={() => {
                                     // settoggleAddStaff(false);
                                     // setSelectedStaff(staff.UserId);
-                                    navigate(`/Staff/Add-Staff?id=${staff.UserId}`)
+                                    navigate(
+                                      `/Staff/Add-Staff?id=${staff.UserId}`
+                                    );
                                   }}
                                 >
                                   <Create />

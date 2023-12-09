@@ -84,41 +84,11 @@ const WeeklyReport = () => {
 
   return (
     <>
-      <div  className="container-fluid">
-        {toggleFullscreen ? (
-          <div className="row justify-content-between ">
-            <div className="col-md-3 text-start pb-0">
-              <button
-                className="btn btn-secondary btn-sm mb-0 mt-3 ms-2"
-                onClick={() => {
-                  navigate(`/Weekly-Reports`);
-                }}
-              >
-                &#60; Back
-              </button>
-            </div>
-            <div className="col-md-3 text-end">
-              {" "}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <Print />
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <Download />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-
+      <div  className="container-fluid print-page-width">
+       
+      <div className="row PageA4 mt-2">
         <div className="card">
-          <div id="WR-preview" className="card-body get-preview">
+          <div id="WR-preview" className="card-body perview-pd get-preview">
             <div className="row mb-5">
               <div className="mt-5 col-xl-10 col-lg-10 col-md-10 col-sm-8 text-center">
                 <h2>
@@ -274,7 +244,48 @@ const WeeklyReport = () => {
               })}
             </div>
           </div>
-        </div>
+        </div></div> 
+        {toggleFullscreen ? (
+
+<div className="row ms-2">
+<div className="d-flex align-items-end flex-column bd-highlight mb-3">
+  <div className="p-2 bd-highlight">
+    <button
+      className="btn btn-outline-primary btn-sm estm-action-btn"
+      onClick={() => {
+        navigate(`/Weekly-Reports`);
+      }}
+    >
+      <i className="fa fa-backward"></i>
+    </button>
+  </div>
+  <div className="p-2 bd-highlight">
+    {" "}
+    <button
+      className="btn btn-sm btn-outline-primary   estm-action-btn"
+      onClick={handlePrint}
+    >
+      <i className="fa fa-print"></i>
+    </button>
+  </div>
+  <div className="p-2 bd-highlight">
+    {" "}
+    <button
+      className="btn btn-sm btn-outline-primary  estm-action-btn"
+      onClick={handleDownload}
+    >
+      <i className="fa fa-download"></i>
+    </button>
+  </div>
+</div>
+;
+</div>
+
+
+       
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );

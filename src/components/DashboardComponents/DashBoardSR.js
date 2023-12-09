@@ -35,8 +35,8 @@ const DashBoardSR = ({ dashBoardData }) => {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
-            <TableRow className="table-header">
+          <TableHead className="table-header">
+            <TableRow className="material-tbl-alignment">
               <TableCell>Customer Name</TableCell>
               <TableCell>Assigned To</TableCell>
               <TableCell>Service Request #</TableCell>
@@ -48,7 +48,7 @@ const DashBoardSR = ({ dashBoardData }) => {
           </TableHead>
           <TableBody>
             {dashBoardData.ServiceRequestData?.map((customer, rowIndex) => (
-              <TableRow key={rowIndex} hover>
+              <TableRow className="material-tbl-alignment" key={rowIndex} hover>
 
                 <TableCell>{customer.CustomerName}</TableCell>
                 <TableCell>{customer.Assign}</TableCell>
