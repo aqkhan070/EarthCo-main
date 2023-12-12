@@ -154,7 +154,7 @@ const PunchListIndex = () => {
 
   return (
     <>
-      {/* <TitleBar icon={icon} title="Punchlists" /> */}
+      <TitleBar icon={icon} title="Punchlists" />
       <div className="container-fluid">
         <div className="row">
           <PunchListCards
@@ -169,8 +169,7 @@ const PunchListIndex = () => {
           ) : (
             <div className="col-xl-12">
               <div className="card">
-                <div className="card-body">
-                  <div>
+                
                     <PunchTR
                       punchData={punchData}
                       fetchFilterdPunchList={fetchFilterdPunchList}
@@ -179,8 +178,7 @@ const PunchListIndex = () => {
                       setselectedPL={setselectedPL}
                       setPlDetailId={setPlDetailId}
                     />
-                  </div>
-                </div>
+                 
               </div>
             </div>
           )}

@@ -49,11 +49,16 @@ const DashboardEstm = ({ dashBoardData }) => {
                 <TableCell>{estimate.RegionalManager}</TableCell>
 
                 <TableCell>{estimate.EstimateNumber}</TableCell>
-                <TableCell>{estimate.EstimateAmount}</TableCell>
+                <TableCell align="right">{(estimate.EstimateAmount).toFixed(2)}</TableCell>
                 <TableCell>{estimate.DescriptionofWork}</TableCell>
 
                 <TableCell>
-                  <span class="badge badge-pill badge-success ">
+                  <span
+                    style={{
+                      backgroundColor: estimate.StatusColor,
+                    }}
+                    className="badge badge-pill badge-success "
+                  >
                     {estimate.Status}
                   </span>
                 </TableCell>

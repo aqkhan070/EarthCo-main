@@ -6,6 +6,7 @@ import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import useFetchPunchDetails from "../Hooks/useFetchPunchDetails";
 import { DataContext } from "../../context/AppData";
+import EventPopups from "../Reusable/EventPopups";
 
 const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   const token = Cookies.get("token");
@@ -20,6 +21,10 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   });
   const [itemsList, setItemsList] = useState([]);
   const [returnElement, setReturnElement] = useState();
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
   const hideOptional = () => {
     const checkbox = document.getElementById("customCheckBox1");
     if (checkbox.checked) {
@@ -80,6 +85,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
       ...prevState,
       [name]: value,
       PunchlistId: selectedPL,
+      // PunchlistDetailId: plDetailId
     }));
   };
 
@@ -343,6 +349,10 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
         { headers }
       );
 
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
       document.getElementById("PunchDetailModalCloser").click();
       setFormData({
         Notes: "",
@@ -365,276 +375,260 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   };
 
   return (
-    <div className="modal fade" id="addPhotos">
-      <div
-        className="modal-dialog"
-        role="document"
-        style={{ maxWidth: "80em" }}
-      >
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Add Punchlist</h5>
-            <button
-              // type="button"
-              className="btn-close"
-              onClick={() => {
-                document.getElementById("PunchDetailModalCloser").click();
-              }}
-              // data-bs-dismiss="modal"
-            ></button>
-          </div>
+    <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
+      <div className="modal fade" id="addPhotos">
+        <div
+          className="modal-dialog"
+          role="document"
+          style={{ maxWidth: "80em" }}
+        >
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Add Punchlist</h5>
+              <button
+                // type="button"
+                className="btn-close"
+                onClick={() => {
+                  document.getElementById("PunchDetailModalCloser").click();
+                }}
+                // data-bs-dismiss="modal"
+              ></button>
+            </div>
 
-          <div className="modal-body">
-            <div className="basic-form">
-              <div className="mb-3 row">
-                <label className="col-sm-3 col-form-label">Photo</label>
-                <div className="col-sm-9">
-                  <input
-                    className="form-control"
-                    onChange={handleFileInputChange}
-                    type="file"
-                    id="formFile"
-                  />
+            <div className="modal-body">
+              <div className="basic-form">
+                <div className="mb-3 row">
+                  <label className="col-sm-3 col-form-label">Photo</label>
+                  <div className="col-sm-9">
+                    <input
+                      className="form-control"
+                      onChange={handleFileInputChange}
+                      type="file"
+                      id="formFile"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="mb-3 row">
-                <label className="col-sm-3 col-form-label">Notes</label>
-                <div className="col-sm-9">
-                  <textarea
-                    name="Notes"
-                    value={formData.Notes || ""}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder=""
-                  ></textarea>
+                <div className="mb-3 row">
+                  <label className="col-sm-3 col-form-label">Notes</label>
+                  <div className="col-sm-9">
+                    <textarea
+                      name="Notes"
+                      value={formData.Notes || ""}
+                      onChange={handleChange}
+                      className="form-control"
+                      placeholder=""
+                    ></textarea>
+                  </div>
                 </div>
-              </div>
-              <div className="mb-3 row">
-                <label className="col-sm-3 col-form-label">Address</label>
-                <div className="col-sm-9">
-                  <input
-                    name="Address"
-                    type="text"
-                    value={formData.Address || ""}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder=""
-                  />
+                <div className="mb-3 row">
+                  <label className="col-sm-3 col-form-label">Address</label>
+                  <div className="col-sm-9">
+                    <input
+                      name="Address"
+                      type="text"
+                      value={formData.Address || ""}
+                      onChange={handleChange}
+                      className="form-control"
+                      placeholder=""
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <div
-                  className="form-check custom-checkbox mx-3 mb-3"
-                  onClick={hideOptional}
-                >
-                  {/* <div className="col-sm-3"> */}
-                  <input
-                    type="checkbox"
-                    name="isAfterPhoto"
-                    onChange={handleChange}
-                    value={formData.isAfterPhoto || ""}
-                    className="form-check-input"
-                    id="customCheckBox1"
-                  />
-                  {/* </div> */}
-                  {/* <div className="col-sm-9"> */}
-                  <label className="form-check-label" htmlFor="customCheckBox1">
-                    After Photo
-                  </label>
-                  {/* </div> */}
+                <div className="row">
+                  <div
+                    className="form-check custom-checkbox mx-3 mb-3"
+                    onClick={hideOptional}
+                  >
+                    {/* <div className="col-sm-3"> */}
+                    <input
+                      type="checkbox"
+                      name="isAfterPhoto"
+                      onChange={handleChange}
+                      value={formData.isAfterPhoto || ""}
+                      className="form-check-input"
+                      id="customCheckBox1"
+                    />
+                    {/* </div> */}
+                    {/* <div className="col-sm-9"> */}
+                    <label
+                      className="form-check-label"
+                      htmlFor="customCheckBox1"
+                    >
+                      After Photo
+                    </label>
+                    {/* </div> */}
+                  </div>
                 </div>
-              </div>
-              {/* <div className="mb-3 row">
+                {/* <div className="mb-3 row">
                                         <label className="col-sm-3 col-form-label">After Photo</label>
                                     </div> */}
 
-              {returnElement}
-              <div className="row">
-                <div className="form-check custom-checkbox mx-3">
-                  {/* <div className="col-sm-3"> */}
-                  <input
-                    type="checkbox"
-                    name="isComplete"
-                    value={formData.isComplete || ""}
-                    className="form-check-input"
-                    onChange={handleChange}
-                    id="customCheckBox2"
-                  />
-                  {/* </div> */}
-                  {/* <div className="col-sm-9"> */}
-                  <label className="form-check-label" htmlFor="customCheckBox2">
-                    Complete ?
-                  </label>
-                  {/* </div> */}
+                {returnElement}
+                <div className="row">
+                  <div className="form-check custom-checkbox mx-3">
+                    {/* <div className="col-sm-3"> */}
+                    <input
+                      type="checkbox"
+                      name="isComplete"
+                      value={formData.isComplete || ""}
+                      className="form-check-input"
+                      onChange={handleChange}
+                      id="customCheckBox2"
+                    />
+                    {/* </div> */}
+                    {/* <div className="col-sm-9"> */}
+                    <label
+                      className="form-check-label"
+                      htmlFor="customCheckBox2"
+                    >
+                      Complete ?
+                    </label>
+                    {/* </div> */}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          {/* item modal */}
-          <div className="itemtitleBar">
-            <h4>Items</h4>
-          </div>
-          <div className="card-body">
-            <div className="estDataBox">
-              <div className="table-responsive active-projects style-1 mt-2">
-                <table id="empoloyees-tblwrapper" className="table">
-                  <thead>
-                    <tr>
-                      <th className="itemName-width">Item</th>
-                      <th>Description</th>
-                      <th>Qty</th>
-                      <th>Rate</th>
-                      <th>Amount</th>
-                      <th>Tax</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {itemsList && itemsList.length > 0 ? (
-                      itemsList.map((item, index) => (
-                        <tr colSpan={2} key={item.ItemId}>
-                          <td className="itemName-width">{item.Name}</td>
-                          <td>{item.Description}</td>
-                          <td>
-                            <input
-                              type="number"
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              value={item.Qty}
-                              onChange={(e) =>
-                                handleQuantityChange(item.ItemId, e)
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              value={item.Rate}
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              onChange={(e) => handleRateChange(item.ItemId, e)}
-                            />
-                          </td>
-                          <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                          <td>NaN</td>
-                          <td>
-                            <div className="badgeBox">
-                              <Button
-                                onClick={() => {
-                                  deleteItem(item.ItemId);
-                                }}
-                              >
-                                <Delete color="error" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <></>
-                    )}
-                    <tr>
-                      <td className="itemName-width">
-                        <>
-                          <Autocomplete
-                            id="search-items"
-                            options={searchResults || null}
-                            getOptionLabel={(item) => item.ItemName}
-                            value={selectedItem} // This should be the selected item, not searchText
-                            onChange={(event, newValue) => {
-                              if (newValue) {
-                                handleItemClick(newValue);
-                              } else {
-                                setSelectedItem(null);
-                              }
-                            }}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label="Search for items..."
-                                variant="outlined"
-                                size="small"
-                                fullWidth
-                                onChange={handleItemChange}
+            {/* item modal */}
+            <div className="itemtitleBar">
+              <h4>Items</h4>
+            </div>
+            <div className="card-body">
+              <div className="estDataBox">
+                <div className="table-responsive active-projects style-1 mt-2">
+                  <table id="empoloyees-tblwrapper" className="table">
+                    <thead>
+                      <tr>
+                        <th className="itemName-width">Item</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Tax</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {itemsList && itemsList.length > 0 ? (
+                        itemsList.map((item, index) => (
+                          <tr colSpan={2} key={item.ItemId}>
+                            <td className="itemName-width">{item.Name}</td>
+                            <td>{item.Description}</td>
+                            <td>
+                              <input
+                                type="number"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={item.Qty}
+                                onChange={(e) =>
+                                  handleQuantityChange(item.ItemId, e)
+                                }
                               />
-                            )}
-                            renderOption={(props, item) => (
-                              <li
-                                style={{
-                                  cursor: "pointer",
-                                  width: "30em",
-                                }}
-                                {...props}
-                                onClick={() => handleItemClick(item)}
-                              >
-                                <div className="customer-dd-border">
-                                  <p>
-                                    <strong>{item.ItemName}</strong>{" "}
-                                  </p>
-                                  <small>{item.Type}</small>
-                                  <br />
-                                  <small>{item.SaleDescription}</small>
-                                </div>
-                              </li>
-                            )}
-                            onKeyPress={(e) => {
-                              if (e.key === "Enter") {
-                                // Handle item addition when Enter key is pressed
-                                e.preventDefault(); // Prevent form submission
-                                handleAddItem();
-                              }
-                            }}
-                          />
-                        </>
-                      </td>
-                      <td>
-                        <p>{selectedItem?.SaleDescription || " "}</p>
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          name="Qty"
-                          value={itemInput.Qty}
-                          onChange={(e) =>
-                            setItemInput({
-                              ...itemInput,
-                              Qty: Number(e.target.value),
-                            })
-                          }
-                          style={{ width: "7em" }}
-                          className="form-control form-control-sm"
-                          placeholder="Quantity"
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                              // Handle item addition when Enter key is pressed
-                              e.preventDefault(); // Prevent form submission
-                              handleAddItem();
-                            }
-                          }}
-                        />
-                      </td>
-                      <td>
-                        <div className="col-sm-9">
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                value={item.Rate}
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                onChange={(e) =>
+                                  handleRateChange(item.ItemId, e)
+                                }
+                              />
+                            </td>
+                            <td>{(item.Rate * item.Qty).toFixed(2)}</td>
+                            <td>NaN</td>
+                            <td>
+                              <div className="badgeBox">
+                                <Button
+                                  onClick={() => {
+                                    deleteItem(item.ItemId);
+                                  }}
+                                >
+                                  <Delete color="error" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <></>
+                      )}
+                      <tr>
+                        <td className="itemName-width">
+                          <>
+                            <Autocomplete
+                              id="search-items"
+                              options={searchResults || null}
+                              getOptionLabel={(item) => item.ItemName}
+                              value={selectedItem} // This should be the selected item, not searchText
+                              onChange={(event, newValue) => {
+                                if (newValue) {
+                                  handleItemClick(newValue);
+                                } else {
+                                  setSelectedItem(null);
+                                }
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Search for items..."
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                  onChange={handleItemChange}
+                                />
+                              )}
+                              renderOption={(props, item) => (
+                                <li
+                                  style={{
+                                    cursor: "pointer",
+                                    width: "30em",
+                                  }}
+                                  {...props}
+                                  onClick={() => handleItemClick(item)}
+                                >
+                                  <div className="customer-dd-border">
+                                    <p>
+                                      <strong>{item.ItemName}</strong>{" "}
+                                    </p>
+                                    <small>{item.Type}</small>
+                                    <br />
+                                    <small>{item.SaleDescription}</small>
+                                  </div>
+                                </li>
+                              )}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </>
+                        </td>
+                        <td>
+                          <p>{selectedItem?.SaleDescription || " "}</p>
+                        </td>
+                        <td>
                           <input
                             type="number"
-                            name="Rate"
-                            style={{ width: "7em" }}
-                            className="form-control form-control-sm"
-                            value={
-                              selectedItem?.SalePrice || itemInput.Rate || ""
-                            }
+                            name="Qty"
+                            value={itemInput.Qty}
                             onChange={(e) =>
                               setItemInput({
                                 ...itemInput,
-                                Rate: Number(e.target.value),
+                                Qty: Number(e.target.value),
                               })
                             }
-                            onClick={(e) => {
-                              setSelectedItem({
-                                ...selectedItem,
-                                SalePrice: 0,
-                              });
-                            }}
+                            style={{ width: "7em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Quantity"
                             onKeyPress={(e) => {
                               if (e.key === "Enter") {
                                 // Handle item addition when Enter key is pressed
@@ -643,65 +637,97 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                               }
                             }}
                           />
-                        </div>
-                      </td>
-                      <td>
-                        <h5 style={{ margin: "0" }}>
-                          {(itemInput.Rate * itemInput.Qty).toFixed(2)}
-                        </h5>
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          name="tax"
-                          style={{ width: "7em" }}
-                          disabled
-                          className="form-control form-control-sm"
-                          placeholder="tax"
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                        </td>
+                        <td>
+                          <div className="col-sm-9">
+                            <input
+                              type="number"
+                              name="Rate"
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={
+                                selectedItem?.SalePrice || itemInput.Rate || ""
+                              }
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  SalePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <h5 style={{ margin: "0" }}>
+                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                          </h5>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            name="tax"
+                            style={{ width: "7em" }}
+                            disabled
+                            className="form-control form-control-sm"
+                            placeholder="tax"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="modal-footer">
-            <button
-              type="button"
-              id="PunchDetailModalCloser"
-              className="btn btn-danger light"
-              data-bs-dismiss="modal"
-              onClick={() => {
-                setPunchDetailData({});
-                setFormData({
-                  Notes: "",
-                  Address: "",
-                  isComplete: false,
-                  isAfterPhoto: false,
-                });
+            <div className="modal-footer">
+              <button
+                type="button"
+                id="PunchDetailModalCloser"
+                className="btn btn-danger light"
+                data-bs-dismiss="modal"
+                onClick={() => {
+                  setPunchDetailData({});
+                  setFormData({
+                    Notes: "",
+                    Address: "",
+                    isComplete: false,
+                    isAfterPhoto: false,
+                  });
 
-                // document.getElementById("formFile").value = "";
-                // document.getElementById("afterFile").value = "";
-                setItemsList([]);
-              }}
-            >
-              Close
-            </button>
-            {/* <NavLink to='/PunchlistPreview'> */}
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleSubmit}
-            >
-              Save
-            </button>
-            {/* </NavLink> */}
+                  // document.getElementById("formFile").value = "";
+                  // document.getElementById("afterFile").value = "";
+                  setItemsList([]);
+                }}
+              >
+                Close
+              </button>
+              {/* <NavLink to='/PunchlistPreview'> */}
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
+                Save
+              </button>
+              {/* </NavLink> */}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

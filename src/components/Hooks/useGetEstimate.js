@@ -39,11 +39,12 @@ const useGetEstimate = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0
+    StatusId = 0,
+    isAscending = false
   ) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
         { headers }
       );
       console.log("filter estimate response is", response.data);

@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import formatDate from "../../../custom/FormatDate";
 import { useNavigate } from "react-router-dom";
+import TblDateFormat from "../../../custom/TblDateFormat";
 
 const WeeklyReportlist = () => {
   const icon = (
@@ -142,33 +143,20 @@ const WeeklyReportlist = () => {
           /> */}
           <div className="col-xl-12">
             <div className="card">
-              <div className="card-body">
-                <div className="tbl-caption">
-                  <div className="row text-right mb-2">
-                    <div className="text-right col-md-12">
-                      <NavLink to="/Weekly-Reports/Add-Weekly-Report">
-                        <a href="/" className="btn btn-primary btn-sm">
-                          + Add Weekly Report
-                        </a>
-                      </NavLink>
-                    </div>
-                    {/* <div
-                      className="col-md-6"
-                      style={{ display: "flex", justifyContent: "flex-end" }}
-                    >
-                      <div className="col-md-3">
-                        <Form.Select
-                          aria-label="Default select example"
-                          size="md"
-                        >
-                          <option>All</option>
-                          <option value="1">Current Month</option>
-                          <option value="2">Previous Month</option>
-                        </Form.Select>
-                      </div>
-                    </div> */}
-                  </div>
+              <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                <div></div>
+                <div className=" me-2">
+                  <button
+                    className="btn btn-primary "
+                    onClick={() => {
+                      navigate("/Weekly-Reports/Add-Weekly-Report");
+                    }}
+                  >
+                    + Add Weekly Report
+                  </button>
                 </div>
+              </div>
+              <div className="card-body pt-0">
                 <div className="table-responsive">
                   {loading ? (
                     <div className="center-loader">
@@ -219,7 +207,7 @@ const WeeklyReportlist = () => {
                               <TableCell>{staff.RegionalManagerName}</TableCell>
                               <TableCell>{staff.CompanyName}</TableCell>
                               <TableCell>
-                                {formatDate(staff.CreatedDate)}
+                                {TblDateFormat(staff.CreatedDate)}
                               </TableCell>
 
                               <TableCell align="right">

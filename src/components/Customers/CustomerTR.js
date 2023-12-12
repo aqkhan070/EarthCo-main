@@ -13,6 +13,9 @@ import {
   Button,
   TablePagination,
   Checkbox,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { Create, Delete, Update } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
@@ -70,6 +73,7 @@ const CustomerTR = ({
 
   const [tablePage, setTablePage] = useState(0);
   const [search, setSearch] = useState("");
+  const [isAscending, setIsAscending] = useState(false);
 
   useEffect(() => {
     // Initial fetch of estimates
@@ -78,8 +82,8 @@ const CustomerTR = ({
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchCustomers(search, tablePage + 1, rowsPerPage);
-  }, [tablePage, rowsPerPage]);
+    fetchCustomers(search, tablePage + 1, rowsPerPage, isAscending);
+  }, [tablePage, rowsPerPage, isAscending]);
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
@@ -125,203 +129,209 @@ const CustomerTR = ({
           {deleteSuccess && (
             <Alert severity="success">Successfully deleted Company</Alert>
           )}
-
-          <div className="card-body p-0">
-            <div className="search-row">
-              <div className="search-container tblsearch-input">
-                <TextField
-                  className="tblsearch-input"
-                  variant="standard"
-                  size="small"
-                  label="Search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-              <div className="add-customer-btn">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    navigate(`/Customers/Add-Customer`);
-                    setSelectedItem(0);
-                    console.log(",,,,,,,,,,", selectedItem);
-                    // setShowContent(false);
-                  }}
-                >
-                  + Add Customer
-                </Button>
-              </div>
+          <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+            <div>
+              <TextField
+                label="Search Customer"
+                variant="standard"
+                size="small"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </div>
+            <div className="pt-2 me-2">
+              <FormControl className="  me-2" variant="outlined">
+                <Select
+                  labelId="customer-type-label"
+                  variant="outlined"
+                  value={isAscending}
+                  onChange={() => {
+                    setIsAscending(!isAscending);
+                  }}
+                  size="small"
+                >
+                  <MenuItem value={true}>Ascending</MenuItem>
+                  <MenuItem value={false}>Descending</MenuItem>
+                </Select>
+              </FormControl>
+              <button
+                className="btn btn-primary "
+                onClick={() => {
+                  navigate(`/Customers/Add-Customer`);
+                  setSelectedItem(0);
+                  console.log(",,,,,,,,,,", selectedItem);
+                  // setShowContent(false);
+                }}
+              >
+                + Add Customer
+              </button>
+            </div>
+          </div>
 
-            <div className="text-center m-3">
-              <Table>
-                <TableHead className="table-header">
-                  <TableRow className="material-tbl-alignment">
-                    {/* Map through columns here */}
-                    {[
-                      // "Select",
-                      "Customer Id",
-                      "Customer Name",
-                      "Contact Name",
-                      "Contact Company",
-                      "Contact Email",
-                      "Actions",
-                    ].map((column, index) => (
-                      <TableCell className="table-cell-align" key={index}>
-                        {index < 5 ? (
-                          <TableSortLabel
-                            active={sorting.field === column}
-                            direction={
-                              ["asc", "desc"].includes(sorting.order)
-                                ? sorting.order
-                                : "asc"
-                            }
-                            onClick={() =>
-                              setSorting({
-                                field: column,
-                                order:
-                                  sorting.order === "asc" &&
-                                  sorting.field === column
-                                    ? "desc"
-                                    : "asc",
-                              })
-                            }
-                          >
-                            {column}
-                          </TableSortLabel>
-                        ) : (
-                          column
-                        )}
-                      </TableCell>
-                    ))}
+          <div className="card-body pt-0">
+            <Table>
+              <TableHead className="table-header">
+                <TableRow className="material-tbl-alignment">
+                  {/* Map through columns here */}
+                  {[
+                    // "Select",
+                    "Customer Id",
+                    "Customer Name",
+                    "Contact Name",
+                    "Contact Company",
+                    "Contact Email",
+                    "Actions",
+                  ].map((column, index) => (
+                    <TableCell className="table-cell-align" key={index}>
+                      {index < 5 ? (
+                        <TableSortLabel
+                          active={sorting.field === column}
+                          direction={
+                            ["asc", "desc"].includes(sorting.order)
+                              ? sorting.order
+                              : "asc"
+                          }
+                          onClick={() =>
+                            setSorting({
+                              field: column,
+                              order:
+                                sorting.order === "asc" &&
+                                sorting.field === column
+                                  ? "desc"
+                                  : "asc",
+                            })
+                          }
+                        >
+                          {column}
+                        </TableSortLabel>
+                      ) : (
+                        column
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {customerFetchError ? (
+                  <TableRow>
+                    <TableCell colSpan={12} className="text-center">
+                      {" "}
+                      No Record Found
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {customerFetchError ? (
-                    <TableRow>
-                      <TableCell colSpan={12} className="text-center">
-                        {" "}
-                        No Record Found
-                      </TableCell>
-                    </TableRow>
-                  ) : null}
-                  {filteredCustomers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((customer, rowIndex) => (
-                      <TableRow
-                        className="material-tbl-alignment"
-                        key={rowIndex}
-                        hover
-                      >
-                        {/* <TableCell>
+                ) : null}
+                {filteredCustomers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((customer, rowIndex) => (
+                    <TableRow
+                      className="material-tbl-alignment"
+                      key={rowIndex}
+                      hover
+                    >
+                      {/* <TableCell>
                     <Checkbox
                       checked={selectedItem === customer.CustomerId}
                       onChange={() => setSelectedItem(customer.CustomerId)}
                     />
                   </TableCell>*/}
-                        <TableCell className="table-cell-align">
-                          {customer.CustomerId}
-                        </TableCell>
-                        <TableCell>{customer.CompanyName}</TableCell>
-                        <TableCell>{customer.CustomerName}</TableCell>
-                        <TableCell>{customer.Address}</TableCell>
-                        <TableCell>{customer.Email}</TableCell>
-                        <TableCell className="table-cell-align">
-                          <Button
-                            onClick={() => {
-                              // setSelectedItem(customer.CustomerId);
-                              // console.log(",,,,,,,,,,", selectedItem);
-                              navigate(
-                                `/Customers/Add-Customer?id=${customer.CustomerId}`
-                              );
-                              // setShowContent(false);
-                            }}
-                          >
-                            <Create />
-                            {/* <i className="fas fa-pencil-alt"></i> */}
-                          </Button>
+                      <TableCell className="table-cell-align">
+                        {customer.CustomerId}
+                      </TableCell>
+                      <TableCell>{customer.CompanyName}</TableCell>
+                      <TableCell>{customer.CustomerName}</TableCell>
+                      <TableCell>{customer.Address}</TableCell>
+                      <TableCell>{customer.Email}</TableCell>
+                      <TableCell className="table-cell-align">
+                        <Button
+                          onClick={() => {
+                            // setSelectedItem(customer.CustomerId);
+                            // console.log(",,,,,,,,,,", selectedItem);
+                            navigate(
+                              `/Customers/Add-Customer?id=${customer.CustomerId}`
+                            );
+                            // setShowContent(false);
+                          }}
+                        >
+                          <Create />
+                          {/* <i className="fas fa-pencil-alt"></i> */}
+                        </Button>
 
-                          <Button
-                            // className="btn btn-danger btn-icon-xxs "
-                            data-bs-toggle="modal"
-                            data-bs-target={`#deleteModal${customer.CustomerId}`}
-                          >
-                            <Delete color="error" />
-                            {/* <i className="fas fa-trash-alt"></i> */}
-                          </Button>
+                        <Button
+                          // className="btn btn-danger btn-icon-xxs "
+                          data-bs-toggle="modal"
+                          data-bs-target={`#deleteModal${customer.CustomerId}`}
+                        >
+                          <Delete color="error" />
+                          {/* <i className="fas fa-trash-alt"></i> */}
+                        </Button>
 
+                        <div
+                          className="modal fade"
+                          id={`deleteModal${customer.CustomerId}`}
+                          tabIndex="-1"
+                          aria-labelledby="deleteModalLabel"
+                          aria-hidden="true"
+                        >
                           <div
-                            className="modal fade"
-                            id={`deleteModal${customer.CustomerId}`}
-                            tabIndex="-1"
-                            aria-labelledby="deleteModalLabel"
-                            aria-hidden="true"
+                            className="modal-dialog modal-dialog-centered"
+                            role="document"
                           >
-                            <div
-                              className="modal-dialog modal-dialog-centered"
-                              role="document"
-                            >
-                              <div className="modal-content">
-                                <div className="modal-header">
-                                  <h5 className="modal-title">
-                                    Customer Delete
-                                  </h5>
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title">Customer Delete</h5>
 
-                                  <button
-                                    type="button"
-                                    className="btn-close"
-                                    data-bs-dismiss="modal"
-                                  ></button>
-                                </div>
-                                <div className="modal-body">
-                                  <p>
-                                    Are you sure you want to delete{" "}
-                                    {customer.CompanyName}
-                                  </p>
-                                </div>
+                                <button
+                                  type="button"
+                                  className="btn-close"
+                                  data-bs-dismiss="modal"
+                                ></button>
+                              </div>
+                              <div className="modal-body">
+                                <p>
+                                  Are you sure you want to delete{" "}
+                                  {customer.CompanyName}
+                                </p>
+                              </div>
 
-                                <div className="modal-footer">
-                                  <button
-                                    type="button"
-                                    id="closer"
-                                    className="btn btn-danger light "
-                                    data-bs-dismiss="modal"
-                                  >
-                                    Close
-                                  </button>
-                                  <button
-                                    className="btn btn-primary "
-                                    data-bs-dismiss="modal"
-                                    onClick={() =>
-                                      handleDelete(customer.CustomerId)
-                                    }
-                                  >
-                                    Yes
-                                  </button>
-                                </div>
+                              <div className="modal-footer">
+                                <button
+                                  type="button"
+                                  id="closer"
+                                  className="btn btn-danger light "
+                                  data-bs-dismiss="modal"
+                                >
+                                  Close
+                                </button>
+                                <button
+                                  className="btn btn-primary "
+                                  data-bs-dismiss="modal"
+                                  onClick={() =>
+                                    handleDelete(customer.CustomerId)
+                                  }
+                                >
+                                  Yes
+                                </button>
                               </div>
                             </div>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
-                component="div"
-                count={totalRecords}
-                rowsPerPage={rowsPerPage}
-                page={tablePage} // Use tablePage for the table rows
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={(event) => {
-                  setRowsPerPage(parseInt(event.target.value, 10));
-                  setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                }}
-              />
-            </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={totalRecords}
+              rowsPerPage={rowsPerPage}
+              page={tablePage} // Use tablePage for the table rows
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(parseInt(event.target.value, 10));
+                setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+              }}
+            />
           </div>
         </div>
       ) : (

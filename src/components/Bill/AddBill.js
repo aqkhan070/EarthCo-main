@@ -12,6 +12,8 @@ import { Button } from "@mui/material";
 import { Print, Email, Download } from "@mui/icons-material";
 import useDeleteFile from "../Hooks/useDeleteFile";
 import { useNavigate, NavLink } from "react-router-dom";
+import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const AddBill = ({
   setshowContent,
@@ -27,6 +29,8 @@ const AddBill = ({
   };
   const currentDate = new Date();
 
+  const { sendEmail } = useSendEmail();
+
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
   const navigate = useNavigate();
@@ -39,11 +43,17 @@ const AddBill = ({
   const [showCustomersList, setShowCustomersList] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const [disableSubmit, setDisableSubmit] = useState(true);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
+
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSL, setSelectedSL] = useState(null);
   const [billNumber, setBillNumber] = useState(0);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const [vendorList, setVendorList] = useState([]);
   const [supplierAddress, setSupplierAddress] = useState("");
@@ -475,6 +485,9 @@ const AddBill = ({
 
     if (!formData.SupplierId || !formData.BillDate) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       return;
     }
 
@@ -525,7 +538,15 @@ const AddBill = ({
         }
       );
 
-      navigate(`/Bills`);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
+      setAddCustomerSuccess(response.data.Message);
+      setTimeout(() => {
+        setAddCustomerSuccess("");
+        navigate(`/Bills`);
+      }, 4000);
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
@@ -545,6 +566,12 @@ const AddBill = ({
   return (
     <>
       <BillTitle billNumber={billNumber} />
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
 
       <div className="add-item">
         {/* <div className="tabSwitch">
@@ -1066,8 +1093,8 @@ const AddBill = ({
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
                     <form>
-                    <label className="form-label">Memo</label>
-                     
+                      <label className="form-label">Memo</label>
+
                       <div className="mb-3">
                         <textarea
                           className="form-txtarea form-control"
@@ -1083,8 +1110,8 @@ const AddBill = ({
                 </div>
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
-                  <label className="form-label">Attachments</label>
-                   
+                    <label className="form-label">Attachments</label>
+
                     <div className="dz-default dlab-message upload-img mb-3">
                       <form action="#" className="dropzone">
                         <svg
@@ -1287,6 +1314,13 @@ const AddBill = ({
 
           <div className="row mb-3 mx-3">
             <div className="col-md-6">
+              {/* {addCustomerSuccess && (
+                <Alert severity="success">
+                  {addCustomerSuccess
+                    ? addCustomerSuccess
+                    : "Susseccfully added/Updated customer"}
+                </Alert>
+              )}
               {errorMessage && (
                 <Alert severity="error">
                   {errorMessage ? errorMessage : "Error Submitting Bill Data"}
@@ -1294,22 +1328,40 @@ const AddBill = ({
               )}
               {emptyFieldsError && (
                 <Alert severity="error">please fill all required fields</Alert>
-              )}
+              )} */}
             </div>
             <div className=" col-md-6 text-end">
               <div>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary estm-action-btn"
-                >
-                  <Email />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary estm-action-btn me-2"
-                >
-                  <Print></Print>
-                </button>
+                {idParam ? (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary estm-action-btn"
+                      onClick={() => {
+                        sendEmail(
+                          `/Bills/Bill-Preview?id=${idParam}`,
+                          formData.SupplierId,
+                          0,
+                          true
+                        );
+                      }}
+                    >
+                      <Email />
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                      onClick={() => {
+                        navigate(`/Bills/Bill-Preview?id=${idParam}`);
+                      }}
+                    >
+                      <Print></Print>
+                    </button>
+                  </>
+                ) : (
+                  <></>
+                )}
+
                 <button
                   className="btn btn-danger light me-2"
                   onClick={() => {

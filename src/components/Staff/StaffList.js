@@ -45,7 +45,22 @@ const StaffList = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* ... Your SVG Path Data */}
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.986 14.0673C7.4407 14.0673 4.41309 14.6034 4.41309 16.7501C4.41309 18.8969 7.4215 19.4521 10.986 19.4521C14.5313 19.4521 17.5581 18.9152 17.5581 16.7693C17.5581 14.6234 14.5505 14.0673 10.986 14.0673Z"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.986 11.0054C13.3126 11.0054 15.1983 9.11881 15.1983 6.79223C15.1983 4.46564 13.3126 2.57993 10.986 2.57993C8.65944 2.57993 6.77285 4.46564 6.77285 6.79223C6.76499 9.11096 8.63849 10.9975 10.9563 11.0054H10.986Z"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 
@@ -124,213 +139,191 @@ const StaffList = () => {
 
   return (
     <>
-      {toggleAddStaff ? (
-        <>
-          <TitleBar icon={icon} title="Staff Management" />
-          {isLoading ? (
-            <div className="center-loader">
-              <CircularProgress style={{ color: "#789a3d" }} />
+      <TitleBar icon={icon} title="Staff Management" />
+      {isLoading ? (
+        <div className="center-loader">
+          <CircularProgress style={{ color: "#789a3d" }} />
+        </div>
+      ) : (
+        <div className="container-fluid">
+          <div className="card">
+            {addStaffSuccess && (
+              <Alert severity="success">Staff Added Successfully</Alert>
+            )}
+            {updateStaffSuccess && (
+              <Alert severity="success">Staff Updated Successfully</Alert>
+            )}
+            {deleteStaffSuccess && (
+              <Alert severity="success">Staff Deleted Successfully</Alert>
+            )}
+
+            <div className="card-header border-0">
+              <dix className="col-md-12">
+                <div className="text-right mt-2  ">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className="me-2"
+                    onClick={() => {
+                      // setSelectedStaff(0);
+                      // settoggleAddStaff(false);
+                      navigate(`/Staff/Add-Staff`);
+                    }}
+                  >
+                    + Add Staff
+                  </Button>
+                </div>
+              </dix>
             </div>
-          ) : (
-            <div className="container-fluid">
-              <div className="card">
-                <div className="card-body p-0">
-                  {addStaffSuccess && (
-                    <Alert severity="success">Staff Added Successfully</Alert>
-                  )}
-                  {updateStaffSuccess && (
-                    <Alert severity="success">Staff Updated Successfully</Alert>
-                  )}
-                  {deleteStaffSuccess && (
-                    <Alert severity="success">Staff Deleted Successfully</Alert>
-                  )}
+            <div className="card-body pt-0">
+              <Table>
+                <TableHead className="table-header">
+                  <TableRow className="material-tbl-alignment">
+                    <TableCell className="ms-3">#</TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "FirstName"}
+                        direction={orderBy === "FirstName" ? order : "asc"}
+                        onClick={() => handleSortRequest("FirstName")}
+                      >
+                        First Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "LastName"}
+                        direction={orderBy === "LastName" ? order : "asc"}
+                        onClick={() => handleSortRequest("LastName")}
+                      >
+                        Last Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "Email"}
+                        direction={orderBy === "Email" ? order : "asc"}
+                        onClick={() => handleSortRequest("Email")}
+                      >
+                        User Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "Role"}
+                        direction={orderBy === "Role" ? order : "asc"}
+                        onClick={() => handleSortRequest("Role")}
+                      >
+                        Role
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {staffFetchError ? (
+                    <TableRow>
+                      <TableCell className="text-center" colSpan={12}>
+                        No Record Found
+                      </TableCell>
+                    </TableRow>
+                  ) : null}
+                  {sortedData
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((staff) => (
+                      <TableRow
+                        className="staff-tbl-alignment"
+                        hover
+                        key={staff.UserId}
+                      >
+                        <TableCell>{staff.UserId}</TableCell>
+                        <TableCell>{staff.FirstName}</TableCell>
+                        <TableCell>{staff.LastName}</TableCell>
+                        <TableCell>{staff.Email}</TableCell>
+                        <TableCell>{staff.Role}</TableCell>
+                        <TableCell>
+                          <Button
+                            // className=" btn btn-primary  btn-icon-xxs me-2"
 
-                  <div className="row search-row">
-                    <dix className="col-md-12">
-                      <div className="text-right mt-2 me-3">
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={() => {
-                            // setSelectedStaff(0);
-                            // settoggleAddStaff(false);
-                            navigate(`/Staff/Add-Staff`);
-                          }}
-                        >
-                          + Add Staff
-                        </Button>
-                      </div>
-                    </dix>
-                  </div>
-                  <div className="text-center m-3">
-                    <Table>
-                      <TableHead className="table-header">
-                        <TableRow className="material-tbl-alignment">
-                          <TableCell className="ms-3">#</TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "FirstName"}
-                              direction={
-                                orderBy === "FirstName" ? order : "asc"
-                              }
-                              onClick={() => handleSortRequest("FirstName")}
-                            >
-                              First Name
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "LastName"}
-                              direction={orderBy === "LastName" ? order : "asc"}
-                              onClick={() => handleSortRequest("LastName")}
-                            >
-                              Last Name
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "Email"}
-                              direction={orderBy === "Email" ? order : "asc"}
-                              onClick={() => handleSortRequest("Email")}
-                            >
-                              User Name
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "Role"}
-                              direction={orderBy === "Role" ? order : "asc"}
-                              onClick={() => handleSortRequest("Role")}
-                            >
-                              Role
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>Actions</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {staffFetchError ? (
-                          <TableRow>
-                            <TableCell className="text-center" colSpan={12}>
-                              No Record Found
-                            </TableCell>
-                          </TableRow>
-                        ) : null}
-                        {sortedData
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((staff) => (
-                            <TableRow
-                              className="staff-tbl-alignment"
-                              hover
-                              key={staff.UserId}
-                            >
-                              <TableCell>{staff.UserId}</TableCell>
-                              <TableCell>{staff.FirstName}</TableCell>
-                              <TableCell>{staff.LastName}</TableCell>
-                              <TableCell>{staff.Email}</TableCell>
-                              <TableCell>{staff.Role}</TableCell>
-                              <TableCell>
-                                <Button
-                                  // className=" btn btn-primary  btn-icon-xxs me-2"
-
-                                  onClick={() => {
-                                    // settoggleAddStaff(false);
-                                    // setSelectedStaff(staff.UserId);
-                                    navigate(
-                                      `/Staff/Add-Staff?id=${staff.UserId}`
-                                    );
-                                  }}
-                                >
-                                  <Create />
-                                  {/* <i className="fas fa-pencil-alt"></i> */}
-                                </Button>
-                                <Button
-                                  color="error"
-                                  // className="btn btn-danger btn-icon-xxs "
-                                  data-bs-toggle="modal"
-                                  data-bs-target={`#deleteModal${staff.UserId}`}
-                                >
-                                  <Delete color="error" />
-                                  {/* <i className="fas fa-trash-alt"></i> */}
-                                </Button>
-                                <div
-                                  className="modal fade"
-                                  id={`deleteModal${staff.UserId}`}
-                                  tabIndex="-1"
-                                  aria-labelledby="deleteModalLabel"
-                                  aria-hidden="true"
-                                >
-                                  <div className="modal-dialog" role="document">
-                                    <div className="modal-content">
-                                      <div className="modal-header">
-                                        <h5 className="modal-title">
-                                          Are you sure you want to delete{" "}
-                                          {staff.FirstName}
-                                        </h5>
-                                        <button
-                                          type="button"
-                                          className="btn-close"
-                                          data-bs-dismiss="modal"
-                                        ></button>
-                                      </div>
-                                      <div className="modal-body">
-                                        <div className="basic-form text-center">
-                                          <button
-                                            type="button"
-                                            id="closer"
-                                            className="btn btn-danger light m-3"
-                                            data-bs-dismiss="modal"
-                                          >
-                                            Close
-                                          </button>
-                                          <button
-                                            className="btn btn-primary m-3"
-                                            data-bs-dismiss="modal"
-                                            onClick={() => {
-                                              deleteStaff(staff.UserId);
-                                            }}
-                                          >
-                                            Yes
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
+                            onClick={() => {
+                              // settoggleAddStaff(false);
+                              // setSelectedStaff(staff.UserId);
+                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                            }}
+                          >
+                            <Create />
+                            {/* <i className="fas fa-pencil-alt"></i> */}
+                          </Button>
+                          <Button
+                            color="error"
+                            // className="btn btn-danger btn-icon-xxs "
+                            data-bs-toggle="modal"
+                            data-bs-target={`#deleteModal${staff.UserId}`}
+                          >
+                            <Delete color="error" />
+                            {/* <i className="fas fa-trash-alt"></i> */}
+                          </Button>
+                          <div
+                            className="modal fade"
+                            id={`deleteModal${staff.UserId}`}
+                            tabIndex="-1"
+                            aria-labelledby="deleteModalLabel"
+                            aria-hidden="true"
+                          >
+                            <div className="modal-dialog" role="document">
+                              <div className="modal-content">
+                                <div className="modal-header">
+                                  <h5 className="modal-title">
+                                    Are you sure you want to delete{" "}
+                                    {staff.FirstName}
+                                  </h5>
+                                  <button
+                                    type="button"
+                                    className="btn-close"
+                                    data-bs-dismiss="modal"
+                                  ></button>
+                                </div>
+                                <div className="modal-body">
+                                  <div className="basic-form text-center">
+                                    <button
+                                      type="button"
+                                      id="closer"
+                                      className="btn btn-danger light m-3"
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Close
+                                    </button>
+                                    <button
+                                      className="btn btn-primary m-3"
+                                      data-bs-dismiss="modal"
+                                      onClick={() => {
+                                        deleteStaff(staff.UserId);
+                                      }}
+                                    >
+                                      Yes
+                                    </button>
                                   </div>
                                 </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
 
-                    <TablePagination
-                      rowsPerPageOptions={[10, 25, 50]}
-                      component="div"
-                      count={staffData.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                  </div>
-                </div>
-              </div>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50]}
+                component="div"
+                count={staffData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
             </div>
-          )}
-        </>
-      ) : (
-        <AddStaff
-          headers={headers}
-          selectedStaff={selectedStaff}
-          settoggleAddStaff={settoggleAddStaff}
-          setAddStaffSuccess={setAddStaffSuccess}
-          setUpdateStaffSuccess={setUpdateStaffSuccess}
-          getStaffList={getStaffList}
-        />
+          </div>
+        </div>
       )}
     </>
   );

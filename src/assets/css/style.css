@@ -18702,6 +18702,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     margin-left: 15rem;
     z-index: 0;
     transition: all .2s ease;
+    min-height: 80vh;
 }
 
 @media only screen and (max-width: 47.9375rem) {
@@ -38020,7 +38021,7 @@ table {
 }
 
 .dz-card .card-body {
-    padding: 1.125rem !important;
+    /* padding: 1.125rem !important; */
     border-radius: 0 0 0.375rem 0.375rem;
 }
 
@@ -38915,12 +38916,20 @@ button:focus {
     box-shadow: none;
 }
 
-.btn {
+/* .btn {
     padding: 0.719rem 1.563rem;
     border-radius: 0.375rem;
     font-weight: 500;
     font-size: 15px;
     line-height: 20px;
+} */
+
+.btn {
+    border-radius: 0.375rem;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    padding: 0.719rem 1.563rem;
 }
 
 .btn:hover,
@@ -54012,6 +54021,7 @@ padding: 0px !important;
 .material-tbl-alignment th{
     padding: 8px 8px !important;
     font-size: 0.900rem;
+    white-space: nowrap;
 }
 
 .bill-tbl-alignment{
@@ -54037,6 +54047,10 @@ padding: 0px !important;
     
 }
 
+.punch-select-width{
+    width: 100% !important;
+}
+
 
 
 .PageA4 {  
@@ -54051,6 +54065,10 @@ padding: 0px !important;
 .print-page-width{
     display: flex;
     justify-content: center;
+}
+
+.selected-map{
+    background-color: azure;
 }
 
  

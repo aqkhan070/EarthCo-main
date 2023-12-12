@@ -223,40 +223,49 @@ const DataFun = ({ children }) => {
 
   const [loggedUser, setLoggedUser] = useState([]);
 
+  const [sRData, setSRData] = useState({});
+  const [POData, setPOData] = useState({});
+  const [InvoiceData, setInvoiceData] = useState({});
+  const [billData, setBillData] = useState({});
 
+  const [PunchDetailData, setPunchDetailData] = useState({});
+  const [PunchListData, setPunchListData] = useState({});
+  const [proposalData, setproposalData] = useState([]);
+  const [sRProposalData, setsRProposalData] = useState({});
 
-  const [sRData, setSRData] = useState({})
-  const [POData, setPOData] = useState({})
-  const [InvoiceData, setInvoiceData] = useState({})
-  const [billData, setBillData] = useState({})
+  const [sRMapData, setSRMapData] = useState([]);
+  const [serviceLocationAddress, setServiceLocationAddress] = useState({});
+  const [maplatLngs, setMaplatLngs] = useState({});
 
-  const [PunchDetailData, setPunchDetailData] = useState({})
-  const [PunchListData, setPunchListData] = useState({})
- const [proposalData, setproposalData] = useState([])
- const [sRProposalData, setsRProposalData] = useState({})
+  const [toggleFullscreen, setToggleFullscreen] = useState(true);
 
- const [sRMapData, setSRMapData] = useState([])
- const [serviceLocationAddress, setServiceLocationAddress] = useState({})
- const [maplatLngs, setMaplatLngs] = useState([])
-
- const [toggleFullscreen, setToggleFullscreen] = useState(true)
-
- const [customerAddress, setCustomerAddress] = useState("")
+  const [customerAddress, setCustomerAddress] = useState("");
 
   return (
     <DataContext.Provider
       value={{
-        customerAddress, setCustomerAddress,
-        toggleFullscreen, setToggleFullscreen,
-        maplatLngs, setMaplatLngs,
-        serviceLocationAddress, setServiceLocationAddress,
-        sRMapData, setSRMapData,
-        sRProposalData, setsRProposalData,
-        PunchListData, setPunchListData,
-        PunchDetailData, setPunchDetailData,
-        billData, setBillData,
-        InvoiceData, setInvoiceData,
-        POData, setPOData,
+        customerAddress,
+        setCustomerAddress,
+        toggleFullscreen,
+        setToggleFullscreen,
+        maplatLngs,
+        setMaplatLngs,
+        serviceLocationAddress,
+        setServiceLocationAddress,
+        sRMapData,
+        setSRMapData,
+        sRProposalData,
+        setsRProposalData,
+        PunchListData,
+        setPunchListData,
+        PunchDetailData,
+        setPunchDetailData,
+        billData,
+        setBillData,
+        InvoiceData,
+        setInvoiceData,
+        POData,
+        setPOData,
         setSRData,
         sRData,
         users,

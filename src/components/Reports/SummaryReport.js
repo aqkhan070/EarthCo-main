@@ -55,8 +55,6 @@ const SummaryReport = () => {
 
   const navigate = useNavigate();
 
-
-
   const { sRProposalData, setsRProposalData } = useContext(DataContext);
 
   const [toggleReport, setToggleReport] = useState(false);
@@ -135,7 +133,9 @@ const SummaryReport = () => {
 
     //     "Service Request"
     //   );
-    navigate(`/GeneralReport`);
+    navigate(
+      `/GeneralReport?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+    );
   };
 
   const getReportData = () => {
@@ -152,10 +152,10 @@ const SummaryReport = () => {
 
     //     "Service Request"
     //   );
-    navigate("/SummaryReportPreview");
+    navigate(
+      `/SummaryReportPreview?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+    );
   };
-
-
 
   const getProposalReportData = () => {
     setSubmitClicked(true);
@@ -166,7 +166,9 @@ const SummaryReport = () => {
       ...prevData,
       formData,
     }));
-    navigate("/ProposalSummary");
+    navigate(
+      `/ProposalSummary?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+    );
   };
 
   const getLandscapeReportData = () => {
@@ -178,7 +180,9 @@ const SummaryReport = () => {
       ...prevData,
       formData,
     }));
-    navigate(`/Landscape/Landscape-Report`);
+    navigate(
+      `/Landscape/Landscape-Report?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+    );
   };
 
   return (
@@ -273,7 +277,7 @@ const SummaryReport = () => {
                   <button
                     className="btn btn-primary btn-sm ms-2"
                     onClick={() => {
-                      getGeneralReportData()
+                      getGeneralReportData();
                     }}
                   >
                     Generate Report

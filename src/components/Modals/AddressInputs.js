@@ -25,16 +25,15 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const AddressInputs = ({ setCustomerAddress }) => {
+const AddressInputs = ({ address, name, handleChange }) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const loaded = useRef(false);
 
   useEffect(() => {
-    setCustomerAddress(value);
-    console.log("address iss", value);
-  }, [value]);
+    setValue(address);
+  }, []);
 
   if (typeof window !== "undefined" && !loaded.current) {
     if (!document.querySelector("#google-maps")) {
@@ -94,22 +93,43 @@ const AddressInputs = ({ setCustomerAddress }) => {
     };
   }, [value, inputValue, fetch]);
 
+  // const handleSelect = (event, newValue) => {
+  //   if (newValue) {
+  //     // Retrieve latitude and longitude for the selected address
+  //     const geocoder = new window.google.maps.Geocoder();
+  //     geocoder.geocode({ address: newValue.description }, (results, status) => {
+  //       if (status === "OK" && results[0]) {
+  //         const { lat, lng } = results[0].geometry.location;
+  //         setValue({
+  //           address: newValue.description,
+  //         });
+  //       }
+  //     });
+  //   } else {
+  //     setValue(null);
+  //   }
+  // };
+
   const handleSelect = (event, newValue) => {
     if (newValue) {
-      // Retrieve latitude and longitude for the selected address
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: newValue.description }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          const { lat, lng } = results[0].geometry.location;
-          setValue({
-            address: newValue.description,
-            latitude: lat(),
-            longitude: lng(),
-          });
-        }
-      });
+      setValue(newValue);
+      const simulatedEvent = {
+        target: {
+          name: name,
+          value: newValue.description ? newValue.description : "",
+        },
+      };
+      handleChange(simulatedEvent);
     } else {
+      // Handle the case when newValue is null
       setValue(null);
+      const simulatedEvent = {
+        target: {
+          name: name,
+          value: "", // Set the value to an empty string or handle it as needed
+        },
+      };
+      handleChange(simulatedEvent);
     }
   };
 
@@ -125,20 +145,14 @@ const AddressInputs = ({ setCustomerAddress }) => {
       autoComplete
       includeInputInList
       filterSelectedOptions
-      value={value}
+      value={value || ""}
       noOptionsText="No locations"
       onChange={handleSelect}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          size="small"
-          multiline
-          placeholder="Address"
-          fullWidth
-        />
+        <TextField {...params} size="small" placeholder="Address" fullWidth />
       )}
       renderOption={(props, option) => {
         const matches =

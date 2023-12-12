@@ -17,11 +17,12 @@ const useFetchServiceRequests = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0
+    StatusId = 0,
+    isAscending = false
   ) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
         { headers }
       );
       setSRfetchError(false);

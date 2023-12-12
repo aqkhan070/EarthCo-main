@@ -29,6 +29,8 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
+import EventPopups from "../Reusable/EventPopups";
+
 const PunchListDetailRow = ({
   headers,
   item,
@@ -36,12 +38,16 @@ const PunchListDetailRow = ({
   expandedRow,
   setPlDetailId,
 }) => {
-  const { PunchDetailData, setPunchDetailData, setPunchListData } =
+  const { PunchDetailData, setPunchDetailData, setPunchListData, fetchFilterdPunchList } =
     useContext(DataContext);
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedCostItem, setSelectedCostItem] = useState([]);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const handleCheckboxChange = (items) => {
     if (selectedItems.includes(items)) {
@@ -81,6 +87,10 @@ const PunchListDetailRow = ({
           headers,
         }
       );
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Punch List detail deleted successfuly");
+      fetchFilterdPunchList();
       console.log("delete pl details response", response.data);
     } catch (error) {
       console.error(
@@ -95,6 +105,12 @@ const PunchListDetailRow = ({
   };
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       {item.DetailDataList.map((detail) => {
         return (
           <TableRow key={detail.DetailData.PunchlistDetailId}>
@@ -140,7 +156,7 @@ const PunchListDetailRow = ({
                         </TableCell>
 
                         <TableCell className="Punch-Detail-Link" colSpan={4}>
-                          <FormControl>
+                          <FormControl className="punch-select-width">
                             {/* <InputLabel size="small" id="pLLink">
                               select
                             </InputLabel> */}
@@ -150,8 +166,12 @@ const PunchListDetailRow = ({
                               variant="outlined"
                               size="small"
                               placeholder="Select"
+                              value={1}
                               fullWidth
                             >
+                              <MenuItem onClick={() => {}} value={1}>
+                                Select
+                              </MenuItem>
                               <MenuItem onClick={() => {}} value={2}>
                                 Complete
                               </MenuItem>
@@ -162,9 +182,7 @@ const PunchListDetailRow = ({
                                 onClick={() => {
                                   console.log("estimate", item);
 
-                                  navigate(
-                                    "/Estimates/Update-Estimate"
-                                  );
+                                  navigate("/Estimates/Add-Estimate");
                                 }}
                                 value={5}
                               >
@@ -173,9 +191,7 @@ const PunchListDetailRow = ({
                               <MenuItem
                                 onClick={() => {
                                   console.log("service request");
-                                  navigate(
-                                    "/Service-Requests/Update-SRform"
-                                  );
+                                  navigate("/Service-Requests/Add-SRform");
                                 }}
                                 value={4}
                               >
@@ -228,7 +244,7 @@ const PunchListDetailRow = ({
                                     data-bs-dismiss="modal"
                                   ></button>
                                 </div>
-                                <div className="modal-body">
+                                <div className="modal-body text-center">
                                   <p>
                                     Are you sure you want to delete{" "}
                                     {detail.DetailData.PunchlistDetailId}

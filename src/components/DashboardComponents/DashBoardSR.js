@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 // import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -17,23 +17,21 @@ import {
   Paper,
 } from "@mui/material";
 import { Form } from "react-bootstrap";
-import formatDate from '../../custom/FormatDate';
-
+import formatDate from "../../custom/FormatDate";
+import TblDateFormat from "../../custom/TblDateFormat";
 
 const DashBoardSR = ({ dashBoardData }) => {
-
   useEffect(() => {
     console.log(",,,,,,,,,,", dashBoardData);
-  })
+  });
 
   return (
-    <div className='card'>
+    <div className="card">
       <div className="card-header bg-primary">
         <h4 style={{ color: "white" }}>Service Requests</h4>
       </div>
 
-
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table>
           <TableHead className="table-header">
             <TableRow className="material-tbl-alignment">
@@ -49,25 +47,29 @@ const DashBoardSR = ({ dashBoardData }) => {
           <TableBody>
             {dashBoardData.ServiceRequestData?.map((customer, rowIndex) => (
               <TableRow className="material-tbl-alignment" key={rowIndex} hover>
-
                 <TableCell>{customer.CustomerName}</TableCell>
                 <TableCell>{customer.Assign}</TableCell>
                 <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                <TableCell><span class="badge badge-pill badge-success ">{customer.Status}</span></TableCell>
+                <TableCell>
+                  <span
+                    style={{
+                      backgroundColor: customer.StatusColor,
+                    }}
+                    className="badge badge-pill "
+                  >
+                    {customer.Status}
+                  </span>
+                </TableCell>
                 <TableCell>{customer.WorkRequest}</TableCell>
-                <TableCell>{formatDate(customer.CreatedDate)}</TableCell>
+                <TableCell>{TblDateFormat(customer.CreatedDate)}</TableCell>
                 <TableCell>{customer.Type}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-
-
-
-
     </div>
-  )
-}
+  );
+};
 
-export default DashBoardSR
+export default DashBoardSR;

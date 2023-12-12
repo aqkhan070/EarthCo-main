@@ -16,6 +16,9 @@ import {
   TablePagination,
   TableSortLabel,
   Button,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { Delete, Create, Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
@@ -24,6 +27,8 @@ import useFetchPo from "../Hooks/useFetchPo";
 import { NavLink, useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
+import TitleBar from "../TitleBar";
+import TblDateFormat from "../../custom/TblDateFormat";
 
 const PurchaseOrder = () => {
   const token = Cookies.get("token");
@@ -40,6 +45,43 @@ const PurchaseOrder = () => {
     fetchFilterPo,
     totalRecords,
   } = useFetchPo();
+
+  const icon = (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.4065 14.8714H7.78821"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M14.4065 11.0338H7.78821"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M10.3137 7.2051H7.78827"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.5829 2.52066C14.5829 2.52066 7.54563 2.52433 7.53463 2.52433C5.00463 2.53991 3.43805 4.20458 3.43805 6.74374V15.1734C3.43805 17.7254 5.01655 19.3965 7.56855 19.3965C7.56855 19.3965 14.6049 19.3937 14.6168 19.3937C17.1468 19.3782 18.7143 17.7126 18.7143 15.1734V6.74374C18.7143 4.19174 17.1349 2.52066 14.5829 2.52066Z"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </svg>
+  );
 
   const [showContent, setShowContent] = useState(true);
   const [page, setPage] = useState(0);
@@ -61,6 +103,8 @@ const PurchaseOrder = () => {
   const [tablePage, setTablePage] = useState(0);
   const [statusId, setStatusId] = useState(0);
   const [searchPo, setSearchPo] = useState("");
+  const [isAscending, setIsAscending] = useState(false);
+
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterPo();
@@ -68,9 +112,9 @@ const PurchaseOrder = () => {
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterPo(searchPo, tablePage + 1, rowsPerPage, statusId);
+    fetchFilterPo(searchPo, tablePage + 1, rowsPerPage, statusId, isAscending);
     console.log("search is", searchPo);
-  }, [searchPo, tablePage, rowsPerPage, statusId]);
+  }, [searchPo, tablePage, rowsPerPage, statusId, isAscending]);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -122,142 +166,163 @@ const PurchaseOrder = () => {
     rowsPerPage -
     Math.min(rowsPerPage, sortedPoList.length - page * rowsPerPage);
 
- 
   return (
     <>
-      {showContent ? (
-        <>
-          <PoTitle />
-          <div className="container-fluid">
-            <div className="row">
-              <PoCards
-                closed={totalRecords.totalClosedRecords}
-                open={totalRecords.totalOpenRecords}
-                setStatusId={setStatusId}
-                statusId={statusId}
-              />
+      <TitleBar icon={icon} title="Add Purchase order" />
 
-              <div className="col-xl-3 mb-3 text-right"></div>
-              <div className="col-xl-12">
-                <div className="card dz-card">
-                  {deleteError && (
-                    <Alert className="m-3" severity="error">
-                      {deleteRes ? deleteRes : "Error deleting Purchase order"}
-                    </Alert>
-                  )}
-                  {deleteSuccess && (
-                    <Alert className="m-3" severity="success">
-                      {deleteRes
-                        ? deleteRes
-                        : "Successfully deleted purchase order"}
-                    </Alert>
-                  )}
-                  {postSuccess && (
-                    <Alert className="m-3" severity="success">
-                      {postSuccessRes
-                        ? postSuccessRes
-                        : "Successfully Added purchase order"}
-                    </Alert>
-                  )}
-                  {/* {error && (
+      <div className="container-fluid">
+        <div className="row">
+          <PoCards
+            closed={totalRecords.totalClosedRecords}
+            open={totalRecords.totalOpenRecords}
+            setStatusId={setStatusId}
+            statusId={statusId}
+          />
+
+          <div className="col-xl-3 mb-3 text-right"></div>
+          <div className="col-xl-12">
+            <div className="card dz-card">
+              {deleteError && (
+                <Alert className="m-3" severity="error">
+                  {deleteRes ? deleteRes : "Error deleting Purchase order"}
+                </Alert>
+              )}
+              {deleteSuccess && (
+                <Alert className="m-3" severity="success">
+                  {deleteRes
+                    ? deleteRes
+                    : "Successfully deleted purchase order"}
+                </Alert>
+              )}
+              {postSuccess && (
+                <Alert className="m-3" severity="success">
+                  {postSuccessRes
+                    ? postSuccessRes
+                    : "Successfully Added purchase order"}
+                </Alert>
+              )}
+              {/* {error && (
                     <Alert className="m-3" severity="error">
                       {error? error: "Error fetching purchase order data"}
                     </Alert>
                   )} */}
 
-                  {loading ? (
-                    <div className="center-loader">
-                      <CircularProgress />
+              {loading ? (
+                <div className="center-loader">
+                  <CircularProgress />
+                </div>
+              ) : (
+                <>
+                  <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                    <div>
+                      <TextField
+                        label="Search Purchase order"
+                        variant="standard"
+                        size="small"
+                        value={searchPo}
+                        onChange={(e) => setSearchPo(e.target.value)}
+                      />
                     </div>
-                  ) : (
-                    <>
-                      <div className="card-header flex-wrap d-flex justify-content-between  border-0">
-                        <TextField
-                          label="Search Purchase order"
-                          variant="standard"
+                    <div className=" me-2">
+                      <FormControl className="  me-2" variant="outlined">
+                        <Select
+                          labelId="customer-type-label"
+                          variant="outlined"
+                          value={isAscending}
+                          onChange={() => {
+                            setIsAscending(!isAscending);
+                          }}
                           size="small"
-                          value={searchPo}
-                          onChange={(e) => setSearchPo(e.target.value)}
-                        />
-                        <div>
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => {
-                              navigate("/Purchase-Order/AddPO");
-                              // setShowContent(false);
-                            }}
-                          >
-                            + Add New Purchase Order
-                          </button>
-                        </div>
-                      </div>
+                        >
+                          <MenuItem value={true}>Ascending</MenuItem>
+                          <MenuItem value={false}>Descending</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <button
+                        className="btn btn-primary "
+                        onClick={() => {
+                          navigate("/Purchase-Order/AddPO");
+                          // setShowContent(false);
+                        }}
+                      >
+                        + Add New Purchase Order
+                      </button>
+                    </div>
+                  </div>
 
-                      <div className="card-body">
-                        <Table>
-                          <TableHead className="table-header">
-                            <TableRow className="material-tbl-alignment">
+                  <div className="card-body pt-0">
+                    <Table>
+                      <TableHead className="table-header">
+                        <TableRow className="material-tbl-alignment">
+                          <TableCell>
+                            <TableSortLabel
+                              active={orderBy === "Vendor"}
+                              direction={orderBy === "Vendor" ? order : "asc"}
+                              onClick={() => handleRequestSort("Vendor")}
+                            >
+                              Vendor
+                            </TableSortLabel>
+                          </TableCell>
+                          <TableCell>Date</TableCell>
+                          <TableCell>Status</TableCell>
+                          <TableCell>Regional Manager</TableCell>
+                          <TableCell>Requested By</TableCell>
+                          <TableCell>Estimate#</TableCell>
+                          <TableCell>Bill#</TableCell>
+                          <TableCell>Invoice#</TableCell>
+                          <TableCell className="text-end">Amount</TableCell>
+                          {/* <TableCell>Actions</TableCell> */}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {error ? (
+                          <TableRow>
+                            {" "}
+                            <TableCell className="text-center" colSpan={9}>
+                              {" "}
+                              No records found{" "}
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredPo.map((po, index) => (
+                            <TableRow
+                              className="material-tbl-alignment"
+                              onDoubleClick={() => {
+                                // setShowContent(false);
+                                // setselectedPo(po.PurchaseOrderId);
+                                navigate(
+                                  `/Purchase-Order/AddPO?id=${po.PurchaseOrderId}`
+                                );
+                              }}
+                              hover
+                              key={index}
+                            >
+                              <TableCell>{po.SupplierName}</TableCell>
+                              <TableCell>{TblDateFormat(po.Date)}</TableCell>
                               <TableCell>
-                                <TableSortLabel
-                                  active={orderBy === "Vendor"}
-                                  direction={
-                                    orderBy === "Vendor" ? order : "asc"
-                                  }
-                                  onClick={() => handleRequestSort("Vendor")}
-                                >
-                                  Vendor
-                                </TableSortLabel>
-                              </TableCell>
-                              <TableCell>Date</TableCell>
-                              <TableCell>Status</TableCell>
-                              <TableCell>Regional Manager</TableCell>
-                              <TableCell>Requested By</TableCell>
-                              <TableCell>Estimate#</TableCell>
-                              <TableCell>Bill#</TableCell>
-                              <TableCell>Invoice#</TableCell>
-                              <TableCell className="text-end">Amount</TableCell>
-                              {/* <TableCell>Actions</TableCell> */}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {error ? (
-                              <TableRow>
-                                {" "}
-                                <TableCell className="text-center" colSpan={9}>
-                                  {" "}
-                                  No records found{" "}
-                                </TableCell>
-                              </TableRow>
-                            ) : (
-                              filteredPo.map((po) => (
-                                <TableRow
-                                className="material-tbl-alignment"
-                                  onDoubleClick={() => {
-                                    // setShowContent(false);
-                                    // setselectedPo(po.PurchaseOrderId);
-                                    navigate(`/Purchase-Order/AddPO?id=${po.PurchaseOrderId}`)
+                                <span
+                                  onClick={() => {
+                                    navigate(
+                                      `/Purchase-Order/Purchase-Order-Preview?id=${po.PurchaseOrderId}`
+                                    );
                                   }}
-                                  hover
-                                  key={po.EstimateNumber}
+                                  style={{
+                                    backgroundColor: po.StatusColor,
+                                  }}
+                                  className=" span-hover-pointer badge badge-pill "
                                 >
-                                  <TableCell>{po.SupplierName}</TableCell>
-                                  <TableCell>{formatDate(po.Date)}</TableCell>
-                                  <TableCell>
-                                    <span
-                                      onClick={() => {
-                                        navigate(`/Purchase-Order/Purchase-Order-Preview?id=${po.PurchaseOrderId}`);
-                                      }}
-                                      className=" span-hover-pointer badge badge-pill badge-success "
-                                    >
-                                      {po.Status}
-                                    </span>
-                                  </TableCell>
-                                  <TableCell>{po.RegionalManager}</TableCell>
-                                  <TableCell>{po.RequestedBy}</TableCell>
-                                  <TableCell>{po.EstimateNumber}</TableCell>
-                                  <TableCell>{po.BillNumber}</TableCell>
-                                  <TableCell>{po.InvoiceNumber}</TableCell>
-                                  <TableCell className="text-end">{po.Amount}</TableCell>
-                                  {/* <TableCell>
+                                  {po.Status}
+                                </span>
+                              </TableCell>
+                              <TableCell>{po.RegionalManager}</TableCell>
+                              <TableCell>{po.RequestedBy}</TableCell>
+                              <TableCell>{po.EstimateNumber}</TableCell>
+                              <TableCell>{po.BillNumber}</TableCell>
+                              <TableCell>{po.InvoiceNumber}</TableCell>
+                              <TableCell className="text-end">
+                                {po.Amount}
+                              </TableCell>
+                              {/* <TableCell>
                                     <div className="button-container">
                                       <Button
                                         // className="btn btn-primary btn-icon-xxs me-2"
@@ -339,43 +404,31 @@ const PurchaseOrder = () => {
                                       </div>
                                     </div>
                                   </TableCell> */}
-                                </TableRow>
-                              ))
-                            )}
-                          </TableBody>
-                        </Table>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
 
-                        <TablePagination
-                          rowsPerPageOptions={[10, 25, 50]}
-                          component="div"
-                          count={totalRecords.totalRecords}
-                          rowsPerPage={rowsPerPage}
-                          page={tablePage} // Use tablePage for the table rows
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={(event) => {
-                            setRowsPerPage(parseInt(event.target.value, 10));
-                            setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="div"
+                      count={totalRecords.totalRecords}
+                      rowsPerPage={rowsPerPage}
+                      page={tablePage} // Use tablePage for the table rows
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={(event) => {
+                        setRowsPerPage(parseInt(event.target.value, 10));
+                        setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </>
-      ) : (
-        <AddPO
-          setselectedPo={setselectedPo}
-          selectedPo={selectedPo}
-          setShowContent={setShowContent}
-          setPostSuccessRes={setPostSuccessRes}
-          setPostSuccess={setPostSuccess}
-          fetchPo={fetchPo}
-          fetchFilterPo={fetchFilterPo}
-        />
-      )}
+        </div>
+      </div>
     </>
   );
 };

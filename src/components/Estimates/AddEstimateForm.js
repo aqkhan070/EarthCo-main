@@ -24,6 +24,8 @@ import { useEstimateContext } from "../../context/EstimateContext";
 import useDeleteFile from "../Hooks/useDeleteFile";
 import { DataContext } from "../../context/AppData";
 import { RoutingContext } from "../../context/RoutesContext";
+import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
@@ -41,6 +43,8 @@ const AddEstimateForm = () => {
     EstimateStatusId: 1,
     tblEstimateItems: [],
   });
+
+  const { sendEmail } = useSendEmail();
 
   const { setestmPreviewId } = useContext(RoutingContext);
   const navigate = useNavigate();
@@ -79,6 +83,8 @@ const AddEstimateForm = () => {
   const [submitError, setSubmitError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
+
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -89,6 +95,10 @@ const AddEstimateForm = () => {
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
   const [profitPercentage, setProfitPercentage] = useState(0);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { deleteEstmFile } = useDeleteFile();
@@ -378,6 +388,9 @@ const AddEstimateForm = () => {
       !formData.EstimateStatusId
     ) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
@@ -431,7 +444,15 @@ const AddEstimateForm = () => {
         }
       );
 
-      navigate(`/Estimates`);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
+      setAddCustomerSuccess(response.data.Message);
+      setTimeout(() => {
+        setAddCustomerSuccess("");
+        navigate(`/Estimates`);
+      }, 4000);
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
@@ -824,6 +845,12 @@ const AddEstimateForm = () => {
 
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="card">
         <div className="itemtitleBar ">
           <h4>Estimate Details</h4>
@@ -1719,8 +1746,8 @@ const AddEstimateForm = () => {
                       </div>
                       <div className="col-md-12 col-lg-12">
                         <div className="basic-form">
-                        <label className="form-label">Attachments</label>
-                     
+                          <label className="form-label">Attachments</label>
+
                           <div className="dz-default dlab-message upload-img mb-3">
                             <form action="#" className="dropzone">
                               <svg
@@ -2025,6 +2052,13 @@ const AddEstimateForm = () => {
                 </div>
                 <div className="mb-2 row text-right">
                   <div className="col-md-5 col-sm-4">
+                    {/* {addCustomerSuccess && (
+                      <Alert severity="success">
+                        {addCustomerSuccess
+                          ? addCustomerSuccess
+                          : "Susseccfully added/Updated estimate"}
+                      </Alert>
+                    )}
                     {submitError && (
                       <Alert severity="error">
                         {errorMessage ? errorMessage : "Error Adding Estimates"}
@@ -2034,21 +2068,19 @@ const AddEstimateForm = () => {
                       <Alert severity="error">
                         Please fill all required fields
                       </Alert>
-                    )}
+                    )} */}
                   </div>
 
-                  <div className="col-md-4 col-sm-5">
+                  <div className="col-md-7 col-sm-7 p-0 ">
                     {idParam ? (
-                      <div>
+                      <>
                         <FormControl>
-                          <InputLabel size="small" id="estimateLink">
-                            Create
-                          </InputLabel>
                           <Select
                             labelId="estimateLink"
                             aria-label="Default select example"
                             variant="outlined"
-                            className="text-left estimate-Link-Button"
+                            className="text-left "
+                            value={1}
                             // color="success"
 
                             name="Status"
@@ -2056,13 +2088,14 @@ const AddEstimateForm = () => {
                             placeholder="Select Status"
                             fullWidth
                           >
+                            <MenuItem value={1}>Create </MenuItem>
                             <MenuItem
+                              value={2}
                               onClick={() => {
                                 // setEstimateLinkData("PO clicked")
                                 LinkToPO();
                                 navigate("/Purchase-Order/AddPO");
                               }}
-                              value={2}
                             >
                               Purchase Order
                             </MenuItem>
@@ -2081,6 +2114,14 @@ const AddEstimateForm = () => {
                         <button
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                          onClick={() => {
+                            sendEmail(
+                              `/Estimates/Estimate-Preview?id=${idParam}`,
+                              formData.CustomerId,
+                              formData.ContactId,
+                              false
+                            );
+                          }}
                         >
                           <Email />
                         </button>
@@ -2088,27 +2129,17 @@ const AddEstimateForm = () => {
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
-                            navigate("/Estimates/Estimate-Preview");
-                            setestmPreviewId(idParam);
-                            // console.log(estimate.EstimateId);
+                            navigate(
+                              `/Estimates/Estimate-Preview?id=${idParam}`
+                            );
                           }}
                         >
                           <Print></Print>
                         </button>
-                        <button
-                          type="button"
-                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                          // style={{ minWidth: "120px" }}
-                        >
-                          <Download />
-                        </button>
-                      </div>
+                      </>
                     ) : (
                       <></>
                     )}{" "}
-                  </div>
-
-                  <div className="col-md-3 col-sm-3 p-0 ">
                     <NavLink to="/Estimates">
                       <button
                         className="btn btn-danger light ms-1 me-2"
@@ -2125,7 +2156,7 @@ const AddEstimateForm = () => {
                     </NavLink>
                     <button
                       type="submit"
-                      className="btn btn-primary me-1"
+                      className="btn btn-primary me-2"
                       onClick={handleSubmit}
                     >
                       Submit

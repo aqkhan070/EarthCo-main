@@ -11,12 +11,16 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
-
+import html2pdf from "html2pdf.js";
+import useSendEmail from "../Hooks/useSendEmail";
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
+  const isMail = queryParams.get("isMail");
 
   const { name, setName, fetchName } = useFetchCustomerName();
+  const { sendEmail } = useSendEmail();
+
   const navigate = useNavigate();
   const { estmPreviewId } = useContext(RoutingContext);
   const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
@@ -46,31 +50,39 @@ const EstimatePreview = () => {
   const handleDownload = () => {
     const input = document.getElementById("estimate-preview");
 
-    // Create a jsPDF instance with custom font and font size
-    const pdf = new jsPDF({
-      orientation: "p",
-      unit: "mm",
-      format: "a4",
+    html2pdf(input, {
+      margin: 10,
+      filename: "Estimate.pdf",
+      image: { type: "jpeg", quality: 1.0 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     });
 
-    const scale = 2; // Adjust the scale factor as needed
+    // // Create a jsPDF instance with custom font and font size
+    // const pdf = new jsPDF({
+    //   orientation: "p",
+    //   unit: "mm",
+    //   format: "a4",
+    // });
 
-    // Calculate the new width and height based on the scale
-    const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
+    // const scale = 2; // Adjust the scale factor as needed
 
-    pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    pdf.setFont("Roboto");
-    pdf.setFontSize(3); // Adjust the font size as needed
+    // // Calculate the new width and height based on the scale
+    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
+    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
 
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
+    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+    // pdf.setFont("Roboto");
+    // pdf.setFontSize(3); // Adjust the font size as needed
 
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-      pdf.save("estimate.pdf");
-    });
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL("image/png");
+    //   const width = pdf.internal.pageSize.getWidth();
+    //   const height = pdf.internal.pageSize.getHeight();
+
+    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    //   pdf.save("estimate.pdf");
+    // });
   };
 
   const fetchEstimates = async () => {
@@ -123,7 +135,7 @@ const EstimatePreview = () => {
       <div
         className={
           toggleFullscreen
-            ? "container-fluid custom-font-style print-page-width "
+            ? "container-fluid custom-font-style print-page-width"
             : ""
         }
       >
@@ -344,16 +356,20 @@ const EstimatePreview = () => {
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
-              <div className="p-2 bd-highlight">
-                <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn"
-                  onClick={() => {
-                    navigate(`/Estimates`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button>
-              </div>
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
+                  <button
+                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    onClick={() => {
+                      navigate(`/Estimates`);
+                    }}
+                  >
+                    <i className="fa fa-backward"></i>
+                  </button>
+                </div>
+              )}
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
@@ -372,6 +388,25 @@ const EstimatePreview = () => {
                   <i className="fa fa-download"></i>
                 </button>
               </div>
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
+                  <button
+                    className="btn btn-sm btn-outline-primary  estm-action-btn"
+                    onClick={() => {
+                      sendEmail(
+                        `/Estimates/Estimate-Preview?id=${idParam}`,
+                        previewData.EstimateData.CustomerId,
+                        previewData.EstimateData.ContactId,
+                        false
+                      );
+                    }}
+                  >
+                    <i class="fa-regular fa-envelope"></i>
+                  </button>
+                </div>
+              )}
             </div>
             ;
           </div>

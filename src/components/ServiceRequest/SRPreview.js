@@ -9,7 +9,8 @@ import { Print, Email, Download } from "@mui/icons-material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
-
+import html2pdf from "html2pdf.js";
+import useSendEmail from "../Hooks/useSendEmail";
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -19,9 +20,11 @@ const SRPreview = () => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
+  const isMail = queryParams.get("isMail");
 
   const { sRData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
+  const { sendEmail } = useSendEmail();
   const [sRPreviewData, setSRPreviewData] = useState({});
 
   const [showbuttons, setShowButtons] = useState(true);
@@ -41,31 +44,39 @@ const SRPreview = () => {
   const handleDownload = () => {
     const input = document.getElementById("SR-preview");
 
+    html2pdf(input, {
+      margin: 10,
+      filename: "Service request.pdf",
+      image: { type: "jpeg", quality: 1.0 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    });
+
     // Create a jsPDF instance with custom font and font size
-    const pdf = new jsPDF({
-      orientation: "p",
-      unit: "mm",
-      format: "a4",
-    });
+    // const pdf = new jsPDF({
+    //   orientation: "p",
+    //   unit: "mm",
+    //   format: "a4",
+    // });
 
-    const scale = 2; // Adjust the scale factor as needed
+    // const scale = 2; // Adjust the scale factor as needed
 
-    // Calculate the new width and height based on the scale
-    const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
+    // // Calculate the new width and height based on the scale
+    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
+    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
 
-    pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    pdf.setFont("Roboto");
-    pdf.setFontSize(3); // Adjust the font size as needed
+    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+    // pdf.setFont("Roboto");
+    // pdf.setFontSize(3); // Adjust the font size as needed
 
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight();
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL("image/png");
+    //   const width = pdf.internal.pageSize.getWidth();
+    //   const height = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-      pdf.save("Service request.pdf");
-    });
+    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    //   pdf.save("Service request.pdf");
+    // });
   };
 
   const fetchSR = async () => {
@@ -126,7 +137,7 @@ const SRPreview = () => {
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
-              <div id="estimate-preview" className=" get-preview ">
+              <div id="SR-preview" className=" get-preview ">
                 <div className="card-body perview-pd">
                   <div className="row ">
                     {/* <div className="col-md-12 mb-5"
@@ -333,16 +344,21 @@ const SRPreview = () => {
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
-              <div className="p-2 bd-highlight">
-                <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn"
-                  onClick={() => {
-                    navigate(`/Service-Requests`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button>
-              </div>
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
+                  <button
+                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    onClick={() => {
+                      navigate(`/Service-Requests`);
+                    }}
+                  >
+                    <i className="fa fa-backward"></i>
+                  </button>
+                </div>
+              )}
+
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
@@ -359,8 +375,28 @@ const SRPreview = () => {
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
-              </div>
+                </button> </div>
+                {isMail ? (
+                  <></>
+                ) : (
+                  <div className="p-2 bd-highlight">
+                    {" "}
+                    <button
+                      className="btn btn-sm btn-outline-primary  estm-action-btn"
+                      onClick={() => {
+                        sendEmail(
+                          `/Service-Requests/Service-Request-Preview?id=${idParam}`,
+                          sRPreviewData.Data.CustomerId,
+                          sRPreviewData.Data.ContactId,
+                          false
+                        );
+                      }}
+                    >
+                      <i class="fa-regular fa-envelope"></i>
+                    </button>
+                  </div>
+                )}
+             
             </div>
             ;
           </div>

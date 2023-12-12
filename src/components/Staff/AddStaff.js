@@ -13,6 +13,9 @@ import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import AddressInputs from "../Modals/AddressInputs";
+import EventPopups from "../Reusable/EventPopups";
+
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -50,13 +53,17 @@ const AddStaff = ({}) => {
     </svg>
   );
 
-  const [customerInfo, setCustomerInfo] = useState({});
+  const [customerInfo, setCustomerInfo] = useState({
+    RoleId: 4,
+  });
   const [userRoles, setUserRoles] = useState([]);
   const [alert, setAlert] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
 
   const [formValid, setFormValid] = useState(false);
+  const [staffAddress, setStaffAddress] = useState("");
 
   const [passwordMatch, setPasswordMatch] = useState(false);
 
@@ -66,6 +73,10 @@ const AddStaff = ({}) => {
   const [phoneError, setPhoneError] = useState(false);
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const getRoles = async () => {
     try {
@@ -80,6 +91,10 @@ const AddStaff = ({}) => {
       console.log("erroor ", error);
     }
   };
+
+  useEffect(() => {
+    console.log("address is", staffAddress);
+  }, [staffAddress]);
 
   useEffect(() => {
     getRoles();
@@ -152,12 +167,19 @@ const AddStaff = ({}) => {
       !customerInfo.RoleId
     ) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("please fill all required fields");
+
       console.log("Required fields are empty");
       return;
     }
 
     if (idParam === 0 && !customerInfo.Password) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
@@ -168,24 +190,36 @@ const AddStaff = ({}) => {
     ) {
       // Handle password and confirm password mismatch
       // setConfirmPasswordError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Password and Confirm Password do not match");
       console.log("Password and Confirm Password do not match");
       return; // Terminate the function here
     }
 
     if (!validator.isLength(customerInfo.FirstName, { min: 3, max: 30 })) {
       setFirstNameError("First name should be between 3 and 30 characters");
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("First name should be 3 to 30 characters");
       console.log("First name should be between 3 and 30 characters");
       return;
     }
 
     if (!validator.isLength(customerInfo.LastName, { min: 3, max: 30 })) {
       setLastNameError("Last name should be between 3 and 30 characters");
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Last name should be 3 to 30 characters");
       console.log("Last name should be between 3 and 30 characters");
       return;
     }
 
     if (!validator.isEmail(customerInfo.Email)) {
       setEmailError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Email must contain the @ symbol");
       console.log("Email must contain the @ symbol");
       return;
     }
@@ -195,6 +229,9 @@ const AddStaff = ({}) => {
       !validator.isMobilePhone(customerInfo.Phone, "any", { max: 20 })
     ) {
       setPhoneError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Phone number is not valid");
       console.log("Phone number is not valid");
       return;
     }
@@ -206,13 +243,20 @@ const AddStaff = ({}) => {
         { headers }
       );
 
-      navigate(`/Staff`);
-
+      setAddCustomerSuccess(response.data.Message);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
       setTimeout(() => {
-        setAlertSuccess(false);
-      }, 3000);
+        setAddCustomerSuccess("");
+        navigate(`/Staff`);
+      }, 4000);
 
-      setAlertSuccess(true);
+      // setTimeout(() => {
+      //   setAlertSuccess(false);
+      // }, 3000);
+
+      // setAlertSuccess(true);
 
       console.log("Staff added successfully", customerInfo);
     } catch (error) {
@@ -249,6 +293,12 @@ const AddStaff = ({}) => {
   return (
     <>
       <TitleBar icon={icon} title="Add Staff" />
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       {loading ? (
         <div className="center-loader">
           <CircularProgress style={{ color: "#789a3d" }} />
@@ -432,7 +482,14 @@ const AddStaff = ({}) => {
                   </div>
                   <div className="col-md-6" style={{ position: "relative" }}>
                     <label className="form-label">Address</label>
-                    <TextField
+
+                    <AddressInputs
+                      address={customerInfo.Address}
+                      handleChange={handleCustomerInfo}
+                      name="Address"
+                    />
+
+                    {/*<TextField
                       type="text"
                       onChange={handleCustomerInfo}
                       className="form-control "
@@ -443,7 +500,7 @@ const AddStaff = ({}) => {
                       id="exampleFormControlInput3"
                       placeholder="Address"
                     />
-                    {/* {showPop1 || (
+                     {showPop1 || (
                   <AdressModal
                     topClass="staffAdress"
                     adress={customerAdress}
@@ -454,6 +511,14 @@ const AddStaff = ({}) => {
                 )} */}
                   </div>
                   <div className="col-md-9 mt-4">
+                    {/* {addCustomerSuccess && (
+                      <Alert severity="success">
+                        {addCustomerSuccess
+                          ? addCustomerSuccess
+                          : "Susseccfully added/Updated staff"}
+                      </Alert>
+                    )}
+
                     {alert && (
                       <Alert severity="error">
                         The Email/User already exists
@@ -480,12 +545,10 @@ const AddStaff = ({}) => {
                     )}
                     {lastNameError && (
                       <Alert severity="error">{lastNameError}</Alert>
-                    )}
+                    )} */}
                   </div>
 
                   <div className=" mt-4 col-md-3 text-end">
-                  
-
                     <button
                       className="btn btn-danger light ms-1"
                       onClick={() => {
@@ -493,7 +556,8 @@ const AddStaff = ({}) => {
                       }}
                     >
                       Cancel
-                    </button>  <button className="btn btn-primary me-1" onClick={addStaff}>
+                    </button>{" "}
+                    <button className="btn btn-primary me-1" onClick={addStaff}>
                       Submit
                     </button>
                   </div>

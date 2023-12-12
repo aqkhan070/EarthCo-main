@@ -3,6 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import EventPopups from "../Reusable/EventPopups";
 
 const AddItem = ({
   selectedItem,
@@ -20,9 +21,11 @@ const AddItem = ({
   };
   const navigate = useNavigate();
 
-
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const getItem = async () => {
     if (!idParam) {
@@ -78,6 +81,10 @@ const AddItem = ({
       !formData.ExpenseAccount
     ) {
       setemptyFieldError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
+
       return;
     }
 
@@ -87,7 +94,12 @@ const AddItem = ({
         formData,
         { headers }
       );
-      navigate(`/Items`)
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(res.data.Message);
+      setTimeout(() => {
+        navigate(`/Items`);
+      }, 4000);
       console.log("successfuly posted item", res.data.Message);
     } catch (error) {
       console.log("api call error", error.response.data.Message);
@@ -102,6 +114,12 @@ const AddItem = ({
 
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className=" add-item mr-2">
         <div className="card">
           <div className="itemtitleBar">
@@ -333,7 +351,7 @@ const AddItem = ({
                   className="btn btn-danger light ms-1"
                   onClick={() => {
                     setFormData({});
-                    navigate(`/Items`)
+                    navigate(`/Items`);
                   }}
                 >
                   Cancel

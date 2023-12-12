@@ -21,17 +21,11 @@ import { Print, Email, Download } from "@mui/icons-material";
 import { useEstimateContext } from "../../context/EstimateContext";
 import { useNavigate, NavLink } from "react-router-dom";
 import useDeleteFile from "../Hooks/useDeleteFile";
+import TitleBar from "../TitleBar";
+import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
-export const AddPO = ({
-  selectedPo,
-  setselectedPo,
-  setShowContent,
-  setPostSuccessRes,
-  setPostSuccess,
-  fetchPo,
-  fetchFilterPo,
-  setPOData,
-}) => {
+export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -59,6 +53,43 @@ export const AddPO = ({
     PurchaseOrderNumber: "",
   };
 
+  const icon = (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.4065 14.8714H7.78821"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M14.4065 11.0338H7.78821"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M10.3137 7.2051H7.78827"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.5829 2.52066C14.5829 2.52066 7.54563 2.52433 7.53463 2.52433C5.00463 2.53991 3.43805 4.20458 3.43805 6.74374V15.1734C3.43805 17.7254 5.01655 19.3965 7.56855 19.3965C7.56855 19.3965 14.6049 19.3937 14.6168 19.3937C17.1468 19.3782 18.7143 17.7126 18.7143 15.1734V6.74374C18.7143 4.19174 17.1349 2.52066 14.5829 2.52066Z"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </svg>
+  );
+
   const [formData, setFormData] = useState(initialFormData);
 
   const [customersList, setCustomersList] = useState([]);
@@ -78,6 +109,12 @@ export const AddPO = ({
   const [staffData, setStaffData] = useState([]);
 
   const [loading, setLoading] = useState(false);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+const [snackBarColor, setSnackBarColor] = useState("");
+const [snackBarText, setSnackBarText] = useState("");
+
   const navigate = useNavigate();
 
   const { invoiceList, fetchInvoices } = useFetchInvoices();
@@ -85,6 +122,7 @@ export const AddPO = ({
   const { deletePOFile } = useDeleteFile();
 
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
+  const { sendEmail } = useSendEmail();
 
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
@@ -630,6 +668,9 @@ export const AddPO = ({
       !formData.Requestedby
     ) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+setSnackBarColor("error");
+setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
@@ -679,8 +720,14 @@ export const AddPO = ({
       );
 
       setEstimateLinkData({});
-
-      navigate("/Purchase-Order");
+      setAddCustomerSuccess(response.data.Message);
+      setOpenSnackBar(true);
+setSnackBarColor("success");
+setSnackBarText(response.data.Message);
+      setTimeout(() => {
+        setAddCustomerSuccess("");
+        navigate("/Purchase-Order");
+      }, 4000);
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
@@ -701,39 +748,14 @@ export const AddPO = ({
 
   return (
     <>
-      <div className="page-titles">
-        <ol className="breadcrumb">
-          <div className="menu-icon me-2">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 22 22"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M15.8381 12.7317C16.4566 12.7317 16.9757 13.2422 16.8811 13.853C16.3263 17.4463 13.2502 20.1143 9.54009 20.1143C5.43536 20.1143 2.10834 16.7873 2.10834 12.6835C2.10834 9.30245 4.67693 6.15297 7.56878 5.44087C8.19018 5.28745 8.82702 5.72455 8.82702 6.36429C8.82702 10.6987 8.97272 11.8199 9.79579 12.4297C10.6189 13.0396 11.5867 12.7317 15.8381 12.7317Z"
-                stroke="#888888"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M19.8848 9.1223C19.934 6.33756 16.5134 1.84879 12.345 1.92599C12.0208 1.93178 11.7612 2.20195 11.7468 2.5252C11.6416 4.81493 11.7834 7.78204 11.8626 9.12713C11.8867 9.5459 12.2157 9.87493 12.6335 9.89906C14.0162 9.97818 17.0914 10.0862 19.3483 9.74467C19.6552 9.69835 19.88 9.43204 19.8848 9.1223Z"
-                stroke="#888888"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <li>
-            <h5 className="bc-title">Purchase Order</h5>
-          </li>
-        </ol>
-      </div>
+      <TitleBar icon={icon} title="Add Purchase order" />
+      <EventPopups
+open={openSnackBar}
+setOpen={setOpenSnackBar}
+color={snackBarColor}
+text={snackBarText}
+/>
+
       {loading ? (
         <div className="center-loader">
           <CircularProgress />
@@ -1668,6 +1690,14 @@ export const AddPO = ({
                   </div>
 
                   <div className="col-md-6">
+                    {/* {addCustomerSuccess && (
+                      <Alert severity="success">
+                        {addCustomerSuccess
+                          ? addCustomerSuccess
+                          : "Successfully added/Updated Purchase order"}
+                      </Alert>
+                    )}
+
                     {emptyFieldsError && (
                       <Alert severity="error">
                         Please fill all required fields
@@ -1679,23 +1709,43 @@ export const AddPO = ({
                           ? errorMessage
                           : "Error submitting Purchase Order Data"}
                       </Alert>
-                    )}
+                    )} */}
                   </div>
 
                   <div className="mb-2  col-md-6 text-end">
                     <div className="mx-2">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn"
-                      >
-                        <Email />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn me-2"
-                      >
-                        <Print></Print>
-                      </button>
+                      {idParam ? (
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary estm-action-btn"
+                            onClick={() => {
+                              sendEmail(
+                                `/Purchase-Order/Purchase-Order-Preview?id=${idParam}`,
+                                formData.SupplierId,
+                                0,
+                                true
+                              );
+                            }}
+                          >
+                            <Email />
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                            onClick={() => {
+                              navigate(
+                                `/Purchase-Order/Purchase-Order-Preview?id=${idParam}`
+                              );
+                            }}
+                          >
+                            <Print></Print>
+                          </button>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
                       <button
                         className="btn btn-danger light me-2"
                         onClick={() => {

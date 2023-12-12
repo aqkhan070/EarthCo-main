@@ -17,6 +17,7 @@ const Map = () => {
   const [selectedType, setSelectedType] = useState("Inspect and Advise.");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedSR, setselectedSR] = useState(null);
   // const [filteredMapData, setFilteredMapData] = useState([]);
 
   const [searchSR, setsearchSR] = useState("");
@@ -93,7 +94,7 @@ const Map = () => {
                   </div>
                   <div className="mt-2">
                     <Form.Select
-                      className="bg-white"
+                      className="form-control bg-white"
                       value={selectedType}
                       onChange={(e) => setSelectedType(e.target.value)}
                     >
@@ -109,40 +110,8 @@ const Map = () => {
                     </Form.Select>
                   </div>
 
-                  <div className="card mt-2">
-                    <div className="card-body">
-                      {/* <ul className="nav nav-pills">
-                    <li className=" nav-item">
-                      <a
-                        href="#navpills-1"
-                        className="nav-link active"
-                        data-bs-toggle="tab"
-                        aria-expanded="false"
-                      >
-                        All
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        href="#navpills-2"
-                        className="nav-link"
-                        data-bs-toggle="tab"
-                        aria-expanded="false"
-                      >
-                        Assigned
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        href="#navpills-3"
-                        className="nav-link"
-                        data-bs-toggle="tab"
-                        aria-expanded="true"
-                      >
-                        Un-Assigned
-                      </a>
-                    </li>
-                  </ul> */}
+                  <div className="card mt-2  ">
+                    <div className="card-body pt-0">
                       <div className="tab-content">
                         {filteredMapData.map((map) => {
                           return (
@@ -151,14 +120,21 @@ const Map = () => {
                               key={map.ServiceRequestId}
                               className="tab-pane active"
                             >
-                              <div className="row serviceLocations pt-2">
+                              <div className="row serviceLocations py-0">
                                 <div
                                   onClick={() => {
                                     getLatLngs(map);
+                                    setselectedSR(map.ServiceRequestId);
                                   }}
                                   className="col-md-12"
                                 >
-                                  <div className="locationInfo">
+                                  <div
+                                    className={
+                                      selectedSR === map.ServiceRequestId
+                                        ? "locationInfo selected-map"
+                                        : "locationInfo"
+                                    }
+                                  >
                                     <div className="col-md-3 flex-box">
                                       <p>{map.ServiceRequestNumber}</p>
                                     </div>

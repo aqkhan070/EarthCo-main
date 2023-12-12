@@ -11,6 +11,8 @@ import Alert from "@mui/material/Alert";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import { CircularProgress } from "@mui/material";
+import EventPopups from "../Reusable/EventPopups";
+
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -32,6 +34,10 @@ const IrrigationForm = () => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const [addSucces, setAddSucces] = useState("");
 
@@ -134,6 +140,9 @@ const IrrigationForm = () => {
   const handleSubmit = async () => {
     setSubmitClicked(true);
     if (!formData.CustomerId) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("please fill all required Fields");
       setErrorMessage("please fill all required Fields");
       return;
     }
@@ -143,7 +152,12 @@ const IrrigationForm = () => {
         formData,
         { headers }
       );
-      navigate(`/Irrigation`);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(res.data.Message);
+      setTimeout(() => {
+        navigate(`/Irrigation`);
+      }, 4000);
 
       console.log("data submitted successfuly", res.data);
     } catch (error) {
@@ -200,6 +214,12 @@ const IrrigationForm = () => {
 
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="card-body">
         <div className="card">
           <div className="card-body p-0">
@@ -208,10 +228,10 @@ const IrrigationForm = () => {
             </div>
             <div className="card-body">
               <div className="">
-                {errorMessage ? (
+                {/* {errorMessage ? (
                   <Alert severity="error">{errorMessage}</Alert>
                 ) : null}
-                {addSucces && <Alert severity="success">{addSucces}</Alert>}
+                {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
 
                 <div className="row mb-2 mx-1">
                   <div className="col-md-3">

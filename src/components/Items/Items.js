@@ -17,6 +17,9 @@ import {
   TableSortLabel,
   TextField,
   CircularProgress,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { Delete, Create } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
@@ -55,15 +58,17 @@ const Items = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
 
   const getFilteredItemsList = async (
     Search = "",
     pageNo = 1,
-    PageLength = 10
+    PageLength = 10,
+    isAscending = false
   ) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Item/GetItemServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        `https://earthcoapi.yehtohoga.com/api/Item/GetItemServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&isAscending=${isAscending}`,
         { headers }
       );
       console.log("filtered items data", res.data);
@@ -99,8 +104,8 @@ const Items = () => {
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    getFilteredItemsList(search, tablePage + 1, rowsPerPage);
-  }, [search, tablePage, rowsPerPage]);
+    getFilteredItemsList(search, tablePage + 1, rowsPerPage, isAscending);
+  }, [search, tablePage, rowsPerPage, isAscending]);
 
   // useEffect(() => {
   //   getItemsList();
@@ -133,96 +138,109 @@ const Items = () => {
 
   return (
     <>
-      {showContent ? (
-        <>
-          <div className="container-fluid">
-            <div className="col-xl-12">
-              <div className="card" id="bootstrap-table2">
-                {successRes && <Alert security="success">{successRes}</Alert>}
-                {loading ? (
-                  <div className="center-loader">
-                    <CircularProgress />
+      <div className="container-fluid">
+        <div className="col-xl-12">
+          <div className="card" id="bootstrap-table2">
+            {successRes && <Alert security="success">{successRes}</Alert>}
+            {loading ? (
+              <div className="center-loader">
+                <CircularProgress />
+              </div>
+            ) : (
+              <>
+                <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                  <div>
+                    <TextField
+                      label="Search Item"
+                      variant="standard"
+                      size="small"
+                      fullWidth
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
                   </div>
-                ) : (
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-3 mb-2 text-left">
-                        <TextField
-                          label="Search"
-                          variant="standard"
-                          size="small"
-                          value={search}
-                          onChange={(e) => setSearch(e.target.value)}
-                        />
-                      </div>
+                  <div className=" me-2">
+                    <FormControl className="  me-2" variant="outlined">
+                      <Select
+                        labelId="customer-type-label"
+                        variant="outlined"
+                        value={isAscending}
+                        onChange={() => {
+                          setIsAscending(!isAscending);
+                        }}
+                        size="small"
+                      >
+                        <MenuItem value={true}>Ascending</MenuItem>
+                        <MenuItem value={false}>Descending</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <button
+                      className="btn btn-primary  "
+                      onClick={() => navigate(`/Items/Add-Item`)}
+                    >
+                      + Add New
+                    </button>
+                  </div>
+                </div>
 
-                      <div className="col-md-9 text-right">
-                        <button
-                          className="btn btn-primary btn-sm "
-                          onClick={() => navigate(`/Items/Add-Item`)}
-                        >
-                          + Add New
-                        </button>
-                      </div>
-                    </div>
-
-                    <Table>
-                      <TableHead className="table-header">
-                        <TableRow className="material-tbl-alignment">
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "ItemName"}
-                              direction={orderBy === "ItemName" ? order : "asc"}
-                              onClick={() => handleSortRequest("ItemName")}
-                            >
-                              Name
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "SKU"}
-                              direction={orderBy === "SKU" ? order : "asc"}
-                              onClick={() => handleSortRequest("SKU")}
-                            >
-                              SKU
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "IncomeAccount"}
-                              direction={
-                                orderBy === "IncomeAccount" ? order : "asc"
-                              }
-                              onClick={() => handleSortRequest("IncomeAccount")}
-                            >
-                              Account #
-                            </TableSortLabel>
-                          </TableCell>
-                          {/* <TableCell className="text-end">Actions</TableCell> */}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {(rowsPerPage > 0
-                          ? filteredItems.slice(
-                              page * rowsPerPage,
-                              page * rowsPerPage + rowsPerPage
-                            )
-                          : filteredItems
-                        ).map((item, index) => (
-                          <TableRow
-                            className="material-tbl-alignment"
-                            onDoubleClick={() => {
-                              // setSelectedItem(item.ItemId);
-                              // setShowContent(false);
-                              navigate(`/Items/Add-Item?id=${item.ItemId}`);
-                            }}
-                            key={index}
-                            hover
+                <div className="card-body pt-0">
+                  <Table>
+                    <TableHead className="table-header">
+                      <TableRow className="material-tbl-alignment">
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "ItemName"}
+                            direction={orderBy === "ItemName" ? order : "asc"}
+                            onClick={() => handleSortRequest("ItemName")}
                           >
-                            <TableCell>{item.ItemName}</TableCell>
-                            <TableCell>{item.SKU}</TableCell>
-                            <TableCell>{item.IncomeAccount}</TableCell>
-                            {/* <TableCell className="text-end">
+                            Name
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "SKU"}
+                            direction={orderBy === "SKU" ? order : "asc"}
+                            onClick={() => handleSortRequest("SKU")}
+                          >
+                            SKU
+                          </TableSortLabel>
+                        </TableCell>
+                        <TableCell>
+                          <TableSortLabel
+                            active={orderBy === "IncomeAccount"}
+                            direction={
+                              orderBy === "IncomeAccount" ? order : "asc"
+                            }
+                            onClick={() => handleSortRequest("IncomeAccount")}
+                          >
+                            Account #
+                          </TableSortLabel>
+                        </TableCell>
+                        {/* <TableCell className="text-end">Actions</TableCell> */}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {(rowsPerPage > 0
+                        ? filteredItems.slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                        : filteredItems
+                      ).map((item, index) => (
+                        <TableRow
+                          className="material-tbl-alignment"
+                          onDoubleClick={() => {
+                            // setSelectedItem(item.ItemId);
+                            // setShowContent(false);
+                            navigate(`/Items/Add-Item?id=${item.ItemId}`);
+                          }}
+                          key={index}
+                          hover
+                        >
+                          <TableCell>{item.ItemName}</TableCell>
+                          <TableCell>{item.SKU}</TableCell>
+                          <TableCell>{item.IncomeAccount}</TableCell>
+                          {/* <TableCell className="text-end">
                               <Button
                                 //  className=" btn btn-primary  btn-icon-xxs me-2"
                                 size="small"
@@ -294,44 +312,34 @@ const Items = () => {
                                 </div>
                               </div>
                             </TableCell> */}
-                          </TableRow>
-                        ))}
-                        {emptyRows > 0 && (
-                          <TableRow>
-                            <TableCell colSpan={5} />
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+                        </TableRow>
+                      ))}
+                      {emptyRows > 0 && (
+                        <TableRow>
+                          <TableCell colSpan={5} />
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
 
-                    <TablePagination
-                      rowsPerPageOptions={[10, 25, 50]}
-                      component="div"
-                      count={totalRecords}
-                      rowsPerPage={rowsPerPage}
-                      page={tablePage} // Use tablePage for the table rows
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={(event) => {
-                        setRowsPerPage(parseInt(event.target.value, 10));
-                        setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50]}
+                    component="div"
+                    count={totalRecords}
+                    rowsPerPage={rowsPerPage}
+                    page={tablePage} // Use tablePage for the table rows
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={(event) => {
+                      setRowsPerPage(parseInt(event.target.value, 10));
+                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                    }}
+                  />
+                </div>
+              </>
+            )}
           </div>
-        </>
-      ) : (
-        <AddItem
-          headers={headers}
-          getFilteredItemsList={getFilteredItemsList}
-          selectedItem={selectedItem}
-          setShowContent={setShowContent}
-          setSuccessRes={setSuccessRes}
-          setSelectedItem={setSelectedItem}
-        />
-      )}
+        </div>
+      </div>
     </>
   );
 };

@@ -14,6 +14,9 @@ import {
   Checkbox,
   Button,
   Grid,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -24,6 +27,7 @@ import { Delete, Create, Visibility } from "@mui/icons-material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import formatDate from "../../custom/FormatDate";
+import TblDateFormat from "../../custom/TblDateFormat";
 import DeleteAllModal from "./DeleteAllModal";
 import useGetEstimate from "../Hooks/useGetEstimate";
 
@@ -201,6 +205,8 @@ const EstimateTR = ({
 
   const [tablePage, setTablePage] = useState(0);
   const [search, setSearch] = useState("");
+  const [isAscending, setIsAscending] = useState(false);
+
   useEffect(() => {
     // Initial fetch of estimates
     getFilteredEstimate();
@@ -208,8 +214,15 @@ const EstimateTR = ({
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    getFilteredEstimate(search, tablePage + 1, rowsPerPage, statusId);
-  }, [search, tablePage, rowsPerPage, statusId]);
+    getFilteredEstimate(
+      search,
+      tablePage + 1,
+      rowsPerPage,
+      statusId,
+      isAscending
+    );
+  }, [search, tablePage, rowsPerPage, statusId, isAscending]);
+
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
     setTablePage(newPage);
@@ -234,230 +247,198 @@ const EstimateTR = ({
 
   return (
     <>
-      {showContent ? (
-        <ThemeProvider theme={theme}>
-          <div className="card">
-            <div className="card-body">
-              <div className="row ">
-                <div className=" text-center mb-3">
-                  {submitsuccess && (
-                    <Alert severity="success">
-                      Successfuly Added Estimates
-                    </Alert>
-                  )}
-                  {updateSuccess && (
-                    <Alert severity="success">
-                      Successfuly Updated Estimates
-                    </Alert>
-                  )}
-                  {deleteSuccess && (
-                    <Alert className="mb-3" severity="success">
-                      Successfuly Deleted Estimate
-                    </Alert>
-                  )}
+      <ThemeProvider theme={theme}>
+        <div className="card">
+          <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+            <div>
+              <TextField
+                label="Search Estimate"
+                variant="standard"
+                size="small"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className=" me-2">
+              <FormControl className="  me-2" variant="outlined">
+                <Select
+                  labelId="customer-type-label"
+                  variant="outlined"
+                  value={isAscending}
+                  onChange={() => {
+                    setIsAscending(!isAscending);
+                  }}
+                  size="small"
+                >
+                  <MenuItem value={true}>Ascending</MenuItem>
+                  <MenuItem value={false}>Descending</MenuItem>
+                </Select>
+              </FormControl>
+              <button
+                className="btn btn-primary "
+                onClick={() => {
+                  // setSelectedItem(0);
+                  // setShowContent(false);
+                  navigate("/Estimates/Add-Estimate");
+                }}
+              >
+                + Add Estimates
+              </button>
+            </div>
+          </div>
 
-                  <div className="col-md-12">
-                    {/* <div>
-                      <Form.Select
-                        size="sm"
-                        value={filterDate}
-                        onChange={(e) => setFilterDate(e.target.value)}
-                        aria-label="Default select example"
-                        className="bg-white date-sort-form"
-                      >
-                        <option value="This Month">This Month</option>
-                        <option value="Previous Month">Previous Month</option>
-                        <option value="Last three months">Last three months</option>
-                      </Form.Select>
-                    </div> */}
-                    <div className="custom-search-container">
-                      <TextField
-                        label="Search Estimates"
-                        variant="standard"
-                        size="small"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </div>
-                    <div className="custom-button-container">
-                      {/* <button
-                        className="btn btn-danger btn-sm me-2"
-                        data-bs-toggle="modal"
-                        data-bs-target={`#deleteAllModal`}
-                      >
-                        Delete All
-                      </button>
-                      <button className="btn btn-warning btn-sm me-2"
-                      data-bs-toggle="modal"
-                      data-bs-target={`#updateAllModal`}
-                      >
-                        Update All
-                      </button> */}
+          <div className="card-body pt-0">
+            <div className="row ">
+              <div
+                className="modal fade"
+                id="deleteAllModal"
+                tabIndex="-1"
+                aria-labelledby="deleteAllModalLabel"
+                aria-hidden="true"
+              >
+                <div
+                  className="modal-dialog modal-dialog-centered"
+                  role="document"
+                >
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Delete Estimates</h5>
                       <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => {
-                          // setSelectedItem(0);
-                          // setShowContent(false);
-                          navigate("/Estimates/Add-Estimate");
-                        }}
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <p>Are you sure you want to delete Estimate</p>
+                    </div>
+
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        // id="closer"
+                        className="btn btn-danger light"
+                        data-bs-dismiss="modal"
                       >
-                        + Add Estimates
+                        Close
+                      </button>
+                      <button
+                        className="btn btn-primary "
+                        data-bs-dismiss="modal"
+                        onClick={() => {}}
+                      >
+                        Yes
                       </button>
                     </div>
                   </div>
-                </div>{" "}
+                </div>
+              </div>
+              <div
+                className="modal fade"
+                id="updateAllModal"
+                tabIndex="-1"
+                aria-labelledby="updateAllModalLabel"
+                aria-hidden="true"
+              >
                 <div
-                  className="modal fade"
-                  id="deleteAllModal"
-                  tabIndex="-1"
-                  aria-labelledby="deleteAllModalLabel"
-                  aria-hidden="true"
+                  className="modal-dialog modal-dialog-centered"
+                  role="document"
                 >
-                  <div
-                    className="modal-dialog modal-dialog-centered"
-                    role="document"
-                  >
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title">Delete Estimates</h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          data-bs-dismiss="modal"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <p>Are you sure you want to delete Estimate</p>
-                      </div>
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">Update Estimates</h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <p>Are you sure you want to Update selected Estimate</p>
+                    </div>
 
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          // id="closer"
-                          className="btn btn-danger light"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                        <button
-                          className="btn btn-primary "
-                          data-bs-dismiss="modal"
-                          onClick={() => {}}
-                        >
-                          Yes
-                        </button>
-                      </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        // id="closer"
+                        className="btn btn-danger light"
+                        data-bs-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button
+                        className="btn btn-primary "
+                        data-bs-dismiss="modal"
+                        onClick={() => {}}
+                      >
+                        Yes
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div
-                  className="modal fade"
-                  id="updateAllModal"
-                  tabIndex="-1"
-                  aria-labelledby="updateAllModalLabel"
-                  aria-hidden="true"
-                >
-                  <div
-                    className="modal-dialog modal-dialog-centered"
-                    role="document"
-                  >
-                    <div className="modal-content">
-                      <div className="modal-header">
-                        <h5 className="modal-title">Update Estimates</h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          data-bs-dismiss="modal"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <p>Are you sure you want to Update selected Estimate</p>
-                      </div>
-
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          // id="closer"
-                          className="btn btn-danger light"
-                          data-bs-dismiss="modal"
-                        >
-                          Close
-                        </button>
-                        <button
-                          className="btn btn-primary "
-                          data-bs-dismiss="modal"
-                          onClick={() => {}}
-                        >
-                          Yes
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <TableContainer>
-                  <Table>
-                    <TableHead className="table-header">
-                      <TableRow className="material-tbl-alignment">
-                        {/*<TableCell padding="checkbox">
+              </div>
+              <TableContainer>
+                <Table>
+                  <TableHead className="table-header">
+                    <TableRow className="material-tbl-alignment">
+                      {/*<TableCell padding="checkbox">
                            <Checkbox
                             checked={selectAll}
                             onChange={handleSelectAll}
                           /></TableCell> */}
-                        <TableCell>#</TableCell>
-                        <TableCell>Customer</TableCell>
-                        <TableCell className="table-cell-align">
-                          Regional Manager
+                      <TableCell>#</TableCell>
+                      <TableCell>Customer</TableCell>
+                      <TableCell className="table-cell-align">
+                        Regional Manager
+                      </TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell className="table-cell-align">
+                        Estimate #
+                      </TableCell>
+                      <TableCell className="table-cell-align">
+                        Description Of Work
+                      </TableCell>
+                      <TableCell className="table-cell-align">PO #</TableCell>
+                      <TableCell className="table-cell-align">Bill #</TableCell>
+                      <TableCell className="table-cell-align">
+                        Invoice #
+                      </TableCell>
+                      <TableCell className=" text-end table-cell-align">
+                        Profit %
+                      </TableCell>
+                      <TableCell className="text-end">Amount</TableCell>
+                      {/* <TableCell>Actions</TableCell> */}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableError ? (
+                      <TableRow>
+                        <TableCell className="text-center" colSpan={12}>
+                          No record Found
                         </TableCell>
-                        <TableCell>Date</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell className="table-cell-align">
-                          Estimate #
-                        </TableCell>
-                        <TableCell className="table-cell-align">
-                          Description Of Work
-                        </TableCell>
-                        <TableCell className="table-cell-align">PO #</TableCell>
-                        <TableCell className="table-cell-align">
-                          Bill #
-                        </TableCell>
-                        <TableCell className="table-cell-align">
-                          Invoice #
-                        </TableCell>
-                        <TableCell className=" text-end table-cell-align">
-                          Profit %
-                        </TableCell>
-                        <TableCell className="text-end">Amount</TableCell>
-                        {/* <TableCell>Actions</TableCell> */}
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {tableError ? (
-                        <TableRow>
-                          <TableCell className="text-center" colSpan={12}>
-                            No record Found
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        filteredEstimates
-                          .slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
-                          .map((estimate, index) => (
-                            <TableRow
-                              className="material-tbl-alignment"
-                              onDoubleClick={() => {
-                                // setSelectedItem(estimate.EstimateId);
-                                // console.log(",,,,,,,,,,", selectedItem);
-                                // setShowContent(false);
-                                navigate(
-                                  `/Estimates/Add-Estimate?id=${estimate.EstimateId}`
-                                );
-                              }}
-                              key={estimate.EstimateId}
-                              hover
-                            >
-                              {/* <TableCell padding="checkbox">
+                    ) : (
+                      filteredEstimates
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((estimate, index) => (
+                          <TableRow
+                            className="material-tbl-alignment"
+                            onDoubleClick={() => {
+                              // setSelectedItem(estimate.EstimateId);
+                              // console.log(",,,,,,,,,,", selectedItem);
+                              // setShowContent(false);
+                              navigate(
+                                `/Estimates/Add-Estimate?id=${estimate.EstimateId}`
+                              );
+                            }}
+                            key={estimate.EstimateId}
+                            hover
+                          >
+                            {/* <TableCell padding="checkbox">
                               <Checkbox
                                 checked={
                                   selectAll ||
@@ -470,50 +451,57 @@ const EstimateTR = ({
                                 }
                               />
                             </TableCell> */}
-                              <TableCell>{estimate.EstimateId}</TableCell>
-                              <TableCell className="table-cell-align">
-                                {estimate.CustomerName}
-                              </TableCell>
-                              <TableCell className="table-cell-align">
-                                {estimate.RegionalManager}
-                              </TableCell>
-                              <TableCell className="table-cell-align">
-                                {formatDate(estimate.Date)}
-                              </TableCell>
-                              <TableCell>
-                                <span
-                                  onClick={() => {
-                                    navigate(`/Estimates/Estimate-Preview?id=${estimate.EstimateId}`);
-                                    // setestmPreviewId(estimate.EstimateId);
-                                    console.log(estimate.EstimateId);
-                                  }}
-                                  className="badge badge-pill badge-success span-hover-pointer"
-                                >
-                                  {estimate.Status}
-                                </span>
-                              </TableCell>
-                              <TableCell
-                                align="center"
-                                className="table-cell-align"
+                            <TableCell>{estimate.EstimateId}</TableCell>
+                            <TableCell className="table-cell-align">
+                              {estimate.CustomerCompanyName}
+                            </TableCell>
+                            <TableCell className="table-cell-align">
+                              {estimate.RegionalManager}
+                            </TableCell>
+                            <TableCell className="table-cell-align">
+                              {TblDateFormat(estimate.Date)}
+                            </TableCell>
+                            <TableCell>
+                              <span
+                                onClick={() => {
+                                  navigate(
+                                    `/Estimates/Estimate-Preview?id=${estimate.EstimateId}`
+                                  );
+                                  // setestmPreviewId(estimate.EstimateId);
+                                  console.log(estimate.EstimateId);
+                                }}
+                                style={{
+                                  backgroundColor: estimate.StatusColor,
+                                }}
+                                className="badge badge-pill  span-hover-pointer"
                               >
-                                {estimate.EstimateNumber}
-                              </TableCell>
-                              {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
-                              <TableCell>
-                                {estimate.DescriptionofWork}
-                              </TableCell>
-                              <TableCell align="center">
-                                {estimate.PurchaseOrderNumber}
-                              </TableCell>
-                              <TableCell align="center">{estimate.BillNumber}</TableCell>
-                              <TableCell align="center">{estimate.InvoiceNumber}</TableCell>
-                              <TableCell className="text-end">
-                                {estimate.ProfitPercentage.toFixed(2)}
-                              </TableCell>
-                              <TableCell className="text-end">
-                                {estimate.EstimateAmount.toFixed(2)}
-                              </TableCell>
-                              {/* <TableCell>
+                                {estimate.Status}
+                              </span>
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              className="table-cell-align"
+                            >
+                              {estimate.EstimateNumber}
+                            </TableCell>
+                            {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
+                            <TableCell>{estimate.DescriptionofWork}</TableCell>
+                            <TableCell align="center">
+                              {estimate.PurchaseOrderNumber}
+                            </TableCell>
+                            <TableCell align="center">
+                              {estimate.BillNumber}
+                            </TableCell>
+                            <TableCell align="center">
+                              {estimate.InvoiceNumber}
+                            </TableCell>
+                            <TableCell className="text-end">
+                              {estimate.ProfitPercentage.toFixed(2)}
+                            </TableCell>
+                            <TableCell className="text-end">
+                              {estimate.EstimateAmount.toFixed(2)}
+                            </TableCell>
+                            {/* <TableCell>
                                 <div className="button-container">
                                   <Button
                                     // className="btn btn-primary btn-icon-xxs me-2"
@@ -606,13 +594,13 @@ const EstimateTR = ({
                                   </div>
                                 </div>
                               </TableCell> */}
-                            </TableRow>
-                          ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-                {/* <div className="row text-end">
+                          </TableRow>
+                        ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              {/* <div className="row text-end">
                   <div className="col-md-9"></div>
                     <div className="col-md-3 text-end">
                     <button type="button" className="btn btn-sm btn-outline-primary me-1"
@@ -628,19 +616,19 @@ const EstimateTR = ({
                     >&#8658;</button>
                     </div>
                   </div> */}
-                <TablePagination
-                  rowsPerPageOptions={[10, 25, 50]}
-                  component="div"
-                  count={estmRecords.totalRecords}
-                  rowsPerPage={rowsPerPage}
-                  page={tablePage} // Use tablePage for the table rows
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={(event) => {
-                    setRowsPerPage(parseInt(event.target.value, 10));
-                    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                  }}
-                />
-                {/* <TablePagination
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 50]}
+                component="div"
+                count={estmRecords.totalRecords}
+                rowsPerPage={rowsPerPage}
+                page={tablePage} // Use tablePage for the table rows
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={(event) => {
+                  setRowsPerPage(parseInt(event.target.value, 10));
+                  setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                }}
+              />
+              {/* <TablePagination
                   rowsPerPageOptions={[10, 25, 50]}
                   component="div"
                   count={filteredEstimates.length}
@@ -652,22 +640,10 @@ const EstimateTR = ({
                     setPage(0);
                   }}
                 /> */}
-              </div>
             </div>
           </div>
-        </ThemeProvider>
-      ) : (
-        <UpdateEstimateForm
-          headers={headers}
-          setShowContent={setShowContent}
-          estimateId={selectedItem}
-          setShowStatusCards={setShowStatusCards}
-          setSubmitsuccess={setSubmitsuccess}
-          setUpdateSuccess={setUpdateSuccess}
-          getEstimate={getEstimate}
-          getFilteredEstimate={getFilteredEstimate}
-        />
-      )}
+        </div>
+      </ThemeProvider>
     </>
   );
 };

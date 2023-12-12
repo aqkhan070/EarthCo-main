@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
 import { TextField } from "@mui/material";
+import EventPopups from "../Reusable/EventPopups";
 
 const IrrigationControler = ({
   setAddSucces,
@@ -16,6 +17,11 @@ const IrrigationControler = ({
   };
   const [formData, setFormData] = useState({});
   const [addError, setAddError] = useState("");
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
   const handleChange = (e) => {
     setEmptyFieldError(false);
     const { name, value } = e.target;
@@ -66,6 +72,9 @@ const IrrigationControler = ({
     setSubmitClicked(true);
 
     if (!formData.MakeAndModel || !formData.SerialNumber) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       setEmptyFieldError(true);
       return;
     }
@@ -116,15 +125,18 @@ const IrrigationControler = ({
         postData,
         { headers }
       );
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
 
       setFormData({});
       fetchIrrigation(idParam);
       setTimeout(() => {
         setAddSucces("");
+        toggleShowForm();
       }, 3000);
 
       setAddSucces(response.data.Message);
-      toggleShowForm();
       document.getElementById("photo").value = "";
       document.getElementById("controllerPhoto").value = "";
 
@@ -141,6 +153,12 @@ const IrrigationControler = ({
 
   return (
     <div className="card">
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="itemtitleBar">
         <h4>Controller Info</h4>
       </div>
@@ -163,7 +181,7 @@ const IrrigationControler = ({
               error={submitClicked && !formData.MakeAndModel}
             />
           </div>
-        
+
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">
@@ -282,7 +300,7 @@ const IrrigationControler = ({
               placeholder=""
             />
           </div>
-          
+
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Satellite Based</label>
@@ -495,7 +513,6 @@ const IrrigationControler = ({
             </div>
           </div>
 
-         
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Number of Broken Heads</label>
@@ -520,9 +537,7 @@ const IrrigationControler = ({
               placeholder="Capture Photo"
             />
           </div>
-          <div className="col-sm-5 col-md-4 mb-3 ">
-         
-          </div>
+          <div className="col-sm-5 col-md-4 mb-3 "></div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Repairs Made</label>
@@ -551,18 +566,17 @@ const IrrigationControler = ({
               ></textarea>
             </div>
           </div>
-        
+
           <div className="col-sm-5 col-md-4 mb-3 "></div>
         </div>
         <div className="row ">
           <div className="col-md-8">
-            {addError && <Alert severity="error">{addError}</Alert>}
+            {/* {addError && <Alert severity="error">{addError}</Alert>}
             {emptyFieldError && (
               <Alert severity="error">Please fill all required fields</Alert>
-            )}
+            )} */}
           </div>
           <div className=" col-md-4 mb-3 text-right">
-        
             <button
               onClick={toggleShowForm}
               type="button"

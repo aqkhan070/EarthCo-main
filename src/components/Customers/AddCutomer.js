@@ -25,6 +25,7 @@ import MapCo from "./MapCo";
 import { DataContext } from "../../context/AppData";
 import Cookies from "js-cookie";
 import CustomerAddress from "./CustomerAddress/CustomerAddress";
+import EventPopups from "../Reusable/EventPopups";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -109,6 +110,7 @@ const AddCustomer = () => {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [disableButton, setDisableButton] = useState(false);
   const [error, setError] = useState(false);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
   const [emailError, setEmailError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -209,6 +211,16 @@ const AddCustomer = () => {
   const [lastNameError, setLastNameError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
+  const handleAlert = () => {
+    setOpenSnackBar(true);
+    setSnackBarColor("success");
+    setSnackBarText("successsssssss");
+  };
+
   const handleSubmit = async () => {
     setDisableButton(true);
     console.log("check1");
@@ -219,6 +231,9 @@ const AddCustomer = () => {
       !companyData.LastName ||
       !companyData.Email
     ) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       console.log("check2 ");
 
       setEmptyFieldError(true);
@@ -237,12 +252,18 @@ const AddCustomer = () => {
       return; // Return early if login fields are empty
     }
     if (allowLogin && companyData.Password !== companyData.ConfirmPassword) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Password and Confirm Password Should Be same");
       console.log("check4");
       return; // Return early if passwords do not match
     }
 
     if (!validator.isLength(companyData.CompanyName, { min: 3, max: 30 })) {
       setCompanyNameError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Company name should be 3 to 30 characters");
       console.log("Company name should be between 3 and 30 characters");
       return;
     }
@@ -250,19 +271,28 @@ const AddCustomer = () => {
     // Validate first name length
     if (!validator.isLength(companyData.FirstName, { min: 3, max: 30 })) {
       setFirstNameError(true);
-      console.log("First name should be between 3 and 30 characters");
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("First name should be between 3 and 30 characters");
+      console.log("First name should be 3 to 30 characters");
       return;
     }
 
     // Validate last name length
     if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
       setLastNameError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Last name should be between 3 and 30 characters");
       console.log("Last name should be between 3 and 30 characters");
       return;
     }
 
     if (!validator.isEmail(companyData.Email)) {
       setemailValidError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Email must contain the @ symbol");
       console.log("Email must contain the @ symbol");
       return;
     }
@@ -271,6 +301,11 @@ const AddCustomer = () => {
       !validator.isMobilePhone(companyData.Phone, "any", { max: 20 })
     ) {
       setPhoneError(true);
+
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Phone number is not valid");
+
       console.log("Phone number is not valid");
       return;
     }
@@ -286,6 +321,15 @@ const AddCustomer = () => {
 
       setCustomerAddress("");
       setServiceLocationAddress({});
+
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
+      setAddCustomerSuccess(response.data.Message);
+      setTimeout(() => {
+        setAddCustomerSuccess("");
+      }, 4000);
 
       setDisableButton(false);
       console.log("sussess add customer response", response.data);
@@ -315,7 +359,6 @@ const AddCustomer = () => {
         ...prevFormData,
         [name]: value,
         isLoginAllow: allowLogin,
-        Address: serviceLocationAddress.Address,
       };
 
       // Additional checks for the username and password fields
@@ -405,6 +448,9 @@ const AddCustomer = () => {
         );
         console.log("successful contact api", response.data.Id);
         //setShouldCloseModal(true);
+        setOpenSnackBar(true);
+        setSnackBarColor("success");
+        setSnackBarText(response.data.Message);
 
         // Update the contactData with the response id, then add to list
         setContactData((prevState) => ({
@@ -518,6 +564,9 @@ const AddCustomer = () => {
       setTimeout(() => {
         setContactDelSuccess(false);
       }, 4000);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Contact Deleted Successfully");
       console.log("contact deleted sussessfully", id, response);
     } catch (error) {
       console.log("error deleting contact", error);
@@ -630,6 +679,9 @@ const AddCustomer = () => {
         );
 
         setServiceLocationAddress({});
+        setOpenSnackBar(true);
+        setSnackBarColor("success");
+        setSnackBarText(response.data.Message);
 
         // Assuming that the response data has an ID that you want to append
         const serviceLocationWithId = {
@@ -749,6 +801,9 @@ const AddCustomer = () => {
         (sl) => sl.ServiceLocationId !== serviceLocationId
       );
       setSlForm(updatedSlForm);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Successfully Deleted Service Location");
       console.log("successfully deleted service location", response);
     } catch (error) {
       console.log("error deleting service location", error);
@@ -923,10 +978,12 @@ const AddCustomer = () => {
                         >
                           Address
                         </label>
-                        {/* <AddressInputs
-                          setCustomerAddress={setCustomerAddress}
-                        /> */}{" "}
-                        <TextField
+                        <AddressInputs
+                          address={companyData.Address}
+                          name="Address"
+                          handleChange={handleCompanyChange}
+                        />
+                        {/* <TextField
                           type="text"
                           className="form-control"
                           name="Address"
@@ -935,7 +992,7 @@ const AddCustomer = () => {
                           value={companyData.Address}
                           onChange={handleCompanyChange}
                           placeholder="Address"
-                        />
+                        /> */}
                         {/* <MapCo /> */}
                       </div>
                       <div className="col-xl-4 mb-3">
@@ -1161,41 +1218,12 @@ const AddCustomer = () => {
                 </div> */}
                 <div className="row">
                   <div className="col-md-9">
-                    {error && (
-                      <Alert severity="error">
-                        {emailError
-                          ? emailError
-                          : "An error occured while adding/Updating customer"}
-                      </Alert>
-                    )}
-                    {emptyFieldError && (
-                      <Alert severity="error">
-                        Please Fill all required fields
-                      </Alert>
-                    )}
-                    {emailValidError && (
-                      <Alert severity="error">Please enter valid email</Alert>
-                    )}
-                    {lastNameError && (
-                      <Alert severity="error">
-                        Please enter valid Last Name
-                      </Alert>
-                    )}
-                    {firstNameError && (
-                      <Alert severity="error">
-                        Please enter valid First Name
-                      </Alert>
-                    )}
-                    {companyNameError && (
-                      <Alert severity="error">
-                        Please enter valid Company name
-                      </Alert>
-                    )}
-                    {phoneError && (
-                      <Alert severity="error">
-                        Please enter valid Phone Number
-                      </Alert>
-                    )}
+                    <EventPopups
+                      open={openSnackBar}
+                      setOpen={setOpenSnackBar}
+                      color={snackBarColor}
+                      text={snackBarText}
+                    />
                   </div>
                   <div className="col-md-3 text-end">
                     <NavLink to="/Customers">
@@ -1375,7 +1403,12 @@ const AddCustomer = () => {
                           Address<span className="text-danger">*</span>
                         </label>
                         <div className="col-sm-8">
-                          <input
+                          <AddressInputs
+                            address={formik.values.Address}
+                            name="Address"
+                            handleChange={formik.handleChange}
+                          />
+                          {/* <input
                             name="Address"
                             className="form-control"
                             placeholder="Address"
@@ -1383,12 +1416,12 @@ const AddCustomer = () => {
                             value={formik.values.Address}
                             onBlur={formik.handleBlur}
                             //required
-                          />
-                          {formik.errors.Address && formik.touched.Address ? (
+                          /> */}
+                          {/* {formik.errors.Address && formik.touched.Address ? (
                             <small style={{ color: "red" }}>
                               {formik.errors.Address}
                             </small>
-                          ) : null}
+                          ) : null} */}
                         </div>
                       </div>
                       <div className=" mb-3 row">
@@ -1668,18 +1701,7 @@ const AddCustomer = () => {
                       </div>
                       <div className="card-body">
                         <div className="row">
-                          <div className="col-md-8">
-                            {contactAddSuccess && (
-                              <Alert severity="success">
-                                Contact Added/Updated Successfuly
-                              </Alert>
-                            )}
-                            {contactDelSuccess && (
-                              <Alert severity="success">
-                                Contact Deleted Successfuly
-                              </Alert>
-                            )}
-                          </div>
+                          <div className="col-md-8"></div>
                           <div className="col-md-4 text-end">
                             <button
                               className="btn btn-primary btn-sm"
@@ -1840,13 +1862,7 @@ const AddCustomer = () => {
                       </div>
                       <div className="card-body">
                         <div className="row">
-                          <div className="col-md-8">
-                            {addSLSuccess && (
-                              <Alert severity="success">
-                                Service Location Added/Updated Successfuly
-                              </Alert>
-                            )}
-                          </div>
+                          <div className="col-md-8"></div>
                           <div className="col-md-4 text-end">
                             {" "}
                             <button

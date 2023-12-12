@@ -23,35 +23,15 @@ const CustomersTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const fetchCustomers = async () => {
-    try {
-      const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList",
-        { headers }
-      );
-      setcustomerFetchError(false);
-      setCustomers(response.data);
-      if (response.data != null) {
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.log("EEEEEEEEEEEEEEEEE", error);
-
-      setIsLoading(false);
-      setcustomerFetchError(true);
-
-      console.error("API Call Error:", error);
-    }
-  };
-
   const fetchFilterCustomers = async (
     Search = "",
     pageNo = 1,
-    PageLength = 10
+    PageLength = 10,
+    isAscending = false
   ) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&isAscending=${isAscending}`,
         { headers }
       );
       setcustomerFetchError(false);

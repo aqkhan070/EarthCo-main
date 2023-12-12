@@ -12,6 +12,7 @@ import TitleBar from "../../TitleBar";
 import { DataContext } from "../../../context/AppData";
 import { NavLink } from "react-router-dom";
 import { Form } from "react-bootstrap";
+import EventPopups from "../../Reusable/EventPopups";
 
 const AddWRform = () => {
   const icon = (
@@ -70,6 +71,11 @@ const AddWRform = () => {
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
   const [estimateFiles, setEstimateFiles] = useState([]);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
   const navigate = useNavigate();
 
   const fetchServiceLocations = async (id) => {
@@ -218,6 +224,9 @@ const AddWRform = () => {
       !formData.AssignTo
     ) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
@@ -264,7 +273,13 @@ const AddWRform = () => {
         }
       );
 
-      navigate(`/Weekly-Reports/WeeklyReport?id=${response.data.Id}`);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
+      setTimeout(() => {
+        navigate(`/Weekly-Reports/WeeklyReport?id=${response.data.Id}`);
+      }, 4000);
 
       console.log("Data submitted successfully:", response.data.Id);
     } catch (error) {
@@ -316,6 +331,13 @@ const AddWRform = () => {
   return (
     <>
       <TitleBar icon={icon} title="Add Weekly Report" />
+
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
 
       <div className="container-fluid">
         <div className="card">

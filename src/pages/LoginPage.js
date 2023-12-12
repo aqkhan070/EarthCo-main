@@ -72,6 +72,7 @@ const LoginPage = () => {
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("userName", response.data.Data.FirstName);
         sessionStorage.setItem("userRole", response.data.Data.RoleId);
+        sessionStorage.setItem("userId", response.data.Data.UserId);
         setBtndisable(false);
         setError("");
         const token = response.data.token.data;

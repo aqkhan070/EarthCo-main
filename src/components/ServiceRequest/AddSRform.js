@@ -19,16 +19,21 @@ import useDeleteFile from "../Hooks/useDeleteFile";
 import { useNavigate } from "react-router-dom";
 import MapCo from "./MapCo";
 import { DataContext } from "../../context/AppData";
+import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
   // const isSRUpdateRoute = window.location.pathname.includes("Update-SRform");
+
+  const { sendEmail } = useSendEmail();
 
   const { sRMapData, setSRMapData, PunchListData, setPunchListData } =
     useContext(DataContext);
@@ -38,10 +43,46 @@ const AddSRform = () => {
 
   const { name, setName, fetchName } = useFetchCustomerName();
 
+  const icon = (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6.64111 13.5497L9.38482 9.9837L12.5145 12.4421L15.1995 8.97684"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <ellipse
+        cx="18.3291"
+        cy="3.85021"
+        rx="1.76201"
+        ry="1.76201"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.6808 2.86012H7.01867C4.25818 2.86012 2.54651 4.81512 2.54651 7.57561V14.9845C2.54651 17.7449 4.22462 19.6915 7.01867 19.6915H14.9058C17.6663 19.6915 19.3779 17.7449 19.3779 14.9845V8.53213"
+        stroke="#888888"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+
   const [customersList, setCustomersList] = useState([]);
   const [customer, setCustomer] = useState();
 
   const [sRList, setSRList] = useState({});
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
@@ -62,25 +103,27 @@ const AddSRform = () => {
 
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (PunchListData) {
-  //     setSRData((prevData) => ({
-  //       ServiceRequestData: {
-  //         ...prevData.ServiceRequestData,
-  //         CustomerId: PunchListData.CustomerId,
-  //       },
-  //     }));
-  //   }
+  useEffect(() => {
+    if (PunchListData) {
+      setSRData((prevData) => ({
+        ServiceRequestData: {
+          ...prevData.ServiceRequestData,
+          CustomerId: PunchListData.CustomerId,
+        },
+      }));
+    }
 
-  //   // Set the tblSRItems state with the response.data.tblSRItems
-  //   setTblSRItems(PunchListData.ItemData);
+    // Set the tblSRItems state with the response.data.tblSRItems
+    if (PunchListData.ItemData) {
+      setTblSRItems(PunchListData.ItemData);
 
-  //   fetchName(PunchListData.CustomerId);
+      fetchName(PunchListData.CustomerId);
 
-  //   fetchStaffList();
-  //   fetctContacts(PunchListData.CustomerId);
-  //   console.log("PunchList Data link", PunchListData);
-  // }, [PunchListData.ItemData]);
+      fetchStaffList();
+      fetctContacts(PunchListData.CustomerId);
+      console.log("PunchList Data link", PunchListData);
+    }
+  }, [PunchListData.ItemData]);
 
   useEffect(() => {
     console.log("map data isss", sRMapData);
@@ -107,6 +150,8 @@ const AddSRform = () => {
   const [loading, setLoading] = useState(true);
 
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
+  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
+
   const [submitClicked, setSubmitClicked] = useState(false);
 
   const inputFile = useRef(null);
@@ -297,6 +342,9 @@ const AddSRform = () => {
       !SRData.ServiceRequestData.Assign
     ) {
       setEmptyFieldsError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
@@ -335,7 +383,16 @@ const AddSRform = () => {
       );
       console.log(response.data.Message);
 
-      navigate("/Service-Requests");
+      setAddCustomerSuccess(response.data.Message);
+
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
+      setTimeout(() => {
+        setAddCustomerSuccess("");
+        navigate("/Service-Requests");
+      }, 4000);
 
       console.log("payload izzzzzzz", formData);
       console.log("sussessfully posted service request");
@@ -545,6 +602,13 @@ const AddSRform = () => {
 
   return (
     <>
+      <TitleBar icon={icon} title="Add Service Request" />
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       {loading ? (
         <div className="center-loader">
           <CircularProgress />
@@ -555,49 +619,6 @@ const AddSRform = () => {
             <div className="">
               <div className="">
                 {/* Add service form */}
-                <div className="row mt-3 mx-2 ">
-                  <div className="col-lg-12 col-md-12 mb-2">
-                    <NavLink to="/Estimates">
-                      {" "}
-                      <button
-                        type="button"
-                        className="col-md-2 btn btn-sm btn-primary"
-                      >
-                        {" "}
-                        + Add Estimate{" "}
-                      </button>
-                    </NavLink>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigate("/Invoices");
-                      }}
-                      className="btn btn-sm btn-secondary mx-2"
-                    >
-                      + Add Invoice
-                    </button>
-
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      <Email></Email>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary mx-2"
-                    >
-                      <Print></Print>
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                    >
-                      <Download></Download>
-                    </button>
-                  </div>
-                </div>
 
                 <div className="">
                   <div className="">
@@ -1314,7 +1335,15 @@ const AddSRform = () => {
               </div>
 
               <div className="row">
-                <div className="col-md-8">
+                <div className="col-md-6">
+                  {/* {addCustomerSuccess && (
+                    <Alert severity="success">
+                      {addCustomerSuccess
+                        ? addCustomerSuccess
+                        : "Susseccfully added/Updated Service Request"}
+                    </Alert>
+                  )}
+
                   {errorMessage && (
                     <Alert className="" severity="error">
                       {errorMessage}
@@ -1324,9 +1353,79 @@ const AddSRform = () => {
                     <Alert className="mb-3" severity="error">
                       Please fill all the required fields
                     </Alert>
-                  )}
+                  )} */}
                 </div>
-                <div className="col-md-4 mb-3 text-right">
+                <div className="col-md-6 mb-3 text-right">
+                  {idParam ? (
+                    <>
+                      <FormControl className=" mx-2">
+                        <Select
+                          labelId="estimateLink"
+                          aria-label="Default select example"
+                          variant="outlined"
+                          className="text-left me-2"
+                          value={1}
+                          // color="success"
+
+                          name="Status"
+                          size="small"
+                          placeholder="Select Status"
+                          fullWidth
+                        >
+                          <MenuItem value={1}>Create </MenuItem>
+                          <MenuItem
+                            value={2}
+                            onClick={() => {
+                              // setEstimateLinkData("PO clicked")
+
+                              navigate("/Estimates");
+                            }}
+                          >
+                            Estimate
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              navigate("/Invoices/AddInvioces");
+                            }}
+                            value={3}
+                          >
+                            Invoice
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary ms-1"
+                        onClick={() => {
+                          sendEmail(
+                            `/Service-Requests/Service-Request-Preview?id=${idParam}`,
+                            SRData.ServiceRequestData.CustomerId,
+                            SRData.ServiceRequestData.ContactId,
+                            false
+                          );
+                        }}
+                      >
+                        <Email></Email>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary mx-2"
+                        onClick={() => {
+                          navigate(
+                            `/Service-Requests/Service-Request-Preview?id=${idParam}`
+                          );
+                          // setestmPreviewId(estimate.EstimateId);
+                          setSRData(customer);
+                        }}
+                      >
+                        <Print></Print>
+                      </button>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+
                   <button
                     className="btn btn-danger  light me-2"
                     style={{ marginRight: "1em" }}

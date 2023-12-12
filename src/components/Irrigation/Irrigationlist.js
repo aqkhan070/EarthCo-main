@@ -14,12 +14,16 @@ import {
   TablePagination,
   TableSortLabel,
   TextField,
+  FormControl,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import Alert from "@mui/material/Alert";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import formatDate from "../../custom/FormatDate";
+import TblDateFormat from "../../custom/TblDateFormat";
 
 const Irrigationlist = () => {
   const token = Cookies.get("token");
@@ -73,14 +77,17 @@ const Irrigationlist = () => {
 
   const [totalRecords, setTotalRecords] = useState(0);
   const [search, setSearch] = useState("");
+  const [isAscending, setIsAscending] = useState(false);
+
   const fetchFilteredIrrigation = async (
     Search = "",
     pageNo = 1,
-    PageLength = 10
+    PageLength = 10,
+    isAscending = false
   ) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigationServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigationServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&isAscending=${isAscending}`,
         { headers }
       );
       console.log("irrigation data", res.data);
@@ -104,8 +111,8 @@ const Irrigationlist = () => {
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilteredIrrigation(search, tablePage + 1, rowsPerPage);
-  }, [search, tablePage, rowsPerPage]);
+    fetchFilteredIrrigation(search, tablePage + 1, rowsPerPage, isAscending);
+  }, [search, tablePage, rowsPerPage, isAscending]);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -142,19 +149,20 @@ const Irrigationlist = () => {
 
   return (
     <>
-      {showContent ? (
-        <div className="container-fluid">
-          <div className="row">
-            <div className="col-xl-12">
-              <div className="card">
-                <div className="card-body">
-                  {error && <Alert severity="error">{error}</Alert>}
-                  {successres && <Alert severity="success">{successres}</Alert>}
-
-                  <div className="row">
-                    <div className="col-md-2 text-left mb-2">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-xl-12">
+            <div className="card">
+              {isLoading ? (
+                <div className="center-loader">
+                  <CircularProgress />
+                </div>
+              ) : (
+                <>
+                  <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                    <div>
                       <TextField
-                        label="Search"
+                        label="Search irrigation"
                         variant="standard"
                         size="small"
                         fullWidth
@@ -162,12 +170,23 @@ const Irrigationlist = () => {
                         onChange={(e) => setSearch(e.target.value)}
                       />
                     </div>
-                    <div className="col-md-8"></div>
-
-                    <div className="col-md-2 text-right">
+                    <div className=" me-2">
+                      <FormControl className="  me-2" variant="outlined">
+                        <Select
+                          labelId="customer-type-label"
+                          variant="outlined"
+                          value={isAscending}
+                          onChange={() => {
+                            setIsAscending(!isAscending);
+                          }}
+                          size="small"
+                        >
+                          <MenuItem value={true}>Ascending</MenuItem>
+                          <MenuItem value={false}>Descending</MenuItem>
+                        </Select>
+                      </FormControl>
                       <button
-                        className="btn btn-primary btn-sm"
-                        role="button"
+                        className="btn btn-primary "
                         onClick={() => {
                           navigate(`/Irrigation/Add-Irrigation`);
                           // setShowContent(false);
@@ -177,12 +196,9 @@ const Irrigationlist = () => {
                       </button>
                     </div>
                   </div>
+                  <div className="card-body pt-0">
+                    {error && <Alert severity="error">{error}</Alert>}
 
-                  {isLoading ? (
-                    <div className="center-loader">
-                      <CircularProgress />
-                    </div>
-                  ) : (
                     <Table>
                       <TableHead className="table-header">
                         <TableRow className="material-tbl-alignment">
@@ -242,7 +258,7 @@ const Irrigationlist = () => {
                               <TableCell>{irr.IrrigationId}</TableCell>
                               <TableCell>{irr.CustomerName}</TableCell>
                               <TableCell>
-                                {formatDate(irr.CreatedDate)}
+                                {TblDateFormat(irr.CreatedDate)}
                               </TableCell>
                               <TableCell>Controller Number</TableCell>
                               <TableCell>
@@ -345,34 +361,26 @@ const Irrigationlist = () => {
                         )}
                       </TableBody>
                     </Table>
-                  )}
 
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={totalRecords}
-                    rowsPerPage={rowsPerPage}
-                    page={tablePage} // Use tablePage for the table rows
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={(event) => {
-                      setRowsPerPage(parseInt(event.target.value, 10));
-                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                    }}
-                  />
-                </div>
-              </div>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="div"
+                      count={totalRecords}
+                      rowsPerPage={rowsPerPage}
+                      page={tablePage} // Use tablePage for the table rows
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={(event) => {
+                        setRowsPerPage(parseInt(event.target.value, 10));
+                        setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                      }}
+                    />
+                  </div>{" "}
+                </>
+              )}
             </div>
           </div>
         </div>
-      ) : (
-        <IrrigationForm
-          getIrrigationList={fetchFilteredIrrigation}
-          setSelectedIrr={setSelectedIrr}
-          selectedIrr={selectedIrr}
-          setShowContent={setShowContent}
-          setSuccessres={setSuccessres}
-        />
-      )}
+      </div>
     </>
   );
 };

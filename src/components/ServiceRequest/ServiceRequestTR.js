@@ -16,6 +16,9 @@ import {
   TablePagination,
   TableContainer,
   Checkbox,
+  FormControl,
+  Select,
+  MenuItem,
   Paper,
 } from "@mui/material";
 import { Create, Delete, Visibility } from "@mui/icons-material";
@@ -25,6 +28,7 @@ import Alert from "@mui/material/Alert";
 import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
+import TblDateFormat from "../../custom/TblDateFormat";
 
 const theme = createTheme({
   palette: {
@@ -89,6 +93,7 @@ const ServiceRequestTR = ({
 
   const [tablePage, setTablePage] = useState(0);
   const [sRsearch, setSRsearch] = useState("");
+  const [isAscending, setIsAscending] = useState(false);
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterServiceRequest();
@@ -96,8 +101,14 @@ const ServiceRequestTR = ({
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
-    fetchFilterServiceRequest(sRsearch, tablePage + 1, rowsPerPage, statusId);
-  }, [sRsearch, tablePage, rowsPerPage, statusId]);
+    fetchFilterServiceRequest(
+      sRsearch,
+      tablePage + 1,
+      rowsPerPage,
+      statusId,
+      isAscending
+    );
+  }, [sRsearch, tablePage, rowsPerPage, statusId, isAscending]);
 
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
@@ -206,159 +217,140 @@ const ServiceRequestTR = ({
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-          <div className="mx-3">
+          <div className="container-fluid pt-0">
             <div className="card">
-              <div className="card-body ">
-                <div className="row mx-2">
-                  <div className=" text-center mb-3">
-                    {successAlert && (
-                      <Alert className="mb-3" severity="success">
-                        {successAlert
-                          ? successAlert
-                          : "Successfuly Added/Updated Service request"}
-                      </Alert>
-                    )}
-                    {deleteSuccess && (
-                      <Alert className="mb-3" severity="success">
-                        Successfuly Deleted Service request
-                      </Alert>
-                    )}
-                    <div className="col-md-12">
-                      {/* <div>
-                    <Form.Select
-                      size="sm"
-                      value={filterDate}
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      aria-label="Default select example"
-                      className="bg-white date-sort-form"
+              <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                <div>
+                  <TextField
+                    label="Search Service request"
+                    variant="standard"
+                    size="small"
+                    value={sRsearch}
+                    onChange={(e) => setSRsearch(e.target.value)}
+                  />
+                </div>
+                <div className=" me-2">
+                  <FormControl className="  me-2" variant="outlined">
+                    <Select
+                      labelId="customer-type-label"
+                      variant="outlined"
+                      value={isAscending}
+                      onChange={() => {
+                        setIsAscending(!isAscending);
+                      }}
+                      size="small"
                     >
-                      <option value="This Month">This Month</option>
-                      <option value="Previous Month">Previous Month</option>
-                      <option value="Last three months">
-                        Last three months
-                      </option>
-                    </Form.Select>
-                  </div> */}
-                      <div className="col-3 custom-search-container">
-                        <TextField
-                          label="Search Service Request"
-                          variant="standard"
-                          size="small"
-                          value={sRsearch}
-                          onChange={(e) => setSRsearch(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="custom-button-container">
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => {
-                            // setShowContent(false);
-                            // setServiceRequestId(0);
-                            navigate(`/Service-Requests/Add-SRform`);
-                          }}
-                        >
-                          + Add Service Request
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <br />
-
-                  <Table>
-                    <TableHead className="table-header">
-                      <TableRow className="material-tbl-alignment">
-                        {[
-                          // "Select",
-                          "Service Request #",
-                          "Customer Name",
-                          "Assigned to",
-                          "Status",
-                          "Work Requested",
-                          "Date Created",
-                        ].map((column, index) => (
-                          <TableCell key={index}>
-                            {index < 5 ? (
-                              <TableSortLabel
-                                active={
-                                  sorting.field === columnFieldMapping[column]
-                                }
-                                direction={sorting.order}
-                                onClick={() =>
-                                  setSorting({
-                                    field: columnFieldMapping[column],
-                                    order:
-                                      sorting.order === "asc" &&
-                                      sorting.field ===
-                                        columnFieldMapping[column]
-                                        ? "desc"
-                                        : "asc",
-                                  })
-                                }
-                              >
-                                {column}
-                              </TableSortLabel>
-                            ) : (
-                              column
-                            )}
-                          </TableCell>
-                        ))}
+                      <MenuItem value={true}>Ascending</MenuItem>
+                      <MenuItem value={false}>Descending</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <button
+                    className="btn btn-primary "
+                    onClick={() => {
+                      // setShowContent(false);
+                      // setServiceRequestId(0);
+                      navigate(`/Service-Requests/Add-SRform`);
+                    }}
+                  >
+                    + Add Service Request
+                  </button>
+                </div>
+              </div>
+              <div className="card-body pt-0">
+                <Table>
+                  <TableHead className="table-header">
+                    <TableRow className="material-tbl-alignment">
+                      {[
+                        // "Select",
+                        "Service Request #",
+                        "Customer Name",
+                        "Assigned to",
+                        "Status",
+                        "Work Requested",
+                        "Date Created",
+                      ].map((column, index) => (
+                        <TableCell key={index}>
+                          {index < 5 ? (
+                            <TableSortLabel
+                              active={
+                                sorting.field === columnFieldMapping[column]
+                              }
+                              direction={sorting.order}
+                              onClick={() =>
+                                setSorting({
+                                  field: columnFieldMapping[column],
+                                  order:
+                                    sorting.order === "asc" &&
+                                    sorting.field === columnFieldMapping[column]
+                                      ? "desc"
+                                      : "asc",
+                                })
+                              }
+                            >
+                              {column}
+                            </TableSortLabel>
+                          ) : (
+                            column
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sRfetchError ? (
+                      <TableRow>
+                        <TableCell className="text-center" colSpan={12}>
+                          No Record found
+                        </TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {sRfetchError ? (
-                        <TableRow>
-                          <TableCell className="text-center" colSpan={12}>
-                            No Record found
-                          </TableCell>
-                        </TableRow>
-                      ) : null}
-                      {sortedAndSearchedCustomers
-                        .slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                        .map((customer, rowIndex) => (
-                          <TableRow
+                    ) : null}
+                    {sortedAndSearchedCustomers
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((customer, rowIndex) => (
+                        <TableRow
                           className="material-tbl-alignment"
-                            onDoubleClick={() => {
-                              // setServiceRequestId(customer.ServiceRequestId);
-                              // setShowContent(false);
-                              // console.log("////////", serviceRequestId);
-                              navigate(
-                                `/Service-Requests/Add-SRform?id=${customer.ServiceRequestId}`
-                              );
-                            }}
-                            key={rowIndex}
-                            hover
-                          >
-                            {/* <TableCell>
+                          onDoubleClick={() => {
+                            // setServiceRequestId(customer.ServiceRequestId);
+                            // setShowContent(false);
+                            // console.log("////////", serviceRequestId);
+                            navigate(
+                              `/Service-Requests/Add-SRform?id=${customer.ServiceRequestId}`
+                            );
+                          }}
+                          key={rowIndex}
+                          hover
+                        >
+                          {/* <TableCell>
                           <Checkbox />
                         </TableCell> */}
-                            <TableCell>
-                              {customer.ServiceRequestNumber}
-                            </TableCell>
-                            <TableCell>{customer.CustomerName}</TableCell>
-                            <TableCell>{customer.Assign}</TableCell>
-                            <TableCell>
-                              <span
-                                onClick={() => {
-                                  navigate(
-                                    `/Service-Requests/Service-Request-Preview?id=${customer.ServiceRequestId}`
-                                  );
-                                  // setestmPreviewId(estimate.EstimateId);
-                                  setSRData(customer);
-                                }}
-                                className="span-hover-pointer badge badge-pill badge-success "
-                              >
-                                {customer.Status}
-                              </span>
-                            </TableCell>
-                            <TableCell>{customer.WorkRequest}</TableCell>
-                            <TableCell>
-                              {formatDate(customer.CreatedDate)}
-                            </TableCell>
-                            {/* <TableCell>
+                          <TableCell>{customer.ServiceRequestNumber}</TableCell>
+                          <TableCell>{customer.CustomerName}</TableCell>
+                          <TableCell>{customer.Assign}</TableCell>
+                          <TableCell>
+                            <span
+                              onClick={() => {
+                                navigate(
+                                  `/Service-Requests/Service-Request-Preview?id=${customer.ServiceRequestId}`
+                                );
+                                // setestmPreviewId(estimate.EstimateId);
+                                setSRData(customer);
+                              }}
+                              style={{
+                                backgroundColor: customer.StatusColor,
+                              }}
+                              className="span-hover-pointer badge badge-pill  "
+                            >
+                              {customer.Status}
+                            </span>
+                          </TableCell>
+                          <TableCell>{customer.WorkRequest}</TableCell>
+                          <TableCell>
+                            {TblDateFormat(customer.CreatedDate)}
+                          </TableCell>
+                          {/* <TableCell>
                               <Button
                                 // className="btn btn-primary btn-icon-xxs me-2"
                                 onClick={() => {
@@ -455,23 +447,22 @@ const ServiceRequestTR = ({
                                 </div>
                               </div>
                             </TableCell> */}
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={totalRecords.totalRecords}
-                    rowsPerPage={rowsPerPage}
-                    page={tablePage} // Use tablePage for the table rows
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={(event) => {
-                      setRowsPerPage(parseInt(event.target.value, 10));
-                      setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                    }}
-                  />
-                </div>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 50]}
+                  component="div"
+                  count={totalRecords.totalRecords}
+                  rowsPerPage={rowsPerPage}
+                  page={tablePage} // Use tablePage for the table rows
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={(event) => {
+                    setRowsPerPage(parseInt(event.target.value, 10));
+                    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -18,11 +18,12 @@ const useFetchInvoices = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0
+    StatusId = 0,
+    isAscending = false
   ) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoiceServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        `https://earthcoapi.yehtohoga.com/api/Invoice/GetInvoiceServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
         { headers }
       );
       setfilteredInvoiceList(res.data.Data);

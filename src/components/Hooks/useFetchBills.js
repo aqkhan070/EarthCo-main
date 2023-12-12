@@ -31,10 +31,10 @@ const [totalRecords, setTotalRecords] = useState(0)
     }
   };
 
-  const fetchFilterBills = async (Search="",pageNo = 1, PageLength = 10) => {
+  const fetchFilterBills = async (Search="",pageNo = 1, PageLength = 10, isAscending = false) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Bill/GetBillServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}`,
+        `https://earthcoapi.yehtohoga.com/api/Bill/GetBillServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&isAscending=${isAscending}`,
         { headers }
       );
       setBillError(false)

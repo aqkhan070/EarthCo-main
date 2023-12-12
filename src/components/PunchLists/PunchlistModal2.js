@@ -5,6 +5,7 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import EventPopups from "../Reusable/EventPopups";
 
 const PunchlistModal2 = ({
   addPunchListData,
@@ -27,6 +28,10 @@ const PunchlistModal2 = ({
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedServiceRequest, setSelectedServiceRequest] = useState(null);
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const [customersList, setCustomersList] = useState([]);
   const [showCustomersList, setShowCustomersList] = useState(true);
@@ -124,18 +129,25 @@ const PunchlistModal2 = ({
       !addPunchListData.AssignedTo
     ) {
       setemptyFieldError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       return;
     }
     event.preventDefault();
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/PunchList/AddPunchList",
         addPunchListData,
         { headers }
       );
       // Handle success - maybe redirect or show a message
       console.log("successfully posted punch list", addPunchListData);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+
       setselectedPL(0);
       fetchFilterdPunchList();
       document.getElementById("punchListcloser").click();
@@ -157,111 +169,118 @@ const PunchlistModal2 = ({
   }, [addPunchListData, selectedContact]);
 
   return (
-    <div className="modal fade modal-lg" id="editPunch">
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Punchlist</h5>
-            <button
-              // type="button"
-              className="btn-close"
-              onClick={() => {
-                document.getElementById("punchListcloser").click();
-              }}
-            ></button>
-          </div>
+    <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
+      <div className="modal fade modal-lg" id="editPunch">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Punchlist</h5>
+              <button
+                // type="button"
+                className="btn-close"
+                onClick={() => {
+                  document.getElementById("punchListcloser").click();
+                }}
+              ></button>
+            </div>
 
-          <div className="modal-body">
-            <div className="row">
-              <div className=" col-md-6 mb-3">
-                <label className="form-label">
-                  Title<span className="text-danger">*</span>
-                </label>
-                <TextField
-                  type="text"
-                  className="form-control"
-                  name="Title"
-                  size="small"
-                  value={addPunchListData.Title}
-                  onChange={handleChange}
-                  placeholder="Title"
-                  error={submitClicked && !addPunchListData.Title}
-                  required
-                />
-              </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">
-                  Customer <span className="text-danger">*</span>
-                </label>
+            <div className="modal-body">
+              <div className="row">
+                <div className=" col-md-6 mb-3">
+                  <label className="form-label">
+                    Title<span className="text-danger">*</span>
+                  </label>
+                  <TextField
+                    type="text"
+                    className="form-control"
+                    name="Title"
+                    size="small"
+                    value={addPunchListData.Title}
+                    onChange={handleChange}
+                    placeholder="Title"
+                    error={submitClicked && !addPunchListData.Title}
+                    required
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">
+                    Customer <span className="text-danger">*</span>
+                  </label>
 
-                <Autocomplete
-                  id="staff-autocomplete"
-                  size="small"
-                  // value={selectedCustomer}
-                  options={customerSearch}
-                  getOptionLabel={(option) => option.CompanyName || ""}
-                  value={name ? { CompanyName: name } : null}
-                  onChange={handleCustomerAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.UserId === value.CustomerId
-                  }
-                  renderOption={(props, option) => (
-                    <li {...props}>
-                      <div className="customer-dd-border">
-                        <h6> {option.CompanyName}</h6>
-                        <small># {option.UserId}</small>
-                      </div>
-                    </li>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      onClick={() => {
-                        setName("");
-                      }}
-                      onChange={(e) => {
-                        fetchCustomers(e.target.value);
-                      }}
-                      placeholder="Choose..."
-                      error={submitClicked && !addPunchListData.CustomerId}
-                      className="bg-white"
-                    />
-                  )}
-                />
-              </div>
+                  <Autocomplete
+                    id="staff-autocomplete"
+                    size="small"
+                    // value={selectedCustomer}
+                    options={customerSearch}
+                    getOptionLabel={(option) => option.CompanyName || ""}
+                    value={name ? { CompanyName: name } : null}
+                    onChange={handleCustomerAutocompleteChange}
+                    isOptionEqualToValue={(option, value) =>
+                      option.UserId === value.CustomerId
+                    }
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <div className="customer-dd-border">
+                          <h6> {option.CompanyName}</h6>
+                          <small># {option.UserId}</small>
+                        </div>
+                      </li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        onClick={() => {
+                          setName("");
+                        }}
+                        onChange={(e) => {
+                          fetchCustomers(e.target.value);
+                        }}
+                        placeholder="Choose..."
+                        error={submitClicked && !addPunchListData.CustomerId}
+                        className="bg-white"
+                      />
+                    )}
+                  />
+                </div>
 
-              <div className="col-md-6 mb-3 ">
-                <label className="form-label">
-                  Contact Name<span className="text-danger">*</span>
-                </label>
-                <Autocomplete
-                  size="small"
-                  options={contactList}
-                  getOptionLabel={(option) => option.FirstName || ""}
-                  value={
-                    contactList.find(
-                      (contact) =>
-                        contact.ContactId === addPunchListData.ContactId
-                    ) || null
-                  }
-                  onChange={handleContactAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.ContactId === value.ContactId
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      error={submitClicked && !addPunchListData.ContactId}
-                      placeholder="Contacts"
-                      className="bg-white"
-                    />
-                  )}
-                  aria-label="Contact select"
-                />
-              </div>
-              {/* <div className="col-md-6 ">
+                <div className="col-md-6 mb-3 ">
+                  <label className="form-label">
+                    Contact Name<span className="text-danger">*</span>
+                  </label>
+                  <Autocomplete
+                    size="small"
+                    options={contactList}
+                    getOptionLabel={(option) => option.FirstName || ""}
+                    value={
+                      contactList.find(
+                        (contact) =>
+                          contact.ContactId === addPunchListData.ContactId
+                      ) || null
+                    }
+                    onChange={handleContactAutocompleteChange}
+                    isOptionEqualToValue={(option, value) =>
+                      option.ContactId === value.ContactId
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        error={submitClicked && !addPunchListData.ContactId}
+                        placeholder="Contacts"
+                        className="bg-white"
+                      />
+                    )}
+                    aria-label="Contact select"
+                  />
+                </div>
+                {/* <div className="col-md-6 ">
                   <label className="form-label">Service location</label>
                   <Autocomplete
                     id="inputState19"
@@ -291,69 +310,71 @@ const PunchlistModal2 = ({
                   />
                 </div> */}
 
-              <div className="col-md-6 mb-3">
-                <label className="form-label">
-                  Assigned To <span className="text-danger">*</span>
-                </label>
-                <Autocomplete
-                  id="staff-autocomplete"
-                  size="small"
-                  options={staffData}
-                  getOptionLabel={(option) => option.FirstName || ""}
-                  value={
-                    staffData.find(
-                      (staff) => staff.UserId === addPunchListData.AssignedTo
-                    ) || null
-                  }
-                  onChange={handleStaffAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.UserId === value.AssignedTo
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      error={submitClicked && !addPunchListData.AssignedTo}
-                      placeholder="Choose..."
-                      className="bg-white"
-                    />
-                  )}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Contact Company</label>
-                <TextField
-                  size="small"
-                  value={
-                    selectedContact.CompanyName ||
-                    addPunchListData.ContactCompany ||
-                    ""
-                  }
-                  fullWidth
-                />
-              </div>
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Contact Email</label>
-                <TextField
-                  size="small"
-                  value={
-                    selectedContact.Email || addPunchListData.ContactEmail || ""
-                  }
-                  fullWidth
-                />
-              </div>
-
-              {emptyFieldError && (
-                <div className="col-md-12">
-                  <Alert severity="error">
-                    {" "}
-                    Please fill all required fields
-                  </Alert>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">
+                    Assigned To <span className="text-danger">*</span>
+                  </label>
+                  <Autocomplete
+                    id="staff-autocomplete"
+                    size="small"
+                    options={staffData}
+                    getOptionLabel={(option) => option.FirstName || ""}
+                    value={
+                      staffData.find(
+                        (staff) => staff.UserId === addPunchListData.AssignedTo
+                      ) || null
+                    }
+                    onChange={handleStaffAutocompleteChange}
+                    isOptionEqualToValue={(option, value) =>
+                      option.UserId === value.AssignedTo
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        error={submitClicked && !addPunchListData.AssignedTo}
+                        placeholder="Choose..."
+                        className="bg-white"
+                      />
+                    )}
+                  />
                 </div>
-              )}
 
-              {/* <div className="col-lg-6 col-md-6 ">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Contact Company</label>
+                  <TextField
+                    size="small"
+                    value={
+                      selectedContact.CompanyName ||
+                      addPunchListData.ContactCompany ||
+                      ""
+                    }
+                    fullWidth
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Contact Email</label>
+                  <TextField
+                    size="small"
+                    value={
+                      selectedContact.Email ||
+                      addPunchListData.ContactEmail ||
+                      ""
+                    }
+                    fullWidth
+                  />
+                </div>
+
+                {emptyFieldError && (
+                  <div className="col-md-12">
+                    <Alert severity="error">
+                      {" "}
+                      Please fill all required fields
+                    </Alert>
+                  </div>
+                )}
+
+                {/* <div className="col-lg-6 col-md-6 ">
                         <label className="form-label">Status:</label>
                         <FormControl fullWidth>
                           <Select
@@ -368,52 +389,53 @@ const PunchlistModal2 = ({
                         </FormControl>
                       </div>
                      */}
+              </div>
             </div>
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-danger light"
-              id="punchListcloser"
-              data-bs-dismiss="modal"
-              data-bs-target="#editPunch"
-              onClick={() => {
-                setAddPunchListData((prevData) => ({
-                  ...prevData,
-                  Title: "",
-                  AssignedTo: null,
-                  CustomerId: null,
-                  ContactEmail: null,
-                  ContactId: null,
-                  ContactCompany: null,
-                }));
-                setSelectedCustomer("");
-                setselectedPL(0);
-                setName("");
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-danger light"
+                id="punchListcloser"
+                data-bs-dismiss="modal"
+                data-bs-target="#editPunch"
+                onClick={() => {
+                  setAddPunchListData((prevData) => ({
+                    ...prevData,
+                    Title: "",
+                    AssignedTo: null,
+                    CustomerId: null,
+                    ContactEmail: null,
+                    ContactId: null,
+                    ContactCompany: null,
+                  }));
+                  setSelectedCustomer("");
+                  setselectedPL(0);
+                  setName("");
 
-                // Clear the Contact Email field
-                setSelectedContact((prevData) => ({
-                  ...prevData,
-                  Email: null,
-                  CompanyName: null,
-                }));
-              }}
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              // data-bs-toggle="modal"
-              // data-bs-target="#editPunch"
-              onClick={handleSubmit}
-            >
-              Next
-            </button>
+                  // Clear the Contact Email field
+                  setSelectedContact((prevData) => ({
+                    ...prevData,
+                    Email: null,
+                    CompanyName: null,
+                  }));
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                // data-bs-toggle="modal"
+                // data-bs-target="#editPunch"
+                onClick={handleSubmit}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

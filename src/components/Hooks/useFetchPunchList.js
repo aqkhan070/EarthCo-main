@@ -32,11 +32,12 @@ function useFetchPunchList() {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0
+    StatusId = 0,
+    isAscending = false
   ) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        `https://earthcoapi.yehtohoga.com/api/PunchList/GetPunchlistServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
         { headers }
       );
       setPunchData(response.data.Data);

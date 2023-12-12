@@ -6,11 +6,13 @@ import profilePic from "../../assets/images/profile/profile.png";
 import { DataContext } from "../../context/AppData";
 import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
+import { useNavigate } from "react-router-dom";
 
 const HeaderExp = () => {
   const [loggedUser, setLoggenUser] = useState(
     sessionStorage.getItem("userEmail")
   );
+  const navigate = useNavigate();
   const { mainControl, setMainControl, setShowSM, eliminate } =
     useContext(StyleContext);
 
@@ -120,7 +122,7 @@ const HeaderExp = () => {
             <nav className="navbar navbar-expand">
               <div className="collapse navbar-collapse justify-content-between">
                 <div className="header-left">
-                  <div className="input-group search-area">
+                  {/* <div className="input-group search-area">
                     <span className="input-group-text">
                       <NavLink>
                         <svg
@@ -152,10 +154,10 @@ const HeaderExp = () => {
                       className="form-control "
                       placeholder="Search"
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <ul className="navbar-nav header-right">
-                  <li className="nav-item dropdown notification_dropdown">
+                  {/* <li className="nav-item dropdown notification_dropdown">
                     <NavLink
                       className="nav-link"
                       role="button"
@@ -367,7 +369,7 @@ const HeaderExp = () => {
                         See all notifications <i className="ti-arrow-end"></i>
                       </NavLink>
                     </div>
-                  </li>
+                  </li> */}
 
                   <li className="nav-item align-items-center header-border">
                     <NavLink to="/" style={{ display: "contents" }}>
@@ -417,7 +419,7 @@ const HeaderExp = () => {
                           </div>
                           <div className="card-body px-0 py-0">
                             <ul>
-                              <li className="dropdown-item ai-icon">
+                              {/* <li className="dropdown-item ai-icon">
                                 <svg
                                   width="20"
                                   height="20"
@@ -446,9 +448,9 @@ const HeaderExp = () => {
                                 </svg>
 
                                 <span className="ms-2">Profile </span>
-                              </li>
+                              </li> */}
 
-                              <li className="dropdown-item ai-icon ">
+                              {/* <li className="dropdown-item ai-icon ">
                                 <svg
                                   width="20"
                                   height="20"
@@ -475,12 +477,22 @@ const HeaderExp = () => {
                                 </svg>
 
                                 <span className="ms-2">Notification </span>
-                              </li>
+                              </li> */}
                             </ul>
                           </div>
                           <div className="card-footer px-0 py-2">
                             <ul>
-                              <li className="dropdown-item ai-icon ">
+                              <li
+                                style={{ cursor: "pointer" }}
+                                className="dropdown-item ai-icon "
+                                onClick={() => {
+                                  navigate(
+                                    `/Staff/Add-Staff?id=${sessionStorage.getItem(
+                                      "userId"
+                                    )}`
+                                  );
+                                }}
+                              >
                                 <svg
                                   width="20"
                                   height="20"

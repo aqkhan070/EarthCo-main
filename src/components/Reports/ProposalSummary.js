@@ -8,7 +8,8 @@ import { Print, Email, Download } from "@mui/icons-material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
-
+import html2pdf from "html2pdf.js";
+import useSendEmail from "../Hooks/useSendEmail";
 const ProposalSummary = () => {
   const {
     sRProposalData,
@@ -19,15 +20,21 @@ const ProposalSummary = () => {
   const navigate = useNavigate();
   const isGeneralReport = window.location.pathname.includes("GeneralReport");
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
+  const customerParam = Number(queryParams.get("Customer"));
+  const MonthParam = Number(queryParams.get("Month"));
+  const yearParam = Number(queryParams.get("Year"));
+  const isMail = queryParams.get("isMail");
+
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
+
+    const { sendEmail } = useSendEmail();
+
   useEffect(() => {
-    fetchReport(
-      sRProposalData.formData.CustomerId,
-      sRProposalData.formData.Year,
-      sRProposalData.formData.Month,
-      "proposal"
-    );
+    fetchReport(customerParam, yearParam, MonthParam, "proposal");
 
     console.log("sr propoal dala", reportData);
   }, []);
@@ -44,31 +51,39 @@ const ProposalSummary = () => {
   const handleDownload = () => {
     const input = document.getElementById("PS-preview");
 
-    // Create a jsPDF instance with custom font and font size
-    const pdf = new jsPDF({
-      orientation: "p",
-      unit: "mm",
-      format: "a4",
+    html2pdf(input, {
+      margin: 10,
+      filename: "Proposal Summary.pdf",
+      image: { type: "jpeg", quality: 1.0 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
     });
 
-    const scale = 2; // Adjust the scale factor as needed
+    // // Create a jsPDF instance with custom font and font size
+    // const pdf = new jsPDF({
+    //   orientation: "p",
+    //   unit: "mm",
+    //   format: "a4",
+    // });
 
-    // Calculate the new width and height based on the scale
-    const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
+    // const scale = 2; // Adjust the scale factor as needed
 
-    pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    pdf.setFont("Roboto");
-    pdf.setFontSize(3); // Adjust the font size as needed
+    // // Calculate the new width and height based on the scale
+    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
+    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
 
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const width = pdf.internal.pageSize.getWidth();
-      const height = pdf.internal.pageSize.getHeight() / 2.2;
+    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+    // pdf.setFont("Roboto");
+    // pdf.setFontSize(3); // Adjust the font size as needed
 
-      pdf.addImage(imgData, "PNG", 0, 0, width, height);
-      pdf.save("ProposalSummary.pdf");
-    });
+    // html2canvas(input).then((canvas) => {
+    //   const imgData = canvas.toDataURL("image/png");
+    //   const width = pdf.internal.pageSize.getWidth();
+    //   const height = pdf.internal.pageSize.getHeight() / 2.2;
+
+    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
+    //   pdf.save("ProposalSummary.pdf");
+    // });
   };
 
   if (reportError) {
@@ -88,104 +103,121 @@ const ProposalSummary = () => {
         </div>
       ) : (
         <div className="container-fluid ">
-    {toggleFullscreen && !isGeneralReport ? (
-      <div className="row me-3">
-       
-        <div className="col-md-11 text-end">
-          {" "}
-          <button
-            className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-            onClick={() => {
-              navigate(`/SummaryReport`);
-            }}
-          >
-            <i className="fa fa-backward"></i>
-          </button>
-          <button
-            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-            onClick={handlePrint}
-          >
-           <i className="fa fa-print"></i>
-          </button>
-          <button
-            className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-            onClick={handleDownload}
-          >
-            <i className="fa fa-download"></i>
-          </button>
-        </div>
-      </div>
-    ) : (
-      <></>
-    )}
+          {toggleFullscreen && !isGeneralReport ? (
+            <div className="row me-3">
+              <div className="col-md-11 text-end">
+                {" "}
+                {isMail ? <></> :<button
+                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                  onClick={() => {
+                    navigate(`/SummaryReport`);
+                  }}
+                >
+                  <i className="fa fa-backward"></i>
+                </button> }
+                
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handlePrint}
+                >
+                  <i className="fa fa-print"></i>
+                </button>
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={handleDownload}
+                >
+                  <i className="fa fa-download"></i>
+                </button>
+                {isMail ? <></> : <button
+              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+              onClick={() => {
+                sendEmail(
+                  `/ProposalSummary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                  customerParam,
+                  0,
+                  false
+                );
+              }}
+            >
+              <i class="fa-regular fa-envelope"></i>
+            </button>}
+                
 
-    <div className="print-page-width">
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
 
-          <div className="PageLandscape mt-2">
-            <div className="card">
-              {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
+          <div className="print-page-width">
+            <div className="PageLandscape mt-2">
+              <div className="card">
+                {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-              <div id="PS-preview" className="card-body perview-pd get-preview">
-                <div className="row mb-5">
-                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
-                    <div style={{ color: "black" }}>
-                      <strong>EarthCo</strong>{" "}
+                <div
+                  id="PS-preview"
+                  className="card-body perview-pd get-preview"
+                >
+                  <div className="row mb-5">
+                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                      <div style={{ color: "black" }}>
+                        <strong>EarthCo</strong>{" "}
+                      </div>
+                      <div style={{ color: "black" }}>
+                        <strong>
+                          {reportData[0].CustomerId} {reportData[0].CompanyName}
+                        </strong>{" "}
+                      </div>
+                      <div style={{ color: "black" }}>
+                        {reportData[0].Address}
+                      </div>
                     </div>
-                    <div style={{ color: "black" }}>
-                      <strong>
-                        {reportData[0].CustomerId} {reportData[0].CompanyName}
-                      </strong>{" "}
+                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
+                      <h3>
+                        {" "}
+                        <strong>Proposal Summary Report</strong>{" "}
+                      </h3>
+                      <h3>Grandview Crest</h3>
                     </div>
-                    <div style={{ color: "black" }}>
-                      {reportData[0].Address}
+                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                      <div className="brand-logo mb-2 inovice-logo">
+                        <img className="preview-Logo" src={logo} alt="" />
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
-                    <h3>
-                      {" "}
-                      <strong>Proposal Summary Report</strong>{" "}
-                    </h3>
-                    <h3>Grandview Crest</h3>
+                  <hr />
+                  <div className="table-responsive">
+                    <table className="text-center table table-bordered ">
+                      <thead>
+                        <tr className="preview-table-head">
+                          <th>SUBMITTED:</th>
+                          <th>PROPOSAL #:</th>
+                          <th>DESCRIPTION:</th>
+                          <th>AMOUNT:</th>
+                          <th>STATUS: </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reportData.map((report, index) => {
+                          return (
+                            <tr className="preview-table-row" key={index}>
+                              <td>{formatDate(report.CreatedDate)}</td>
+                              <td className="left strong">
+                                {report.EstimateNumber}
+                              </td>
+                              <td>{report.EstimateNotes}</td>
+                              <td>{report.TotalAmount.toFixed(2)}</td>
+                              <td>{report.Status}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
-                    <div className="brand-logo mb-2 inovice-logo">
-                      <img className="preview-Logo" src={logo} alt="" />
-                    </div>
-                  </div>
-                </div>
-                <hr />
-                <div className="table-responsive">
-                  <table className="text-center table table-bordered ">
-                    <thead>
-                      <tr className="preview-table-head">
-                        <th>SUBMITTED:</th>
-                        <th>PROPOSAL #:</th>
-                        <th>DESCRIPTION:</th>
-                        <th>AMOUNT:</th>
-                        <th>STATUS: </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reportData.map((report, index) => {
-                        return (
-                          <tr className="preview-table-row" key={index}>
-                            <td>{formatDate(report.CreatedDate)}</td>
-                            <td className="left strong">
-                              {report.EstimateNumber}
-                            </td>
-                            <td>{report.EstimateNotes}</td>
-                            <td>{report.TotalAmount.toFixed(2)}</td>
-                            <td>{report.Status}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       )}
     </>

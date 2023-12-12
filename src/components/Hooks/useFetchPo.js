@@ -19,7 +19,7 @@ const useFetchPo = () => {
         `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrderList`,
         { headers }
       );
-      setPoList(res.data);
+      // setPoList(res.data);
       // setLoading(false);
       // setError("")
       console.log("purchase order", res.data);
@@ -34,11 +34,12 @@ const useFetchPo = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0
+    StatusId = 0,
+    isAscending = false
   ) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrderServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}`,
+        `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrderServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
         { headers }
       );
       setFilteredPo(res.data.Data);

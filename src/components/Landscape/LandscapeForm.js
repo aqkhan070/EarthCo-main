@@ -8,13 +8,15 @@ import useCustomerSearch from "../Hooks/useCustomerSearch";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import { Autocomplete, TextField } from "@mui/material";
 import Cookies from "js-cookie";
-
+import EventPopups from "../Reusable/EventPopups";
 
 const LandscapeForm = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+ 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
 
@@ -27,6 +29,10 @@ const LandscapeForm = () => {
   const [contactList, setContactList] = useState([]);
   const [staffData, setStaffData] = useState([]);
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+const [snackBarColor, setSnackBarColor] = useState("");
+const [snackBarText, setSnackBarText] = useState("");
+
   const navigate = useNavigate();
 
   const fetchServiceLocations = async (id) => {
@@ -84,6 +90,7 @@ const LandscapeForm = () => {
 
   useEffect(() => {
     fetchStaffList();
+    
   }, []);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
@@ -167,9 +174,16 @@ const LandscapeForm = () => {
         { headers }
       );
 
+      setOpenSnackBar(true);
+setSnackBarColor("success");
+setSnackBarText(response.data.Message);
+setTimeout(() => {
+  
+  navigate(`/Landscape/Landscape-Report?id=${response.data.Id}`);
+}, 4000);
+
       // Log the response or handle success
       console.log("Response:", response.data);
-      navigate(`/Landscape/Landscape-Report?id=${response.data.Id}`);
     } catch (error) {
       // Handle the error
       console.error("API Post Error:", error);
@@ -178,6 +192,12 @@ const LandscapeForm = () => {
 
   return (
     <>
+    <EventPopups
+open={openSnackBar}
+setOpen={setOpenSnackBar}
+color={snackBarColor}
+text={snackBarText}
+/>
       <div className="container-fluid">
         <div className="card">
           <div className="card-body p-0">
