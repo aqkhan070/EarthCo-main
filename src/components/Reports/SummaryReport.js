@@ -134,7 +134,7 @@ const SummaryReport = () => {
     //     "Service Request"
     //   );
     navigate(
-      `/GeneralReport?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+      `/general-report?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
     );
   };
 
@@ -153,7 +153,7 @@ const SummaryReport = () => {
     //     "Service Request"
     //   );
     navigate(
-      `/SummaryReportPreview?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+      `/summary-report-preview?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
     );
   };
 
@@ -167,7 +167,7 @@ const SummaryReport = () => {
       formData,
     }));
     navigate(
-      `/ProposalSummary?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+      `/proposal-summary?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
     );
   };
 
@@ -181,7 +181,7 @@ const SummaryReport = () => {
       formData,
     }));
     navigate(
-      `/Landscape/Landscape-Report?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
+      `/landscape/landscape-report?Customer=${formData.CustomerId}&Year=${formData.Year}&Month=${formData.Month}`
     );
   };
 
@@ -288,7 +288,7 @@ const SummaryReport = () => {
                     {" "}
                     <button
                       onClick={() => {
-                        navigate("/Landscape/Add-Landscape");
+                        navigate("/landscape/add-landscape");
                       }}
                       className="btn btn-info btn-sm me-2"
                     >

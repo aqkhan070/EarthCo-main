@@ -9,8 +9,8 @@ const WeeklyReportIndex = () => {
         <>
             <Routes>
                 <Route path='' element={<WeeklyReportlist />} />
-                <Route path='WeeklyReport' element={<WeeklyReport />} />
-                <Route path='Add-Weekly-Report' element={<AddWRform />} />
+                <Route path='weekly-report-preview' element={<WeeklyReport />} />
+                <Route path='add-weekly-report' element={<AddWRform />} />
             </Routes>
         </>
     )

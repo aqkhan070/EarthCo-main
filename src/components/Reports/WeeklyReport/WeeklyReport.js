@@ -105,13 +105,13 @@ const WeeklyReport = () => {
           <div className="card">
             <div id="WR-preview" className="card-body perview-pd get-preview">
               <div className="row mb-5">
-                <div className="mt-5 col-xl-10 col-lg-10 col-md-10 col-sm-8 text-center">
+                <div className="mt-5 col-xl-10 col-lg-10 col-md-10 col-sm-10 text-center">
                   <h2>
                     {" "}
                     <strong>Weekly Report</strong>{" "}
                   </h2>
                 </div>
-                <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-4 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                   <div className="brand-logo mb-2 inovice-logo">
                     <img className="preview-Logo" src={logo} alt="" />
                   </div>
@@ -264,17 +264,21 @@ const WeeklyReport = () => {
         {toggleFullscreen ? (
           <div className="row ms-2">
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
-            {isMail ? <></> : <div className="p-2 bd-highlight">
-                <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn"
-                  onClick={() => {
-                    navigate(`/Weekly-Reports`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button>
-              </div>}
-              
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
+                  <button
+                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    onClick={() => {
+                      navigate(`/weekly-reports`);
+                    }}
+                  >
+                    <i className="fa fa-backward"></i>
+                  </button>
+                </div>
+              )}
+
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
@@ -294,22 +298,25 @@ const WeeklyReport = () => {
                 </button>
               </div>
 
-              {isMail ? <></> : <div className="p-2 bd-highlight">
-                <button
-                  className="btn btn-sm btn-outline-primary  estm-action-btn"
-                  onClick={() => {
-                    sendEmail(
-                      `/Weekly-Reports/WeeklyReport?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                      customerParam,
-                      0,
-                      false
-                    );
-                  }}
-                >
-                  <i class="fa-regular fa-envelope"></i>
-                </button>
-              </div>}
-              
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
+                  <button
+                    className="btn btn-sm btn-outline-primary  estm-action-btn"
+                    onClick={() => {
+                      sendEmail(
+                        `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                        customerParam,
+                        0,
+                        false
+                      );
+                    }}
+                  >
+                    <i class="fa-regular fa-envelope"></i>
+                  </button>
+                </div>
+              )}
             </div>
             ;
           </div>

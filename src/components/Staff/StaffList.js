@@ -21,6 +21,8 @@ import {
   TableSortLabel,
   TextField,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
+
 
 const StaffList = () => {
   const token = Cookies.get("token");
@@ -167,7 +169,7 @@ const StaffList = () => {
                     onClick={() => {
                       // setSelectedStaff(0);
                       // settoggleAddStaff(false);
-                      navigate(`/Staff/Add-Staff`);
+                      navigate(`/staff/add-staff`);
                     }}
                   >
                     + Add Staff
@@ -216,7 +218,7 @@ const StaffList = () => {
                         Role
                       </TableSortLabel>
                     </TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -231,7 +233,7 @@ const StaffList = () => {
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((staff) => (
                       <TableRow
-                        className="staff-tbl-alignment"
+                        className="material-tbl-alignment"
                         hover
                         key={staff.UserId}
                       >
@@ -240,8 +242,8 @@ const StaffList = () => {
                         <TableCell>{staff.LastName}</TableCell>
                         <TableCell>{staff.Email}</TableCell>
                         <TableCell>{staff.Role}</TableCell>
-                        <TableCell>
-                          <Button
+                        <TableCell align="right">
+                          <span
                             // className=" btn btn-primary  btn-icon-xxs me-2"
 
                             onClick={() => {
@@ -250,18 +252,17 @@ const StaffList = () => {
                               navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
                             }}
                           >
-                            <Create />
+                            <Create color="success" />
                             {/* <i className="fas fa-pencil-alt"></i> */}
-                          </Button>
-                          <Button
-                            color="error"
+                          </span>
+                          <span
                             // className="btn btn-danger btn-icon-xxs "
                             data-bs-toggle="modal"
                             data-bs-target={`#deleteModal${staff.UserId}`}
                           >
                             <Delete color="error" />
                             {/* <i className="fas fa-trash-alt"></i> */}
-                          </Button>
+                          </span>
                           <div
                             className="modal fade"
                             id={`deleteModal${staff.UserId}`}

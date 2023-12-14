@@ -16,9 +16,9 @@ const ServiceIndex = () => {
         <>
             <Routes>
                 <Route path='' element={<SRlist />} />
-                <Route path='Add-SRform' element={<AddSRform />} />
-                <Route path='Update-SRform' element={<UpdateSRForm />} />
-                <Route path='Service-Request-Preview' element={<SRPreview />} />
+                <Route path='add-sRform' element={<AddSRform />} />
+                <Route path='update-sRform' element={<UpdateSRForm />} />
+                <Route path='service-request-preview' element={<SRPreview />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
             </Routes>
         </>

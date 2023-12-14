@@ -12,6 +12,7 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import { CircularProgress } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -118,6 +119,7 @@ const IrrigationForm = () => {
 
   const handleInputChange = (e, newValue) => {
     setErrorMessage("");
+    setDisableButton(false);
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -136,6 +138,7 @@ const IrrigationForm = () => {
   }, [formData.CustomerId]);
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleSubmit = async () => {
     setSubmitClicked(true);
@@ -146,6 +149,8 @@ const IrrigationForm = () => {
       setErrorMessage("please fill all required Fields");
       return;
     }
+    setDisableButton(true);
+
     try {
       const res = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Irrigation/AddIrrigation`,
@@ -155,13 +160,15 @@ const IrrigationForm = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(res.data.Message);
+      setDisableButton(false);
       setTimeout(() => {
-        navigate(`/Irrigation`);
+        navigate(`/irrigation`);
       }, 4000);
 
       console.log("data submitted successfuly", res.data);
     } catch (error) {
       console.log("error submitting data", error);
+      setDisableButton(false);
     }
   };
 
@@ -357,21 +364,29 @@ const IrrigationForm = () => {
                           Add Controller Info
                         </button>
                       )}
-                      <button
+                      {/* <button
                         type="button"
                         onClick={handleSubmit}
                         className="btn btn-primary btn-sm me-1"
                       >
                         Submit
-                      </button>
-                      {/* <NavLink to="/Irrigation">
+                      </button> */}
+                      <LoaderButton
+                        varient="small"
+                        loading={disableButton}
+                        handleSubmit={handleSubmit}
+                      >
+                        Submit
+                      </LoaderButton>
+
+                      {/* <NavLink to="/irrigation">
                   </NavLink> */}
 
                       <button
                         onClick={() => {
                           // setShowContent(true);
                           // setSelectedIrr(0);
-                          navigate(`/Irrigation`);
+                          navigate(`/irrigation`);
                         }}
                         className="btn btn-danger btn-sm light ms-1"
                       >

@@ -34,7 +34,7 @@ const Landscape = () => {
   const yearParam = Number(queryParams.get("Year"));
 
 
-  const isGeneralReport = window.location.pathname.includes("GeneralReport");
+  const isGeneralReport = window.location.pathname.includes("general-report");
 
   const [landscapeData, setLandscapeData] = useState({});
   const { sendEmail } = useSendEmail();
@@ -133,7 +133,7 @@ const Landscape = () => {
               {isMail ? <></> : <button
                 className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                 onClick={() => {
-                  navigate(`/SummaryReport`);
+                  navigate(`/summary-report`);
                 }}
               >
                 <i className="fa fa-backward"></i>
@@ -155,7 +155,7 @@ const Landscape = () => {
               className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
               onClick={() => {
                 sendEmail(
-                  `/Landscape/Landscape-Report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                  `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                   customerParam,
                   0,
                   false

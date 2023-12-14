@@ -249,7 +249,7 @@ const ServiceRequestTR = ({
                     onClick={() => {
                       // setShowContent(false);
                       // setServiceRequestId(0);
-                      navigate(`/Service-Requests/Add-SRform`);
+                      navigate(`/service-requests/add-sRform`);
                     }}
                   >
                     + Add Service Request
@@ -317,7 +317,7 @@ const ServiceRequestTR = ({
                             // setShowContent(false);
                             // console.log("////////", serviceRequestId);
                             navigate(
-                              `/Service-Requests/Add-SRform?id=${customer.ServiceRequestId}`
+                              `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
                             );
                           }}
                           key={rowIndex}
@@ -333,7 +333,7 @@ const ServiceRequestTR = ({
                             <span
                               onClick={() => {
                                 navigate(
-                                  `/Service-Requests/Service-Request-Preview?id=${customer.ServiceRequestId}`
+                                  `/service-requests/service-request-preview?id=${customer.ServiceRequestId}`
                                 );
                                 // setestmPreviewId(estimate.EstimateId);
                                 setSRData(customer);
@@ -355,7 +355,7 @@ const ServiceRequestTR = ({
                                 // className="btn btn-primary btn-icon-xxs me-2"
                                 onClick={() => {
                                   navigate(
-                                    "/Service-Requests/Service-Request-Preview"
+                                    "/service-requests/service-request-preview"
                                   );
                                   // setestmPreviewId(estimate.EstimateId);
                                   setSRData(customer);

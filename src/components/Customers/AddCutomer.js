@@ -26,6 +26,7 @@ import { DataContext } from "../../context/AppData";
 import Cookies from "js-cookie";
 import CustomerAddress from "./CustomerAddress/CustomerAddress";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -222,7 +223,7 @@ const AddCustomer = () => {
   };
 
   const handleSubmit = async () => {
-    setDisableButton(true);
+    
     console.log("check1");
     setSubmitClicked(true);
     if (
@@ -310,6 +311,8 @@ const AddCustomer = () => {
       return;
     }
 
+    setDisableButton(true);
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
@@ -333,7 +336,7 @@ const AddCustomer = () => {
 
       setDisableButton(false);
       console.log("sussess add customer response", response.data);
-      navigate(`/Customers/Add-Customer?id=${response.data.Id}`);
+      navigate(`/customers/add-customer?id=${response.data.Id}`);
       // window.location.reload();
     } catch (error) {
       setDisableButton(false);
@@ -1226,7 +1229,7 @@ const AddCustomer = () => {
                     />
                   </div>
                   <div className="col-md-3 text-end">
-                    <NavLink to="/Customers">
+                    <NavLink to="/customers">
                       <button
                         className="btn btn-danger light  m-1 "
                         onClick={() => {
@@ -1236,13 +1239,21 @@ const AddCustomer = () => {
                         Cancel
                       </button>
                     </NavLink>
-                    <button
+
+                    <LoaderButton
+                      loading={disableButton}
+                      handleSubmit={handleSubmit}
+                    >
+                      Save
+                    </LoaderButton>
+
+                    {/* <button
                       className="btn btn-primary m-1"
                       onClick={handleSubmit}
                       disabled={disableButton}
                     >
                       Submit
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

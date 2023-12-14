@@ -77,98 +77,94 @@ function App() {
             <Route path="/ResetPassword" element={<ResetPassword />} />
 
             <Route path="/" element={<DashboardPage />}>
-              <Route path="/DashBoard" element={<DashBoard />} />
+              <Route path="/dashBoard" element={<DashBoard />} />
 
-              <Route path="Customers" element={<CustomerIndex />}>
+              <Route path="customers" element={<CustomerIndex />}>
                 <Route path="" element={<CustomersTable />} />
-                <Route path="Add-Customer" element={<AddCutomer />} />
-                <Route path="Update-Customer" element={<UpdateCustomer />} />
+                <Route path="add-customer" element={<AddCutomer />} />
+                <Route path="update-customer" element={<UpdateCustomer />} />
               </Route>
-              <Route path="Staff/*" element={<StaffIndex />}>
+              <Route path="staff/*" element={<StaffIndex />}>
                 <Route path="" element={<StaffList />} />
-                <Route path="Add-Staff" element={<AddStaff />} />
+                <Route path="add-staff" element={<AddStaff />} />
               </Route>
-              <Route path="Map" element={<MapIndex />} />
-              <Route path="Estimates" element={<EstimateIndex />}>
+              <Route path="map" element={<MapIndex />} />
+              <Route path="estimates" element={<EstimateIndex />}>
                 <Route path="" element={<EstimateList />} />
-                <Route path="Add-Estimate" element={<AddEstimate />} />
+                <Route path="add-estimate" element={<AddEstimate />} />
                 <Route
-                  path="Update-Estimate"
+                  path="update-estimate"
                   element={<UpdateEstimateForm />}
                 />
-                <Route path="Estimate-Preview" element={<EstimatePreview />} />
+                <Route path="estimate-preview" element={<EstimatePreview />} />
                 <Route path={estimateRoute} element={<EstimateIDopen />} />
               </Route>
-              <Route path="Service-Requests/*" element={<ServiceIndex />}>
+              <Route path="service-requests/*" element={<ServiceIndex />}>
                 <Route path="" element={<SRlist />} />
-                <Route path="Service-Request-Preview" element={<SRPreview />} />
-                <Route path="Add-SRform" element={<AddSRform />} />
-                <Route path="Update-SRform" element={<UpdateSRForm />} />
+                <Route path="service-request-preview" element={<SRPreview />} />
+                <Route path="add-sRform" element={<AddSRform />} />
+                <Route path="update-sRform" element={<UpdateSRForm />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
               </Route>
 
-              <Route path="Purchase-Order/*" element={<PurchaseOrderIndex />}>
+              <Route path="purchase-order/*" element={<PurchaseOrderIndex />}>
                 <Route path="" element={<PurchaseOrder />}>
                   <Route
-                    path="Purchase-Order-Preview"
+                    path="purchase-order-preview"
                     element={<POPreview />}
                   />
 
-                  <Route path="AddPO" element={<AddPO />}></Route>
+                  <Route path="add-po" element={<AddPO />}></Route>
                 </Route>
               </Route>
 
               {/* <Route path="Bills" element={<Bills />}></Route> */}
-              <Route path="Bills/*" element={<BillIndex />}>
+              <Route path="bills/*" element={<BillIndex />}>
                 <Route path="" element={<Bills />}></Route>
-                <Route path="AddBill" element={<AddBill />} />
-                <Route path="Bill-Preview" element={<BillPreview />} />
+                <Route path="add-bill" element={<AddBill />} />
+                <Route path="bill-preview" element={<BillPreview />} />
               </Route>
 
-              <Route path="Invoices/*" element={<InvoiceIndex />}>
+              <Route path="invoices/*" element={<InvoiceIndex />}>
                 <Route path="" element={<Invoices />}></Route>
-                <Route path="AddInvioces" element={<AddInvioces />}></Route>
-                <Route path="Invoice-Preview" element={<InvoicePreview />} />
+                <Route path="add-invoices" element={<AddInvioces />}></Route>
+                <Route path="invoice-preview" element={<InvoicePreview />} />
               </Route>
 
-              <Route path="Items/*" element={<ItemIndex />}>
-              <Route path="" element={<Items />} />
-                <Route path="Add-Item" element={<AddItem />} />
+              <Route path="items/*" element={<ItemIndex />}>
+                <Route path="" element={<Items />} />
+                <Route path="add-item" element={<AddItem />} />
               </Route>
 
-              <Route path="Irrigation" element={<IrrigationIndex />}>
+              <Route path="irrigation" element={<IrrigationIndex />}>
                 <Route path="" element={<Irrigationlist />} />
-                <Route path="Add-Irrigation" element={<IrrigationForm />} />
+                <Route path="add-irrigation" element={<IrrigationForm />} />
               </Route>
-              <Route path="Irrigation/Audit-Report" element={<Audit />} />
-              <Route path="Punchlist" element={<PunchListIndex />} />
+              <Route path="irrigation/audit-report" element={<Audit />} />
+              <Route path="punchlist" element={<PunchListIndex />} />
               <Route
-                path="Irrigation/PunchlistPreview"
+                path="irrigation/PunchlistPreview"
                 element={<PunchlistPreview />}
               />
-              <Route path="SummaryReport" element={<SummaryReport />} />
+              <Route path="summary-report" element={<SummaryReport />} />
               <Route
-                path="SummaryReportPreview"
+                path="summary-report-preview"
                 element={<SummaryReportPreview />}
               />
-               <Route
-                path="GeneralReport"
-                element={<GenralReport />}
-              />
+              <Route path="general-report" element={<GenralReport />} />
 
-
-              <Route path="ProposalSummary" element={<ProposalSummary />} />
-              <Route path="Weekly-Reports" element={<WeeklyReportIndex />}>
+              <Route path="proposal-summary" element={<ProposalSummary />} />
+              <Route path="weekly-reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />
-                <Route path="WeeklyReport" element={<WeeklyReport />} />
-                <Route path="Add-Weekly-Report" element={<AddWRform />} />
+                <Route path="weekly-report-preview" element={<WeeklyReport />} />
+                <Route path="add-weekly-report" element={<AddWRform />} />
               </Route>
-              <Route path="Landscape" element={<LandscapeIndex />}>
+              <Route path="landscape" element={<LandscapeIndex />}>
                 <Route path="" element={<Landscapelist />} />
-                <Route path="Add-Landscape" element={<LandscapeForm />} />
+                <Route path="add-landscape" element={<LandscapeForm />} />
               </Route>
               <Route
-                path="Landscape/Landscape-Report"
+                path="landscape/landscape-report"
                 element={<Landscape />}
               />
             </Route>

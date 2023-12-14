@@ -24,7 +24,7 @@ import useDeleteFile from "../Hooks/useDeleteFile";
 import TitleBar from "../TitleBar";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
-
+import LoaderButton from "../Reusable/LoaderButton";
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -112,8 +112,8 @@ export const AddPO = ({}) => {
   const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
-const [snackBarColor, setSnackBarColor] = useState("");
-const [snackBarText, setSnackBarText] = useState("");
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const navigate = useNavigate();
 
@@ -428,6 +428,7 @@ const [snackBarText, setSnackBarText] = useState("");
 
   const handleInputChange = (e, newValue) => {
     setEmptyFieldsError(false);
+    setDisableButton(false);
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -447,6 +448,7 @@ const [snackBarText, setSnackBarText] = useState("");
 
   const handleChange = (e) => {
     setEmptyFieldsError(false);
+    setDisableButton(false)
     // Extract the name and value from the event target
     const { name, value } = e.target;
 
@@ -502,7 +504,7 @@ const [snackBarText, setSnackBarText] = useState("");
   });
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
   const inputRef = useRef(null);
@@ -534,7 +536,7 @@ const [snackBarText, setSnackBarText] = useState("");
     ]);
     // Reset the input fields
     setSearchText("");
-    setSelectedItem(null);
+    setSelectedItem({});
     setItemInput({
       Name: "",
       Qty: 1,
@@ -573,7 +575,7 @@ const [snackBarText, setSnackBarText] = useState("");
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -585,6 +587,7 @@ const [snackBarText, setSnackBarText] = useState("");
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
+      PurchasePrice: item.PurchasePrice,
     });
     setShowItem(false);
     setSearchResults([]); // Clear the search results
@@ -656,6 +659,7 @@ const [snackBarText, setSnackBarText] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -669,11 +673,13 @@ const [snackBarText, setSnackBarText] = useState("");
     ) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
-setSnackBarColor("error");
-setSnackBarText("Please fill all required fields");
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
+    setDisableButton(true);
+
     const postData = new FormData();
 
     // Merge the current items with the new items for EstimateData
@@ -720,19 +726,21 @@ setSnackBarText("Please fill all required fields");
       );
 
       setEstimateLinkData({});
+      setDisableButton(false);
       setAddCustomerSuccess(response.data.Message);
       setOpenSnackBar(true);
-setSnackBarColor("success");
-setSnackBarText(response.data.Message);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate("/Purchase-Order");
+        navigate("/purchase-order");
       }, 4000);
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
       setError(true);
       setErrorMessage(error.response.data);
+      setDisableButton(false);
 
       console.error("API Call Error:", error);
     }
@@ -750,11 +758,11 @@ setSnackBarText(response.data.Message);
     <>
       <TitleBar icon={icon} title="Add Purchase order" />
       <EventPopups
-open={openSnackBar}
-setOpen={setOpenSnackBar}
-color={snackBarColor}
-text={snackBarText}
-/>
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
 
       {loading ? (
         <div className="center-loader">
@@ -1103,7 +1111,7 @@ text={snackBarText}
                                 className="ms-2"
                                 onClick={() => {
                                   navigate(
-                                    `/Invoices/AddInvioces?id=${formData.InvoiceId}`
+                                    `/invoices/add-invoices?id=${formData.InvoiceId}`
                                   );
                                 }}
                               >
@@ -1166,7 +1174,7 @@ text={snackBarText}
                                 className="ms-2"
                                 onClick={() => {
                                   navigate(
-                                    `/Bills/addbill?id=${formData.BillId}`
+                                    `/bills/addbill?id=${formData.BillId}`
                                   );
                                 }}
                               >
@@ -1254,7 +1262,7 @@ text={snackBarText}
                           <th>Qty</th>
                           <th>Rate</th>
                           <th>Amount</th>
-                          <th>Tax</th>
+                          <th>Cost Price</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -1293,7 +1301,7 @@ text={snackBarText}
                                 </div>
                               </td>
                               <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                              <td>NaN</td>
+                              <td>{item.PurchasePrice}</td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
@@ -1317,12 +1325,12 @@ text={snackBarText}
                                 id="search-items"
                                 options={searchResults || ""}
                                 getOptionLabel={(item) => item.ItemName}
-                                value={selectedItem}
+                                value={selectedItem.ItemName}
                                 onChange={(event, newValue) => {
                                   if (newValue) {
                                     handleItemClick(newValue);
                                   } else {
-                                    setSelectedItem(null);
+                                    setSelectedItem({});
                                   }
                                 }}
                                 renderInput={(params) => (
@@ -1430,14 +1438,9 @@ text={snackBarText}
                             </h5>
                           </td>
                           <td>
-                            <input
-                              type="number"
-                              name="tax"
-                              style={{ width: "7em" }}
-                              disabled
-                              className="form-control form-control-sm"
-                              placeholder="Tax"
-                            />
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.PurchasePrice}
+                            </h5>
                           </td>
                           <td></td>
                         </tr>
@@ -1459,7 +1462,7 @@ text={snackBarText}
                           <div className="mb-3">
                             <textarea
                               className=" form-control"
-                              rows="5"
+                              rows="3"
                               id="comment"
                               value={formData.MemoInternal}
                               name="MemoInternal"
@@ -1474,7 +1477,7 @@ text={snackBarText}
                           <div className="mb-3">
                             <textarea
                               className=" form-control"
-                              rows="5"
+                              rows="3"
                               id="comment"
                               name="Message"
                               value={formData.Message}
@@ -1587,6 +1590,9 @@ text={snackBarText}
                           position: "relative",
                         }}
                       >
+                        <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer">
                         <img
                           src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                           alt={file.FileName}
@@ -1595,7 +1601,7 @@ text={snackBarText}
                             height: "120px",
                             objectFit: "cover",
                           }}
-                        />
+                        /></a>
                         <p
                           className="file-name-overlay"
                           style={{
@@ -1721,7 +1727,7 @@ text={snackBarText}
                             className="btn btn-sm btn-outline-primary estm-action-btn"
                             onClick={() => {
                               sendEmail(
-                                `/Purchase-Order/Purchase-Order-Preview?id=${idParam}`,
+                                `/purchase-order/purchase-order-preview?id=${idParam}`,
                                 formData.SupplierId,
                                 0,
                                 true
@@ -1735,7 +1741,7 @@ text={snackBarText}
                             className="btn btn-sm btn-outline-primary estm-action-btn me-2"
                             onClick={() => {
                               navigate(
-                                `/Purchase-Order/Purchase-Order-Preview?id=${idParam}`
+                                `/purchase-order/purchase-order-preview?id=${idParam}`
                               );
                             }}
                           >
@@ -1751,20 +1757,28 @@ text={snackBarText}
                         onClick={() => {
                           setFormData(initialFormData);
 
-                          navigate("/Purchase-Order");
+                          navigate("/purchase-order");
 
                           setEstimateLinkData({});
                         }}
                       >
                         Cancel
                       </button>
+                      <LoaderButton
+                        loading={disableButton}
+                        handleSubmit={handleSubmit}
+                      >
+                        Save
+                      </LoaderButton>
+
+                      {/* 
                       <button
                         type="button"
                         className="btn btn-primary me-2"
                         onClick={handleSubmit}
                       >
                         Save
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

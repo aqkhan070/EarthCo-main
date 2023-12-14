@@ -4,6 +4,7 @@ import axios from "axios";
 import Alert from "@mui/material/Alert";
 import { TextField } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const IrrigationControler = ({
   setAddSucces,
@@ -24,6 +25,7 @@ const IrrigationControler = ({
 
   const handleChange = (e) => {
     setEmptyFieldError(false);
+    setDisableButton(false);
     const { name, value } = e.target;
     const parsedValue =
       name === "NumberofBrokenHeads" ||
@@ -66,6 +68,7 @@ const IrrigationControler = ({
 
   const [submitClicked, setSubmitClicked] = useState(false);
   const [emptyFieldError, setEmptyFieldError] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -78,6 +81,8 @@ const IrrigationControler = ({
       setEmptyFieldError(true);
       return;
     }
+    setDisableButton(true);
+
 
     const postData = new FormData();
 
@@ -128,6 +133,7 @@ const IrrigationControler = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setDisableButton(false);
 
       setFormData({});
       fetchIrrigation(idParam);
@@ -147,6 +153,7 @@ const IrrigationControler = ({
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
       console.error("API Call Error:", error.response.data);
+      setDisableButton(false);
       setAddError(error.response.data);
     }
   };
@@ -577,6 +584,9 @@ const IrrigationControler = ({
             )} */}
           </div>
           <div className=" col-md-4 mb-3 text-right">
+            <LoaderButton loading={disableButton} handleSubmit={handleSubmit}>
+              Add
+            </LoaderButton>{" "}
             <button
               onClick={toggleShowForm}
               type="button"
@@ -584,13 +594,13 @@ const IrrigationControler = ({
             >
               Clear
             </button>
-            <button
+            {/* <button
               type="button"
               className="btn btn-primary me-1"
               onClick={handleSubmit}
             >
               Add
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

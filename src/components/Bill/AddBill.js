@@ -14,6 +14,7 @@ import useDeleteFile from "../Hooks/useDeleteFile";
 import { useNavigate, NavLink } from "react-router-dom";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddBill = ({
   setshowContent,
@@ -273,6 +274,7 @@ const AddBill = ({
   const handleInputChange = (e, newValue) => {
     setSubmitClicked(false);
     setEmptyFieldsError(false);
+    setDisableButton(false);
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -289,6 +291,7 @@ const AddBill = ({
   const handleChange = (e) => {
     setSubmitClicked(false);
     setEmptyFieldsError(false);
+    setDisableButton(false);
 
     // Extract the name and value from the event target
     const { name, value } = e.target;
@@ -330,7 +333,7 @@ const AddBill = ({
   });
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
   const inputRef = useRef(null);
@@ -361,7 +364,7 @@ const AddBill = ({
     ]);
     // Reset the input fields
     setSearchText("");
-    setSelectedItem(null);
+    setSelectedItem({});
     setItemInput({
       Name: "",
       Qty: 1,
@@ -374,7 +377,7 @@ const AddBill = ({
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -476,6 +479,7 @@ const AddBill = ({
   // submit handler
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -490,6 +494,7 @@ const AddBill = ({
       setSnackBarText("Please fill all required fields");
       return;
     }
+    setDisableButton(true);
 
     const postData = new FormData();
 
@@ -541,17 +546,19 @@ const AddBill = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setDisableButton(false);
 
       setAddCustomerSuccess(response.data.Message);
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate(`/Bills`);
+        navigate(`/bills`);
       }, 4000);
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
       setErrorMessage(error.response.data);
       console.error("API Call Error:", error);
+      setDisableButton(false);
     }
 
     // Logging FormData contents (for debugging purposes)
@@ -816,7 +823,7 @@ const AddBill = ({
                                   className="ms-2"
                                   onClick={() => {
                                     navigate(
-                                      `/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`
+                                      `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
                                     );
                                   }}
                                 >
@@ -958,14 +965,14 @@ const AddBill = ({
                         <>
                           <Autocomplete
                             id="search-items"
-                            options={searchResults || null}
+                            options={searchResults}
                             getOptionLabel={(item) => item.ItemName}
-                            value={selectedItem} // This should be the selected item, not searchText
+                            value={selectedItem.ItemName} // This should be the selected item, not searchText
                             onChange={(event, newValue) => {
                               if (newValue) {
                                 handleItemClick(newValue);
                               } else {
-                                setSelectedItem(null);
+                                setSelectedItem({});
                               }
                             }}
                             renderInput={(params) => (
@@ -1092,20 +1099,18 @@ const AddBill = ({
               <div className="row">
                 <div className="col-xl-12 col-lg-12">
                   <div className="basic-form">
-                    <form>
-                      <label className="form-label">Memo</label>
+                    <label className="form-label">Memo</label>
 
-                      <div className="mb-3">
-                        <textarea
-                          className="form-txtarea form-control"
-                          rows="5"
-                          id="comment"
-                          name="Memo"
-                          value={formData.Memo}
-                          onChange={handleChange}
-                        ></textarea>
-                      </div>
-                    </form>
+                    <div className="mb-3">
+                      <textarea
+                        className="form-txtarea form-control"
+                        rows="3"
+                        id="comment"
+                        name="Memo"
+                        value={formData.Memo}
+                        onChange={handleChange}
+                      ></textarea>
+                    </div>
                   </div>
                 </div>
                 <div className="col-xl-12 col-lg-12">
@@ -1210,15 +1215,21 @@ const AddBill = ({
                   position: "relative",
                 }}
               >
-                <img
-                  src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                  alt={file.FileName}
-                  style={{
-                    width: "150px",
-                    height: "120px",
-                    objectFit: "cover",
-                  }}
-                />
+                <a
+                  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                    alt={file.FileName}
+                    style={{
+                      width: "150px",
+                      height: "120px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </a>
                 <p
                   className="file-name-overlay"
                   style={{
@@ -1339,7 +1350,7 @@ const AddBill = ({
                       className="btn btn-sm btn-outline-primary estm-action-btn"
                       onClick={() => {
                         sendEmail(
-                          `/Bills/Bill-Preview?id=${idParam}`,
+                          `/bills/bill-preview?id=${idParam}`,
                           formData.SupplierId,
                           0,
                           true
@@ -1352,7 +1363,7 @@ const AddBill = ({
                       type="button"
                       className="btn btn-sm btn-outline-primary estm-action-btn me-2"
                       onClick={() => {
-                        navigate(`/Bills/Bill-Preview?id=${idParam}`);
+                        navigate(`/bills/bill-preview?id=${idParam}`);
                       }}
                     >
                       <Print></Print>
@@ -1365,18 +1376,25 @@ const AddBill = ({
                 <button
                   className="btn btn-danger light me-2"
                   onClick={() => {
-                    navigate(`/Bills`);
+                    navigate(`/bills`);
                   }}
                 >
                   Cancel
                 </button>
-                <button
+                <LoaderButton
+                  loading={disableButton}
+                  handleSubmit={handleSubmit}
+                >
+                  Save
+                </LoaderButton>
+
+                {/* <button
                   type="button"
                   className="btn btn-primary me-2"
                   onClick={handleSubmit}
                 >
                   Save
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

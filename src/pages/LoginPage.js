@@ -81,7 +81,7 @@ const LoginPage = () => {
         // console.log("login response iss", Cookies.get('token'))
         console.log("login response is", response.data);
 
-        navigate("/Dashboard");
+        navigate("/dashboard");
       } else {
         setError("Invalid email or password. Please try again.");
         setBtndisable(false);
@@ -311,12 +311,11 @@ const LoginPage = () => {
                             size="large"
                             variant="contained"
                             loading={btndisable}
+                            loadingPosition="start"
                             fullWidth
-                           
                             type="submit"
-                          
                           >
-                            Sign Me In
+                            <span>Sign Me In</span>
                           </LoadingButton>
                         </div>
                       </form>

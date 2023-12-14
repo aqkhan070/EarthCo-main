@@ -339,7 +339,7 @@ const UpdateSRForm = ({
       console.log(response.data.Message);
 
       if (isSRUpdateRoute) {
-        navigate("/Service-Requests");
+        navigate("/service-requests");
         return;
       }
 
@@ -360,7 +360,7 @@ const UpdateSRForm = ({
     } catch (error) {
       console.error("API Call Error:", error.response.data);
       if (isSRUpdateRoute) {
-        navigate("/Service-Requests");
+        navigate("/service-requests");
         return;
       }
       setBtnDisable(false);
@@ -575,7 +575,7 @@ const UpdateSRForm = ({
                 {/* Add service form */}
                 <div className="row mt-3 mx-2 ">
                   <div className="col-lg-12 col-md-12 mb-2">
-                    <NavLink to="/Estimates">
+                    <NavLink to="/estimates">
                       {" "}
                       <button
                         type="button"
@@ -1359,7 +1359,7 @@ const UpdateSRForm = ({
                     onClick={() => {
                       if (isSRUpdateRoute) {
                         setPunchListData({});
-                        navigate("/Service-Requests");
+                        navigate("/service-requests");
                         return;
                       }
                       setShowContent(true);

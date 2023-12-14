@@ -487,7 +487,7 @@ const HeaderExp = () => {
                                 className="dropdown-item ai-icon "
                                 onClick={() => {
                                   navigate(
-                                    `/Staff/Add-Staff?id=${sessionStorage.getItem(
+                                    `/staff/add-staff?id=${sessionStorage.getItem(
                                       "userId"
                                     )}`
                                   );

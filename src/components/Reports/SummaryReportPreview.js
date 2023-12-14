@@ -32,7 +32,7 @@ const SummaryReportPreview = () => {
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
 
-  const isGeneralReport = window.location.pathname.includes("GeneralReport");
+  const isGeneralReport = window.location.pathname.includes("general-report");
 
   const handlePrint = () => {
     setToggleFullscreen(false);
@@ -117,7 +117,7 @@ const SummaryReportPreview = () => {
                 {isMail ? <></> : <button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                   onClick={() => {
-                    navigate(`/SummaryReport`);
+                    navigate(`/summary-report`);
                   }}
                 >
                   <i className="fa fa-backward"></i>
@@ -139,7 +139,7 @@ const SummaryReportPreview = () => {
               className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
               onClick={() => {
                 sendEmail(
-                  `/SummaryReportPreview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                  `/summary-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                   customerParam,
                   0,
                   false

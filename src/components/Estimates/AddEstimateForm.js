@@ -26,6 +26,7 @@ import { DataContext } from "../../context/AppData";
 import { RoutingContext } from "../../context/RoutesContext";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
@@ -56,18 +57,32 @@ const AddEstimateForm = () => {
   const { PunchListData, setPunchListData } = useContext(DataContext);
 
   useEffect(() => {
+    fetchName(PunchListData.CustomerId);
     if (PunchListData.ItemData) {
-      fetchName(PunchListData.CustomerId);
-
       setFormData((prevState) => ({
         ...prevState,
         ...PunchListData,
         tblEstimateItems: PunchListData.ItemData,
       }));
     }
+
+    if (PunchListData.PhotoPath) {
+      setFormData((prevState) => ({
+        ...prevState,
+        ...PunchListData,
+        tblEstimateFiles: [
+          { FilePath: PunchListData.PhotoPath },
+          { FilePath: PunchListData.AfterPhotoPath },
+        ],
+      }));
+    }
+
     fetchStaffList();
     fetctContacts(PunchListData.CustomerId);
     console.log("PunchList Data link", PunchListData);
+    return () => {
+      setPunchListData({});
+    };
   }, [PunchListData]);
 
   const inputFile = useRef(null);
@@ -84,6 +99,7 @@ const AddEstimateForm = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
   const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
+  const [disableButton, setDisableButton] = useState(false);
 
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -124,6 +140,10 @@ const AddEstimateForm = () => {
 
       console.log("selected estimate is", response.data);
       setPrevFiles(response.data.EstimateFileData);
+      setEstimateLinkData((prevState) => ({
+        ...prevState,
+        FileData: response.data.EstimateFileData,
+      }));
       fetchName(response.data.EstimateItemData.CustomerId);
 
       // Combine EstimateItemData and EstimateCostItemData into tblEstimateItems
@@ -136,6 +156,7 @@ const AddEstimateForm = () => {
         ...prevState,
         ...response.data.EstimateData,
         tblEstimateItems: combinedItems,
+        // tblEstimateFiles: combinedItems,
       }));
 
       setEstimateFiles(response.data.EstimateFileData);
@@ -338,6 +359,7 @@ const AddEstimateForm = () => {
 
   const handleInputChange = (e, newValue) => {
     setEmptyFieldsError(false);
+    setDisableButton(false);
     const { name, value } = e.target;
 
     setSelectedCustomer(newValue);
@@ -373,9 +395,9 @@ const AddEstimateForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (id = idParam, number = formData.EstimateNumber) => {
     setSubmitClicked(true);
-    e.preventDefault();
+
     if (
       !formData.IssueDate ||
       !formData.CustomerId ||
@@ -399,7 +421,8 @@ const AddEstimateForm = () => {
     // Merge the current items with the new items for EstimateData
     const mergedEstimateData = {
       ...formData,
-      EstimateId: idParam,
+      EstimateId: id,
+      EstimateNumber: number,
       TotalAmount: totalItemAmount || 0,
       ProfitPercentage: profitPercentage || 0,
       Shipping: shippingCost || 0,
@@ -420,6 +443,7 @@ const AddEstimateForm = () => {
     estimateFiles.forEach((fileObj) => {
       postData.append("Files", fileObj);
     });
+    setDisableButton(true);
 
     submitData(postData);
   };
@@ -449,9 +473,10 @@ const AddEstimateForm = () => {
       setSnackBarText(response.data.Message);
 
       setAddCustomerSuccess(response.data.Message);
+      setDisableButton(false);
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate(`/Estimates`);
+        navigate(`/estimates`);
       }, 4000);
 
       console.log("Data submitted successfully:", response.data);
@@ -459,6 +484,7 @@ const AddEstimateForm = () => {
       console.error("API Call Error:", error);
       setErrorMessage(error.response.data);
       setSubmitError(true);
+      setDisableButton(false);
     }
 
     // Logging FormData contents (for debugging purposes)
@@ -506,7 +532,7 @@ const AddEstimateForm = () => {
   });
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
   const inputRef = useRef(null);
@@ -546,7 +572,7 @@ const AddEstimateForm = () => {
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -558,7 +584,7 @@ const AddEstimateForm = () => {
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
-
+      PurchasePrice: item.PurchasePrice,
       isCost: false,
     });
     itemInput ? setItemBtnDisable(false) : setItemBtnDisable(true);
@@ -566,7 +592,7 @@ const AddEstimateForm = () => {
     setShowItem(false);
     setSearchResults([]); // Clear the search results
 
-    console.log("selected item is", itemInput);
+    console.log("selected item is", item);
   };
 
   const handleAddItem = () => {
@@ -675,7 +701,7 @@ const AddEstimateForm = () => {
   });
   const [searchACText, setSearchACText] = useState("");
   const [searchACResults, setSearchACResults] = useState([]);
-  const [selectedACItem, setSelectedACItem] = useState(null);
+  const [selectedACItem, setSelectedACItem] = useState({});
   const [showACItem, setShowACItem] = useState(true);
   const [itemACBtnDisable, setItemACBtnDisable] = useState(true);
   const inputACRef = useRef(null);
@@ -704,7 +730,7 @@ const AddEstimateForm = () => {
     setShowACItem(true);
     setSearchACText(event.target.value);
 
-    setSelectedACItem(null); // Clear selected item when input changes
+    setSelectedACItem({}); // Clear selected item when input changes
   };
   const handleACAddItem = () => {
     // setTblSRItems([...tblSRItems, itemInput]);
@@ -748,7 +774,10 @@ const AddEstimateForm = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalACAmount, setTotalACAmount] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
+  const [paymentCredit, setPaymentCredit] = useState(0);
+  const [balanceDue, setBalanceDue] = useState(0);
 
   const shippingcostChange = (e) => {
     if (parseFloat(e.target.value) > 0) {
@@ -759,10 +788,16 @@ const AddEstimateForm = () => {
   };
 
   const discountChange = (e) => {
-    if (parseFloat(e.target.value) > 0) {
-      setTotalDiscount(parseFloat(e.target.value));
-    } else {
-      setTotalDiscount(0);
+    const newValue = parseFloat(e.target.value);
+
+    if (newValue) {
+      if (newValue >= 0 && newValue <= 100) {
+        setTotalDiscount(newValue);
+      } else if (newValue > 100) {
+        setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
+      } else {
+        setTotalDiscount(0);
+      }
     }
   };
 
@@ -770,13 +805,13 @@ const AddEstimateForm = () => {
     const filteredACItems = formData.tblEstimateItems?.filter(
       (item) => item.isCost === true
     );
+    const filteredItems = formData.tblEstimateItems?.filter(
+      (item) => item.isCost === false
+    );
 
     const newACTotalAmount = filteredACItems?.reduce(
       (acc, item) => acc + item.Rate * item.Qty,
       0
-    );
-    const filteredItems = formData.tblEstimateItems?.filter(
-      (item) => item.isCost === false
     );
 
     const newTotalAmount = filteredItems?.reduce(
@@ -784,20 +819,43 @@ const AddEstimateForm = () => {
       0
     );
 
+    const newCostTotalAmount = filteredItems?.reduce(
+      (acc, item) => acc + item.PurchasePrice * item.Qty,
+      0
+    );
+    const totalamount =
+      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
+
+    const calculatedTotalProfit =
+      newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+
+    const calculatedProfitPercentage =
+      (calculatedTotalProfit / totalExpense) * 100;
+
+    setTotalExpense(newCostTotalAmount + newACTotalAmount);
+
     setSubtotal(newTotalAmount);
     setTotalACAmount(newACTotalAmount);
-    const calculatedTotalProfit =
-      newTotalAmount - newACTotalAmount - (totalDiscount / subtotal) * 100;
-    setTotalProfit(calculatedTotalProfit);
-    setTotalItemAmount(
-      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100
-    );
-    const calculatedProfitPercentage =
-      (newACTotalAmount / calculatedTotalProfit) * 100;
+    if (totalamount) {
+      setTotalItemAmount(totalamount);
+    }
+    if (calculatedTotalProfit) {
+      setTotalProfit(calculatedTotalProfit);
+    }
+
+    setBalanceDue(totalItemAmount - paymentCredit);
+
     setProfitPercentage(calculatedProfitPercentage);
 
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
-  }, [formData.tblEstimateItems, shippingCost, totalDiscount]);
+  }, [
+    formData.tblEstimateItems,
+    shippingCost,
+    totalDiscount,
+    totalItemAmount,
+    subtotal,
+    totalExpense,
+  ]);
 
   // filesss........
 
@@ -1105,7 +1163,7 @@ const AddEstimateForm = () => {
                             className="ms-2"
                             onClick={() => {
                               navigate(
-                                `/Invoices/AddInvioces?id=${formData.InvoiceId}`
+                                `/invoices/add-invoices?id=${formData.InvoiceId}`
                               );
                             }}
                           >
@@ -1254,7 +1312,7 @@ const AddEstimateForm = () => {
                             className="ms-2"
                             onClick={() => {
                               navigate(
-                                `/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`
+                                `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
                               );
                             }}
                           >
@@ -1310,7 +1368,7 @@ const AddEstimateForm = () => {
                           <th>Qty</th>
                           <th>Rate</th>
                           <th>Amount</th>
-                          <th>Tax</th>
+                          <th>Cost Price</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -1348,7 +1406,7 @@ const AddEstimateForm = () => {
                                 <td>
                                   {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                                 </td>
-                                <td>NaN</td>
+                                <td>{item.PurchasePrice}</td>
                                 <td>
                                   <div className="badgeBox">
                                     <Button
@@ -1372,12 +1430,12 @@ const AddEstimateForm = () => {
                                 id="search-items"
                                 options={searchResults}
                                 getOptionLabel={(item) => item.ItemName}
-                                value={selectedItem} // This should be the selected item, not searchText
+                                value={selectedItem.ItemName} // This should be the selected item, not searchText
                                 onChange={(event, newValue) => {
                                   if (newValue) {
                                     handleItemClick(newValue);
                                   } else {
-                                    setSelectedItem(null);
+                                    setSelectedItem({});
                                   }
                                 }}
                                 renderInput={(params) => (
@@ -1486,14 +1544,9 @@ const AddEstimateForm = () => {
                             </h5>
                           </td>
                           <td>
-                            <input
-                              type="number"
-                              name="tax"
-                              style={{ width: "7em" }}
-                              disabled
-                              className="form-control form-control-sm"
-                              placeholder="tax"
-                            />
+                            <h5 style={{ margin: "0" }}>
+                              {itemInput.PurchasePrice}
+                            </h5>
                           </td>
                           <td></td>
                         </tr>
@@ -1577,19 +1630,19 @@ const AddEstimateForm = () => {
                                 id="search-ac-items"
                                 options={searchACResults}
                                 getOptionLabel={(item) => item.ItemName}
-                                value={selectedACItem}
+                                value={selectedACItem.ItemName}
                                 onChange={(event, newValue) => {
                                   if (newValue) {
                                     handleACItemClick(newValue);
                                   } else {
-                                    setSelectedACItem(null);
+                                    setSelectedACItem({});
                                   }
                                 }}
                                 inputValue={searchACText}
                                 onInputChange={(event, newInputValue) => {
                                   setShowACItem(true);
                                   setSearchACText(newInputValue);
-                                  setSelectedACItem(null); // Clear selected item when input changes
+                                  setSelectedACItem({}); // Clear selected item when input changes
                                 }}
                                 renderInput={(params) => (
                                   <TextField
@@ -1718,7 +1771,7 @@ const AddEstimateForm = () => {
                                 name="EstimateNotes"
                                 onChange={handleInputChange}
                                 className=" form-control"
-                                rows="5"
+                                rows="3"
                               ></textarea>
                             </div>
                           </form>
@@ -1738,7 +1791,7 @@ const AddEstimateForm = () => {
                                 name="ServiceLocationNotes"
                                 onChange={handleInputChange}
                                 className=" form-control "
-                                rows="5"
+                                rows="3"
                               ></textarea>
                             </div>
                           </form>
@@ -1830,7 +1883,7 @@ const AddEstimateForm = () => {
                             ${subtotal?.toFixed(2)}
                           </td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="left custom-table-row">
                             <label className="form-label">Taxes</label>
                             <div
@@ -1847,7 +1900,7 @@ const AddEstimateForm = () => {
                             </div>
                           </td>
                           <td className="right text-right">$0.00</td>
-                        </tr>
+                        </tr> */}
                         <tr>
                           <td className="left custom-table-row">
                             <label className="form-label">Discount(%)</label>
@@ -1866,10 +1919,13 @@ const AddEstimateForm = () => {
                             </div>
                           </td>
                           <td className="right text-right">
-                            ${((totalDiscount / subtotal) * 100).toFixed(2)}
+                            $
+                            {totalDiscount && subtotal
+                              ? ((totalDiscount / subtotal) * 100).toFixed(2)
+                              : 0}
                           </td>
                         </tr>
-                        <tr>
+                        {/*  <tr>
                           <td className="left custom-table-row">
                             <label className="form-label">Shipping</label>
                             <div
@@ -1889,7 +1945,7 @@ const AddEstimateForm = () => {
                           <td className="right text-right">
                             ${shippingCost || 0.0}
                           </td>
-                        </tr>
+                        </tr> */}
 
                         <tr>
                           <td className="left">
@@ -1899,21 +1955,23 @@ const AddEstimateForm = () => {
                             <strong>${totalItemAmount?.toFixed(2)}</strong>
                           </td>
                         </tr>
-                        <tr>
+                        {/* <tr>
                           <td className="left">Payment/Credit</td>
-                          <td className="right text-right">$0.00</td>
+                          <td className="right text-right">${paymentCredit}</td>
                         </tr>
                         <tr>
                           <td className="left">
                             <h3>Balance due</h3>
                           </td>
                           <td className="right text-right">
-                            <h3>$0.00</h3>
+                            <h3>${balanceDue.toFixed(2)}</h3>
                           </td>
-                        </tr>
+                        </tr> */}
                         <tr>
                           <td className="left">Total Expenses</td>
-                          <td className="right text-right">${totalACAmount}</td>
+                          <td className="right text-right">
+                            ${totalExpense.toFixed(2)}
+                          </td>
                         </tr>
                         <tr>
                           <td className="left">Total Profit</td>
@@ -1935,6 +1993,59 @@ const AddEstimateForm = () => {
                 <div className="row">
                   <div className="col-xl-12 col-lg-12">
                     <div className="card-body row">
+                      {formData.tblEstimateFiles?.map((file, index) => (
+                        <div
+                          key={index}
+                          className="col-md-2 col-md-2 mt-3 image-container"
+                          style={{
+                            width: "150px", // Set the desired width
+                            height: "120px", // Set the desired height
+                            margin: "1em",
+                            position: "relative",
+                          }}
+                        >
+                          <a
+                            href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                              style={{
+                                width: "150px",
+                                height: "120px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </a>
+                          <p
+                            className="file-name-overlay"
+                            style={{
+                              position: "absolute",
+                              bottom: "0",
+                              left: "13px",
+                              right: "0",
+                              backgroundColor: "rgba(0, 0, 0, 0.3)",
+                              textAlign: "center",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                              textOverflow: "ellipsis",
+                              padding: "5px",
+                            }}
+                          ></p>
+                          <span
+                            className="file-delete-button"
+                            style={{
+                              left: "140px",
+                            }}
+                          >
+                            <span>
+                              <Delete color="error" />
+                            </span>
+                          </span>
+                        </div>
+                      ))}
                       {PrevFiles.map((file, index) => (
                         <div
                           key={index}
@@ -1946,6 +2057,9 @@ const AddEstimateForm = () => {
                             position: "relative",
                           }}
                         >
+                          <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer" >
                           <img
                             src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             alt={file.FileName}
@@ -1954,7 +2068,7 @@ const AddEstimateForm = () => {
                               height: "120px",
                               objectFit: "cover",
                             }}
-                          />
+                          /></a>
                           <p
                             className="file-name-overlay"
                             style={{
@@ -2094,7 +2208,7 @@ const AddEstimateForm = () => {
                               onClick={() => {
                                 // setEstimateLinkData("PO clicked")
                                 LinkToPO();
-                                navigate("/Purchase-Order/AddPO");
+                                navigate("/purchase-order/add-po");
                               }}
                             >
                               Purchase Order
@@ -2102,7 +2216,7 @@ const AddEstimateForm = () => {
                             <MenuItem
                               onClick={() => {
                                 LinkToPO();
-                                navigate("/Invoices/AddInvioces");
+                                navigate("/invoices/add-invoices");
                               }}
                               value={3}
                             >
@@ -2116,7 +2230,7 @@ const AddEstimateForm = () => {
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
                             sendEmail(
-                              `/Estimates/Estimate-Preview?id=${idParam}`,
+                              `/estimates/estimate-preview?id=${idParam}`,
                               formData.CustomerId,
                               formData.ContactId,
                               false
@@ -2130,7 +2244,7 @@ const AddEstimateForm = () => {
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
                             navigate(
-                              `/Estimates/Estimate-Preview?id=${idParam}`
+                              `/estimates/estimate-preview?id=${idParam}`
                             );
                           }}
                         >
@@ -2140,12 +2254,12 @@ const AddEstimateForm = () => {
                     ) : (
                       <></>
                     )}{" "}
-                    <NavLink to="/Estimates">
+                    <NavLink to="/estimates">
                       <button
                         className="btn btn-danger light ms-1 me-2"
                         onClick={() => {
                           if (isEstimateUpdateRoute) {
-                            navigate(`/Estimates`);
+                            navigate(`/estimates`);
                             setPunchListData({});
                             return;
                           }
@@ -2154,13 +2268,44 @@ const AddEstimateForm = () => {
                         Cancel
                       </button>
                     </NavLink>
-                    <button
+                    {idParam ? (
+                      <LoaderButton
+                        loading={disableButton}
+                        handleSubmit={() => {
+                          handleSubmit(0, "");
+                        }}
+                        color={"customColor"}
+                      >
+                        Save as copy
+                      </LoaderButton>
+                    ) : (
+                      // <button
+                      //   className="btn btn-secondary me-2"
+                      //   onClick={() => {
+                      //     handleSubmit(0, "");
+                      //   }}
+                      // >
+                      //   Save as copy
+                      // </button>
+                      <></>
+                    )}
+                    <LoaderButton
+                      loading={disableButton}
+                      handleSubmit={() => {
+                        handleSubmit();
+                      }}
+                    >
+                      Save
+                    </LoaderButton>
+                    {/* <button
                       type="submit"
                       className="btn btn-primary me-2"
-                      onClick={handleSubmit}
+                      onClick={() => {
+                        handleSubmit();
+                      }}
                     >
-                      Submit
-                    </button>
+                      Save
+                    </button> */}
                   </div>
                 </div>
               </div>

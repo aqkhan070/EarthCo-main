@@ -152,18 +152,18 @@ const EstimatePreview = () => {
                  
                   }}
                 ></div> */}
-                    <div className="col-md-2 col-sm-5">
+                    <div className="col-md-2 col-sm-2">
                       {" "}
                       <img className="preview-Logo" src={logo} alt="" />
                     </div>
-                    <div className="col-md-7 col-sm-2"></div>
+                    <div className="col-md-7 col-sm-6"></div>
                     <div className="col-md-3 col-sm-4 text-center table-cell-align">
                       <h1>ESTIMATE</h1>
                     </div>
                   </div>
 
                   <div className="row mt-2">
-                    <div className="col-md-8  col-sm-6">
+                    <div className="col-md-8  col-sm-8">
                       <table>
                         <tbody>
                           <tr>
@@ -245,7 +245,7 @@ const EstimatePreview = () => {
                       </table>
                     </div>
 
-                    <div className="col-md-4 col-sm-6 ">
+                    <div className="col-md-4 col-sm-4 ">
                       <table className="preview-table">
                         <thead>
                           <tr>
@@ -363,7 +363,7 @@ const EstimatePreview = () => {
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
                     onClick={() => {
-                      navigate(`/Estimates`);
+                      navigate(`/estimates`);
                     }}
                   >
                     <i className="fa fa-backward"></i>
@@ -396,7 +396,7 @@ const EstimatePreview = () => {
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
                       sendEmail(
-                        `/Estimates/Estimate-Preview?id=${idParam}`,
+                        `/estimates/estimate-preview?id=${idParam}`,
                         previewData.EstimateData.CustomerId,
                         previewData.EstimateData.ContactId,
                         false

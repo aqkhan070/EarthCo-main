@@ -93,7 +93,7 @@ const GenralReport = () => {
                 <button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                   onClick={() => {
-                    navigate(`/SummaryReport`);
+                    navigate(`/summary-report`);
                   }}
                 >
                   <i className="fa fa-backward"></i>
@@ -118,7 +118,7 @@ const GenralReport = () => {
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={() => {
                     sendEmail(
-                      `/GeneralReport?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                      `/general-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                       customerParam,
                       0,
                       false

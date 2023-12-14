@@ -188,7 +188,7 @@ const Irrigationlist = () => {
                       <button
                         className="btn btn-primary "
                         onClick={() => {
-                          navigate(`/Irrigation/Add-Irrigation`);
+                          navigate(`/irrigation/add-irrigation`);
                           // setShowContent(false);
                         }}
                       >
@@ -249,7 +249,7 @@ const Irrigationlist = () => {
                                 // setShowContent(false);
                                 // setSelectedIrr(irr.IrrigationId);
                                 navigate(
-                                  `/Irrigation/Add-Irrigation?id=${irr.IrrigationId}`
+                                  `/irrigation/add-irrigation?id=${irr.IrrigationId}`
                                 );
                               }}
                               hover
@@ -263,7 +263,7 @@ const Irrigationlist = () => {
                               <TableCell>Controller Number</TableCell>
                               <TableCell>
                                 <NavLink
-                                  to={`/Irrigation/Audit-Report?id=${irr.IrrigationId}`}
+                                  to={`/irrigation/audit-report?id=${irr.IrrigationId}`}
                                 >
                                   <span className="badge badge-pill badge-success ">
                                     Open

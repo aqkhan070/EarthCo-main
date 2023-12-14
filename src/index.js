@@ -1,32 +1,33 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import RoutesContext from './context/RoutesContext';
-import DataFun from './context/AppData';
-import StyleData from './context/StyleData';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import RoutesContext from "./context/RoutesContext";
+import DataFun from "./context/AppData";
+import StyleData from "./context/StyleData";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 const theme = createTheme({
   palette: {
     primary: {
       main: "#7c9c3d",
     },
-  }, 
-  
+    customColor: {
+      main: "#2C2C2C", // Replace with your custom color code
+    },
+  },
 });
-
 
 root.render(
   <RoutesContext>
     <DataFun>
       <StyleData>
-      <ThemeProvider theme={theme}>
-        <div id="main-wrapper" className='show'>
-          <App />
-        </div>
+        <ThemeProvider theme={theme}>
+          <div id="main-wrapper" className="show">
+            <App />
+          </div>
         </ThemeProvider>
       </StyleData>
     </DataFun>

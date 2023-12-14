@@ -107,14 +107,7 @@ const PunchListIndex = () => {
     console.log("punchData data is", punchData);
   }, [punchData]); // This useEffect will run whenever punchData changes
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setAddPunchListData((prevState) => ({
-      ...prevState,
-      [name]: value,
-      StatusId: 2,
-    }));
-  };
+
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const icon = (
@@ -195,7 +188,7 @@ const PunchListIndex = () => {
         <PunchlistModal2
           selectedPL={selectedPL}
           addPunchListData={addPunchListData}
-          handleChange={handleChange}
+      
           inputValue={inputValue}
           contactList={contactList}
           sLList={sLList}

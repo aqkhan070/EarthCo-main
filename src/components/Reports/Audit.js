@@ -121,7 +121,7 @@ const Audit = () => {
               <button
                 className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                 onClick={() => {
-                  navigate(`/Irrigation`);
+                  navigate(`/irrigation`);
                 }}
               >
                 <i className="fa fa-backward"></i>
@@ -146,7 +146,7 @@ const Audit = () => {
                 className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                 onClick={() => {
                   sendEmail(
-                    `/Irrigation/Audit-Report?id=${idParam}`,
+                    `/irrigation/audit-report?id=${idParam}`,
                     irrDetails.IrrigationData.CustomerId,
                     0,
                     false

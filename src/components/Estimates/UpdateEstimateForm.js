@@ -439,7 +439,7 @@ const UpdateEstimateForm = ({
         }
       );
       if (isEstimateUpdateRoute) {
-        navigate(`/Estimates`);
+        navigate(`/estimates`);
         return;
       }
 
@@ -1020,7 +1020,7 @@ const UpdateEstimateForm = ({
                             style={{ color: "blue" }}
                             onClick={() => {
                               navigate(
-                                `/Invoices/AddInvioces?id=${formData.InvoiceId}`
+                                `/invoices/add-invoices?id=${formData.InvoiceId}`
                               );
                             }}
                           >
@@ -1147,7 +1147,7 @@ const UpdateEstimateForm = ({
                             style={{ color: "blue" }}
                             onClick={() => {
                               navigate(
-                                `/Bills/addbill?id=${formData.BillId}`
+                                `/bills/addbill?id=${formData.BillId}`
                               );
                             }}
                           >
@@ -1193,7 +1193,7 @@ const UpdateEstimateForm = ({
                             style={{ color: "blue" }}
                             onClick={() => {
                               navigate(
-                                `/Purchase-Order/AddPO?id=${formData.PurchaseOrderId}`
+                                `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
                               );
                             }}
                           >
@@ -2015,7 +2015,7 @@ const UpdateEstimateForm = ({
                             onClick={() => {
                               // setEstimateLinkData("PO clicked")
                               LinkToPO();
-                              navigate("/Purchase-Order/AddPO");
+                              navigate("/purchase-order/add-po");
                             }}
                             value={2}
                           >
@@ -2024,7 +2024,7 @@ const UpdateEstimateForm = ({
                           <MenuItem
                             onClick={() => {
                               LinkToPO();
-                              navigate("/Invoices/AddInvioces");
+                              navigate("/invoices/add-invoices");
                             }}
                             value={3}
                           >
@@ -2043,7 +2043,7 @@ const UpdateEstimateForm = ({
                         type="button"
                         className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                         onClick={() => {
-                          navigate("/Estimates/Estimate-Preview");
+                          navigate("/estimates/estimate-preview");
                           setestmPreviewId(estimateId);
                           // console.log(estimate.EstimateId);
                         }}
@@ -2071,12 +2071,12 @@ const UpdateEstimateForm = ({
                   >
                     Submit
                   </button>
-                  <NavLink to="/Estimates">
+                  <NavLink to="/estimates">
                     <button
                       className="btn btn-danger light ms-1 me-3"
                       onClick={() => {
                         if (isEstimateUpdateRoute) {
-                          navigate(`/Estimates`);
+                          navigate(`/estimates`);
                           setPunchListData({});
                           return;
                         }

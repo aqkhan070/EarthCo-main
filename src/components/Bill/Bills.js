@@ -167,7 +167,7 @@ const Bills = () => {
                     className="btn btn-primary "
                     onClick={() => {
                       // setshowContent(false);
-                      navigate(`/Bills/AddBill`);
+                      navigate(`/bills/add-bill`);
                     }}
                   >
                     + Add New Bill
@@ -223,7 +223,7 @@ const Bills = () => {
                           onDoubleClick={() => {
                             // setshowContent(false);
                             // setselectedBill(bill.BillId);
-                            navigate(`/Bills/AddBill?id=${bill.BillId}`);
+                            navigate(`/bills/add-bill?id=${bill.BillId}`);
                           }}
                           hover
                           key={bill.BillId}
@@ -241,7 +241,7 @@ const Bills = () => {
                               // className="btn btn-primary btn-icon-xxs me-2"
                               onClick={() => {
                                 navigate(
-                                  `/Bills/Bill-Preview?id=${bill.BillId}`
+                                  `/bills/bill-preview?id=${bill.BillId}`
                                 );
                                 // setBillData(bill);
                                 // console.log(estimate.EstimateId);

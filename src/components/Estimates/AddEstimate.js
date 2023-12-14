@@ -12,7 +12,7 @@ const AddEstimate = () => {
 
     return (
         <>
-            <TitleBar icon={icon} title='Add Estimate' />
+            <TitleBar icon={icon} title='add estimate' />
            
             <div className="add-item" style={{ margin: '20px', }}>
                 

@@ -1209,7 +1209,7 @@ const UpdateCustomer = ({
                     >
                       Submit
                     </button>
-                    <NavLink to="/Customers">
+                    <NavLink to="/customers">
                       <button
                         className="btn btn-danger light  m-1 "
                         onClick={() => {

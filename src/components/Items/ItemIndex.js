@@ -41,7 +41,7 @@ const ItemIndex = () => {
 
       <Routes>
         <Route path="" element={<Items />} />
-        <Route path="Add-Item" element={<AddItem />} />
+        <Route path="add-item" element={<AddItem />} />
       </Routes>
     </>
   );

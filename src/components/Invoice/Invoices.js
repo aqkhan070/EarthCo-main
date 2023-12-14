@@ -192,7 +192,7 @@ const Invoices = () => {
                           <button
                             className="btn btn-primary "
                             onClick={() => {
-                              navigate(`/Invoices/AddInvioces`);
+                              navigate(`/invoices/add-invoices`);
                             }}
                           >
                             + Add New Invoice
@@ -243,11 +243,15 @@ const Invoices = () => {
                                 </TableSortLabel>
                               </TableCell>
                               <TableCell>Customer</TableCell>
+                              <TableCell>Service#</TableCell>
+                              <TableCell>PO #</TableCell>
+                              <TableCell>Estimate #</TableCell>
+                              <TableCell>Bill #</TableCell>
+                              <TableCell>Profit %</TableCell>
                               <TableCell className="text-end">
                                 Balance
                               </TableCell>
                               <TableCell className="text-end">Total</TableCell>
-                              <TableCell>Service#</TableCell>
                               <TableCell>Status</TableCell>
                               {/* <TableCell>Actions</TableCell> */}
                             </TableRow>
@@ -276,7 +280,7 @@ const Invoices = () => {
                                     // setSelectedInvoice(invoice.InvoiceId);
                                     // setShowContent(false);
                                     navigate(
-                                      `/Invoices/AddInvioces?id=${invoice.InvoiceId}`
+                                      `/invoices/add-invoices?id=${invoice.InvoiceId}`
                                     );
                                   }}
                                   hover
@@ -296,20 +300,24 @@ const Invoices = () => {
                                   <TableCell>
                                     {TblDateFormat(invoice.IssueDate)}
                                   </TableCell>
-                                  <TableCell>{invoice.CustomerName}</TableCell>
+                                  <TableCell>{invoice.CustomerName}</TableCell>{" "}
+                                  <TableCell></TableCell>
+                                  <TableCell></TableCell>
+                                  <TableCell></TableCell>
+                                  <TableCell></TableCell>
+                                  <TableCell></TableCell>
                                   <TableCell className="text-end">
                                     {invoice.BalanceAmount}
                                   </TableCell>
                                   <TableCell className="text-end">
                                     {invoice.TotalAmount.toFixed(2)}
                                   </TableCell>
-                                  <TableCell></TableCell>
                                   <TableCell>
                                     <span
                                       onClick={() => {
                                         // setInvoiceData(invoice);
                                         navigate(
-                                          `/Invoices/Invoice-Preview?id=${invoice.InvoiceId}`
+                                          `/invoices/invoice-preview?id=${invoice.InvoiceId}`
                                         );
                                       }}
                                       className="  span-hover-pointer badge badge-pill badge-success "
@@ -323,7 +331,7 @@ const Invoices = () => {
                             onClick={() => {
                               setInvoiceData(invoice)
                               navigate(
-                                "/Invoices/Invoice-Preview"
+                                "/Invoices/invoice-preview"
                               );
                             }}
                           >

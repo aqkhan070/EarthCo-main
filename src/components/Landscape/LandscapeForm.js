@@ -16,7 +16,6 @@ const LandscapeForm = () => {
     Authorization: `Bearer ${token}`,
   };
 
- 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
 
@@ -30,8 +29,8 @@ const LandscapeForm = () => {
   const [staffData, setStaffData] = useState([]);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
-const [snackBarColor, setSnackBarColor] = useState("");
-const [snackBarText, setSnackBarText] = useState("");
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const navigate = useNavigate();
 
@@ -90,7 +89,6 @@ const [snackBarText, setSnackBarText] = useState("");
 
   useEffect(() => {
     fetchStaffList();
-    
   }, []);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
@@ -175,12 +173,11 @@ const [snackBarText, setSnackBarText] = useState("");
       );
 
       setOpenSnackBar(true);
-setSnackBarColor("success");
-setSnackBarText(response.data.Message);
-setTimeout(() => {
-  
-  navigate(`/Landscape/Landscape-Report?id=${response.data.Id}`);
-}, 4000);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+      setTimeout(() => {
+        navigate(`/landscape/landscape-report?id=${response.data.Id}`);
+      }, 4000);
 
       // Log the response or handle success
       console.log("Response:", response.data);
@@ -192,19 +189,20 @@ setTimeout(() => {
 
   return (
     <>
-    <EventPopups
-open={openSnackBar}
-setOpen={setOpenSnackBar}
-color={snackBarColor}
-text={snackBarText}
-/>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="container-fluid">
         <div className="card">
-          <div className="card-body p-0">
+          <div className="itemtitleBar">
+            <h4>Customer Information</h4>
+          </div>
+
+          <div className="card-body pt-0">
             <div className="estDataBox">
-              <div className="itemtitleBar">
-                <h4>Customer Information</h4>
-              </div>
               <div className="basic-form mb-2">
                 <div className="row  mt-2">
                   <div className="col-md-3">
@@ -915,7 +913,14 @@ text={snackBarText}
               Save & Perview
             </button>
 
-            <button className="btn btn-danger light ms-1">Cancel</button>
+            <button
+              className="btn btn-danger light ms-1"
+              onClick={() => {
+                navigate("/landscape");
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       </div>

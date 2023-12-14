@@ -21,6 +21,7 @@ import MapCo from "./MapCo";
 import { DataContext } from "../../context/AppData";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddSRform = () => {
   const token = Cookies.get("token");
@@ -153,6 +154,7 @@ const AddSRform = () => {
   const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
 
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const inputFile = useRef(null);
 
@@ -218,11 +220,11 @@ const AddSRform = () => {
     fetctContacts(SRData.ServiceRequestData.CustomerId);
     fetchName(SRData.ServiceRequestData.CustomerId);
 
-    SRData.ServiceRequestData.ContactId &&
-    SRData.ServiceRequestData.ServiceLocationId &&
-    SRData.ServiceRequestData.Assign
-      ? setDisableSubmit(false)
-      : setDisableSubmit(true);
+    // SRData.ServiceRequestData.ContactId &&
+    // SRData.ServiceRequestData.ServiceLocationId &&
+    // SRData.ServiceRequestData.Assign
+    //   ? setDisableSubmit(false)
+    //   : setDisableSubmit(true);
   }, [SRData.ServiceRequestData.CustomerId]);
 
   const fetchStaffList = async () => {
@@ -252,7 +254,7 @@ const AddSRform = () => {
     }
   };
 
-  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [disableSubmit, setDisableSubmit] = useState(false);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
@@ -306,6 +308,7 @@ const AddSRform = () => {
 
   const handleInputChange = (event) => {
     // setSubmitClicked(false);
+    setLoadingButton(false);
     setErrorMessage("");
     setEmptyFieldsError(false);
     const { name, value } = event.target;
@@ -335,6 +338,7 @@ const AddSRform = () => {
 
   const submitHandler = async () => {
     setSubmitClicked(true);
+    
     if (
       !SRData.ServiceRequestData.CustomerId ||
       !SRData.ServiceRequestData.ServiceLocationId ||
@@ -348,7 +352,7 @@ const AddSRform = () => {
       console.log("Required fields are empty");
       return;
     }
-
+    setLoadingButton(true);
     setBtnDisable(true);
     const formData = new FormData();
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
@@ -388,10 +392,12 @@ const AddSRform = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setSubmitClicked(false);
+      setLoadingButton(false);
 
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate("/Service-Requests");
+        navigate("/service-requests");
       }, 4000);
 
       console.log("payload izzzzzzz", formData);
@@ -403,9 +409,8 @@ const AddSRform = () => {
       // window.location.reload();
     } catch (error) {
       console.error("API Call Error:", error.response.data);
-
-      navigate("/Service-Requests");
-
+      setSubmitClicked(false);
+      setLoadingButton(false);
       setBtnDisable(false);
       setErrorMessage(error.response.data);
       setError(true);
@@ -491,7 +496,7 @@ const AddSRform = () => {
 
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
   const inputRef = useRef(null);
@@ -520,7 +525,7 @@ const AddSRform = () => {
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleAddItem = () => {
@@ -947,12 +952,12 @@ const AddSRform = () => {
                                   id="search-items"
                                   options={searchResults}
                                   getOptionLabel={(item) => item.ItemName}
-                                  value={selectedItem || ""} // This should be the selected item, not searchText
+                                  value={selectedItem.ItemName} // This should be the selected item, not searchText
                                   onChange={(event, newValue) => {
                                     if (newValue) {
                                       handleItemClick(newValue);
                                     } else {
-                                      setSelectedItem(null);
+                                      setSelectedItem({});
                                     }
                                   }}
                                   renderInput={(params) => (
@@ -1230,6 +1235,9 @@ const AddSRform = () => {
                             position: "relative",
                           }}
                         >
+                          <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            target="_blank"
+                            rel="noopener noreferrer">
                           <img
                             src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             alt={file.FileName}
@@ -1238,7 +1246,7 @@ const AddSRform = () => {
                               height: "120px",
                               objectFit: "cover",
                             }}
-                          />
+                          /></a>
                           <p
                             className="file-name-overlay"
                             style={{
@@ -1378,14 +1386,14 @@ const AddSRform = () => {
                             onClick={() => {
                               // setEstimateLinkData("PO clicked")
 
-                              navigate("/Estimates");
+                              navigate("/estimates");
                             }}
                           >
                             Estimate
                           </MenuItem>
                           <MenuItem
                             onClick={() => {
-                              navigate("/Invoices/AddInvioces");
+                              navigate("/invoices/AddInvioces");
                             }}
                             value={3}
                           >
@@ -1399,7 +1407,7 @@ const AddSRform = () => {
                         className="btn btn-sm btn-outline-primary ms-1"
                         onClick={() => {
                           sendEmail(
-                            `/Service-Requests/Service-Request-Preview?id=${idParam}`,
+                            `/service-requests/service-request-preview?id=${idParam}`,
                             SRData.ServiceRequestData.CustomerId,
                             SRData.ServiceRequestData.ContactId,
                             false
@@ -1413,7 +1421,7 @@ const AddSRform = () => {
                         className="btn btn-sm btn-outline-primary mx-2"
                         onClick={() => {
                           navigate(
-                            `/Service-Requests/Service-Request-Preview?id=${idParam}`
+                            `/service-requests/service-request-preview?id=${idParam}`
                           );
                           // setestmPreviewId(estimate.EstimateId);
                           setSRData(customer);
@@ -1431,19 +1439,25 @@ const AddSRform = () => {
                     style={{ marginRight: "1em" }}
                     onClick={() => {
                       setPunchListData({});
-                      navigate("/Service-Requests");
+                      navigate("/service-requests");
                     }}
                   >
                     Cancel
                   </button>
-                  <button
+                  <LoaderButton
+                    loading={loadingButton}
+                    handleSubmit={submitHandler}
+                  >
+                    Save
+                  </LoaderButton>
+                  {/* <button
                     type="button"
                     className="btn btn-primary me-2"
                     // disabled={disableSubmit}
                     onClick={submitHandler}
                   >
                     Submit
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

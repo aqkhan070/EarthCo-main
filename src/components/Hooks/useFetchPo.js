@@ -19,7 +19,7 @@ const useFetchPo = () => {
         `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/GetPurchaseOrderList`,
         { headers }
       );
-      // setPoList(res.data);
+      setPoList(res.data);
       // setLoading(false);
       // setError("")
       console.log("purchase order", res.data);

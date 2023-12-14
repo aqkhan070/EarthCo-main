@@ -9,8 +9,8 @@ const PurchaseOrderIndex = () => {
   return (
     <Routes>
     <Route path='' element={<PurchaseOrder />} />
-    <Route path='AddPO' element={<AddPO />} />
-    <Route path='Purchase-Order-Preview' element={<POPreview />} />
+    <Route path='add-po' element={<AddPO />} />
+    <Route path='purchase-order-preview' element={<POPreview />} />
 
 </Routes>
   )

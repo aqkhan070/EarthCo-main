@@ -157,7 +157,7 @@ const CustomerTR = ({
               <button
                 className="btn btn-primary "
                 onClick={() => {
-                  navigate(`/Customers/Add-Customer`);
+                  navigate(`/customers/add-customer`);
                   setSelectedItem(0);
                   console.log(",,,,,,,,,,", selectedItem);
                   // setShowContent(false);
@@ -247,7 +247,7 @@ const CustomerTR = ({
                             // setSelectedItem(customer.CustomerId);
                             // console.log(",,,,,,,,,,", selectedItem);
                             navigate(
-                              `/Customers/Add-Customer?id=${customer.CustomerId}`
+                              `/customers/add-customer?id=${customer.CustomerId}`
                             );
                             // setShowContent(false);
                           }}

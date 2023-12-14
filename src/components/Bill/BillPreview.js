@@ -145,18 +145,18 @@ const BillPreview = () => {
                
                 }}
               ></div> */}
-                    <div className="col-md-2 col-sm-5">
+                    <div className="col-md-2 col-sm-2">
                       {" "}
                       <img className="preview-Logo" src={logo} alt="" />
                     </div>
-                    <div className="col-md-7 col-sm-2"></div>
-                    <div className="col-md-3 col-sm-4 text-center table-cell-align">
+                    <div className="col-md-7 col-sm-7"></div>
+                    <div className="col-md-3 col-sm-3 text-center table-cell-align">
                       <h2 className="table-cell-align">Bills</h2>
                     </div>
                   </div>
 
                   <div className="row mt-2">
-                    <div className="col-md-8  col-sm-6">
+                    <div className="col-md-8  col-sm-8">
                       <table>
                         <tbody>
                           <tr>
@@ -176,7 +176,7 @@ const BillPreview = () => {
                       </table>
                     </div>
 
-                    <div className="col-md-4 col-sm-6 ">
+                    <div className="col-md-4 col-sm-4 ">
                       <table className="preview-table">
                         <thead>
                           <tr>
@@ -292,7 +292,7 @@ const BillPreview = () => {
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
                     onClick={() => {
-                      navigate(`/Bills`);
+                      navigate(`/bills`);
                     }}
                   >
                     <i className="fa fa-backward"></i>
@@ -326,7 +326,7 @@ const BillPreview = () => {
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
                       sendEmail(
-                        `/Bills/Bill-Preview?id=${idParam}`,
+                        `/bills/bill-preview?id=${idParam}`,
                         billPreviewData.Data.SupplierId,
                         0,
                         false
@@ -334,7 +334,7 @@ const BillPreview = () => {
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>
-                </button>
+                  </button>
                 </div>
               )}
             </div>

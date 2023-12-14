@@ -18,7 +18,7 @@ const ProposalSummary = () => {
     setToggleFullscreen,
   } = useContext(DataContext);
   const navigate = useNavigate();
-  const isGeneralReport = window.location.pathname.includes("GeneralReport");
+  const isGeneralReport = window.location.pathname.includes("general-report");
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -110,7 +110,7 @@ const ProposalSummary = () => {
                 {isMail ? <></> :<button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                   onClick={() => {
-                    navigate(`/SummaryReport`);
+                    navigate(`/summary-report`);
                   }}
                 >
                   <i className="fa fa-backward"></i>
@@ -132,7 +132,7 @@ const ProposalSummary = () => {
               className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
               onClick={() => {
                 sendEmail(
-                  `/ProposalSummary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                  `/proposal-summary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                   customerParam,
                   0,
                   false

@@ -278,7 +278,7 @@ const AddWRform = () => {
       setSnackBarText(response.data.Message);
 
       setTimeout(() => {
-        navigate(`/Weekly-Reports/WeeklyReport?id=${response.data.Id}`);
+        navigate(`/weekly-reports/weekly-report-preview?id=${response.data.Id}`);
       }, 4000);
 
       console.log("Data submitted successfully:", response.data.Id);
@@ -718,7 +718,7 @@ const AddWRform = () => {
             <button
               className="btn btn-danger light me-2"
               onClick={() => {
-                navigate("/Weekly-Reports");
+                navigate("/weekly-reports");
               }}
             >
               Cancel

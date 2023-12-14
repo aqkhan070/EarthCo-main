@@ -176,7 +176,7 @@ const Items = () => {
                     </FormControl>
                     <button
                       className="btn btn-primary  "
-                      onClick={() => navigate(`/Items/Add-Item`)}
+                      onClick={() => navigate(`/items/add-item`)}
                     >
                       + Add New
                     </button>
@@ -205,7 +205,7 @@ const Items = () => {
                             SKU
                           </TableSortLabel>
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           <TableSortLabel
                             active={orderBy === "IncomeAccount"}
                             direction={
@@ -232,14 +232,16 @@ const Items = () => {
                           onDoubleClick={() => {
                             // setSelectedItem(item.ItemId);
                             // setShowContent(false);
-                            navigate(`/Items/Add-Item?id=${item.ItemId}`);
+                            navigate(`/items/add-item?id=${item.ItemId}`);
                           }}
                           key={index}
                           hover
                         >
                           <TableCell>{item.ItemName}</TableCell>
                           <TableCell>{item.SKU}</TableCell>
-                          <TableCell>{item.IncomeAccount}</TableCell>
+                          <TableCell align="center">
+                            {item.IncomeAccount}
+                          </TableCell>
                           {/* <TableCell className="text-end">
                               <Button
                                 //  className=" btn btn-primary  btn-icon-xxs me-2"

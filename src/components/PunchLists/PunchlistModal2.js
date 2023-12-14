@@ -6,10 +6,11 @@ import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const PunchlistModal2 = ({
   addPunchListData,
-  handleChange,
+ 
   staffData,
   sLList,
 
@@ -119,9 +120,22 @@ const PunchlistModal2 = ({
 
   const [emptyFieldError, setemptyFieldError] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [disableButton, setDisableButton] = useState(false)
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setDisableButton(false)
+    setAddPunchListData((prevState) => ({
+      ...prevState,
+      [name]: value,
+      StatusId: 2,
+    }));
+  };
 
   const handleSubmit = async (event) => {
     setSubmitClicked(true);
+    event.preventDefault();
+
     if (
       !addPunchListData.CustomerId ||
       !addPunchListData.Title ||
@@ -134,7 +148,8 @@ const PunchlistModal2 = ({
       setSnackBarText("Please fill all required fields");
       return;
     }
-    event.preventDefault();
+    setDisableButton(true)
+
 
     try {
       const response = await axios.post(
@@ -147,11 +162,13 @@ const PunchlistModal2 = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setDisableButton(false)
 
       setselectedPL(0);
       fetchFilterdPunchList();
       document.getElementById("punchListcloser").click();
     } catch (error) {
+      setDisableButton(false)
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
 
@@ -365,14 +382,14 @@ const PunchlistModal2 = ({
                   />
                 </div>
 
-                {emptyFieldError && (
+                {/* {emptyFieldError && (
                   <div className="col-md-12">
                     <Alert severity="error">
                       {" "}
                       Please fill all required fields
                     </Alert>
                   </div>
-                )}
+                )} */}
 
                 {/* <div className="col-lg-6 col-md-6 ">
                         <label className="form-label">Status:</label>
@@ -422,15 +439,17 @@ const PunchlistModal2 = ({
               >
                 Close
               </button>
-              <button
-                type="submit"
+              <LoaderButton loading={disableButton} handleSubmit={handleSubmit}>
+  Save
+</LoaderButton>
+              {/* <button
+              
                 className="btn btn-primary"
-                // data-bs-toggle="modal"
-                // data-bs-target="#editPunch"
+               
                 onClick={handleSubmit}
               >
                 Next
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

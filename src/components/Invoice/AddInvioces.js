@@ -20,6 +20,7 @@ import { Delete, Create } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import InvoiceTitleBar from "./InvoiceTitleBar";
 import useSendEmail from "../Hooks/useSendEmail";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddInvioces = ({
   setShowContent,
@@ -255,11 +256,20 @@ const AddInvioces = ({
   }, []);
 
   useEffect(() => {
-    setFormData(estimateLinkData);
+    // setFormData(estimateLinkData);
     setFormData((prevData) => ({
       ...prevData,
+      CustomerId: estimateLinkData.CustomerId,
+      EstimateId: estimateLinkData.EstimateId,
+      AssignTo: estimateLinkData.AssignTo,
+      EstimateNumber: estimateLinkData.EstimateNumber,
       tblInvoiceItems: estimateLinkData.tblEstimateItems,
+      tblInvoiceFiles: estimateLinkData.FileData,
     }));
+    console.log("link data izz", estimateLinkData);
+    return () => {
+      setEstimateLinkData({});
+    };
   }, [estimateLinkData]);
 
   const handleBillAutocompleteChange = (event, newValue) => {
@@ -358,6 +368,7 @@ const AddInvioces = ({
 
   const handleChange = (e) => {
     setSubmitClicked(false);
+    setDisableButton(false);
     setEmptyFieldsError(false);
     // Extract the name and value from the event target
     const { name, value } = e.target;
@@ -380,6 +391,7 @@ const AddInvioces = ({
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -425,6 +437,7 @@ const AddInvioces = ({
       postData.append("Files", fileObj);
     });
 
+    setDisableButton(true);
     submitData(postData);
   };
 
@@ -451,9 +464,10 @@ const AddInvioces = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setDisableButton(false);
 
       setTimeout(() => {
-        navigate("/Invoices");
+        navigate("/invoices");
       }, 4000);
 
       setEstimateLinkData({});
@@ -464,6 +478,7 @@ const AddInvioces = ({
     } catch (error) {
       setError(true);
       setErrorMessage(error.message);
+      setDisableButton(false);
       console.error("API Call Error:", error);
     }
 
@@ -486,7 +501,7 @@ const AddInvioces = ({
   });
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
   const inputRef = useRef(null);
@@ -527,7 +542,7 @@ const AddInvioces = ({
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -539,6 +554,7 @@ const AddInvioces = ({
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
+      PurchasePrice: item.PurchasePrice,
 
       isCost: false,
     });
@@ -650,7 +666,7 @@ const AddInvioces = ({
   });
   const [searchACText, setSearchACText] = useState("");
   const [searchACResults, setSearchACResults] = useState([]);
-  const [selectedACItem, setSelectedACItem] = useState(null);
+  const [selectedACItem, setSelectedACItem] = useState({});
   const [showACItem, setShowACItem] = useState(true);
   const [itemACBtnDisable, setItemACBtnDisable] = useState(true);
   const inputACRef = useRef(null);
@@ -679,7 +695,7 @@ const AddInvioces = ({
     setShowACItem(true);
     setSearchACText(event.target.value);
 
-    setSelectedACItem(null); // Clear selected item when input changes
+    setSelectedACItem({}); // Clear selected item when input changes
   };
   const handleACAddItem = () => {
     // setTblSRItems([...tblSRItems, itemInput]);
@@ -723,7 +739,10 @@ const AddInvioces = ({
   const [subtotal, setSubtotal] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const [totalACAmount, setTotalACAmount] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
+  const [paymentCredit, setPaymentCredit] = useState(0);
+  const [balanceDue, setBalanceDue] = useState(0);
 
   const shippingcostChange = (e) => {
     if (parseFloat(e.target.value) > 0) {
@@ -734,10 +753,16 @@ const AddInvioces = ({
   };
 
   const discountChange = (e) => {
-    if (parseFloat(e.target.value) > 0) {
-      setTotalDiscount(parseFloat(e.target.value));
-    } else {
-      setTotalDiscount(0);
+    const newValue = parseFloat(e.target.value);
+
+    if (newValue) {
+      if (newValue >= 0 && newValue <= 100) {
+        setTotalDiscount(newValue);
+      } else if (newValue > 100) {
+        setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
+      } else {
+        setTotalDiscount(0);
+      }
     }
   };
 
@@ -745,13 +770,13 @@ const AddInvioces = ({
     const filteredACItems = formData.tblInvoiceItems?.filter(
       (item) => item.isCost === true
     );
+    const filteredItems = formData.tblInvoiceItems?.filter(
+      (item) => item.isCost === false
+    );
 
     const newACTotalAmount = filteredACItems?.reduce(
       (acc, item) => acc + item.Rate * item.Qty,
       0
-    );
-    const filteredItems = formData.tblInvoiceItems?.filter(
-      (item) => item.isCost === false
     );
 
     const newTotalAmount = filteredItems?.reduce(
@@ -759,20 +784,47 @@ const AddInvioces = ({
       0
     );
 
-    setSubtotal(newTotalAmount);
-    setTotalACAmount(newACTotalAmount);
-    const calculatedTotalProfit =
-      newTotalAmount - newACTotalAmount - (totalDiscount / subtotal) * 100;
-    setTotalProfit(calculatedTotalProfit);
-    setTotalItemAmount(
-      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100
+    const newCostTotalAmount = filteredItems?.reduce(
+      (acc, item) => acc + item.PurchasePrice * item.Qty,
+      0
     );
+    const totalamount =
+      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
+
+    const calculatedTotalProfit =
+      newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+
     const calculatedProfitPercentage =
-      (newACTotalAmount / calculatedTotalProfit) * 100;
+      (calculatedTotalProfit / totalExpense) * 100;
+
+    if (newCostTotalAmount && newACTotalAmount) {
+      setTotalExpense(newCostTotalAmount + newACTotalAmount);
+    }
+
+    if (newTotalAmount) {
+      setSubtotal(newTotalAmount);
+    }
+    setTotalACAmount(newACTotalAmount);
+    if (totalamount) {
+      setTotalItemAmount(totalamount);
+    }
+    if (calculatedTotalProfit) {
+      setTotalProfit(calculatedTotalProfit);
+    }
+
+    setBalanceDue(totalItemAmount - paymentCredit);
+
     setProfitPercentage(calculatedProfitPercentage);
 
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
-  }, [formData.tblInvoiceItems, shippingCost, totalDiscount]);
+  }, [
+    formData.tblInvoiceItems,
+    shippingCost,
+    totalDiscount,
+    totalItemAmount,
+    subtotal,
+    totalExpense,
+  ]);
 
   // files
 
@@ -951,7 +1003,7 @@ const AddInvioces = ({
                           className="ms-2"
                           onClick={() => {
                             navigate(
-                              `/Estimates/Update-Estimate?id=${formData.EstimateId}`
+                              `/estimates/add-estimate?id=${formData.EstimateId}`
                             );
                           }}
                         >
@@ -1220,7 +1272,7 @@ const AddInvioces = ({
                         <th>Qty</th>
                         <th>Rate</th>
                         <th>Amount</th>
-                        <th>Tax</th>
+                        <th>Cost Price</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -1258,7 +1310,7 @@ const AddInvioces = ({
                               <td>
                                 {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                               </td>
-                              <td>NaN</td>
+                              <td>{item.PurchasePrice}</td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
@@ -1282,12 +1334,12 @@ const AddInvioces = ({
                               id="search-items"
                               options={searchResults}
                               getOptionLabel={(item) => item.ItemName}
-                              value={selectedItem} // This should be the selected item, not searchText
+                              value={selectedItem.ItemName} // This should be the selected item, not searchText
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   handleItemClick(newValue);
                                 } else {
-                                  setSelectedItem(null);
+                                  setSelectedItem({});
                                 }
                               }}
                               renderInput={(params) => (
@@ -1394,14 +1446,9 @@ const AddInvioces = ({
                           </h5>
                         </td>
                         <td>
-                          <input
-                            type="number"
-                            name="tax"
-                            style={{ width: "7em" }}
-                            disabled
-                            className="form-control form-control-sm"
-                            placeholder="tax"
-                          />
+                          <h5 style={{ margin: "0" }}>
+                            {itemInput.PurchasePrice}
+                          </h5>
                         </td>
                         <td></td>
                       </tr>
@@ -1485,19 +1532,19 @@ const AddInvioces = ({
                               id="search-ac-items"
                               options={searchACResults}
                               getOptionLabel={(item) => item.ItemName}
-                              value={selectedACItem}
+                              value={selectedACItem.ItemName}
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   handleACItemClick(newValue);
                                 } else {
-                                  setSelectedACItem(null);
+                                  setSelectedACItem({});
                                 }
                               }}
                               inputValue={searchACText}
                               onInputChange={(event, newInputValue) => {
                                 setShowACItem(true);
                                 setSearchACText(newInputValue);
-                                setSelectedACItem(null); // Clear selected item when input changes
+                                setSelectedACItem({}); // Clear selected item when input changes
                               }}
                               renderInput={(params) => (
                                 <TextField
@@ -1623,7 +1670,7 @@ const AddInvioces = ({
                               name="MemoInternal"
                               onChange={handleChange}
                               className=" form-control"
-                              rows="5"
+                              rows="3"
                             ></textarea>
                           </div>
                         </form>
@@ -1640,7 +1687,7 @@ const AddInvioces = ({
                               name="CustomerMessage"
                               onChange={handleChange}
                               className=" form-control"
-                              rows="5"
+                              rows="3"
                             ></textarea>
                           </div>
                         </form>
@@ -1710,27 +1757,27 @@ const AddInvioces = ({
                           <strong>Subtotal</strong>
                         </td>
                         <td className="right text-right">
-                          ${subtotal ? subtotal?.toFixed(2) : 0.0}
+                          ${subtotal?.toFixed(2)}
                         </td>
                       </tr>
-                      <tr>
-                        <td className="left custom-table-row">
-                          <label className="form-label">Taxes</label>
-                          <div
-                            style={{ width: "10em" }}
-                            className="input-group"
-                          >
-                            <input
+                      {/* <tr>
+                          <td className="left custom-table-row">
+                            <label className="form-label">Taxes</label>
+                            <div
                               style={{ width: "10em" }}
-                              type="text"
-                              className="form-control form-control-sm "
-                              name="Taxes"
-                              placeholder="Taxes"
-                            />
-                          </div>
-                        </td>
-                        <td className="right text-right">$0.00</td>
-                      </tr>
+                              className="input-group"
+                            >
+                              <input
+                                style={{ width: "10em" }}
+                                type="text"
+                                className="form-control form-control-sm "
+                                name="Taxes"
+                                placeholder="Taxes"
+                              />
+                            </div>
+                          </td>
+                          <td className="right text-right">$0.00</td>
+                        </tr> */}
                       <tr>
                         <td className="left custom-table-row">
                           <label className="form-label">Discount(%)</label>
@@ -1750,66 +1797,63 @@ const AddInvioces = ({
                         </td>
                         <td className="right text-right">
                           $
-                          {totalDiscount
+                          {totalDiscount && subtotal
                             ? ((totalDiscount / subtotal) * 100).toFixed(2)
-                            : 0.0}
+                            : 0}
                         </td>
                       </tr>
-                      <tr>
-                        <td className="left custom-table-row">
-                          <label className="form-label">Shipping</label>
-                          <div
-                            style={{ width: "10em" }}
-                            className="input-group"
-                          >
-                            <input
-                              type="number"
-                              value={shippingCost}
-                              className="form-control form-control-sm"
-                              onChange={shippingcostChange}
-                              name="Shipping"
-                              placeholder="Shipping"
-                            />
-                          </div>
-                        </td>
-                        <td className="right text-right">
-                          ${shippingCost ? shippingCost : 0.0}
-                        </td>
-                      </tr>
+                      {/*  <tr>
+                          <td className="left custom-table-row">
+                            <label className="form-label">Shipping</label>
+                            <div
+                              style={{ width: "10em" }}
+                              className="input-group"
+                            >
+                              <input
+                                type="number"
+                                value={shippingCost}
+                                className="form-control form-control-sm"
+                                onChange={shippingcostChange}
+                                name="Shipping"
+                                placeholder="Shipping"
+                              />
+                            </div>
+                          </td>
+                          <td className="right text-right">
+                            ${shippingCost || 0.0}
+                          </td>
+                        </tr> */}
 
                       <tr>
                         <td className="left">
                           <strong>Total</strong>
                         </td>
                         <td className="right text-right">
-                          <strong>
-                            $
-                            {totalItemAmount ? totalItemAmount.toFixed(2) : 0.0}
-                          </strong>
+                          <strong>${totalItemAmount?.toFixed(2)}</strong>
                         </td>
                       </tr>
-                      <tr>
+                      {/* <tr>
                         <td className="left">Payment/Credit</td>
-                        <td className="right text-right">$0.00</td>
+                        <td className="right text-right">${paymentCredit}</td>
                       </tr>
                       <tr>
                         <td className="left">
                           <h3>Balance due</h3>
                         </td>
                         <td className="right text-right">
-                          <h3>$0.00</h3>
+                          <h3>${balanceDue.toFixed(2)}</h3>
                         </td>
-                      </tr>
+                      </tr> */}
                       <tr>
                         <td className="left">Total Expenses</td>
                         <td className="right text-right">
-                          ${totalACAmount ? totalACAmount : 0.0}
+                          ${totalExpense.toFixed(2)}
                         </td>
                       </tr>
                       <tr>
                         <td className="left">Total Profit</td>
                         <td className="right text-right">
-                          ${totalProfit ? totalProfit.toFixed(2) : 0.0}
+                          ${totalProfit?.toFixed(2) || 0}
                         </td>
                       </tr>
                       <tr>
@@ -1824,7 +1868,7 @@ const AddInvioces = ({
               </div>
 
               <div className="row mx-2">
-                {PrevFiles.map((file, index) => (
+                {estimateLinkData.FileData?.map((file, index) => (
                   <div
                     key={index}
                     className="col-md-2 col-md-2 mt-3 image-container"
@@ -1844,6 +1888,70 @@ const AddInvioces = ({
                         objectFit: "cover",
                       }}
                     />
+                    <p
+                      className="file-name-overlay"
+                      style={{
+                        position: "absolute",
+                        bottom: "0",
+                        left: "13px",
+                        right: "0",
+                        backgroundColor: "rgba(0, 0, 0, 0.3)",
+                        textAlign: "center",
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        width: "100%",
+                        textOverflow: "ellipsis",
+                        padding: "5px",
+                      }}
+                    >
+                      {file.FileName}
+                    </p>
+                    <span
+                      className="file-delete-button"
+                      style={{
+                        left: "140px",
+                      }}
+                      onClick={() => {
+                        deleteInvoiceFile(file.BillFileId);
+
+                        setTimeout(() => {
+                          getInvoice();
+                        }, 1000);
+                      }}
+                    >
+                      <span>
+                        <Delete color="error" />
+                      </span>
+                    </span>
+                  </div>
+                ))}
+
+                {PrevFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="col-md-2 col-md-2 mt-3 image-container"
+                    style={{
+                      width: "150px", // Set the desired width
+                      height: "120px", // Set the desired height
+                      margin: "1em",
+                      position: "relative",
+                    }}
+                  >
+                    <a
+                      href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                        alt={file.FileName}
+                        style={{
+                          width: "150px",
+                          height: "120px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </a>
                     <p
                       className="file-name-overlay"
                       style={{
@@ -1963,9 +2071,9 @@ const AddInvioces = ({
                       className="btn btn-sm btn-outline-primary estm-action-btn"
                       onClick={() => {
                         sendEmail(
-                          `/Invoices/Invoice-Preview?id=${idParam}`,
+                          `/invoices/invoice-preview?id=${idParam}`,
                           formData.CustomerId,
-                          formData.ContactId,
+                          0,
                           true
                         );
                       }}
@@ -1976,7 +2084,7 @@ const AddInvioces = ({
                       type="button"
                       className="btn btn-sm btn-outline-primary estm-action-btn me-2"
                       onClick={() => {
-                        navigate(`/Invoices/Invoice-Preview?id=${idParam}`);
+                        navigate(`/invoices/invoice-preview?id=${idParam}`);
                       }}
                     >
                       <Print></Print>
@@ -1988,18 +2096,24 @@ const AddInvioces = ({
                 <button
                   className="btn btn-danger light me-2"
                   onClick={() => {
-                    navigate("/Invoices");
+                    navigate("/invoices");
                   }}
                 >
                   Cancel
                 </button>{" "}
-                <button
+                <LoaderButton
+                  loading={disableButton}
+                  handleSubmit={handleSubmit}
+                >
+                  Save
+                </LoaderButton>
+                {/* <button
                   type="button"
                   className="btn btn-primary me-2"
                   onClick={handleSubmit}
                 >
                   Save
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

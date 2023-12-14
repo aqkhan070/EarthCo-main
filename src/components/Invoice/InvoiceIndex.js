@@ -8,8 +8,8 @@ const InvoiceIndex = () => {
   return (
 <Routes>
     <Route path='' element={<Invoices />} />
-    <Route path='AddInvioces' element={<AddInvioces />} />
-    <Route path='Invoice-Preview' element={<InvoicePreview />} />
+    <Route path='add-invoices' element={<AddInvioces />} />
+    <Route path='invoice-preview' element={<InvoicePreview />} />
 
 </Routes>
   )

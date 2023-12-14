@@ -18,7 +18,7 @@ const SideBar = () => {
   const sideBarData = [
     {
       label: "Dashboard",
-      path: "/Dashboard",
+      path: "/dashboard",
       icon: (
         <svg
           width="20"
@@ -44,7 +44,7 @@ const SideBar = () => {
     },
     {
       label: "Customers",
-      path: "/Customers",
+      path: "/customers",
       icon: (
         <svg
           width="22"
@@ -74,7 +74,7 @@ const SideBar = () => {
     },
     {
       label: "Staff Management",
-      path: "/Staff",
+      path: "/staff",
       icon: (
         <svg
           width="22"
@@ -104,7 +104,7 @@ const SideBar = () => {
     },
     {
       label: "Map",
-      path: "/Map",
+      path: "/map",
       icon: (
         <span className="material-symbols-outlined locationIcon">
           location_on
@@ -113,7 +113,7 @@ const SideBar = () => {
     },
     {
       label: "Estimates",
-      path: "/Estimates",
+      path: "/estimates",
       icon: (
         <svg
           width="22"
@@ -143,7 +143,7 @@ const SideBar = () => {
     },
     {
       label: "Service Requests",
-      path: "/Service-Requests",
+      path: "/service-requests",
       icon: (
         <svg
           width="22"
@@ -178,7 +178,7 @@ const SideBar = () => {
     },
     {
       label: "Purchase order",
-      path: "/Purchase-Order",
+      path: "/purchase-order",
       icon: (
         <svg
           width="22"
@@ -218,7 +218,7 @@ const SideBar = () => {
     },
     {
       label: "Bill",
-      path: "/Bills",
+      path: "/bills",
       icon: (
         <svg
           width="22"
@@ -253,7 +253,7 @@ const SideBar = () => {
     },
     {
       label: "Invoice",
-      path: "/Invoices",
+      path: "/invoices",
       icon: (
         <svg
           width="22"
@@ -288,7 +288,7 @@ const SideBar = () => {
     },
     {
       label: "Irrigation",
-      path: "/Irrigation",
+      path: "/irrigation",
       icon: (
         <svg
           width="22"
@@ -322,7 +322,7 @@ const SideBar = () => {
     },
     {
       label: "Punchlist",
-      path: "/Punchlist",
+      path: "/punchlist",
       icon: (
         <svg
           width="20"
@@ -350,7 +350,7 @@ const SideBar = () => {
     },
     {
       label: "Items",
-      path: "/Items",
+      path: "/items",
       icon: (
         <svg
           width="22"
@@ -381,21 +381,21 @@ const SideBar = () => {
   ];
 
   const subMenu = [
-    // {
-    //   label: "Monthly Landsacpe",
-    //   path: "/Landscape",
-    // },
     {
       label: "Monthly",
-      path: "/SummaryReport",
+      path: "/summary-report",
+    },
+    {
+      label: "Monthly Landsacpe",
+      path: "/landscape",
     },
     // {
     //   label: "Proposal Summary",
-    //   path: "/ProposalSummary",
+    //   path: "/proposal-summary",
     // },
     {
       label: "Weekly Landsacpe",
-      path: "/Weekly-Reports",
+      path: "/weekly-reports",
     },
   ];
 

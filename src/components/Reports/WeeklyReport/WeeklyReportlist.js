@@ -132,7 +132,7 @@ const WeeklyReportlist = () => {
 
   return (
     <>
-      <TitleBar icon={icon} title="Weekly Reports" />
+      <TitleBar icon={icon} title="Weekly Landscape" />
       <div className="container-fluid">
         <div className="row">
           {/* <StatusCards
@@ -149,7 +149,7 @@ const WeeklyReportlist = () => {
                   <button
                     className="btn btn-primary "
                     onClick={() => {
-                      navigate("/Weekly-Reports/Add-Weekly-Report");
+                      navigate("/weekly-reports/add-weekly-report");
                     }}
                   >
                     + Add Weekly Report
@@ -216,7 +216,7 @@ const WeeklyReportlist = () => {
                                   className="btn p-0"
                                   onClick={() => {
                                     navigate(
-                                      `/Weekly-Reports/WeeklyReport?id=${staff.WeeklyReportId}`
+                                      `/weekly-reports/weekly-report-preview?id=${staff.WeeklyReportId}`
                                     );
                                   }}
                                 >

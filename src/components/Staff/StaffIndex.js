@@ -7,7 +7,7 @@ const StaffIndex = () => {
     return (
         <Routes>
             <Route path='' element={<StaffList />} />
-            <Route path='Add-Staff' element={<AddStaff />} />
+            <Route path='add-staff' element={<AddStaff />} />
         </Routes>
     )
 }

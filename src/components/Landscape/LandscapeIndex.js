@@ -15,10 +15,10 @@ const LandscapeIndex = () => {
 
     return (
         <>
-            <TitleBar icon={icon} title='Landscape' />
+            <TitleBar icon={icon} title='Monthly Landscape' />
             <Routes>
                 <Route path='' element={<Landscapelist />} />
-                <Route path='Add-Landscape' element={<LandscapeForm />} />
+                <Route path='add-landscape' element={<LandscapeForm />} />
             </Routes>
         </>
     )

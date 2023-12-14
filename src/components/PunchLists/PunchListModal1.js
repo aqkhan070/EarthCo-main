@@ -103,7 +103,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   });
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
   const inputRef = useRef(null);
@@ -134,7 +134,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
     ]);
     // Reset the input fields
     setSearchText("");
-    setSelectedItem(null);
+    setSelectedItem({});
     setItemInput({
       Name: "",
       Qty: 1,
@@ -147,7 +147,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
     setShowItem(true);
     setSearchText(event.target.value);
 
-    setSelectedItem(null); // Clear selected item when input changes
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleItemClick = (item) => {
@@ -563,14 +563,14 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                           <>
                             <Autocomplete
                               id="search-items"
-                              options={searchResults || null}
+                              options={searchResults}
                               getOptionLabel={(item) => item.ItemName}
-                              value={selectedItem} // This should be the selected item, not searchText
+                              value={selectedItem.ItemName} // This should be the selected item, not searchText
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   handleItemClick(newValue);
                                 } else {
-                                  setSelectedItem(null);
+                                  setSelectedItem({});
                                 }
                               }}
                               renderInput={(params) => (

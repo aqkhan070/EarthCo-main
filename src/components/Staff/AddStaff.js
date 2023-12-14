@@ -15,6 +15,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import AddressInputs from "../Modals/AddressInputs";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
@@ -77,6 +78,7 @@ const AddStaff = ({}) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
+  const [loadingButton, setLoadingButton] = useState(false);
 
   const getRoles = async () => {
     try {
@@ -124,6 +126,7 @@ const AddStaff = ({}) => {
     setPhoneError(false);
     setFirstNameError("");
     setLastNameError("");
+    setLoadingButton(false);
     const { name, value } = event.target;
 
     const newValue = name === "RoleId" ? parseInt(value, 10) : value;
@@ -159,6 +162,7 @@ const AddStaff = ({}) => {
 
   const addStaff = async () => {
     setSubmitClicked(true);
+    setLoadingButton(true);
 
     if (
       !customerInfo.FirstName ||
@@ -247,9 +251,10 @@ const AddStaff = ({}) => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setLoadingButton(false);
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate(`/Staff`);
+        navigate(`/staff`);
       }, 4000);
 
       // setTimeout(() => {
@@ -260,6 +265,7 @@ const AddStaff = ({}) => {
 
       console.log("Staff added successfully", customerInfo);
     } catch (error) {
+      setLoadingButton(false);
       if (error.response.status === 409) {
         setAlert(true);
       }
@@ -552,14 +558,21 @@ const AddStaff = ({}) => {
                     <button
                       className="btn btn-danger light ms-1"
                       onClick={() => {
-                        navigate(`/Staff`);
+                        navigate(`/staff`);
                       }}
                     >
                       Cancel
                     </button>{" "}
-                    <button className="btn btn-primary me-1" onClick={addStaff}>
+                    {/* <button className="btn btn-primary me-1" onClick={addStaff}>
                       Submit
-                    </button>
+                    </button> */}
+                    <LoaderButton
+                      loading={loadingButton}
+                      handleSubmit={addStaff}
+                    >
+                      Save
+                    </LoaderButton>
+                   
                   </div>
                   <div className="row">
                     <div className="col-md-12"></div>

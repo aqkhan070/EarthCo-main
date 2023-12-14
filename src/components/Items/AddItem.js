@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const AddItem = ({
   selectedItem,
@@ -58,6 +59,7 @@ const AddItem = ({
 
   const handleChange = (e) => {
     setemptyFieldError(false);
+    setDisableButton(false);
     const { name, value, type, checked } = e.target;
 
     // Parse values as numbers if the input type is "number"
@@ -73,6 +75,7 @@ const AddItem = ({
 
   const [submitClicked, setSubmitClicked] = useState(false);
   const [emptyFieldError, setemptyFieldError] = useState(false);
+  const [disableButton, setDisableButton] = useState(false);
   const submitData = async () => {
     setSubmitClicked(true);
     if (
@@ -87,6 +90,7 @@ const AddItem = ({
 
       return;
     }
+    setDisableButton(true);
 
     try {
       const res = await axios.post(
@@ -97,11 +101,13 @@ const AddItem = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(res.data.Message);
+      setDisableButton(false);
       setTimeout(() => {
-        navigate(`/Items`);
+        navigate(`/items`);
       }, 4000);
       console.log("successfuly posted item", res.data.Message);
     } catch (error) {
+      setDisableButton(false);
       console.log("api call error", error.response.data.Message);
       console.log("api call error2", error);
     }
@@ -332,26 +338,29 @@ const AddItem = ({
                 </div>
               </div>
               <div className="col-md-8">
-                {emptyFieldError && (
+                {/* {emptyFieldError && (
                   <Alert severity="error">
                     Please Fill All Required Fields
                   </Alert>
-                )}
+                )} */}
               </div>
               <div className="col-md-4 text-right">
-                <button
+                {/* <button
                   onClick={submitData}
-                  type="button"
+                
                   className="btn btn-primary me-1"
                 >
                   Save
-                </button>
+                </button> */}
+                <LoaderButton loading={disableButton} handleSubmit={submitData}>
+                  Save
+                </LoaderButton>
 
                 <button
                   className="btn btn-danger light ms-1"
                   onClick={() => {
                     setFormData({});
-                    navigate(`/Items`);
+                    navigate(`/items`);
                   }}
                 >
                   Cancel

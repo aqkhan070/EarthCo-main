@@ -241,7 +241,7 @@ const PurchaseOrder = () => {
                       <button
                         className="btn btn-primary "
                         onClick={() => {
-                          navigate("/Purchase-Order/AddPO");
+                          navigate("/purchase-order/add-po");
                           // setShowContent(false);
                         }}
                       >
@@ -291,7 +291,7 @@ const PurchaseOrder = () => {
                                 // setShowContent(false);
                                 // setselectedPo(po.PurchaseOrderId);
                                 navigate(
-                                  `/Purchase-Order/AddPO?id=${po.PurchaseOrderId}`
+                                  `/purchase-order/add-po?id=${po.PurchaseOrderId}`
                                 );
                               }}
                               hover
@@ -303,7 +303,7 @@ const PurchaseOrder = () => {
                                 <span
                                   onClick={() => {
                                     navigate(
-                                      `/Purchase-Order/Purchase-Order-Preview?id=${po.PurchaseOrderId}`
+                                      `/purchase-order/purchase-order-preview?id=${po.PurchaseOrderId}`
                                     );
                                   }}
                                   style={{

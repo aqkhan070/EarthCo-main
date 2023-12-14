@@ -14,11 +14,11 @@ const CustomerIndex = () => {
 
     return (
         <>
-            <TitleBar icon={icon} title='Customers' />
+            <TitleBar icon={icon} title='customers' />
             <Routes>
                 <Route path='' element={<CustomersTable />} />
-                <Route path='Add-Customer' element={<AddCutomer />} />
-                <Route path='Update-Customer' element={<UpdateCustomer />} />
+                <Route path='add-customer' element={<AddCutomer />} />
+                <Route path='update-customer' element={<UpdateCustomer />} />
             </Routes>
         </>
     )

@@ -7,8 +7,8 @@ const BillIndex = () => {
   return (
     <Routes>
     <Route path='' element={<Bills />} />
-    <Route path='AddBill' element={<AddBill />} />
-    <Route path='Bill-Preview' element={<BillPreview />} />
+    <Route path='add-bill' element={<AddBill />} />
+    <Route path='bill-preview' element={<BillPreview />} />
 
 </Routes>
   )

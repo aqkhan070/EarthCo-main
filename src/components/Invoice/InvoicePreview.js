@@ -150,12 +150,12 @@ const InvoicePreview = () => {
                
                 }}
               ></div> */}
-                    <div className="col-md-2 col-sm-5">
+                    <div className="col-md-2 col-sm-2">
                       {" "}
                       <img className="preview-Logo" src={logo} alt="" />
                     </div>
-                    <div className="col-md-7 col-sm-2"></div>
-                    <div className="col-md-3 col-sm-4 text-center table-cell-align">
+                    <div className="col-md-7 col-sm-7"></div>
+                    <div className="col-md-3 col-sm-3 text-center table-cell-align">
                       <h2 className="table-cell-align">Invoice</h2>
                     </div>
                   </div>
@@ -354,20 +354,21 @@ const InvoicePreview = () => {
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
-              <div className="p-2 bd-highlight">
-                {isMail ? (
-                  <></>
-                ) : (
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
                     onClick={() => {
-                      navigate(`/Invoices`);
+                      navigate(`/invoices`);
                     }}
                   >
                     <i className="fa fa-backward"></i>
                   </button>
-                )}
-              </div>
+                </div>
+              )}
+
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
@@ -385,14 +386,16 @@ const InvoicePreview = () => {
                 >
                   <i className="fa fa-download"></i>
                 </button>
-                {isMail ? (
-                  <></>
-                ) : (
+              </div>
+              {isMail ? (
+                <></>
+              ) : (
+                <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
                       sendEmail(
-                        `/Invoices/Invoice-Preview?id=${idParam}`,
+                        `/invoices/invoice-preview?id=${idParam}`,
                         InvoicePreviewData.Data.CustomerId,
                         InvoicePreviewData.Data.ContactId,
                         false
@@ -401,8 +404,8 @@ const InvoicePreview = () => {
                   >
                     <i class="fa-regular fa-envelope"></i>
                   </button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
             ;
           </div>

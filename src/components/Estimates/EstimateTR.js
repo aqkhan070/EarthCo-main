@@ -279,7 +279,7 @@ const EstimateTR = ({
                 onClick={() => {
                   // setSelectedItem(0);
                   // setShowContent(false);
-                  navigate("/Estimates/Add-Estimate");
+                  navigate("/estimates/add-estimate");
                 }}
               >
                 + Add Estimates
@@ -432,7 +432,7 @@ const EstimateTR = ({
                               // console.log(",,,,,,,,,,", selectedItem);
                               // setShowContent(false);
                               navigate(
-                                `/Estimates/Add-Estimate?id=${estimate.EstimateId}`
+                                `/estimates/add-estimate?id=${estimate.EstimateId}`
                               );
                             }}
                             key={estimate.EstimateId}
@@ -465,7 +465,7 @@ const EstimateTR = ({
                               <span
                                 onClick={() => {
                                   navigate(
-                                    `/Estimates/Estimate-Preview?id=${estimate.EstimateId}`
+                                    `/estimates/estimate-preview?id=${estimate.EstimateId}`
                                   );
                                   // setestmPreviewId(estimate.EstimateId);
                                   console.log(estimate.EstimateId);
@@ -507,7 +507,7 @@ const EstimateTR = ({
                                     // className="btn btn-primary btn-icon-xxs me-2"
                                     onClick={() => {
                                       navigate(
-                                        "/Estimates/Estimate-Preview"
+                                        "/estimates/estimate-preview"
                                       );
                                       setestmPreviewId(estimate.EstimateId);
                                       console.log(estimate.EstimateId);

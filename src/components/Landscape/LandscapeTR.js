@@ -21,7 +21,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
-
+import TblDateFormat from "../../custom/TblDateFormat";
 const theme = createTheme({
   palette: {
     primary: {
@@ -62,13 +62,14 @@ const LandscapeTR = () => {
   const navigate = useNavigate();
 
   const fetchReports = async () => {
-    const response = await axios.get(
-      `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`,
-      { headers }
-    );
     try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`,
+        { headers }
+      );
+
       setReports(response.data);
-      console.log("////////", reports);
+      console.log("////////", response.data);
       if (response.data != null) {
         setIsLoading(false);
       }
@@ -79,58 +80,24 @@ const LandscapeTR = () => {
 
   useEffect(() => {
     fetchReports();
-  });
+  }, []);
 
-  const handleSort = (property) => {
-    let actualProperty;
-    switch (property) {
-      case "#":
-        actualProperty = "MonthlyLandsacpeId";
-        break;
-      case "Customer Name":
-        actualProperty = "tblCustomer.CustomerName";
-        break;
-      // case "Estimate Number":
-      //   actualProperty = "EstimateNumber";
-      //   break;
-      case "Type":
-        actualProperty = "Type";
-        break;
-      case "Assign To":
-        actualProperty = "";
-        break;
-      case "Status":
-        actualProperty = "";
-        break;
-      case "Date Created":
-        actualProperty = "CreatedDate";
-        break;
+  const filteredReports = reports;
+  //   .filter((e) =>
+  //     e.tblCustomer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
+  //   )
+  //   .sort(getSorting(order, orderBy));
 
-      default:
-        actualProperty = property;
-    }
-
-    const isAsc = orderBy === actualProperty && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(actualProperty);
-  };
-
-  const filteredReports = reports
-    .filter((e) =>
-      e.tblCustomer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-    )
-    .sort(getSorting(order, orderBy));
-
-  // ... Pagination, Sorting logic ...
-  function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  }
+  // // ... Pagination, Sorting logic ...
+  // function desc(a, b, orderBy) {
+  //   if (b[orderBy] < a[orderBy]) {
+  //     return -1;
+  //   }
+  //   if (b[orderBy] > a[orderBy]) {
+  //     return 1;
+  //   }
+  //   return 0;
+  // }
 
   function stableSort(array, cmp) {
     const stabilizedThis = array.map((el, index) => [el, index]);
@@ -140,12 +107,6 @@ const LandscapeTR = () => {
       return a[1] - b[1];
     });
     return stabilizedThis.map((el) => el[0]);
-  }
-
-  function getSorting(order, orderBy) {
-    return order === "desc"
-      ? (a, b) => desc(a, b, orderBy)
-      : (a, b) => -desc(a, b, orderBy);
   }
 
   const deleteReport = async (id) => {
@@ -178,86 +139,65 @@ const LandscapeTR = () => {
           <CircularProgress style={{ color: "#789a3d" }} />
         </div>
       ) : (
-        <ThemeProvider theme={theme}>
-          <Paper>
-            <div className=" text-center">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="custom-search-container">
-                    <TextField
-                      label="Search"
-                      variant="standard"
-                      size="small"
-                      value={filtering}
-                      onChange={(e) => setFiltering(e.target.value)}
-                    />
-                  </div>
-                  <div className="custom-button-container">
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => {
-                        navigate("/Landscape/Add-Landscape");
-                      }}
-                    >
-                      + Add
-                    </button>
-                  </div>
-                </div>
+        <div>
+          <div className="row mb-2">
+            <div className="col-md-12">
+              <div className="custom-search-container">
+                <TextField
+                  label="Search"
+                  variant="standard"
+                  size="small"
+                  // value={filtering}
+                  // onChange={(e) => setFiltering(e.target.value)}
+                />
               </div>
-            </div>{" "}
-            <br />
-            <TableContainer>
-              <Table>
-                <TableHead className="table-header">
-                  <TableRow>
-                    <TableCell padding="checkbox">
-                      <Checkbox />
+              <div className="custom-button-container">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    navigate("/landscape/add-landscape");
+                  }}
+                >
+                  + Add
+                </button>
+              </div>
+            </div>
+          </div>{" "}
+          <Table>
+            <TableHead className="table-header ">
+              <TableRow className="material-tbl-alignment">
+                {/* <TableCell padding="checkbox">
+                  <Checkbox />
+                </TableCell> */}
+                {["#", "Customer Name", "Requested by", "Date Created"].map(
+                  (headCell) => (
+                    <TableCell key={headCell}>
+                      <TableSortLabel>{headCell}</TableSortLabel>
                     </TableCell>
-                    {[
-                      "#",
-                      "Customer Name",
-                      "Type",
-                      "Assigned to",
-                      "Status",
-                      "Date Created",
-                      "Report",
-                      "Actions",
-                    ].map((headCell) => (
-                      <TableCell
-                        key={headCell}
-                        sortDirection={orderBy === headCell ? order : false}
-                      >
-                        <TableSortLabel
-                          active={orderBy === headCell}
-                          direction={orderBy === headCell ? order : "asc"}
-                          onClick={() => handleSort(headCell)}
-                        >
-                          {headCell}
-                        </TableSortLabel>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredReports
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((report, index) => (
-                      <TableRow key={report.MonthlyLandsacpeId} hover>
-                        <TableCell padding="checkbox">
-                          <Checkbox />
-                        </TableCell>
-                        <TableCell>{report.MonthlyLandsacpeId}</TableCell>
-                        <TableCell>{report.tblCustomer.CustomerName}</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>{report.CreatedDate}</TableCell>
-                        <TableCell>...</TableCell>
-                        {/* <TableCell>...</TableCell> */}
-                        {/* <TableCell>...</TableCell> */}
-                        <TableCell>
-                          <div className="button-container">
-                            {/* <Button
+                  )
+                )}
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredReports.map((report, index) => (
+                <TableRow
+                  key={report.MonthlyLandsacpeId}
+                  hover
+                  className="material-tbl-alignment"
+                >
+                  <TableCell>{report.MonthlyLandsacpeId}</TableCell>
+                  <TableCell>{report.CompanyName}</TableCell>
+
+                  <TableCell>{report.RequestByName}</TableCell>
+
+                  <TableCell>{TblDateFormat(report.CreatedDate)}</TableCell>
+
+                  {/* <TableCell>...</TableCell> */}
+                  {/* <TableCell>...</TableCell> */}
+                  <TableCell align="right">
+                    <div>
+                      {/* <Button
                             className="delete-button"
                             onClick={() => {
                               setSelectedItem(estimate.EstimateId);
@@ -267,35 +207,33 @@ const LandscapeTR = () => {
                           >
                             <Create />
                           </Button> */}
-                            <Button className="delete-button">
-                              <Delete
-                                color="error"
-                                onClick={() =>
-                                  handleDelete(report.MonthlyLandsacpeId)
-                                }
-                              />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 50]}
-              component="div"
-              count={filteredReports.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={(event, newPage) => setPage(newPage)}
-              onRowsPerPageChange={(event) => {
-                setRowsPerPage(parseInt(event.target.value, 10));
-                setPage(0);
-              }}
-            />
-          </Paper>
-        </ThemeProvider>
+                      <Button className="delete-button">
+                        <Delete
+                          color="error"
+                          onClick={() =>
+                            handleDelete(report.MonthlyLandsacpeId)
+                          }
+                        />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50]}
+            component="div"
+            count={filteredReports.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+          />
+        </div>
       )}
     </>
   );
