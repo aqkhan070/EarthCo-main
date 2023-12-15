@@ -12,30 +12,18 @@ import TitleBar from "./TitleBar";
 import DashBoardSR from "./DashboardComponents/DashBoardSR";
 import DashboardEstm from "./DashboardComponents/DashboardEstm";
 import DashBoardCards from "./DashboardComponents/DashBoardCards";
-import useFetchDashBoardData from './Hooks/useFetchDashBoardData'
-
+import useFetchDashBoardData from "./Hooks/useFetchDashBoardData";
+import DashBoardCalender from "./DashboardComponents/DashBoardCalender";
 
 const DashBoard = () => {
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
   useEffect(() => {
-    getDashboardData()
-  }, [])
+    getDashboardData();
+  }, []);
 
-  const { estimates, setSingleObj, serviceRequests, setSingleSR } = useContext(DataContext);
+  const { estimates, setSingleObj, serviceRequests, setSingleSR } =
+    useContext(DataContext);
   const { setEstimateRoute, setSRroute } = useContext(RoutingContext);
-
-  const handleCatClick = (type, id) => {
-    setEstimateRoute(type);
-    const updatedArr = estimates.filter((object) => {
-      if (id === object.estimateID) {
-        return object;
-      }
-      return object;
-    });
-    setSingleObj(updatedArr);
-  };
-
-
 
   const icon = (
     <svg
@@ -77,69 +65,18 @@ const DashBoard = () => {
           <div className="col-md-3">
             <div className="card">
               <div className="card-header border-0 pb-1 bg-primary">
-                <h4 className="heading " style={{ color: "white" }}>Upcoming Schedules</h4>
+                <h4 className="heading " style={{ color: "white" }}>
+                  Upcoming Schedules
+                </h4>
               </div>
               <div className="card-body schedules-cal p-2">
-                <Calendar style={{ width: "100%" }} />
-                {/* <div className="events">
-                  <h6>events</h6>
-                  <div className="dz-scroll event-scroll">
-                    <div className="event-media">
-                      <div className="d-flex align-items-center">
-                        <div className="event-box">
-                          <h5 className="mb-0">20</h5>
-                          <span>Mon</span>
-                        </div>
-                        <div className="event-data ms-2">
-                          <h5 className="mb-0">
-                            <NavLink>Development planning</NavLink>
-                          </h5>
-                          <span>w3it Technologies</span>
-                        </div>
-                      </div>
-                      <span className="text-secondary">12:05 PM</span>
-                    </div>
-                    <div className="event-media">
-                      <div className="d-flex align-items-center">
-                        <div className="event-box">
-                          <h5 className="mb-0">20</h5>
-                          <span>Mon</span>
-                        </div>
-                        <div className="event-data ms-2">
-                          <h5 className="mb-0">
-                            <NavLink>Development planning</NavLink>
-                          </h5>
-                          <span>w3it Technologies</span>
-                        </div>
-                      </div>
-                      <span className="text-secondary">12:05 PM</span>
-                    </div>
-                    <div className="event-media">
-                      <div className="d-flex align-items-center">
-                        <div className="event-box">
-                          <h5 className="mb-0">20</h5>
-                          <span>Mon</span>
-                        </div>
-                        <div className="event-data ms-2">
-                          <h5 className="mb-0">
-                            <NavLink>Development planning</NavLink>
-                          </h5>
-                          <span>w3it Technologies</span>
-                        </div>
-                      </div>
-                      <span className="text-secondary">12:05 PM</span>
-                    </div>
-                  </div>
-                </div> */}
+                <DashBoardCalender />
+                
               </div>
             </div>
           </div>
 
           <DashBoardCards dashBoardData={dashBoardData} />
-
-
-
-
         </div>
       </div>
     </>

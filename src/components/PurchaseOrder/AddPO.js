@@ -122,7 +122,13 @@ export const AddPO = ({}) => {
   const { deletePOFile } = useDeleteFile();
 
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const handleAutocompleteChange = async (e) => {
     // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
@@ -448,7 +454,7 @@ export const AddPO = ({}) => {
 
   const handleChange = (e) => {
     setEmptyFieldsError(false);
-    setDisableButton(false)
+    setDisableButton(false);
     // Extract the name and value from the event target
     const { name, value } = e.target;
 
@@ -488,7 +494,8 @@ export const AddPO = ({}) => {
 
     setFormData((prevData) => ({
       ...prevData,
-      estimateLinkData,
+      EstimateId: estimateLinkData.EstimateId,
+      EstimateNumber: estimateLinkData.EstimateNumber,
     }));
     console.log("item List is", itemsList);
   }, []);
@@ -762,6 +769,12 @@ export const AddPO = ({}) => {
         setOpen={setOpenSnackBar}
         color={snackBarColor}
         text={snackBarText}
+      />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
       />
 
       {loading ? (
@@ -1590,18 +1603,21 @@ export const AddPO = ({}) => {
                           position: "relative",
                         }}
                       >
-                        <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
-                        <img
-                          src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                          alt={file.FileName}
-                          style={{
-                            width: "150px",
-                            height: "120px",
-                            objectFit: "cover",
-                          }}
-                        /></a>
+                        <a
+                          href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </a>
                         <p
                           className="file-name-overlay"
                           style={{

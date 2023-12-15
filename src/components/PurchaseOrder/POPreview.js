@@ -11,6 +11,7 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const POPreview = () => {
   const token = Cookies.get("token");
@@ -24,7 +25,13 @@ const POPreview = () => {
   const isMail = queryParams.get("isMail");
   const { POData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
   const [PoPreviewData, setPoPreviewData] = useState({});
   const [printClicked, setPrintClicked] = useState(false);
   const [showbuttons, setShowButtons] = useState(true);
@@ -127,6 +134,13 @@ const POPreview = () => {
 
   return (
     <>
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
+
       <div
         className={
           toggleFullscreen

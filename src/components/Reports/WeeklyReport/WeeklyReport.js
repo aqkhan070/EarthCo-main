@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../../Hooks/useSendEmail";
+import EventPopups from "../../Reusable/EventPopups";
 
 const WeeklyReport = () => {
   const token = Cookies.get("token");
@@ -20,7 +21,13 @@ const WeeklyReport = () => {
   };
 
   const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -100,6 +107,12 @@ const WeeklyReport = () => {
 
   return (
     <>
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       <div className="container-fluid print-page-width">
         <div className="row PageA4 mt-2">
           <div className="card">

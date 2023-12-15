@@ -34,7 +34,13 @@ const AddSRform = () => {
 
   // const isSRUpdateRoute = window.location.pathname.includes("Update-SRform");
 
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const { sRMapData, setSRMapData, PunchListData, setPunchListData } =
     useContext(DataContext);
@@ -338,7 +344,7 @@ const AddSRform = () => {
 
   const submitHandler = async () => {
     setSubmitClicked(true);
-    
+
     if (
       !SRData.ServiceRequestData.CustomerId ||
       !SRData.ServiceRequestData.ServiceLocationId ||
@@ -614,6 +620,13 @@ const AddSRform = () => {
         color={snackBarColor}
         text={snackBarText}
       />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
+
       {loading ? (
         <div className="center-loader">
           <CircularProgress />
@@ -737,6 +750,14 @@ const AddSRform = () => {
                             isOptionEqualToValue={(option, value) =>
                               option.ContactId === value.ContactId
                             }
+                            renderOption={(props, option) => (
+                              <li {...props}>
+                                <div className="customer-dd-border">
+                                  <h6> {option.FirstName}</h6>
+                                  <small>{option.Email}</small>
+                                </div>
+                              </li>
+                            )}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -1235,18 +1256,21 @@ const AddSRform = () => {
                             position: "relative",
                           }}
                         >
-                          <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          <a
+                            href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             target="_blank"
-                            rel="noopener noreferrer">
-                          <img
-                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                            alt={file.FileName}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
-                            }}
-                          /></a>
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                              alt={file.FileName}
+                              style={{
+                                width: "150px",
+                                height: "120px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </a>
                           <p
                             className="file-name-overlay"
                             style={{

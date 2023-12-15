@@ -16,6 +16,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 
+
 const AddBill = ({
   setshowContent,
   fetchBills,
@@ -30,7 +31,12 @@ const AddBill = ({
   };
   const currentDate = new Date();
 
-  const { sendEmail } = useSendEmail();
+  const { sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor
+ } = useSendEmail();
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -579,6 +585,12 @@ const AddBill = ({
         color={snackBarColor}
         text={snackBarText}
       />
+          <EventPopups
+    open={showEmailAlert}
+    setOpen={setShowEmailAlert}
+    color={emailAlertColor}
+    text={emailAlertTxt}
+  />
 
       <div className="add-item">
         {/* <div className="tabSwitch">

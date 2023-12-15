@@ -10,6 +10,7 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -37,7 +38,11 @@ const Landscape = () => {
   const isGeneralReport = window.location.pathname.includes("general-report");
 
   const [landscapeData, setLandscapeData] = useState({});
-  const { sendEmail } = useSendEmail();
+  const { sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor } = useSendEmail();
 
   const getLandscape = async () => {
     try {
@@ -124,7 +129,13 @@ const Landscape = () => {
   });
 
   return (
-    <>
+    <> <EventPopups
+    open={showEmailAlert}
+    setOpen={setShowEmailAlert}
+    color={emailAlertColor}
+    text={emailAlertTxt}
+  />
+
       <div className="container-fluid ">
         {toggleFullscreen && !isGeneralReport ? (
           <div className="row me-4">

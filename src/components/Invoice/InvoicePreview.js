@@ -11,11 +11,18 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -130,6 +137,15 @@ const InvoicePreview = () => {
 
   return (
     <>
+      {" "}
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
+    
+
       <div
         className={
           toggleFullscreen

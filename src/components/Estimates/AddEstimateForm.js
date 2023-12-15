@@ -45,7 +45,13 @@ const AddEstimateForm = () => {
     tblEstimateItems: [],
   });
 
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const { setestmPreviewId } = useContext(RoutingContext);
   const navigate = useNavigate();
@@ -126,6 +132,7 @@ const AddEstimateForm = () => {
   const { setEstimateLinkData } = useEstimateContext();
 
   const [PrevFiles, setPrevFiles] = useState([]);
+  const [btnDisable, setBtnDisable] = useState(false);
 
   const fetchEstimates = async () => {
     if (idParam === 0) {
@@ -139,6 +146,9 @@ const AddEstimateForm = () => {
       );
 
       console.log("selected estimate is", response.data);
+      if (response.data.EstimateItemData.PurchaseOrderId) {
+        setBtnDisable(true);
+      }
       setPrevFiles(response.data.EstimateFileData);
       setEstimateLinkData((prevState) => ({
         ...prevState,
@@ -865,6 +875,17 @@ const AddEstimateForm = () => {
     updatedFiles.splice(index, 1);
     setFiles(updatedFiles);
   };
+  const handleDeletePLFile = (indexToDelete) => {
+    // Create a copy of the formData.tblEstimateFiles array
+    const updatedFiles = [...formData.tblEstimateFiles];
+
+    // Remove the file at the specified index
+    updatedFiles.splice(indexToDelete, 1);
+
+    // Update the formData with the new array without the deleted file
+    setFormData({ ...formData, tblEstimateFiles: updatedFiles });
+  };
+
   const handleEstmDeleteFile = (index) => {
     // Create a copy of the estimateFiles array without the file to be deleted
     const updatedEstimateFiles = [...estimateFiles];
@@ -908,6 +929,12 @@ const AddEstimateForm = () => {
         setOpen={setOpenSnackBar}
         color={snackBarColor}
         text={snackBarText}
+      />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
       />
       <div className="card">
         <div className="itemtitleBar ">
@@ -1219,6 +1246,14 @@ const AddEstimateForm = () => {
                       isOptionEqualToValue={(option, value) =>
                         option.ContactId === value.ContactId
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.FirstName}</h6>
+                            <small>{option.Email}</small>
+                          </div>
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -1239,7 +1274,7 @@ const AddEstimateForm = () => {
                     <Select
                       aria-label="Default select example"
                       variant="outlined"
-                      value={formData.EstimateStatusId || 1}
+                      value={formData.EstimateStatusId || 4}
                       onChange={handleStatusChange}
                       name="Status"
                       size="small"
@@ -2039,6 +2074,7 @@ const AddEstimateForm = () => {
                             style={{
                               left: "140px",
                             }}
+                            onClick={() => handleDeletePLFile(index)}
                           >
                             <span>
                               <Delete color="error" />
@@ -2057,18 +2093,21 @@ const AddEstimateForm = () => {
                             position: "relative",
                           }}
                         >
-                          <a  href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          <a
+                            href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             target="_blank"
-                            rel="noopener noreferrer" >
-                          <img
-                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                            alt={file.FileName}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
-                            }}
-                          /></a>
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                              alt={file.FileName}
+                              style={{
+                                width: "150px",
+                                height: "120px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          </a>
                           <p
                             className="file-name-overlay"
                             style={{
@@ -2239,6 +2278,7 @@ const AddEstimateForm = () => {
                         >
                           <Email />
                         </button>
+
                         <button
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
@@ -2271,6 +2311,7 @@ const AddEstimateForm = () => {
                     {idParam ? (
                       <LoaderButton
                         loading={disableButton}
+                        disable={btnDisable}
                         handleSubmit={() => {
                           handleSubmit(0, "");
                         }}
@@ -2290,6 +2331,7 @@ const AddEstimateForm = () => {
                       <></>
                     )}
                     <LoaderButton
+                      disable={btnDisable}
                       loading={disableButton}
                       handleSubmit={() => {
                         handleSubmit();

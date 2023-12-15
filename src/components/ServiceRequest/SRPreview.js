@@ -11,6 +11,8 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
+
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -24,7 +26,13 @@ const SRPreview = () => {
 
   const { sRData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
   const [sRPreviewData, setSRPreviewData] = useState({});
 
   const [showbuttons, setShowButtons] = useState(true);
@@ -126,6 +134,12 @@ const SRPreview = () => {
 
   return (
     <>
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       <div
         className={
           toggleFullscreen

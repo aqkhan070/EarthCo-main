@@ -7,6 +7,7 @@ import { Print, Email, Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
 
 const GenralReport = () => {
   const {
@@ -26,7 +27,13 @@ const GenralReport = () => {
   const isMail = queryParams.get("isMail");
 
   const navigate = useNavigate();
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const handlePrint = () => {
     setToggleFullscreen(false);
@@ -82,6 +89,12 @@ const GenralReport = () => {
 
   return (
     <>
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       <div className="container-fluid ">
         {toggleFullscreen ? (
           <div className="row me-4">

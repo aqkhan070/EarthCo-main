@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { DataContext } from "../../context/AppData";
 import { CircularProgress } from "@mui/material";
+import EventPopups from "../Reusable/EventPopups";
 
 const Map = () => {
   const token = Cookies.get("token");
@@ -18,6 +19,9 @@ const Map = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSR, setselectedSR] = useState(null);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
   // const [filteredMapData, setFilteredMapData] = useState([]);
 
   const [searchSR, setsearchSR] = useState("");
@@ -56,6 +60,12 @@ const Map = () => {
   });
 
   const getLatLngs = (map) => {
+    if(!map.lat){
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Location not Found");
+      return
+    }
     console.log("map dataa", map);
     setMaplatLngs({
       lat: map.lat,
@@ -77,6 +87,12 @@ const Map = () => {
 
   return (
     <>
+     <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="container-fluid">
         <div className="card">
           <div className="card-body">
@@ -113,8 +129,8 @@ const Map = () => {
                   <div className="card mt-2  ">
                     <div className="card-body pt-0">
                       <div className="tab-content">
-                        {filteredMapData.map((map) => {
-                          return (
+                        <div style={{ height: "70vh", overflowY: "scroll" }}>
+                          {filteredMapData.map((map) => (
                             <div
                               style={{ cursor: "pointer" }}
                               key={map.ServiceRequestId}
@@ -153,74 +169,7 @@ const Map = () => {
                                 </div>
                               </div>
                             </div>
-                          );
-                        })}
-
-                        <div id="navpills-2" className="tab-pane">
-                          <div className="row serviceLocations pt-2">
-                            <div className="col-md-12">
-                              <div className="locationInfo">
-                                <div className="col-md-3 flex-box">
-                                  <p>#646546</p>
-                                </div>
-                                <div className="col-md-9">
-                                  <div className="media-body">
-                                    <h6 className="mb-1">Customer 1</h6>
-                                    <p className="mb-1">
-                                      C-II Block C 2 Phase 1 Johar Town, Lahore,
-                                      Punjab 54770
-                                    </p>
-                                    <span className="badge badge-primary">
-                                      Irrigation
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="col-md-12">
-                              <div className="locationInfo">
-                                <div className="col-md-3 flex-box">
-                                  <p>#646546</p>
-                                </div>
-                                <div className="col-md-9">
-                                  <div className="media-body">
-                                    <h6 className="mb-1">Customer 2</h6>
-                                    <p className="mb-1">
-                                      C-II Block C 2 Phase 1 Johar Town, Lahore,
-                                      Punjab 54770
-                                    </p>
-                                    <span className="badge badge-primary">
-                                      Irrigation
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div id="navpills-3" className="tab-pane">
-                          <div className="row serviceLocations pt-2">
-                            <div className="col-md-12">
-                              <div className="locationInfo">
-                                <div className="col-md-3 flex-box">
-                                  <p>#646546</p>
-                                </div>
-                                <div className="col-md-9">
-                                  <div className="media-body">
-                                    <h6 className="mb-1">Customer 3</h6>
-                                    <p className="mb-1">
-                                      C-II Block C 2 Phase 1 Johar Town, Lahore,
-                                      Punjab 54770
-                                    </p>
-                                    <span className="badge badge-primary">
-                                      Maintenance
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     </div>

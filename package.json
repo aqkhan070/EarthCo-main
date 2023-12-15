@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@ericz1803/react-google-calendar": "^4.3.1",
     "@mui/icons-material": "^5.14.14",
     "@mui/lab": "^5.0.0-alpha.154",
     "@mui/material": "^5.14.14",
@@ -32,6 +33,7 @@
     "react-calendar": "^4.6.0",
     "react-data-table-component": "^7.5.4",
     "react-dom": "^18.2.0",
+    "react-google-calendar-api": "^2.3.0",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
     "react-table": "^7.8.0",

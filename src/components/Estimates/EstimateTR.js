@@ -496,10 +496,10 @@ const EstimateTR = ({
                               {estimate.InvoiceNumber}
                             </TableCell>
                             <TableCell className="text-end">
-                              {estimate.ProfitPercentage.toFixed(2)}
+                              {estimate.ProfitPercentage?.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-end">
-                              {estimate.EstimateAmount.toFixed(2)}
+                              {estimate.EstimateAmount?.toFixed(2)}
                             </TableCell>
                             {/* <TableCell>
                                 <div className="button-container">

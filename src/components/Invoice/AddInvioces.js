@@ -35,7 +35,13 @@ const AddInvioces = ({
     Authorization: `Bearer ${token}`,
   };
 
-  const { sendEmail } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -273,14 +279,11 @@ const AddInvioces = ({
   }, [estimateLinkData]);
 
   const handleBillAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "BillId",
-        value: newValue ? newValue.BillId : "",
-      },
-    };
-
-    handleChange(simulatedEvent);
+    setFormData((prevData) => ({
+      ...prevData,
+      BillId: newValue.BillId,
+      BillNumber: newValue.BillNumber,
+    }));
   };
   const handleEstimatesAutocompleteChange = (event, newValue) => {
     if (newValue) {
@@ -414,14 +417,14 @@ const AddInvioces = ({
         ...formData,
         InvoiceId: idParam,
         TotalAmount: totalItemAmount || 0,
-        ProfitPercentage: profitPercentage || 0,
+        ProfitPercentage: Number(profitPercentage) || 0,
       };
     } else {
       InvoiceData = {
         ...formData,
         InvoiceId: idParam || 0,
         TotalAmount: totalItemAmount || 0,
-        ProfitPercentage: profitPercentage || 0,
+        ProfitPercentage: Number(profitPercentage) || 0,
       };
     }
 
@@ -797,13 +800,9 @@ const AddInvioces = ({
     const calculatedProfitPercentage =
       (calculatedTotalProfit / totalExpense) * 100;
 
-    if (newCostTotalAmount && newACTotalAmount) {
-      setTotalExpense(newCostTotalAmount + newACTotalAmount);
-    }
+    setTotalExpense(newCostTotalAmount + newACTotalAmount);
 
-    if (newTotalAmount) {
-      setSubtotal(newTotalAmount);
-    }
+    setSubtotal(newTotalAmount);
     setTotalACAmount(newACTotalAmount);
     if (totalamount) {
       setTotalItemAmount(totalamount);
@@ -813,8 +812,9 @@ const AddInvioces = ({
     }
 
     setBalanceDue(totalItemAmount - paymentCredit);
-
-    setProfitPercentage(calculatedProfitPercentage);
+    if (calculatedProfitPercentage) {
+      setProfitPercentage(calculatedProfitPercentage.toFixed(2));
+    }
 
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
   }, [
@@ -862,6 +862,17 @@ const AddInvioces = ({
     console.log("Deleted file at index:", indexToDelete);
   };
 
+  const handleDeletePLFile = (indexToDelete) => {
+    // Create a copy of the formData.tblEstimateFiles array
+    const updatedFiles = [...estimateLinkData.FileData];
+
+    // Remove the file at the specified index
+    updatedFiles.splice(indexToDelete, 1);
+
+    // Update the formData with the new array without the deleted file
+    setEstimateLinkData({ ...estimateLinkData, FileData: updatedFiles });
+  };
+
   return (
     <>
       <InvoiceTitleBar />
@@ -871,6 +882,13 @@ const AddInvioces = ({
         color={snackBarColor}
         text={snackBarText}
       />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
+
       {loading ? (
         <div className="center-loader">
           <CircularProgress />
@@ -1757,7 +1775,7 @@ const AddInvioces = ({
                           <strong>Subtotal</strong>
                         </td>
                         <td className="right text-right">
-                          ${subtotal?.toFixed(2)}
+                          ${subtotal ? subtotal?.toFixed(2) : 0.0}
                         </td>
                       </tr>
                       {/* <tr>
@@ -1799,7 +1817,7 @@ const AddInvioces = ({
                           $
                           {totalDiscount && subtotal
                             ? ((totalDiscount / subtotal) * 100).toFixed(2)
-                            : 0}
+                            : 0.0}
                         </td>
                       </tr>
                       {/*  <tr>
@@ -1847,7 +1865,7 @@ const AddInvioces = ({
                       <tr>
                         <td className="left">Total Expenses</td>
                         <td className="right text-right">
-                          ${totalExpense.toFixed(2)}
+                          ${totalExpense ? totalExpense.toFixed(2) : 0.0}
                         </td>
                       </tr>
                       <tr>
@@ -1859,7 +1877,7 @@ const AddInvioces = ({
                       <tr>
                         <td className="left">Profit Margin(%)</td>
                         <td className="right text-right">
-                          {profitPercentage ? profitPercentage.toFixed(2) : 0}%
+                          {profitPercentage}%
                         </td>
                       </tr>
                     </tbody>
@@ -1911,13 +1929,7 @@ const AddInvioces = ({
                       style={{
                         left: "140px",
                       }}
-                      onClick={() => {
-                        deleteInvoiceFile(file.BillFileId);
-
-                        setTimeout(() => {
-                          getInvoice();
-                        }, 1000);
-                      }}
+                      onClick={() => handleDeletePLFile(index)}
                     >
                       <span>
                         <Delete color="error" />
@@ -2074,7 +2086,7 @@ const AddInvioces = ({
                           `/invoices/invoice-preview?id=${idParam}`,
                           formData.CustomerId,
                           0,
-                          true
+                          false
                         );
                       }}
                     >

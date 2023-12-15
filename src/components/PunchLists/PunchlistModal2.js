@@ -10,7 +10,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 
 const PunchlistModal2 = ({
   addPunchListData,
- 
+
   staffData,
   sLList,
 
@@ -120,11 +120,11 @@ const PunchlistModal2 = ({
 
   const [emptyFieldError, setemptyFieldError] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [disableButton, setDisableButton] = useState(false)
+  const [disableButton, setDisableButton] = useState(false);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setDisableButton(false)
+    setDisableButton(false);
     setAddPunchListData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -148,8 +148,7 @@ const PunchlistModal2 = ({
       setSnackBarText("Please fill all required fields");
       return;
     }
-    setDisableButton(true)
-
+    setDisableButton(true);
 
     try {
       const response = await axios.post(
@@ -162,13 +161,13 @@ const PunchlistModal2 = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
-      setDisableButton(false)
+      setDisableButton(false);
 
       setselectedPL(0);
       fetchFilterdPunchList();
       document.getElementById("punchListcloser").click();
     } catch (error) {
-      setDisableButton(false)
+      setDisableButton(false);
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
 
@@ -285,6 +284,14 @@ const PunchlistModal2 = ({
                     isOptionEqualToValue={(option, value) =>
                       option.ContactId === value.ContactId
                     }
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <div className="customer-dd-border">
+                          <h6> {option.FirstName}</h6>
+                          <small>{option.Email}</small>
+                        </div>
+                      </li>
+                    )}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -440,8 +447,8 @@ const PunchlistModal2 = ({
                 Close
               </button>
               <LoaderButton loading={disableButton} handleSubmit={handleSubmit}>
-  Save
-</LoaderButton>
+                Save
+              </LoaderButton>
               {/* <button
               
                 className="btn btn-primary"

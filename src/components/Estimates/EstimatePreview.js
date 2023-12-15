@@ -13,13 +13,19 @@ import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
+
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
   const isMail = queryParams.get("isMail");
 
   const { name, setName, fetchName } = useFetchCustomerName();
-  const { sendEmail } = useSendEmail();
+  const { sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor, } = useSendEmail();
 
   const navigate = useNavigate();
   const { estmPreviewId } = useContext(RoutingContext);
@@ -132,6 +138,12 @@ const EstimatePreview = () => {
 
   return (
     <>
+     <EventPopups
+    open={showEmailAlert}
+    setOpen={setShowEmailAlert}
+    color={emailAlertColor}
+    text={emailAlertTxt}
+  />
       <div
         className={
           toggleFullscreen

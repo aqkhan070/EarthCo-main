@@ -1,7 +1,7 @@
 import React from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-const LoaderButton = ({ varient, color, handleSubmit, loading, children }) => {
+const LoaderButton = ({disable, varient, color, handleSubmit, loading, children }) => {
   if (varient == "small") {
     return (
       <LoadingButton
@@ -28,6 +28,7 @@ const LoaderButton = ({ varient, color, handleSubmit, loading, children }) => {
         // startIcon={<DeleteIcon />}
         // loadingPosition="start"
         onClick={handleSubmit}
+        disabled={disable}
         sx={{ padding: "0.5rem 1.5rem", marginRight: "0.6em", color: "#fff" }}
       >
         {children}

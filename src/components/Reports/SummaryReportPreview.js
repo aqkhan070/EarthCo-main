@@ -10,6 +10,8 @@ import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
  import html2pdf from 'html2pdf.js';
  import useSendEmail from "../Hooks/useSendEmail";
+import EventPopups from "../Reusable/EventPopups";
+
 const SummaryReportPreview = () => {
   const {
     sRProposalData,
@@ -21,7 +23,11 @@ const SummaryReportPreview = () => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-  const { sendEmail } = useSendEmail();
+  const { sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor } = useSendEmail();
 
   const customerParam = Number(queryParams.get("Customer"));
   const MonthParam = Number(queryParams.get("Month"));
@@ -104,6 +110,12 @@ const SummaryReportPreview = () => {
 
   return (
     <>
+    <EventPopups
+    open={showEmailAlert}
+    setOpen={setShowEmailAlert}
+    color={emailAlertColor}
+    text={emailAlertTxt}
+  />
       {loading ? (
         <div className="center-loader">
           <CircularProgress style={{ color: "#789a3d" }} />

@@ -140,7 +140,7 @@ const Invoices = () => {
           <InvoiceTitleBar />
           <div className="container-fluid">
             <div className="row">
-              <InvoiceCards />
+              {/* <InvoiceCards /> */}
               <div className="col-xl-12" id="bootstrap-table2">
                 <div className="card">
                   {deleteSuccess && (
@@ -243,8 +243,8 @@ const Invoices = () => {
                                 </TableSortLabel>
                               </TableCell>
                               <TableCell>Customer</TableCell>
-                              <TableCell>Service#</TableCell>
-                              <TableCell>PO #</TableCell>
+                              {/* <TableCell>Service #</TableCell> */}
+                              {/* <TableCell>PO #</TableCell> */}
                               <TableCell>Estimate #</TableCell>
                               <TableCell>Bill #</TableCell>
                               <TableCell>Profit %</TableCell>
@@ -301,11 +301,15 @@ const Invoices = () => {
                                     {TblDateFormat(invoice.IssueDate)}
                                   </TableCell>
                                   <TableCell>{invoice.CustomerName}</TableCell>{" "}
-                                  <TableCell></TableCell>
-                                  <TableCell></TableCell>
-                                  <TableCell></TableCell>
-                                  <TableCell></TableCell>
-                                  <TableCell></TableCell>
+                                  {/* <TableCell></TableCell> */}
+                                  {/* <TableCell></TableCell> */}
+                                  <TableCell>
+                                    {invoice.EstimateNumber}
+                                  </TableCell>
+                                  <TableCell>{invoice.BillNumber}</TableCell>
+                                  <TableCell>
+                                    {invoice.ProfitPercentage}
+                                  </TableCell>
                                   <TableCell className="text-end">
                                     {invoice.BalanceAmount}
                                   </TableCell>
