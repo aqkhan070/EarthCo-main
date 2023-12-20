@@ -148,7 +148,7 @@ const PunchListDetailRow = ({
                       </div>
                     </TableCell>
 
-                    <TableCell colSpan={3}>
+                    <TableCell  colSpan={3}>
                       {detail.ItemData.map((item) => {
                         return (
                           <div key={item.ItemId}>

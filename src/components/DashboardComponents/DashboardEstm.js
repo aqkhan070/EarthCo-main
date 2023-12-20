@@ -33,7 +33,7 @@ const DashboardEstm = ({ dashBoardData }) => {
               <TableCell>Customer Name</TableCell>
               <TableCell>Assign to</TableCell>
               <TableCell>Estimate #</TableCell>
-              <TableCell>Estimate Amount</TableCell>
+              <TableCell align="right">Estimate Amount</TableCell>
               <TableCell>Estimate Note</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
@@ -49,7 +49,9 @@ const DashboardEstm = ({ dashBoardData }) => {
                 <TableCell>{estimate.RegionalManager}</TableCell>
 
                 <TableCell>{estimate.EstimateNumber}</TableCell>
-                <TableCell align="right">{(estimate.EstimateAmount).toFixed(2)}</TableCell>
+                <TableCell align="right">
+                  {estimate.EstimateAmount.toFixed(2)}
+                </TableCell>
                 <TableCell>{estimate.DescriptionofWork}</TableCell>
 
                 <TableCell>

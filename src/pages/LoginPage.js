@@ -7,6 +7,8 @@ import Alert from "@mui/material/Alert";
 import LoadingButton from "@mui/lab/LoadingButton";
 
 const LoginPage = () => {
+  const token = Cookies.get("token");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +50,21 @@ const LoginPage = () => {
     phone,
     reTypePass,
   ]);
+
+  const urlParams = new URLSearchParams(window.location.hash);
+  const accessToken = urlParams.get("#access_token");
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (token) {
+      // navigate(`/Dashboard`);
+    }
+    if (accessToken) {
+      navigate(`/Dashboard${hash}`);
+      localStorage.setItem("access_token", accessToken);
+    }
+    console.log("Full URL:", hash);
+    console.log("accessToken", accessToken);
+  }, []);
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();

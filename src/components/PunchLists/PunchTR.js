@@ -33,6 +33,7 @@ import PunchListDetailRow from "./PunchListDetailRow";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 import EventPopups from "../Reusable/EventPopups";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -67,20 +68,16 @@ const PunchTR = ({
     Authorization: `Bearer ${token}`,
   };
 
-
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sorting, setSorting] = useState({ field: "", order: "" });
-  
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
-const [snackBarColor, setSnackBarColor] = useState("");
-const [snackBarText, setSnackBarText] = useState("");
-
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
 
   const [expandedRow, setExpandedRow] = useState(-1); // By default, no row is expanded.
 
-
-
+  const navigate = useNavigate();
 
   const columnFieldMapping = {
     "#": "PunchlistId",
@@ -162,8 +159,8 @@ const [snackBarText, setSnackBarText] = useState("");
         }
       );
       setOpenSnackBar(true);
-setSnackBarColor("error");
-setSnackBarText("PunchList Deleted Successfully");
+      setSnackBarColor("error");
+      setSnackBarText("PunchList Deleted Successfully");
 
       fetchFilterdPunchList();
       // Handle the response. For example, you can reload the customers or show a success message
@@ -180,12 +177,12 @@ setSnackBarText("PunchList Deleted Successfully");
 
   return (
     <>
-    <EventPopups
-open={openSnackBar}
-setOpen={setOpenSnackBar}
-color={snackBarColor}
-text={snackBarText}
-/>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <ThemeProvider theme={theme}>
         <div className="card-header flex-wrap d-flex justify-content-between  border-0">
           <div>
@@ -292,7 +289,13 @@ text={snackBarText}
                     <TableCell>
                       <span
                         style={{
+                          cursor: "pointer",
                           backgroundColor: item.Data.StatusColor,
+                        }}
+                        onClick={() => {
+                          navigate(
+                            `/PunchlistPreview?id=${item.Data.PunchlistId}`
+                          );
                         }}
                         className="badge badge-pill "
                       >
@@ -387,7 +390,7 @@ text={snackBarText}
                   </TableRow>
 
                   <PunchListDetailRow
-                  fetchFilterdPunchList={fetchFilterdPunchList}
+                    fetchFilterdPunchList={fetchFilterdPunchList}
                     headers={headers}
                     item={item}
                     rowIndex={rowIndex}

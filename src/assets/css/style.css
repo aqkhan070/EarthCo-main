@@ -45645,7 +45645,7 @@ table.dataTable thead .sorting_asc {
 }
 
 .event-scroll {
-    padding: 0 1.25rem;
+    padding: 0 ;
 }
 
 .project-chart {
@@ -54049,6 +54049,7 @@ padding: 0px !important;
 
 .punch-select-width{
     width: 100% !important;
+ 
 }
 
 
@@ -54070,6 +54071,38 @@ padding: 0px !important;
 .selected-map{
     background-color: azure;
 }
+
+.css-1q04gal-MuiDateCalendar-root{
+    width: 250px !important;
+}
+.css-1vdhxma-MuiButtonBase-root-MuiPickersDay-root{
+margin: 0px 1px !important;
+width : 30px !important;
+    height: 30px !important;
+}
+
+.css-rhmlg1-MuiTypography-root-MuiDayCalendar-weekDayLabel {
+    width : 30px !important;
+    height: 30px !important;
+}
+
+.scrollable-events {
+  max-height: 300px; 
+  overflow-y: auto;
+}
+
+.event-dot {
+    width: 7px;
+    height: 7px;
+    background-color: red;
+    border-radius: 50%;
+}
+.Pl-preview strong{
+color : black;
+}
+.Pl-preview p{
+    color : black;
+    }
 
  
 @media print{

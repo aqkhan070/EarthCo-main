@@ -5,7 +5,7 @@ import {
   Marker,
   InfoWindow,
 } from "@react-google-maps/api";
-import { DataContext } from "../../context/AppData";
+
 
 const containerStyle = {
   width: "100%",
@@ -17,19 +17,18 @@ const defaultCenter = {
   lng: 74.35,
 };
 
-function GoogleMapApi() {
+function GoogleMapApi({sLAddress, setSLAddress}) {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState({});
   const [selectedMarker, setSelectedMarker] = useState(null);
   const searchInputRef = useRef(null);
 
-  const { serviceLocationAddress, setServiceLocationAddress } =
-    useContext(DataContext);
 
   useEffect(() => {
     // Load markers from localStorage on component mount
     const savedMarkers = JSON.parse(localStorage.getItem("markers")) || [];
     setMarkers(savedMarkers);
+   
   }, []);
 
   const saveMarkersToLocalStorage = (markers) => {
@@ -71,13 +70,13 @@ function GoogleMapApi() {
           if (map) {
             map.panTo(place.geometry.location);
           }
-          setServiceLocationAddress((prevData) => ({
+          setSLAddress((prevData) => ({
             ...prevData,
             Address: e.target.value,
             lat: newMarkers.lat,
             lng: newMarkers.lng,
           }));
-          console.log("mapesss", serviceLocationAddress);
+          
         }
       });
     }
@@ -113,7 +112,7 @@ function GoogleMapApi() {
         <input
           ref={searchInputRef}
           type="text"
-          value={serviceLocationAddress.Address}
+          value={sLAddress.Address}
           placeholder="Address"
           onChange={handleSearch}
           className="form-control"

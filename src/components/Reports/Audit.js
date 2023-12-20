@@ -189,7 +189,7 @@ const Audit = () => {
                   className="card-body get-preview perview-pd"
                 >
                   <div className="row mb-5">
-                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-12 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                       <div className="brand-logo mb-2 inovice-logo">
                         <img
                           className="irr-preview-Logo ms-3"
@@ -198,7 +198,7 @@ const Audit = () => {
                         />
                       </div>
                     </div>
-                    <div className="mt-5 col-xl-6 col-lg-6 col-md-6 col-sm-12 text-center">
+                    <div className="mt-5 col-xl-6 col-lg-6 col-md-6 col-sm-6 text-center">
                       <h3>
                         {" "}
                         <strong>Irrigation Audit</strong>{" "}

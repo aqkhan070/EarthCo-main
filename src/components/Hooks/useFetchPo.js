@@ -51,7 +51,7 @@ const useFetchPo = () => {
       setLoading(false);
       setError(true);
       setFilteredPo([]);
-      console.log("api call error", error.message);
+      console.log("api call error", error);
     }
   };
 

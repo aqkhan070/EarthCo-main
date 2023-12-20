@@ -25,7 +25,8 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const AddressInputs = ({ address, name, handleChange }) => {
+const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
+
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
@@ -119,6 +120,11 @@ const AddressInputs = ({ address, name, handleChange }) => {
           value: newValue.description ? newValue.description : "",
         },
       };
+
+      
+
+
+
       handleChange(simulatedEvent);
 
       // Use the Google Maps Geocoding API to get latitude and longitude
@@ -129,6 +135,12 @@ const AddressInputs = ({ address, name, handleChange }) => {
           const latitude = location.lat();
           const longitude = location.lng();
           console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+          setSLAddress((prevData) => ({
+            ...prevData,
+            lat: latitude,
+            lng: longitude,
+          }))
+
         } else {
           console.log(
             "Geocode was not successful for the following reason: " + status
@@ -145,6 +157,12 @@ const AddressInputs = ({ address, name, handleChange }) => {
       };
       handleChange(simulatedEvent);
     }
+
+    setSLAddress((prevData) => ({
+        ...prevData,
+        Address: newValue.description ? newValue.description : "",       
+      }))
+
   };
 
   return (
@@ -206,6 +224,6 @@ const AddressInputs = ({ address, name, handleChange }) => {
       }}
     />
   );
-};
+}
 
-export default AddressInputs;
+export default SLAddress

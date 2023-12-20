@@ -96,6 +96,8 @@ const DashboardPage = () => {
     window.location.pathname.includes("weekly-report-preview");
   const isGenetalReportPreviewRoute =
     window.location.pathname.includes("GeneralReport");
+    const isPLPreviewRoute =
+    window.location.pathname.includes("PunchlistPreview");
 
   const isPreview =
     !isEstimatePreviewRoute &&
@@ -108,6 +110,7 @@ const DashboardPage = () => {
     !isProposalPreviewRoute &&
     !isLandscapPreviewRoute &&
     !isWeeklyReportPreviewRoute &&
+    !isPLPreviewRoute &&
     !isGenetalReportPreviewRoute;
 
   return (
@@ -196,11 +199,11 @@ const DashboardPage = () => {
               </Route>
               <Route path="irrigation/audit-report" element={<Audit />} />
               <Route path="punchlist" element={<PunchListIndex />} />
+              <Route path="summary-report" element={<SummaryReport />} />
               <Route
-                path="irrigation/PunchlistPreview"
+                path="PunchlistPreview"
                 element={<PunchlistPreview />}
               />
-              <Route path="summary-report" element={<SummaryReport />} />
               <Route
                 path="summary-report-preview"
                 element={<SummaryReportPreview />}

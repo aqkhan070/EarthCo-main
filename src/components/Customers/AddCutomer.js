@@ -19,15 +19,12 @@ import InputLabel from "@mui/material/InputLabel";
 import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddressInputs from "../Modals/AddressInputs";
-import { useFormik } from "formik";
-import { ServiceValidation, ValidationCustomer } from "./ValidationCustomer";
-import MapCo from "./MapCo";
-import { DataContext } from "../../context/AppData";
+
 import Cookies from "js-cookie";
-import CustomerAddress from "./CustomerAddress/CustomerAddress";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
-
+import Contacts from "./Contacts";
+import ServiceLocations from "./ServiceLocations";
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -70,60 +67,22 @@ const AddCustomer = () => {
   const idParam = Number(queryParams.get("id"));
   const navigate = useNavigate();
 
-  const {
-    serviceLocationAddress,
-    setServiceLocationAddress,
-    customerAddress,
-    setCustomerAddress,
-  } = useContext(DataContext);
-
-  const [customerData, setCustomerData] = useState({});
-  const [contacts, setContacts] = useState([]);
-  const [loginState, setLoginState] = useState("dontallow");
-  const [showLogin, setShowLogin] = useState(false);
-  const [primary, setPrimary] = useState(false);
-  const [alowContactLogin, setAlowContactLogin] = useState(false);
   const [allowLogin, setAllowLogin] = useState(false);
-
-  const [showContacts, setShowContacts] = useState(false);
-  const [showSRLocation, setShowSRLocation] = useState(false);
 
   // company data
   const [companyData, setCompanyData] = useState({
-    CompanyName: "",
-    FirstName: "",
-    LastName: "",
-    Email: "",
-    Address: "",
-    Phone: "",
-    AltPhone: "",
-    Fax: "",
-    CustomerTypeId: "",
-    Notes: "",
-    username: "",
-    Password: "",
-    ConfirmPassword: "",
     CustomerTypeId: 1,
   });
   const [customerType, setCustomerType] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState({});
-  const [responseid, setresponseid] = useState(0);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [disableButton, setDisableButton] = useState(false);
-  const [error, setError] = useState(false);
-  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
-  const [emailError, setEmailError] = useState("");
   const [loading, setLoading] = useState(true);
 
   // updated contacts
-  const [contactData, setContactData] = useState({});
   const [contactDataList, setContactDataList] = useState([]);
-  const [contactAddSuccess, setContactAddSuccess] = useState(false);
-  const [contactDelSuccess, setContactDelSuccess] = useState(false);
+  const [sLAddress, setSLAddress] = useState({});
   // service Locations
-  const [serviceLocations, setServiceLocations] = useState({});
   const [slForm, setSlForm] = useState([]);
-  const [addSLSuccess, setAddSLSuccess] = useState(false);
 
   // tabs
   const [value, setValue] = useState(0);
@@ -145,12 +104,11 @@ const AddCustomer = () => {
       // AhsanModel
       // Handle the response. For example, you can reload the customers or show a success message
       console.log("Customer zzzzzzzz:", response.data);
-      setSelectedCompany(response.data);
       setAllowLogin(response.data.isLoginAllow);
       setCompanyData(response.data.Data);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
-      setServiceLocationAddress((prevData) => ({
+      setSLAddress((prevData) => ({
         ...prevData,
         Address: response.data.Data.Address,
       }));
@@ -205,25 +163,17 @@ const AddCustomer = () => {
     }
   };
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [emptyFieldError, setEmptyFieldError] = useState(false);
-  const [emailValidError, setemailValidError] = useState(false);
-  const [companyNameError, setCompanyNameError] = useState(false);
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [lastNameError, setLastNameError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
 
-  const handleAlert = () => {
-    setOpenSnackBar(true);
-    setSnackBarColor("success");
-    setSnackBarText("successsssssss");
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
   };
 
   const handleSubmit = async () => {
-    
     console.log("check1");
     setSubmitClicked(true);
     if (
@@ -236,8 +186,6 @@ const AddCustomer = () => {
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
       console.log("check2 ");
-
-      setEmptyFieldError(true);
 
       return; // Return early if any required field is empty
     }
@@ -261,7 +209,6 @@ const AddCustomer = () => {
     }
 
     if (!validator.isLength(companyData.CompanyName, { min: 3, max: 30 })) {
-      setCompanyNameError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Company name should be 3 to 30 characters");
@@ -271,7 +218,6 @@ const AddCustomer = () => {
 
     // Validate first name length
     if (!validator.isLength(companyData.FirstName, { min: 3, max: 30 })) {
-      setFirstNameError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("First name should be between 3 and 30 characters");
@@ -281,7 +227,6 @@ const AddCustomer = () => {
 
     // Validate last name length
     if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
-      setLastNameError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Last name should be between 3 and 30 characters");
@@ -290,7 +235,6 @@ const AddCustomer = () => {
     }
 
     if (!validator.isEmail(companyData.Email)) {
-      setemailValidError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Email must contain the @ symbol");
@@ -322,17 +266,9 @@ const AddCustomer = () => {
         }
       );
 
-      setCustomerAddress("");
-      setServiceLocationAddress({});
-
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
-
-      setAddCustomerSuccess(response.data.Message);
-      setTimeout(() => {
-        setAddCustomerSuccess("");
-      }, 4000);
 
       setDisableButton(false);
       console.log("sussess add customer response", response.data);
@@ -340,21 +276,12 @@ const AddCustomer = () => {
       // window.location.reload();
     } catch (error) {
       setDisableButton(false);
-      setError(true);
-      setEmptyFieldError(false);
-      setEmailError(error.response.data);
+
       console.error("Error submitting data:", error.response.data);
       // console.log("customer payload is", companyData);
     }
   };
   const handleCompanyChange = (e) => {
-    setemailValidError(false);
-    setEmptyFieldError(false);
-    setDisableButton(false);
-    setLastNameError(false);
-    setFirstNameError(false);
-    setCompanyNameError(false);
-    setPhoneError(false);
     const { name, value } = e.target;
 
     setCompanyData((prevFormData) => {
@@ -376,491 +303,24 @@ const AddCustomer = () => {
 
         // Disable button if passwords don't match when allowLogin is true
         if (allowLogin && !isMatching) {
-          setDisableButton(true);
+          // setDisableButton(true);
         }
       } else if (allowLogin && name === "username" && !value) {
         // Disable button if username is empty when allowLogin is true
-        setDisableButton(true);
+        // setDisableButton(true);
       }
 
-      setError(false);
       console.log("company data is", updatedFormData);
 
       return updatedFormData;
     });
   };
 
-  //  Contacts logic
-
-  // AhsanModel
-  const formInitialValues = {
-    CompanyName: "",
-    FirstName: "",
-    LastName: "",
-    Phone: "",
-    AltPhone: "",
-    Email: "",
-    Address: "",
-    Comments: "",
-  };
-
-  useEffect(() => {
-    //console.log("Service Locations in useEffect:", serviceLocations);
-    formik.setValues({
-      CompanyName: contactData.CompanyName,
-      FirstName: contactData.FirstName,
-      LastName: contactData.LastName,
-      Phone: contactData.Phone,
-      AltPhone: contactData.AltPhone,
-      Email: contactData.Email,
-      Address: contactData.Address,
-      Comments: contactData.Comments,
-      ContactId: contactData.ContactId,
-    });
-  }, [contactData]);
-
-  const resetForm = () => {
-    formik.resetForm();
-    //setContactAddSuccess(false);
-  };
-
-  const handleAddContactsClick = () => {
-    resetForm();
-  };
-
-  const formik = useFormik({
-    initialValues: formInitialValues,
-    validationSchema: ValidationCustomer,
-
-    onSubmit: async (values, action) => {
-      console.log(values);
-
-      const CId = idParam;
-
-      const updatedValues = {
-        ...values,
-        CustomerId: CId,
-      };
-      console.log(updatedValues);
-
-      try {
-        const response = await axios.post(
-          "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
-          updatedValues,
-          { headers }
-        );
-        console.log("successful contact api", response.data.Id);
-        //setShouldCloseModal(true);
-        setOpenSnackBar(true);
-        setSnackBarColor("success");
-        setSnackBarText(response.data.Message);
-
-        // Update the contactData with the response id, then add to list
-        setContactData((prevState) => ({
-          ...prevState,
-          ContactId: response.data.Id,
-        }));
-
-        // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
-        setresponseid(response.data.Id);
-        getCustomerData();
-
-        const closeButton = document.getElementById("closer");
-        if (closeButton) {
-          closeButton.click();
-        }
-
-        action.resetForm();
-
-        setTimeout(() => {
-          setContactAddSuccess(false);
-        }, 3000);
-        setContactAddSuccess(true);
-        // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
-      } catch (error) {
-        console.log("api call error", error);
-      }
-    },
-  });
-
-  // const handleContactChange = (e) => {
-  //   const { name, value, type } = e.target;
-
-  //   // Check if the input type is "number" and convert the value to a number
-  //   // const parsedValue = type === 'number' ? parseFloat(value) : valu
-
-  //   setContactData({
-  //     ...contactData,
-  //     [name]: value,
-  //     CustomerId: selectedItem,
-  //   });
-  //   console.log("contact data,,,,,,", contactData);
-  // };
-
-  // useEffect(() => {
-  //   // Only add to contactDataList if contactData is not empty
-  //   if (
-  //     contactData.FirstName ||
-  //     contactData.LastName ||
-  //     contactData.Phone ||
-  //     contactData.Email
-  //   ) {
-  //     console.log("contactDataList", contactDataList);
-  //     console.log("Adding to contactDataList: ", contactData);
-  //     setContactDataList((prevList) => [...prevList, contactData]);
-  //   }
-  //   setContactData({
-  //     FirstName: "",
-  //     LastName: "",
-  //     Phone: "",
-  //     AltPhone: "",
-  //     Email: "",
-  //     Address: "",
-  //     Comments: "",
-  //   });
-  // }, [responseid]); // Depends on when responseid is set
-
-  // const [shouldCloseModal, setShouldCloseModal] = useState(false); // close modal
-  // const handleContactSave = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await axios.post(
-  //       "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
-  //       contactData,
-  //       { headers }
-  //     );
-  //     console.log("successful contact api", response.data.Id);
-  //     setShouldCloseModal(true);
-
-  //     // Update the contactData with the response id, then add to list
-  //     setContactData((prevState) => ({
-  //       ...prevState,
-  //       ContactId: response.data.Id,
-  //     }));
-
-  //     // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
-  //     setresponseid(response.data.Id);
-  //     getCustomerData();
-  //     setTimeout(() => {
-  //       setContactAddSuccess(false);
-  //     }, 3000);
-  //     setContactAddSuccess(true);
-  //     // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
-  //   } catch (error) {
-  //     console.log("api call error", error);
-  //   }
-  // };
-
-  const delContact = async (id) => {
-    try {
-      const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteContact?id=${id}`,
-        { headers }
-      );
-
-      const updatedContacts = contactDataList.filter(
-        (contact) => contact.ContactId !== id
-      );
-      setContactDataList(updatedContacts);
-      setContactDelSuccess(true);
-      setTimeout(() => {
-        setContactDelSuccess(false);
-      }, 4000);
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Contact Deleted Successfully");
-      console.log("contact deleted sussessfully", id, response);
-    } catch (error) {
-      console.log("error deleting contact", error);
-    }
-  };
-
-  const deleteContact = (id) => {
-    delContact(id);
-  };
-
-  const updateContact = (id) => {
-    console.log(id);
-    const updatedContacts = contactDataList.filter(
-      (contact) => contact.ContactId !== id
-    );
-    setContactDataList(updatedContacts);
-  };
-
-  useEffect(() => {
-    if (loginState === "allow") {
-      setShowLogin(true);
-    } else {
-      setShowLogin(false);
-    }
-  }, [loginState]);
-
-  // const isSaveDisabled = () => {
-  //   return (
-  //     !contactData.FirstName ||
-  //     !contactData.LastName ||
-  //     !contactData.Phone ||
-  //     !contactData.Email ||
-  //     !contactData.Address ||
-  //     // Check for other fields if they are required as well
-  //     false
-  //   ); // This false is just to avoid ending the statement with ||
-  // };
-
-  // service locations logic
-
-  const handleSLChange = (e) => {
-    const { name, type, value } = e.target;
-
-    const updatedValue = e.target.value;
-
-    setServiceLocations((prevLocations) => ({
-      ...prevLocations,
-      CustomerId: idParam,
-      [name]: updatedValue,
-    }));
-    console.log("ssssssss", serviceLocations);
-  };
-
-  //AhsanModel
-
-  const serviceFromInitialValue = {
-    Name: "",
-    Address: "",
-    Phone: "",
-    AltPhone: "",
-    isBilltoCustomer: null,
-    ServiceLocationId: null,
-  };
-
-  const resetFormLocation = () => {
-    formikAddService.resetForm();
-    //setContactAddSuccess(false);
-  };
-
-  useEffect(() => {
-    console.log("lat lng data", serviceLocationAddress);
-  }, [serviceLocationAddress]);
-
-  const handleAddLocationClick = () => {
-    resetFormLocation();
-  };
-
-  const [sLSubmitClicked, setSLSubmitClicked] = useState(false);
-  // const [emptyAddress, setEmptyAddress] = useState(false);
-
-  const formikAddService = useFormik({
-    initialValues: serviceFromInitialValue,
-    // validationSchema: ServiceValidation,
-
-    onSubmit: async (values, action) => {
-      setSLSubmitClicked(true);
-      console.log("Form value", values);
-
-      const CId = idParam;
-      const updatedValues = {
-        ...values,
-        CustomerId: CId,
-        Address: serviceLocationAddress.Address,
-        lat: serviceLocationAddress.lat,
-        lng: serviceLocationAddress.lng,
-      };
-
-      console.log("service location payload is", updatedValues);
-
-      // if (!serviceLocationAddress.Address) {
-      //   setEmptyAddress(true);
-      //   return;
-      // }
-
-      try {
-        const response = await axios.post(
-          `https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`,
-          updatedValues,
-          { headers }
-        );
-
-        setServiceLocationAddress({});
-        setOpenSnackBar(true);
-        setSnackBarColor("success");
-        setSnackBarText(response.data.Message);
-
-        // Assuming that the response data has an ID that you want to append
-        const serviceLocationWithId = {
-          ...values, // spread the existing serviceLocations fields
-          ServiceLocationId: response.data.Id, // add the new ID from the response
-        };
-        console.log("New service location to add:", serviceLocationWithId);
-
-        // Find the index of the item to update in slForm
-        const indexOfItemToUpdate = slForm.findIndex(
-          (item) => item.ServiceLocationId === values.ServiceLocationId
-        );
-
-        if (indexOfItemToUpdate !== -1) {
-          // Update the item at the found index
-          setSlForm((prevObjects) => {
-            const updatedSlForm = [...prevObjects];
-            updatedSlForm[indexOfItemToUpdate] = serviceLocationWithId;
-            console.log("Updated slForm:", updatedSlForm);
-            return updatedSlForm;
-          });
-        } else {
-          // Add the new item if it doesn't exist
-          setSlForm((prevObjects) => [...prevObjects, serviceLocationWithId]);
-        }
-
-        // // Update your form state with the new service location object that includes the response ID
-        // setSlForm((prevObjects) => {
-        //   const updatedSlForm = [...prevObjects, serviceLocationWithId];
-        //   console.log("Updated slForm:", updatedSlForm);
-        //   return updatedSlForm;
-        // });
-
-        // // Reset serviceLocations state to clear the form or set it for a new entry
-        // setServiceLocations({
-        //   Name: "",
-        //   Address: "",
-        //   Phone: "",
-        //   AltPhone: "",
-        //   isBilltoCustomer: null,
-        // });
-        getCustomerData();
-
-        const closeButton = document.getElementById("closerLocation");
-        if (closeButton) {
-          closeButton.click();
-        }
-
-        action.resetForm();
-
-        setTimeout(() => {
-          setAddSLSuccess(false);
-        }, 3000);
-        setAddSLSuccess(true);
-
-        console.log("successfully sent service locations", response.data.Id);
-      } catch (error) {
-        console.log("service locations Post error", error);
-      }
-    },
-  });
-
-  // const addServiceLocation = async (e) => {
-  //   e.preventDefault();
-  //   // Check if serviceLocations has data to add
-  //   if (Object.keys(serviceLocations).length === 0) {
-  //     alert("Service Locations data is empty");
-  //     return;
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       `https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`,
-  //       serviceLocations,
-  //       { headers }
-  //     );
-
-  //     // Assuming that the response data has an ID that you want to append
-  //     const serviceLocationWithId = {
-  //       ...serviceLocations, // spread the existing serviceLocations fields
-  //       ServiceLocationId: response.data.Id, // add the new ID from the response
-  //     };
-  //     console.log("New service location to add:", serviceLocationWithId);
-  //     // Update your form state with the new service location object that includes the response ID
-  //     setSlForm((prevObjects) => {
-  //       const updatedSlForm = [...prevObjects, serviceLocationWithId];
-  //       console.log("Updated slForm:", updatedSlForm);
-  //       return updatedSlForm;
-  //     });
-
-  //     // Reset serviceLocations state to clear the form or set it for a new entry
-  //     setServiceLocations({
-  //       Name: "",
-  //       Address: "",
-  //       Phone: "",
-  //       AltPhone: "",
-  //       isBilltoCustomer: null,
-  //     });
-  //     getCustomerData();
-  //     setTimeout(() => {
-  //       setAddSLSuccess(false);
-  //     }, 3000);
-  //     setAddSLSuccess(true);
-
-  //     console.log("successfully sent service locations", response.data.Id);
-  //   } catch (error) {
-  //     console.log("service locations Post error", error);
-  //   }
-  // };
-
-  const handleDelete = async (serviceLocationId) => {
-    try {
-      const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/DeleteServiceLocation?id=${serviceLocationId}`,
-        { headers }
-      );
-      const updatedSlForm = slForm.filter(
-        (sl) => sl.ServiceLocationId !== serviceLocationId
-      );
-      setSlForm(updatedSlForm);
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Successfully Deleted Service Location");
-      console.log("successfully deleted service location", response);
-    } catch (error) {
-      console.log("error deleting service location", error);
-    }
-  };
-  const updateSL = (serviceLocationId) => {
-    console.log(serviceLocationId);
-    const updatedSlForm = slForm.filter(
-      (sl) => sl.ServiceLocationId !== serviceLocationId
-    );
-    setSlForm(updatedSlForm);
-    console.log(updatedSlForm);
-  };
-
-  // const isFormInvalid = () => {
-  //   // Check if any of these fields are empty or in the case of isBilltoCustomer, undefined
-  //   return (
-  //     !serviceLocations.Name ||
-  //     !serviceLocations.Address ||
-  //     !serviceLocations.Phone ||
-  //     serviceLocations.isBilltoCustomer === undefined
-  //   ); // Explicitly check for undefined
-  // };
-
-  // tabs
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const handleRadioChange = (e) => {
-    const { name, value } = e.target;
-
-    formikAddService.handleChange(e);
-    formikAddService.setFieldValue(name, value);
-  };
-
-  useEffect(() => {
-    //console.log("Service Locations in useEffect:", serviceLocations);
-    formikAddService.setValues({
-      Name: serviceLocations.Name,
-      Address: serviceLocations.Address,
-      Phone: serviceLocations.Phone,
-      AltPhone: serviceLocations.AltPhone,
-      isBilltoCustomer: serviceLocations.isBilltoCustomer,
-      ServiceLocationId: serviceLocations.ServiceLocationId,
-    });
-  }, [serviceLocations]);
-
   return (
     <>
       {loading ? (
         <div className="center-loader">
-          <CircularProgress style={{ color: "#789a3d" }} />
+          <CircularProgress />
         </div>
       ) : (
         <div className=" container-fluid">
@@ -900,9 +360,9 @@ const AddCustomer = () => {
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
                         >
-                          Company Name <span className="text-danger">*</span>
+                          Customer Name <span className="text-danger">*</span>
                         </label>
-                        {/* <MapCo /> */}
+
                         <TextField
                           type="text"
                           className="form-control"
@@ -912,7 +372,7 @@ const AddCustomer = () => {
                           error={submitClicked && !companyData.CompanyName}
                           value={companyData?.CompanyName || ""}
                           onChange={handleCompanyChange}
-                          placeholder="Company Name"
+                          placeholder="Customer Name"
                         />
                       </div>
                     </div>
@@ -1113,7 +573,7 @@ const AddCustomer = () => {
                             checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
                             onChange={() => {
                               setAllowLogin(true);
-                              setDisableButton(true);
+                              // setDisableButton(true);
                             }}
                           />
                           <label
@@ -1230,12 +690,7 @@ const AddCustomer = () => {
                   </div>
                   <div className="col-md-3 text-end">
                     <NavLink to="/customers">
-                      <button
-                        className="btn btn-danger light  m-1 "
-                        onClick={() => {
-                          setServiceLocationAddress({});
-                        }}
-                      >
+                      <button className="btn btn-danger light  m-1 ">
                         Cancel
                       </button>
                     </NavLink>
@@ -1263,224 +718,6 @@ const AddCustomer = () => {
           {/* contact modal */}
           {/* AhsanModel */}
 
-          <div className="modal fade" id="basicModal">
-            <div className="modal-dialog" role="document">
-              <div className="modal-content">
-                <form onSubmit={formik.handleSubmit}>
-                  <div className="modal-header">
-                    <h5 className="modal-title">Add Contact</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      data-bs-dismiss="modal"
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="basic-form">
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Contact Company<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="text"
-                            name="CompanyName"
-                            className="form-control"
-                            placeholder="Contact Company"
-                            // onChange={handleContactChange}
-                            value={formik.values.CompanyName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            //required
-                          />
-                          {formik.errors.CompanyName &&
-                          formik.touched.CompanyName ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.CompanyName}
-                            </small>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          First Name<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="text"
-                            name="FirstName"
-                            className="form-control"
-                            placeholder="First Name"
-                            onChange={formik.handleChange}
-                            value={formik.values.FirstName}
-                            onBlur={formik.handleBlur}
-                            //required
-                          />
-                          {formik.errors.FirstName &&
-                          formik.touched.FirstName ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.FirstName}
-                            </small>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Last Name<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="text"
-                            name="LastName"
-                            className="form-control"
-                            placeholder="Last Name"
-                            onChange={formik.handleChange}
-                            value={formik.values.LastName}
-                            onBlur={formik.handleBlur}
-                            //required
-                          />
-                          {formik.errors.LastName && formik.touched.LastName ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.LastName}
-                            </small>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Phone<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="text"
-                            id="contactInp3"
-                            name="Phone"
-                            className="form-control"
-                            placeholder="Phone"
-                            onChange={formik.handleChange}
-                            value={formik.values.Phone}
-                            onBlur={formik.handleBlur}
-                            //required
-                          />
-                          {formik.errors.Phone && formik.touched.Phone ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.Phone}
-                            </small>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Alt Phone
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="text"
-                            id="contactInp3"
-                            name="AltPhone"
-                            className="form-control"
-                            placeholder=" Alt Phone"
-                            onChange={formik.handleChange}
-                            value={formik.values.AltPhone}
-                            //required
-                          />
-                        </div>
-                      </div>
-                      <div className="mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Email<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <input
-                            type="email"
-                            id="contactInp2"
-                            className="form-control"
-                            name="Email"
-                            placeholder="Email"
-                            onChange={formik.handleChange}
-                            value={formik.values.Email}
-                            onBlur={formik.handleBlur}
-                            //required
-                          />
-                          {formik.errors.Email && formik.touched.Email ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.Email}
-                            </small>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className=" mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Address<span className="text-danger">*</span>
-                        </label>
-                        <div className="col-sm-8">
-                          <AddressInputs
-                            address={formik.values.Address}
-                            name="Address"
-                            handleChange={formik.handleChange}
-                          />
-                          {/* <input
-                            name="Address"
-                            className="form-control"
-                            placeholder="Address"
-                            onChange={formik.handleChange}
-                            value={formik.values.Address}
-                            onBlur={formik.handleBlur}
-                            //required
-                          /> */}
-                          {/* {formik.errors.Address && formik.touched.Address ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.Address}
-                            </small>
-                          ) : null} */}
-                        </div>
-                      </div>
-                      <div className=" mb-3 row">
-                        <label className="col-sm-4 col-form-label">
-                          Comments
-                        </label>
-                        <div className="col-sm-8">
-                          <textarea
-                            name="Comments"
-                            className="form-txtarea form-control"
-                            onChange={formik.handleChange}
-                            value={formik.values.Comments}
-                            rows="2"
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      id="closer"
-                      className="btn btn-danger light"
-                      data-bs-dismiss="modal"
-                      onClick={() => {
-                        getCustomerData();
-                        setContactData({
-                          FirstName: "",
-                          LastName: "",
-                          Phone: "",
-                          AltPhone: "",
-                          Email: "",
-                          Address: "",
-                          Comments: "",
-                        });
-                      }}
-                    >
-                      Close
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      Save
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
           {idParam === 0 ? null : (
             <div>
               {/* Contacts Table */}
@@ -1488,200 +725,6 @@ const AddCustomer = () => {
               {/* servive location form */}
               {/* AhsanModel */}
 
-              <div
-                style={{ zIndex: "100" }}
-                className="modal fade "
-                id="basicModal2"
-              >
-                <div className="modal-dialog" role="document">
-                  <div className="modal-content">
-                    <form onSubmit={formikAddService.handleSubmit}>
-                      <div className="modal-header">
-                        <h5 className="modal-title">Add Service location</h5>
-                        <button
-                          type="button"
-                          className="btn-close"
-                          data-bs-dismiss="modal"
-                        ></button>
-                      </div>
-                      <div className="modal-body">
-                        <div className="basic-form">
-                          <div className="mb-3 row">
-                            <label className="col-sm-3 col-form-label">
-                              Name<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-9">
-                              <input
-                                type="text"
-                                name="Name"
-                                onChange={formikAddService.handleChange}
-                                className="form-control"
-                                placeholder="Name"
-                                value={formikAddService.values.Name}
-                                onBlur={formikAddService.handleBlur}
-                                //required
-                              />
-                              {formikAddService.errors.Name &&
-                              formikAddService.touched.Name ? (
-                                <small style={{ color: "red" }}>
-                                  {formikAddService.errors.Name}
-                                </small>
-                              ) : null}
-                            </div>
-                          </div>
-                          <div className="mb-3 row">
-                            <label className="col-sm-3 col-form-label">
-                              Bill To<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-9">
-                              <div className="row">
-                                <div className="col-5">
-                                  <input
-                                    className="form-check-input radio-margin-top"
-                                    type="radio"
-                                    name="isBilltoCustomer"
-                                    id="inlineRadio11"
-                                    onChange={handleRadioChange}
-                                    onBlur={formikAddService.handleBlur}
-                                    value={true}
-                                    // checked={
-                                    //   serviceLocations.isBilltoCustomer === true
-                                    // }
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor="inlineRadio11"
-                                  >
-                                    Customer
-                                  </label>
-                                </div>
-                                <div className="col-7">
-                                  <input
-                                    className="form-check-input radio-margin-top"
-                                    type="radio"
-                                    name="isBilltoCustomer"
-                                    id="inlineRadio22"
-                                    onChange={handleRadioChange}
-                                    onBlur={formikAddService.handleBlur}
-                                    value={false}
-                                    // checked={
-                                    //   serviceLocations.isBilltoCustomer ===
-                                    //   false
-                                    // }
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor="inlineRadio22"
-                                  >
-                                    This service Location
-                                  </label>
-                                </div>
-                              </div>
-                              {formikAddService.errors.isBilltoCustomer &&
-                              formikAddService.touched.isBilltoCustomer ? (
-                                <small style={{ color: "red" }}>
-                                  {formikAddService.errors.isBilltoCustomer}
-                                </small>
-                              ) : null}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 row">
-                            <label className="col-sm-3 col-form-label">
-                              Address<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-9">
-                              <MapCo />
-                              {/* {emptyAddress && (
-                                <small style={{ color: "red" }}>
-                                  Address is required
-                                </small>
-                              )} */}
-
-                              {/* <input
-                                type="text"
-                                onChange={formikAddService.handleChange}
-                                name="Address"
-                                value={formikAddService.values.Address}
-                                className="form-control"
-                                placeholder="Address"
-                                onBlur={formikAddService.handleBlur}
-                              />*/}
-                            </div>
-                          </div>
-                          <div className="mb-3 row">
-                            <label className="col-sm-3 col-form-label">
-                              Phone<span className="text-danger">*</span>
-                            </label>
-                            <div className="col-sm-9">
-                              <input
-                                type="text"
-                                onChange={formikAddService.handleChange}
-                                value={formikAddService.values.Phone}
-                                name="Phone"
-                                className="form-control"
-                                placeholder="Phone"
-                                onBlur={formikAddService.handleBlur}
-                              />
-                              {formikAddService.errors.Phone &&
-                              formikAddService.touched.Phone ? (
-                                <small style={{ color: "red" }}>
-                                  {formikAddService.errors.Phone}
-                                </small>
-                              ) : null}
-                            </div>
-                          </div>
-                          <div className="mb-3 row">
-                            <label className="col-sm-3 col-form-label">
-                              Alt Phone
-                            </label>
-                            <div className="col-sm-9">
-                              <input
-                                type="text"
-                                name="AltPhone"
-                                onChange={formikAddService.handleChange}
-                                value={formikAddService.values.AltPhone}
-                                className="form-control"
-                                placeholder="Alt Phone"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="modal-footer">
-                        <button
-                          type="button"
-                          id="closerLocation"
-                          className="btn btn-danger light"
-                          data-bs-dismiss="modal"
-                          onClick={() => {
-                            getCustomerData();
-                            setServiceLocationAddress({});
-                            setServiceLocations({
-                              Name: "",
-                              Address: "",
-                              Phone: "",
-                              AltPhone: "",
-                              isBilltoCustomer: null,
-                            });
-                          }}
-                        >
-                          Close
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          //data-bs-dismiss="modal"
-                          // onClick={addServiceLocation}
-                          // disabled={isFormInvalid()}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
               {/* service location table */}
               <Box sx={{ width: "100%" }}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -1696,340 +739,21 @@ const AddCustomer = () => {
                   </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <div className="card">
-                      <div className="">
-                        <h4
-                          className="modal-title itemtitleBar"
-                          id="#gridSystemModal1"
-                        >
-                          Contacts
-                        </h4>
-                      </div>
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-md-8"></div>
-                          <div className="col-md-4 text-end">
-                            <button
-                              className="btn btn-primary btn-sm"
-                              data-bs-toggle="modal"
-                              data-bs-target="#basicModal"
-                              style={{ margin: "0px 20px 12px" }}
-                              onClick={handleAddContactsClick}
-                            >
-                              + Add Contacts
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-12">
-                          <div className="card">
-                            <div className="card-body p-0">
-                              <div className="estDataBox">
-                                <div className="table-responsive active-projects style-1">
-                                  <table
-                                    id="empoloyees-tblwrapper"
-                                    className="table"
-                                  >
-                                    <thead>
-                                      <tr>
-                                        <th>#</th>
-                                        <th>First Name</th>
-                                        <th>Last Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th style={{ maxWidth: "20px" }}>
-                                          Address
-                                        </th>
-
-                                        <th className="actions-head ">
-                                          Actions
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {contactDataList.map((contact, index) => (
-                                        <tr key={index}>
-                                          <td>{contact.ContactId}</td>
-                                          <td>{contact.FirstName}</td>
-                                          <td>{contact.LastName}</td>
-                                          <td>{contact.Email}</td>
-                                          <td>{contact.Phone}</td>
-                                          <td>{contact.Address}</td>
-                                          <td
-                                            className="contact-actions"
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <Create
-                                              className="custom-create-icon"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#basicModal"
-                                              onClick={() => {
-                                                setContactData(contact);
-                                                updateContact(
-                                                  contact.ContactId
-                                                );
-                                              }}
-                                            ></Create>
-                                            <Button
-                                              color="error"
-                                              className="delete-button"
-                                              data-bs-toggle="modal"
-                                              data-bs-target={`#contactDeleteModal${contact.ContactId}`}
-                                            >
-                                              <Delete />
-                                            </Button>
-
-                                            {/* <Delete
-                                          color="error" 
-
-                                           onClick={() =>
-                                           deleteContact(contact.ContactId)
-                                           }
-                                        ></Delete>*/}
-                                          </td>
-                                          <div
-                                            className="modal fade"
-                                            id={`contactDeleteModal${contact.ContactId}`}
-                                            tabIndex="-1"
-                                            aria-labelledby="deleteModalLabel"
-                                            aria-hidden="true"
-                                          >
-                                            <div
-                                              className="modal-dialog"
-                                              role="document"
-                                            >
-                                              <div className="modal-content">
-                                                <div className="modal-header">
-                                                  <h5 className="modal-title">
-                                                    Are you sure you want to
-                                                    delete {contact.FirstName}?
-                                                  </h5>
-                                                  <button
-                                                    type="button"
-                                                    className="btn-close"
-                                                    data-bs-dismiss="modal"
-                                                  ></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                  <div className="basic-form text-center">
-                                                    <button
-                                                      type="button"
-                                                      id="closer"
-                                                      className="btn btn-danger light m-3"
-                                                      data-bs-dismiss="modal"
-                                                      onClick={() => {
-                                                        setServiceLocationAddress(
-                                                          {}
-                                                        );
-                                                      }}
-                                                    >
-                                                      Close
-                                                    </button>
-                                                    <button
-                                                      className="btn btn-primary m-3"
-                                                      data-bs-dismiss="modal"
-                                                      onClick={() =>
-                                                        deleteContact(
-                                                          contact.ContactId
-                                                        )
-                                                      }
-                                                    >
-                                                      Yes
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+                  <Contacts
+                    contactDataList={contactDataList}
+                    setContactDataList={setContactDataList}
+                    getCustomerData={getCustomerData}
+                  />
                 </CustomTabPanel>
                 {/* AhsanModel */}
                 <CustomTabPanel value={value} index={1}>
-                  <form>
-                    <div className="card">
-                      <div className="">
-                        <h4
-                          className="modal-title itemtitleBar"
-                          id="#gridSystemModal"
-                        >
-                          Service Locations
-                        </h4>
-                      </div>
-                      <div className="card-body">
-                        <div className="row">
-                          <div className="col-md-8"></div>
-                          <div className="col-md-4 text-end">
-                            {" "}
-                            <button
-                              className="btn btn-primary btn-sm"
-                              data-bs-toggle="modal"
-                              data-bs-target="#basicModal2"
-                              style={{ margin: "0px 20px 12px" }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleAddLocationClick();
-                              }}
-                            >
-                              + Add Service Locations
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="col-xl-12">
-                          <div className="card">
-                            <div className="card-body p-0">
-                              <div className="estDataBox">
-                                <div className="table-responsive active-projects style-1">
-                                  <table
-                                    id="empoloyees-tblwrapper"
-                                    className="table"
-                                  >
-                                    <thead>
-                                      <tr>
-                                        <th>#</th>
-                                        <th>Name</th>
-                                        <th>Address</th>
-                                        <th>Phone</th>
-                                        <th>Alt Phone</th>
-                                        <th>Bill to Customer</th>
-                                        <th className="actions-head">
-                                          Actions
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {slForm.map((slData, index) => (
-                                        <tr key={slData.ServiceLocationId}>
-                                          <td>{slData.ServiceLocationId}</td>
-                                          <td>{slData.Name}</td>
-                                          <td>{slData.Address}</td>
-                                          <td>{slData.Phone}</td>
-                                          <td>{slData.AltPhone}</td>
-                                          <td>
-                                            {slData.isBilltoCustomer
-                                              ? "Customer"
-                                              : "Service Location"}
-                                          </td>
-
-                                          <td
-                                            className="contact-actions"
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <Create
-                                              className="custom-create-icon"
-                                              data-bs-toggle="modal"
-                                              data-bs-target="#basicModal2"
-                                              onClick={() => {
-                                                console.log("sl data", slData);
-                                                setServiceLocationAddress(
-                                                  (prevData) => ({
-                                                    ...prevData,
-                                                    Address: slData.Address,
-                                                    lat: slData.lat,
-                                                    lng: slData.lng,
-                                                  })
-                                                );
-                                                setServiceLocations(slData);
-                                                updateSL(
-                                                  slData.ServiceLocationId
-                                                );
-                                              }}
-                                            ></Create>
-                                            {/* <Delete
-                                          color="error"
-                                          onClick={() =>
-                                            handleDelete(
-                                              slData.ServiceLocationId
-                                            )
-                                          }
-                                        ></Delete> */}
-                                            <Button
-                                              color="error"
-                                              className="delete-button"
-                                              data-bs-toggle="modal"
-                                              data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
-                                            >
-                                              <Delete />
-                                            </Button>
-                                          </td>
-                                          <div
-                                            className="modal fade"
-                                            id={`sLDeleteModal${slData.ServiceLocationId}`}
-                                            tabIndex="-1"
-                                            aria-labelledby="deleteModalLabel"
-                                            aria-hidden="true"
-                                          >
-                                            <div
-                                              className="modal-dialog"
-                                              role="document"
-                                            >
-                                              <div className="modal-content">
-                                                <div className="modal-header">
-                                                  <h5 className="modal-title">
-                                                    Are you sure you want to
-                                                    delete {slData.Name}?
-                                                  </h5>
-                                                  <button
-                                                    type="button"
-                                                    className="btn-close"
-                                                    data-bs-dismiss="modal"
-                                                  ></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                  <div className="basic-form text-center">
-                                                    <button
-                                                      type="button"
-                                                      id="closer"
-                                                      className="btn btn-danger light m-3"
-                                                      data-bs-dismiss="modal"
-                                                    >
-                                                      Close
-                                                    </button>
-                                                    <button
-                                                      className="btn btn-primary m-3"
-                                                      data-bs-dismiss="modal"
-                                                      onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleDelete(
-                                                          slData.ServiceLocationId
-                                                        );
-                                                      }}
-                                                    >
-                                                      Yes
-                                                    </button>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </tr>
-                                      ))}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+                  <ServiceLocations
+                    getCustomerData={getCustomerData}
+                    sLAddress={sLAddress}
+                    setSLAddress={setSLAddress}
+                    slForm={slForm}
+                    setSlForm={setSlForm}
+                  />
                 </CustomTabPanel>
                 {/* <CustomTabPanel value={value} index={2}>
         Item Three

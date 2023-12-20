@@ -15,7 +15,7 @@ const useSendEmail = () => {
   const sendEmail = async (Link, CustomerId, ContactId, isVendor) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Email/SendEmail?Link="https://earth-co.vercel.app${Link}"&CustomerId=${CustomerId}&ContactId=${ContactId}&isVendor=${isVendor}`,
+        `https://earthcoapi.yehtohoga.com/api/Email/SendEmail?Link="https://earth-co.vercel.app${Link}"&UserId=${CustomerId}&ContactId=${ContactId}&isVendor=${isVendor}`,
         { headers }
       );
       setEmailAlertTxt(res.data);
@@ -28,7 +28,7 @@ const useSendEmail = () => {
       // setError(error.message);
       setShowEmailAlert(true);
       setEmailAlertColor("error");
-      setEmailAlertTxt(error.message);
+      setEmailAlertTxt(error.response.data);
       console.log("api call error", error);
     }
   };

@@ -142,11 +142,11 @@ function App() {
               </Route>
               <Route path="irrigation/audit-report" element={<Audit />} />
               <Route path="punchlist" element={<PunchListIndex />} />
+              <Route path="summary-report" element={<SummaryReport />} />
               <Route
-                path="irrigation/PunchlistPreview"
+                path="PunchlistPreview"
                 element={<PunchlistPreview />}
               />
-              <Route path="summary-report" element={<SummaryReport />} />
               <Route
                 path="summary-report-preview"
                 element={<SummaryReportPreview />}
@@ -156,7 +156,10 @@ function App() {
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />
-                <Route path="weekly-report-preview" element={<WeeklyReport />} />
+                <Route
+                  path="weekly-report-preview"
+                  element={<WeeklyReport />}
+                />
                 <Route path="add-weekly-report" element={<AddWRform />} />
               </Route>
               <Route path="landscape" element={<LandscapeIndex />}>

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import EstimateTR from "./Estimates/EstimateTR";
 import ServiceRequestTR from "./ServiceRequest/ServiceRequestTR";
-import { NavLink } from "react-router-dom";
 import { DataContext } from "../context/AppData";
 import { RoutingContext } from "../context/RoutesContext";
 import $ from "jquery";
@@ -14,12 +13,19 @@ import DashboardEstm from "./DashboardComponents/DashboardEstm";
 import DashBoardCards from "./DashboardComponents/DashBoardCards";
 import useFetchDashBoardData from "./Hooks/useFetchDashBoardData";
 import DashBoardCalender from "./DashboardComponents/DashBoardCalender";
+import { createClient } from "@supabase/supabase-js";
+import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 const DashBoard = () => {
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
   useEffect(() => {
     getDashboardData();
   }, []);
+
+  const supabase = createClient(
+    "https://hgdeariacwkedtbglxwg.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnZGVhcmlhY3drZWR0YmdseHdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDI5NjU1ODUsImV4cCI6MjAxODU0MTU4NX0.6RSteYZdFAiIBVcmDq-7N14xdqLKupGLFqGhplJs1iQ"
+  );
 
   const { estimates, setSingleObj, serviceRequests, setSingleSR } =
     useContext(DataContext);
@@ -70,7 +76,9 @@ const DashBoard = () => {
                 </h4>
               </div>
               <div className="card-body schedules-cal p-2">
-                <DashBoardCalender />
+                <SessionContextProvider supabaseClient={supabase}>
+                  <DashBoardCalender />
+                </SessionContextProvider>
                 
               </div>
             </div>

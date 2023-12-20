@@ -7,6 +7,7 @@ import { DataContext } from "../../context/AppData";
 import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const HeaderExp = () => {
   const [loggedUser, setLoggenUser] = useState(
@@ -522,28 +523,35 @@ const HeaderExp = () => {
                                 <span className="ms-2">Settings </span>
                               </li>
                             </ul>
-                            <NavLink to="/">
-                              <ul>
-                                <li className="dropdown-item ai-icon ">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="18"
-                                    height="18"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="var(--primary)"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  >
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                    <polyline points="16 17 21 12 16 7"></polyline>
-                                    <line x1="21" y1="12" x2="9" y2="12"></line>
-                                  </svg>
-                                  <span className="ms-2">Logout </span>
-                                </li>
-                              </ul>
-                            </NavLink>
+
+                            <ul>
+                              <li className="dropdown-item ai-icon ">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="18"
+                                  height="18"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="var(--primary)"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                  <polyline points="16 17 21 12 16 7"></polyline>
+                                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                <span
+                                  className="ms-2"
+                                  // onClick={() => {
+                                  //   Cookies.set("token", "");
+                                  //   navigate(`/`);
+                                  // }}
+                                >
+                                  Logout{" "}
+                                </span>
+                              </li>
+                            </ul>
                           </div>
                         </div>
                       </div>
