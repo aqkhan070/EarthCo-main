@@ -481,7 +481,7 @@ const DashBoardCalender = () => {
       );
       console.log("Event deleted", response.data);
       setOpenSnackBar(true);
-      setSnackBarColor("success");
+      setSnackBarColor("error");
       setSnackBarText("Event deleted successfully");
       fetchGoogleEvents(); // Refresh the list after deletion
     } catch (error) {
@@ -500,46 +500,56 @@ const DashBoardCalender = () => {
         color={snackBarColor}
         text={snackBarText}
       />
-      <div style={{ width: "100%" }}>
-        {session ? (
-          <>
-            {/* <h6>Hey there {session.user.email}</h6> */}
-            <button
-              className="btn btn-sm btn-secondary mb-2"
-              onClick={() => signOut()}
-            >
-              Sign Out
-            </button>
+      <div className="card">
+        <div className="card-header border-0 pb-0 bg-primary">
+          <h4 className="heading no-wrap" style={{ color: "white" }}>
+            Upcoming Schedules
+          </h4>
+        </div>
 
-            <button
-              className="btn btn-sm btn-info mb-2 ms-2"
-              onClick={() => fetchGoogleEvents()}
-            >
-              Get Events
-            </button>
+        <div className="card-body schedules-cal p-2">
+          <div style={{ width: "100%" }}>
+            {/* <div className="p-0 bg-primary" style={{ color: "white" }}>
+              {session.user.email ? session.user.email : ""}
+            </div> */}
+            {session ? (
+              <>
+                <button
+                  className="btn btn-sm btn-secondary mb-2"
+                  onClick={() => signOut()}
+                >
+                  Sign Out
+                </button>
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateCalendar
-                defaultValue={initialValue}
-                loading={loading}
-                onMonthChange={handleMonthChange}
-                renderLoading={() => <DayCalendarSkeleton />}
-                slots={{
-                  day: ServerDay,
-                }}
-                slotProps={{
-                  day: {
-                    highlightedDays,
-                  },
-                }}
-              />
-            </LocalizationProvider>
-            <EventsList
-              eventsList={eventsList}
-              onDeleteEvent={deleteCalendarEvent}
-            />
+                <button
+                  className="btn btn-sm btn-info mb-2 ms-2"
+                  onClick={() => fetchGoogleEvents()}
+                >
+                  Get Events
+                </button>
 
-            {/*<p>Start of your event</p>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateCalendar
+                    defaultValue={initialValue}
+                    loading={loading}
+                    onMonthChange={handleMonthChange}
+                    renderLoading={() => <DayCalendarSkeleton />}
+                    slots={{
+                      day: ServerDay,
+                    }}
+                    slotProps={{
+                      day: {
+                        highlightedDays,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+                <EventsList
+                  eventsList={eventsList}
+                  onDeleteEvent={deleteCalendarEvent}
+                />
+
+                {/*<p>Start of your event</p>
          <DateTimePicker onChange={setStart} value={start} /> 
           <p>End of your event</p>
          <DateTimePicker onChange={setEnd} value={end} />
@@ -555,17 +565,19 @@ const DashBoardCalender = () => {
             Create Calendar Event
           </button>
           <p></p> */}
-          </>
-        ) : (
-          <>
-            <button
-              className="btn btn-sm btn-primary mb-2"
-              onClick={() => googleSignIn()}
-            >
-              Sign In With Google
-            </button>
-          </>
-        )}
+              </>
+            ) : (
+              <>
+                <button
+                  className="btn btn-sm btn-primary mb-2"
+                  onClick={() => googleSignIn()}
+                >
+                  Sign In With Google
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

@@ -33,11 +33,13 @@ const ProposalSummary = () => {
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
 
-    const { sendEmail,
-      showEmailAlert,
-      setShowEmailAlert,
-      emailAlertTxt,
-      emailAlertColor } = useSendEmail();
+  const {
+    sendEmail,
+    showEmailAlert,
+    setShowEmailAlert,
+    emailAlertTxt,
+    emailAlertColor,
+  } = useSendEmail();
 
   useEffect(() => {
     fetchReport(customerParam, yearParam, MonthParam, "proposal");
@@ -102,12 +104,13 @@ const ProposalSummary = () => {
   }
 
   return (
-    <><EventPopups
-    open={showEmailAlert}
-    setOpen={setShowEmailAlert}
-    color={emailAlertColor}
-    text={emailAlertTxt}
-  />
+    <>
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       {loading ? (
         <div className="center-loader">
           <CircularProgress style={{ color: "#789a3d" }} />
@@ -118,15 +121,18 @@ const ProposalSummary = () => {
             <div className="row me-3">
               <div className="col-md-11 text-end">
                 {" "}
-                {isMail ? <></> :<button
-                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                  onClick={() => {
-                    navigate(`/summary-report`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button> }
-                
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                    onClick={() => {
+                      navigate(`/summary-report`);
+                    }}
+                  >
+                    <i className="fa fa-backward"></i>
+                  </button>
+                )}
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={handlePrint}
@@ -139,21 +145,23 @@ const ProposalSummary = () => {
                 >
                   <i className="fa fa-download"></i>
                 </button>
-                {isMail ? <></> : <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-              onClick={() => {
-                sendEmail(
-                  `/proposal-summary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                  customerParam,
-                  0,
-                  false
-                );
-              }}
-            >
-              <i class="fa-regular fa-envelope"></i>
-            </button>}
-                
-
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                    onClick={() => {
+                      sendEmail(
+                        `/proposal-summary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                        customerParam,
+                        0,
+                        false
+                      );
+                    }}
+                  >
+                    <i class="fa-regular fa-envelope"></i>
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -170,29 +178,34 @@ const ProposalSummary = () => {
                   className="card-body perview-pd get-preview"
                 >
                   <div className="row mb-5">
-                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 ">
+                      <div style={{ color: "black" }}>EarthCo</div>
                       <div style={{ color: "black" }}>
-                        <strong>EarthCo</strong>{" "}
-                      </div>
-                      <div style={{ color: "black" }}>
-                        <strong>
-                          {reportData[0].CustomerId} {reportData[0].CompanyName}
-                        </strong>{" "}
+                        {reportData[0].CustomerId} {reportData[0].CompanyName}
                       </div>
                       <div style={{ color: "black" }}>
                         {reportData[0].Address}
                       </div>
+                      <div style={{ color: "black" }}>Submitted To: </div>
+                      <div style={{ color: "black" }}>
+                        {reportData[0].RegionalManagerName}
+                      </div>
                     </div>
-                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
+                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-6 text-center">
                       <h3>
                         {" "}
                         <strong>Proposal Summary Report</strong>{" "}
                       </h3>
                       <h3>Grandview Crest</h3>
                     </div>
-                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                       <div className="brand-logo mb-2 inovice-logo">
-                        <img className="preview-Logo" src={logo} alt="" />
+                        <img
+                          className="preview-Logo"
+                          style={{ width: "13em" }}
+                          src={logo}
+                          alt=""
+                        />
                       </div>
                     </div>
                   </div>
@@ -203,7 +216,7 @@ const ProposalSummary = () => {
                         <tr className="preview-table-head">
                           <th>SUBMITTED:</th>
                           <th>PROPOSAL #:</th>
-                          <th>DESCRIPTION:</th>
+                          <th style={{ maxWidth: "20em" }}>DESCRIPTION:</th>
                           <th>AMOUNT:</th>
                           <th>STATUS: </th>
                         </tr>
@@ -216,8 +229,16 @@ const ProposalSummary = () => {
                               <td className="left strong">
                                 {report.EstimateNumber}
                               </td>
-                              <td>{report.EstimateNotes}</td>
-                              <td>{report.TotalAmount.toFixed(2)}</td>
+                              <td style={{ maxWidth: "20em" }}>
+                                {report.EstimateNotes}
+                              </td>
+                              <td>
+                                $
+                                {report.TotalAmount.toFixed(2).replace(
+                                  /\B(?=(\d{3})+(?!\d))/g,
+                                  ","
+                                )}
+                              </td>
                               <td>{report.Status}</td>
                             </tr>
                           );

@@ -69,13 +69,7 @@ const DashBoard = () => {
           </div>
 
           <div className="col-md-3">
-            <div className="card">
-              <div className="card-header border-0 pb-1 bg-primary">
-                <h4 className="heading " style={{ color: "white" }}>
-                  Upcoming Schedules
-                </h4>
-              </div>
-              <div className="card-body schedules-cal p-2">
+            
                 <SessionContextProvider supabaseClient={supabase}>
                   <DashBoardCalender />
                 </SessionContextProvider>
@@ -85,8 +79,7 @@ const DashBoard = () => {
           </div>
 
           <DashBoardCards dashBoardData={dashBoardData} />
-        </div>
-      </div>
+       
     </>
   );
 };

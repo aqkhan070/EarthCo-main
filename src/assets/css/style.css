@@ -54051,16 +54051,22 @@ padding: 0px !important;
     width: 100% !important;
  
 }
+.LandScape-TablePadding td{
+    padding: 0.2rem 0.5rem !important;
+}
 
+.LandScape-TablePadding th{
+    padding: 0.2rem 0.5rem !important;
+}
 
 
 .PageA4 {  
   width: 21cm;
-  height: 31.7cm; 
+  min-height: 26.7cm; 
 }
 
 .PageLandscape{
-    height : 21cm;
+    min-height : 22cm;
     width: 28.7cm; 
 }
 .print-page-width{

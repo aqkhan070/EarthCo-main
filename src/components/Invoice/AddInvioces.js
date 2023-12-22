@@ -482,6 +482,9 @@ const AddInvioces = ({
       setError(true);
       setErrorMessage(error.message);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Error Adding invoice");
       console.error("API Call Error:", error);
     }
 

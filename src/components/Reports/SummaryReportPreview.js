@@ -8,8 +8,8 @@ import { Print, Email, Download } from "@mui/icons-material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useNavigate } from "react-router-dom";
- import html2pdf from 'html2pdf.js';
- import useSendEmail from "../Hooks/useSendEmail";
+import html2pdf from "html2pdf.js";
+import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 
 const SummaryReportPreview = () => {
@@ -23,17 +23,18 @@ const SummaryReportPreview = () => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-  const { sendEmail,
+  const {
+    sendEmail,
     showEmailAlert,
     setShowEmailAlert,
     emailAlertTxt,
-    emailAlertColor } = useSendEmail();
+    emailAlertColor,
+  } = useSendEmail();
 
   const customerParam = Number(queryParams.get("Customer"));
   const MonthParam = Number(queryParams.get("Month"));
   const yearParam = Number(queryParams.get("Year"));
   const isMail = queryParams.get("isMail");
-
 
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
@@ -52,14 +53,13 @@ const SummaryReportPreview = () => {
   const handleDownload = () => {
     const input = document.getElementById("summeryReport-preview");
 
-   
     html2pdf(input, {
-          margin: 10,
-          filename: 'Summary Report.pdf',
-          image: { type: 'jpeg', quality: 1.00 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-        });
+      margin: 10,
+      filename: "Summary Report.pdf",
+      image: { type: "jpeg", quality: 1.0 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+    });
 
     // Create a jsPDF instance with custom font and font size
     // const pdf = new jsPDF({
@@ -89,12 +89,7 @@ const SummaryReportPreview = () => {
   };
 
   useEffect(() => {
-    fetchReport(
-      customerParam,
-      yearParam,
-      MonthParam,
-      "Service Request"
-    );
+    fetchReport(customerParam, yearParam, MonthParam, "Service Request");
 
     console.log("sr propoal dala", sRProposalData);
   }, []);
@@ -110,12 +105,12 @@ const SummaryReportPreview = () => {
 
   return (
     <>
-    <EventPopups
-    open={showEmailAlert}
-    setOpen={setShowEmailAlert}
-    color={emailAlertColor}
-    text={emailAlertTxt}
-  />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       {loading ? (
         <div className="center-loader">
           <CircularProgress style={{ color: "#789a3d" }} />
@@ -126,15 +121,18 @@ const SummaryReportPreview = () => {
             <div className="row me-3">
               <div className="col-md-11 text-end">
                 {" "}
-                {isMail ? <></> : <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                  onClick={() => {
-                    navigate(`/summary-report`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button>}
-                
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                    onClick={() => {
+                      navigate(`/summary-report`);
+                    }}
+                  >
+                    <i className="fa fa-backward"></i>
+                  </button>
+                )}
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={handlePrint}
@@ -147,21 +145,23 @@ const SummaryReportPreview = () => {
                 >
                   <i className="fa fa-download"></i>
                 </button>
-                {isMail ? <></> : <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-              onClick={() => {
-                sendEmail(
-                  `/summary-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                  customerParam,
-                  0,
-                  false
-                );
-              }}
-            >
-              <i class="fa-regular fa-envelope"></i>
-            </button>}
-                
-
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                    onClick={() => {
+                      sendEmail(
+                        `/summary-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                        customerParam,
+                        0,
+                        false
+                      );
+                    }}
+                  >
+                    <i class="fa-regular fa-envelope"></i>
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -170,36 +170,43 @@ const SummaryReportPreview = () => {
 
           <div className="print-page-width">
             <div className="PageLandscape mt-2">
-              <div id="summeryReport-preview" className="card">
+              <div className="card">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
                                     <strong>Status:</strong> Pending</span> </div> */}
-                <div className="card-body perview-pd get-preview">
+                <div
+                  id="summeryReport-preview"
+                  className="card-body perview-pd get-preview"
+                >
                   <div className="row mb-5">
                     <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                      <div style={{ color: "black" }}>EarthCo</div>
                       <div style={{ color: "black" }}>
                         {" "}
-                        <strong>
-                          {reportData[0].CustomerId} {reportData[0].CompanyName}
-                        </strong>{" "}
+                        {reportData[0].CustomerId} {reportData[0].CompanyName}
                       </div>
                       <div style={{ color: "black" }}>
                         {reportData[0].Address}
                       </div>
 
                       <div style={{ color: "black" }}>Submitted To: </div>
-                      <div style={{ color: "black" }}>Christian Walton</div>
-                      <div style={{ color: "black" }}>Optimum</div>
+                      <div style={{ color: "black" }}>{reportData[0].AssignToName}</div>
+                     
                     </div>
-                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-7 text-center">
+                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-6 px-0 text-center">
                       <h3 className="table-cell-align">
                         {" "}
                         <strong>Service Request Summary Report</strong>{" "}
                       </h3>
                       <h3>Grandview Crest</h3>
                     </div>
-                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 text-right d-flex justify-content-lg-end justify-content-md-center">
+                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 ">
                       <div className="brand-logo mb-2 inovice-logo">
-                        <img className="preview-Logo" src={logo} alt="" />
+                        <img
+                          className="preview-Logo"
+                          style={{ width: "12em" }}
+                          src={logo}
+                          alt=""
+                        />
                       </div>
                     </div>
                   </div>
@@ -210,8 +217,10 @@ const SummaryReportPreview = () => {
                         <tr className="preview-table-head">
                           <th>RECEIVED:</th>
                           <th>W/O #:</th>
-                          <th>REQUESTED WORK:</th>
-                          <th>EARTHCO'S ACTION TAKEN</th>
+                          <th style={{ maxWidth: "15em" }}>REQUESTED WORK:</th>
+                          <th style={{ maxWidth: "15em" }}>
+                            EARTHCO'S ACTION TAKEN
+                          </th>
                           <th>STATUS: </th>
                           <th>COMPLETED:</th>
                         </tr>
@@ -224,8 +233,12 @@ const SummaryReportPreview = () => {
                               <td className="left strong">
                                 {report.ServiceRequestNumber}
                               </td>
-                              <td>{report.WorkRequest}</td>
-                              <td>{report.ActionTaken}</td>
+                              <td style={{ maxWidth: "15em" }}>
+                                {report.WorkRequest}
+                              </td>
+                              <td style={{ maxWidth: "15em" }}>
+                                {report.ActionTaken}
+                              </td>
                               <td>{report.Status}</td>
                               <td>{formatDate(report.CompletedDate)}</td>
                             </tr>

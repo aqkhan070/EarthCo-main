@@ -268,6 +268,7 @@ const ServiceRequestTR = ({
                         "Status",
                         "Work Requested",
                         "Date Created",
+                        "Type",
                       ].map((column, index) => (
                         <TableCell key={index}>
                           {index < 5 ? (
@@ -350,6 +351,7 @@ const ServiceRequestTR = ({
                           <TableCell>
                             {TblDateFormat(customer.CreatedDate)}
                           </TableCell>
+                          <TableCell>{customer.Type}</TableCell>
                           {/* <TableCell>
                               <Button
                                 // className="btn btn-primary btn-icon-xxs me-2"

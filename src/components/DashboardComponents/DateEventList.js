@@ -35,12 +35,18 @@ const DateEventList = ({ eventsOnDate, onDeleteEvent, handleEventEdit }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setIsDeleteModalOpen(false)} color="primary">
+          <button
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="btn btn-sm btn-primary"
+          >
             Cancel
-          </Button>
-          <Button onClick={handleDeleteConfirmation} color="error">
+          </button>
+          <button
+            onClick={handleDeleteConfirmation}
+            className="btn btn-sm btn-danger"
+          >
             Delete
-          </Button>
+          </button>
         </DialogActions>
       </Dialog>
 
@@ -111,6 +117,7 @@ const DateEventList = ({ eventsOnDate, onDeleteEvent, handleEventEdit }) => {
                   </div>
                   <div className="col-md-2 text-end">
                     <span
+                      className="me-2"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         handleEventEdit(event);

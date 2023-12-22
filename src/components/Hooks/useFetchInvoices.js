@@ -35,7 +35,7 @@ const useFetchInvoices = () => {
       setLoading(false);
       setfilteredInvoiceList([]);
       setError(error.message);
-      console.log("api call error", error.message);
+      console.log("api call error", error);
     }
   };
 

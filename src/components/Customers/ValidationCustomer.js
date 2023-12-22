@@ -6,7 +6,7 @@ export const ValidationCustomer = Yup.object({
   Phone: Yup.number()
     .typeError("Phone number must be a valid number")
     .required("Phone number is required"),
-  Email: Yup.string().email("Invalid email").required("First Name is required"),
+  Email: Yup.string().email("Invalid email").required("Email is required"),
   Address: Yup.string().required("Address is required"),
   CompanyName: Yup.string().required("Company name is required"),
 });

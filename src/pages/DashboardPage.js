@@ -92,11 +92,12 @@ const DashboardPage = () => {
     window.location.pathname.includes("proposal-summary");
   const isLandscapPreviewRoute =
     window.location.pathname.includes("landscape-report");
-  const isWeeklyReportPreviewRoute =
-    window.location.pathname.includes("weekly-report-preview");
+  const isWeeklyReportPreviewRoute = window.location.pathname.includes(
+    "weekly-report-preview"
+  );
   const isGenetalReportPreviewRoute =
-    window.location.pathname.includes("GeneralReport");
-    const isPLPreviewRoute =
+    window.location.pathname.includes("general-report");
+  const isPLPreviewRoute =
     window.location.pathname.includes("PunchlistPreview");
 
   const isPreview =
@@ -200,10 +201,7 @@ const DashboardPage = () => {
               <Route path="irrigation/audit-report" element={<Audit />} />
               <Route path="punchlist" element={<PunchListIndex />} />
               <Route path="summary-report" element={<SummaryReport />} />
-              <Route
-                path="PunchlistPreview"
-                element={<PunchlistPreview />}
-              />
+              <Route path="PunchlistPreview" element={<PunchlistPreview />} />
               <Route
                 path="summary-report-preview"
                 element={<SummaryReportPreview />}
@@ -212,7 +210,10 @@ const DashboardPage = () => {
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />
-                <Route path="weekly-report-preview" element={<WeeklyReport />} />
+                <Route
+                  path="weekly-report-preview"
+                  element={<WeeklyReport />}
+                />
                 <Route path="add-weekly-report" element={<AddWRform />} />
               </Route>
               <Route path="landscape" element={<LandscapeIndex />}>

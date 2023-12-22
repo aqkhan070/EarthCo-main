@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import TblDateFormat from "../../custom/TblDateFormat";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -34,15 +35,16 @@ const Landscape = () => {
   const MonthParam = Number(queryParams.get("Month"));
   const yearParam = Number(queryParams.get("Year"));
 
-
   const isGeneralReport = window.location.pathname.includes("general-report");
 
   const [landscapeData, setLandscapeData] = useState({});
-  const { sendEmail,
+  const {
+    sendEmail,
     showEmailAlert,
     setShowEmailAlert,
     emailAlertTxt,
-    emailAlertColor } = useSendEmail();
+    emailAlertColor,
+  } = useSendEmail();
 
   const getLandscape = async () => {
     try {
@@ -129,27 +131,31 @@ const Landscape = () => {
   });
 
   return (
-    <> <EventPopups
-    open={showEmailAlert}
-    setOpen={setShowEmailAlert}
-    color={emailAlertColor}
-    text={emailAlertTxt}
-  />
-
+    <>
+      {" "}
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       <div className="container-fluid ">
         {toggleFullscreen && !isGeneralReport ? (
           <div className="row me-4">
             <div className="col-md-10 text-end">
               {" "}
-              {isMail ? <></> : <button
-                className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                onClick={() => {
-                  navigate(`/summary-report`);
-                }}
-              >
-                <i className="fa fa-backward"></i>
-              </button>}
-              
+              {isMail ? (
+                <></>
+              ) : (
+                <button
+                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                  onClick={() => {
+                    navigate(`/summary-report`);
+                  }}
+                >
+                  <i className="fa fa-backward"></i>
+                </button>
+              )}
               <button
                 className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                 onClick={handlePrint}
@@ -162,20 +168,23 @@ const Landscape = () => {
               >
                 <i className="fa fa-download"></i>
               </button>
-              {isMail ? <></> : <button
-              className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-              onClick={() => {
-                sendEmail(
-                  `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                  customerParam,
-                  0,
-                  false
-                );
-              }}
-            >
-              <i class="fa-regular fa-envelope"></i>
-            </button>}
-              
+              {isMail ? (
+                <></>
+              ) : (
+                <button
+                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  onClick={() => {
+                    sendEmail(
+                      `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                      customerParam,
+                      0,
+                      false
+                    );
+                  }}
+                >
+                  <i class="fa-regular fa-envelope"></i>
+                </button>
+              )}
             </div>
           </div>
         ) : (
@@ -189,10 +198,14 @@ const Landscape = () => {
                                     <strong>Status:</strong> Pending</span> </div> */}
               <div
                 id="landscape-preview"
-                className="card-body perview-pd get-preview"
+                className={
+                  !toggleFullscreen
+                    ? "get-preview"
+                    : "card-body perview-pd get-preview"
+                }
               >
-                <div className="row mb-5">
-                  <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
+                <div className="row mb-2">
+                  <div className="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
                     <div style={{ color: "black" }}>
                       {" "}
                       <strong>Earthco</strong>{" "}
@@ -208,26 +221,31 @@ const Landscape = () => {
                       <strong>Phone:</strong> {landscapeData.Phone}{" "}
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6 mt-5">
+                  <div className="col-md-6 col-sm-5 mt-5 ">
                     {" "}
                     <h2 className="text-center">Landscape Report</h2>
                   </div>
 
-                  <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 text-end d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                  <div className=" col-xl-2 col-lg-2 col-md-2 col-sm-4 text-end ">
                     <div className="brand-logo mb-2 inovice-logo">
-                      <img className="preview-Logo" src={logo} alt="" />
+                      <img
+                        className="preview-Logo"
+                        style={{ width: "12em" }}
+                        src={logo}
+                        alt=""
+                      />
                     </div>
                   </div>
                 </div>
 
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
+                <div className="row my-2">
+                  <div className="col-md-7 col-sm-7">
                     <div className="table-responsive">
-                      <table className="text-center table-striped table table-bordered ">
+                      <table className=" table-striped table table-bordered text-start">
                         <thead>
                           <tr
                             style={{ backgroundColor: "gray" }}
-                            className="preview-table-head"
+                            className="preview-table-head LandScape-TablePadding"
                           >
                             <th className="landscap-preview-heading">
                               Requested By:
@@ -240,7 +258,8 @@ const Landscape = () => {
                         <tbody>
                           <tr className="preview-table-row">
                             <td style={{ color: "black" }}>
-                              {landscapeData.RequestByName}
+                              {landscapeData.RequestByName} <br />
+                              {landscapeData.ServiceLocationName}
                             </td>
                             <td
                               style={{ color: "black" }}
@@ -253,15 +272,10 @@ const Landscape = () => {
                       </table>
                     </div>{" "}
                   </div>
+
                   <div
                     style={{ color: "black" }}
-                    className="col-md-2 col-sm-1 text-end"
-                  >
-                    {" "}
-                  </div>
-                  <div
-                    style={{ color: "black" }}
-                    className="col-md-2 col-sm-3 text-end"
+                    className="col-md-3 col-sm-3 text-end"
                   >
                     {" "}
                     <strong>Date Created:</strong>
@@ -276,7 +290,7 @@ const Landscape = () => {
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table className="table-bordered table  ">
+                  <table className="table-bordered table  LandScape-TablePadding">
                     <thead></thead>
                     <tbody>
                       <tr>
@@ -491,7 +505,7 @@ const Landscape = () => {
                   </table>
                 </div>
 
-                <p className="mt-5">
+                <p className="mt-2">
                   *Note Beginning October 1, Earthco will commence annual skip
                   mowing of the grass due to the winter season
                 </p>

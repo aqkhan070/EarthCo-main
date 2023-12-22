@@ -5,10 +5,53 @@ import Popover from "@mui/material/Popover";
 import { TextField } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import TblDateFormat from "../../custom/TblDateFormat";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 const EventsList = ({ eventsList, onDeleteEvent }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+
+  const handleDeleteConfirmation = () => {
+    if (eventToDelete) {
+      onDeleteEvent(eventToDelete.id);
+      setEventToDelete(null);
+    }
+    setIsDeleteModalOpen(false);
+  };
   return (
     <>
+      <Dialog
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this event?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <button
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="btn btn-sm btn-primary"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDeleteConfirmation}
+            className="btn btn-sm btn-danger"
+          >
+            Delete
+          </button>
+        </DialogActions>
+      </Dialog>
       <div className="events">
         <h6>events</h6>
         <div className="dz-scroll event-scroll">
@@ -56,10 +99,13 @@ const EventsList = ({ eventsList, onDeleteEvent }) => {
                     </div>
                   </div>
                   <span className="text-secondary">{formattedTime}</span>
-                  
+
                   <span
                     style={{ cursor: "pointer" }}
-                    onClick={() => onDeleteEvent(event.id)}
+                    onClick={() => {
+                      setEventToDelete(event);
+                      setIsDeleteModalOpen(true);
+                    }}
                   >
                     <Delete color="error" />
                   </span>

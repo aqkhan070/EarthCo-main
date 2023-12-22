@@ -8,14 +8,26 @@ import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import useQuickBook from "../Hooks/useQuickBook";
+import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
 
 const HeaderExp = () => {
   const [loggedUser, setLoggenUser] = useState(
     sessionStorage.getItem("userEmail")
   );
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+  const state = urlParams.get("state");
+  const realmId = urlParams.get("realmId");
+
   const navigate = useNavigate();
   const { mainControl, setMainControl, setShowSM, eliminate } =
     useContext(StyleContext);
+
+  const { connectToQB, genetareQBToken } = useQuickBook();
+
+  const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -25,6 +37,7 @@ const HeaderExp = () => {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
+    getDashboardData();
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -103,6 +116,13 @@ const HeaderExp = () => {
     }
   }, [mainControl]);
 
+  useEffect(() => {
+    console.log("Code:", code);
+    console.log("State:", state);
+    console.log("Realm ID:", realmId);
+    genetareQBToken(code, realmId, state);
+  }, []);
+
   return (
     <>
       <div className="nav-header">
@@ -123,6 +143,25 @@ const HeaderExp = () => {
             <nav className="navbar navbar-expand">
               <div className="collapse navbar-collapse justify-content-between">
                 <div className="header-left">
+                {dashBoardData.isQBToken ? <></> :  <iframe
+                    src="https://earthcoapi.yehtohoga.com/"
+                    scrolling="no"
+                    style={{
+                      height: "100%",
+                      overflowY: "hidden",
+                      marginTop: "-1.5%",
+                    }}
+                  ></iframe>}
+                 
+
+                  {/* <button
+                    className="btn btn-info btn-sm"
+                    onClick={() => {
+                      connectToQB();
+                    }}
+                  >
+                    Connect to QuickBooks
+                  </button> */}
                   {/* <div className="input-group search-area">
                     <span className="input-group-text">
                       <NavLink>
@@ -543,10 +582,10 @@ const HeaderExp = () => {
                                 </svg>
                                 <span
                                   className="ms-2"
-                                  // onClick={() => {
-                                  //   Cookies.set("token", "");
-                                  //   navigate(`/`);
-                                  // }}
+                                  onClick={() => {
+                                    Cookies.set("token", "");
+                                    navigate(`/`);
+                                  }}
                                 >
                                   Logout{" "}
                                 </span>
