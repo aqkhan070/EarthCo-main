@@ -174,12 +174,13 @@ const Landscape = () => {
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={() => {
-                    sendEmail(
-                      `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                      customerParam,
-                      0,
-                      false
-                    );
+                    // sendEmail(
+                    //   `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                    //   customerParam,
+                    //   0,
+                    //   false
+                    // );
+                    navigate(`/send-mail?title=${"Monthly Landscape"}`);
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>

@@ -63,6 +63,16 @@ import SummaryReportPreview from "../components/Reports/SummaryReportPreview";
 import { DataContext } from "../context/AppData";
 import ItemIndex from "../components/Items/ItemIndex";
 import GenralReport from "../components/Reports/GenralReport";
+import SendMail from "../components/Reports/SendMail.js";
+import AddRisingCanes from "../components/Reports/WeeklyReport/RisingCanes/AddRisingCanes.js";
+import RisingCaneTable from "../components/Reports/WeeklyReport/RisingCanes/RisingCaneTable.js";
+import RisingCanesPreview from "../components/Reports/WeeklyReport/RisingCanes/RisingCanesPreview.js";
+import PLPhotoOnlyPreview from "../components/PunchListPhotoOnly/PLPhotoOnlyPreview.js";
+import PunchListPhotoOnly from "../components/PunchListPhotoOnly/PunchListPhotoOnly.js";
+import AddPLPhotoOnly from "../components/PunchListPhotoOnly/AddPLPhotoOnly.js";
+import IrrigationAuditTable from "../components/IrrigationAudit/IrrigationAuditTable.js";
+import AddIrrigationAudit from "../components/IrrigationAudit/AddIrrigationAudit.js";
+import IrrigationAuditPreview from "../components/IrrigationAudit/IrrigationAuditPreview.js";
 
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -97,8 +107,20 @@ const DashboardPage = () => {
   );
   const isGenetalReportPreviewRoute =
     window.location.pathname.includes("general-report");
-  const isPLPreviewRoute =
-    window.location.pathname.includes("PunchlistPreview");
+  const isPLPreviewRoute = window.location.pathname.includes(
+    "PunchlistPreview" || "punchList-photos-only/preview"
+  );
+
+  const isPLphotosPreviewRoute = window.location.pathname.includes(
+    "punchList-photos-only/preview"
+  );
+
+  const isWeeklyReportRisingCanesRoute = window.location.pathname.includes(
+    "weekly-reports/rising-canes-preview"
+  );
+  const isIrrigationAuditPreviewRoute = window.location.pathname.includes(
+    "irrigation-audit/preview"
+  );
 
   const isPreview =
     !isEstimatePreviewRoute &&
@@ -112,6 +134,9 @@ const DashboardPage = () => {
     !isLandscapPreviewRoute &&
     !isWeeklyReportPreviewRoute &&
     !isPLPreviewRoute &&
+    !isWeeklyReportRisingCanesRoute &&
+    !isPLphotosPreviewRoute &&
+    !isIrrigationAuditPreviewRoute &&
     !isGenetalReportPreviewRoute;
 
   return (
@@ -223,6 +248,45 @@ const DashboardPage = () => {
               <Route
                 path="landscape/landscape-report"
                 element={<Landscape />}
+              />
+              <Route path="send-mail" element={<SendMail />} />
+              <Route
+                path="weekly-reports/add-rising-canes"
+                element={<AddRisingCanes />}
+              />
+              <Route
+                path="weekly-reports/rising-canes"
+                element={<RisingCaneTable />}
+              />
+              <Route
+                path="weekly-reports/rising-canes-preview"
+                element={<RisingCanesPreview />}
+              />
+
+              <Route
+                path="punchList-photos-only"
+                element={<PunchListPhotoOnly />}
+              />
+              <Route
+                path="punchList-photos-only/add"
+                element={<AddPLPhotoOnly />}
+              />
+              <Route
+                path="punchList-photos-only/preview"
+                element={<PLPhotoOnlyPreview />}
+              />
+
+              <Route
+                path="irrigation-audit"
+                element={<IrrigationAuditTable />}
+              />
+              <Route
+                path="irrigation-audit/add"
+                element={<AddIrrigationAudit />}
+              />
+              <Route
+                path="irrigation-audit/preview"
+                element={<IrrigationAuditPreview />}
               />
             </Routes>
           </div>

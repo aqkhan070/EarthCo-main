@@ -21,6 +21,7 @@ import axios from "axios";
 import EventPopups from "../Reusable/EventPopups";
 import EventsList from "./EventsList";
 import DateEventList from "./DateEventList";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const DashBoardCalender = () => {
   const requestAbortController = useRef(null);
@@ -203,7 +204,21 @@ const DashBoardCalender = () => {
         >
           <div style={{ padding: "2em", width: "40em" }}>
             <div className="row">
-              <div className="col-md-6">
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setIsEdit(false);
+                  setShowAdd(false);
+                  settitle("");
+                  setEventDescription("");
+                  setStartTime(null);
+                  setEndTime(null);
+                }}
+                className="col-md-1"
+              >
+                <ArrowBackIcon />
+              </div>
+              <div className="col-md-5">
                 <h4>Schedule Event</h4>
               </div>
               <div className="col-md-6 text-end">

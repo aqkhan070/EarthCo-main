@@ -18,8 +18,11 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const DashboardEstm = ({ dashBoardData }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="card">
       <div className="card-header bg-primary">
@@ -41,6 +44,14 @@ const DashboardEstm = ({ dashBoardData }) => {
           <TableBody>
             {dashBoardData.EstimateData?.map((estimate, index) => (
               <TableRow
+                onClick={() => {
+                  // setSelectedItem(estimate.EstimateId);
+                  // console.log(",,,,,,,,,,", selectedItem);
+                  // setShowContent(false);
+                  navigate(
+                    `/estimates/add-estimate?id=${estimate.EstimateId}`
+                  );
+                }}
                 className="material-tbl-alignment"
                 key={estimate.EstimateId}
                 hover

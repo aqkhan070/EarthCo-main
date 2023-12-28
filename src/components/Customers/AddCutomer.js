@@ -140,7 +140,6 @@ const AddCustomer = () => {
       if (
         companyData.CompanyName &&
         companyData.FirstName &&
-        companyData.LastName &&
         companyData.Email
       ) {
       } else {
@@ -179,7 +178,7 @@ const AddCustomer = () => {
     if (
       !companyData.CompanyName ||
       !companyData.FirstName ||
-      !companyData.LastName ||
+      !companyData.ContactName ||
       !companyData.Email
     ) {
       setOpenSnackBar(true);
@@ -220,16 +219,24 @@ const AddCustomer = () => {
     if (!validator.isLength(companyData.FirstName, { min: 3, max: 30 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText("First name should be between 3 and 30 characters");
+      setSnackBarText("Customer name should be between 3 and 30 characters");
       console.log("First name should be 3 to 30 characters");
       return;
     }
 
     // Validate last name length
-    if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
+    // if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
+    //   setOpenSnackBar(true);
+    //   setSnackBarColor("error");
+    //   setSnackBarText("Last name should be between 3 and 30 characters");
+    //   console.log("Last name should be between 3 and 30 characters");
+    //   return;
+    // }
+
+    if (!validator.isLength(companyData.ContactName, { min: 3, max: 30 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText("Last name should be between 3 and 30 characters");
+      setSnackBarText("Contact Name should be between 3 and 30 characters");
       console.log("Last name should be between 3 and 30 characters");
       return;
     }
@@ -251,12 +258,12 @@ const AddCustomer = () => {
       setSnackBarColor("error");
       setSnackBarText("Phone number is not valid");
 
-      console.log("Phone number is not valid");
+
       return;
     }
 
     setDisableButton(true);
-
+    console.log("companyData", companyData);
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
@@ -276,6 +283,9 @@ const AddCustomer = () => {
       // window.location.reload();
     } catch (error) {
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
 
       console.error("Error submitting data:", error.response.data);
       // console.log("customer payload is", companyData);
@@ -355,12 +365,15 @@ const AddCustomer = () => {
                 <div className="row">
                   <div className="col-9">
                     <div className="row">
+
+                    </div>
+                    <div className="row">
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
                         >
-                          Customer Name <span className="text-danger">*</span>
+                          Company Name <span className="text-danger">*</span>
                         </label>
 
                         <TextField
@@ -372,17 +385,15 @@ const AddCustomer = () => {
                           error={submitClicked && !companyData.CompanyName}
                           value={companyData?.CompanyName || ""}
                           onChange={handleCompanyChange}
-                          placeholder="Customer Name"
+                          placeholder="Company Name"
                         />
                       </div>
-                    </div>
-                    <div className="row">
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
                         >
-                          First Name <span className="text-danger">*</span>
+                          Customer Name <span className="text-danger">*</span>
                         </label>
                         <TextField
                           type="text"
@@ -393,10 +404,29 @@ const AddCustomer = () => {
                           value={companyData.FirstName}
                           error={submitClicked && !companyData.FirstName}
                           onChange={handleCompanyChange}
-                          placeholder="First Name"
+                          placeholder="Customer Name"
                         />
                       </div>
                       <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Contact Name <span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="text"
+                          className="form-control"
+                          name="ContactName"
+                          variant="outlined"
+                          size="small"
+                          value={companyData.ContactName}
+                          onChange={handleCompanyChange}
+                          error={submitClicked && !companyData.ContactName}
+                          placeholder="Contact Name"
+                        />
+                      </div>
+                      {/* <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
@@ -414,7 +444,7 @@ const AddCustomer = () => {
                           error={submitClicked && !companyData.LastName}
                           placeholder="Last Name"
                         />
-                      </div>
+                      </div> */}
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
@@ -458,7 +488,7 @@ const AddCustomer = () => {
                         /> */}
                         {/* <MapCo /> */}
                       </div>
-                      <div className="col-xl-4 mb-3">
+                      {/* <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
@@ -512,8 +542,8 @@ const AddCustomer = () => {
                           onChange={handleCompanyChange}
                           placeholder="Customer Fax"
                         />
-                      </div>
-                      <div className="col-xl-4 mb-3">
+                      </div> */}
+                      {/* <div className="col-xl-4 mb-3">
                         <FormControl fullWidth variant="outlined">
                           <label
                             htmlFor="exampleFormControlInput1"
@@ -540,7 +570,7 @@ const AddCustomer = () => {
                             ))}
                           </Select>
                         </FormControl>
-                      </div>
+                      </div> */}
 
                       <div className="col-xl-4 mb-3">
                         <label className="form-label">Notes</label>
@@ -554,7 +584,7 @@ const AddCustomer = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="col-3">
+                  {/* <div className="col-3">
                     <div className="col-xl-12 mb-3 ">
                       <div className="form-check form-check-inline radio-margin">
                         <label
@@ -671,7 +701,7 @@ const AddCustomer = () => {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </div> */}
                 </div>
                 {/* <div className="col-md-6">
                   <label className="col-sm-4 col-form-label">

@@ -325,7 +325,7 @@ const EstimateTR = ({
                       <button
                         className="btn btn-primary "
                         data-bs-dismiss="modal"
-                        onClick={() => {}}
+                        onClick={() => { }}
                       >
                         Yes
                       </button>
@@ -369,7 +369,7 @@ const EstimateTR = ({
                       <button
                         className="btn btn-primary "
                         data-bs-dismiss="modal"
-                        onClick={() => {}}
+                        onClick={() => { }}
                       >
                         Yes
                       </button>
@@ -427,7 +427,7 @@ const EstimateTR = ({
                         .map((estimate, index) => (
                           <TableRow
                             className="material-tbl-alignment"
-                            onDoubleClick={() => {
+                            onClick={() => {
                               // setSelectedItem(estimate.EstimateId);
                               // console.log(",,,,,,,,,,", selectedItem);
                               // setShowContent(false);

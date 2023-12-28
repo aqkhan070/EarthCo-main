@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
-import StatusCards from "../../ServiceRequest/StatusCards";
-import { NavLink } from "react-router-dom";
-import { useContext } from "react";
+
 import TitleBar from "../../TitleBar";
-import { DataContext } from "../../../context/AppData";
-import { Form } from "react-bootstrap";
 import Cookies from "js-cookie";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -128,7 +124,7 @@ const WeeklyReportlist = () => {
     }
   });
 
-  const { wReportData } = useContext(DataContext);
+
 
   return (
     <>

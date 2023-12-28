@@ -1361,12 +1361,13 @@ const AddBill = ({
                       type="button"
                       className="btn btn-sm btn-outline-primary estm-action-btn"
                       onClick={() => {
-                        sendEmail(
-                          `/bills/bill-preview?id=${idParam}`,
-                          formData.SupplierId,
-                          0,
-                          true
-                        );
+                        navigate(`/send-mail?title=${"Bill"}`);
+                        // sendEmail(
+                        //   `/bills/bill-preview?id=${idParam}`,
+                        //   formData.SupplierId,
+                        //   0,
+                        //   true
+                        // );
                       }}
                     >
                       <Email />

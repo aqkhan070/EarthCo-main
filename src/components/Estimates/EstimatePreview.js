@@ -14,6 +14,7 @@ import { DataContext } from "../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -21,11 +22,13 @@ const EstimatePreview = () => {
   const isMail = queryParams.get("isMail");
 
   const { name, setName, fetchName } = useFetchCustomerName();
-  const { sendEmail,
+  const {
+    sendEmail,
     showEmailAlert,
     setShowEmailAlert,
     emailAlertTxt,
-    emailAlertColor, } = useSendEmail();
+    emailAlertColor,
+  } = useSendEmail();
 
   const navigate = useNavigate();
   const { estmPreviewId } = useContext(RoutingContext);
@@ -35,6 +38,8 @@ const EstimatePreview = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const [previewData, setPreviewData] = useState({});
   const [totalAmount, setTotalAmount] = useState(0);
@@ -101,6 +106,7 @@ const EstimatePreview = () => {
         { headers }
       );
       setPreviewData(response.data);
+      fetchEmail(response.data.EstimateData.ContactId);
 
       console.log("selected estimate is", response.data);
       console.log("selected estimate is", previewData);
@@ -138,12 +144,12 @@ const EstimatePreview = () => {
 
   return (
     <>
-     <EventPopups
-    open={showEmailAlert}
-    setOpen={setShowEmailAlert}
-    color={emailAlertColor}
-    text={emailAlertTxt}
-  />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
       <div
         className={
           toggleFullscreen
@@ -407,12 +413,15 @@ const EstimatePreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/estimates/estimate-preview?id=${idParam}`,
-                        previewData.EstimateData.CustomerId,
-                        previewData.EstimateData.ContactId,
-                        false
+                      navigate(
+                        `/send-mail?title=${"Estimate"}&mail=${contactEmail}`
                       );
+                      // sendEmail(
+                      //   `/estimates/estimate-preview?id=${idParam}`,
+                      //   previewData.EstimateData.CustomerId,
+                      //   previewData.EstimateData.ContactId,
+                      //   false
+                      // );
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

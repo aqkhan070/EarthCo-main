@@ -510,28 +510,22 @@ const AddInvioces = ({
   const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [itemBtnDisable, setItemBtnDisable] = useState(true);
-  const inputRef = useRef(null);
   const [shippingCost, setShippingCost] = useState(0);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      // Make an API request when the search text changes
-
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-          console.log("item list is", response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+        console.log("item list is", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const deleteItem = (itemId, isCost) => {
@@ -561,7 +555,6 @@ const AddInvioces = ({
       Description: item.SaleDescription,
       Rate: item.SalePrice,
       PurchasePrice: item.PurchasePrice,
-
       isCost: false,
     });
     itemInput ? setItemBtnDisable(false) : setItemBtnDisable(true);
@@ -569,13 +562,19 @@ const AddInvioces = ({
     setShowItem(false);
     setSearchResults([]); // Clear the search results
 
-    console.log("selected item is", itemInput);
+    console.log("selected item is", item);
   };
 
   const handleAddItem = () => {
+    const newAmount = itemInput.Qty * itemInput.Rate;
+    const newItem = {
+      ...itemInput,
+      Amount: newAmount,
+    };
+
     setFormData((prevData) => ({
       ...prevData,
-      tblInvoiceItems: [...(prevData.tblInvoiceItems || []), itemInput],
+      tblInvoiceItems: [...(prevData.tblInvoiceItems || []), newItem], // Initialize as an empty array if undefined
     }));
 
     setSearchText("");
@@ -587,9 +586,9 @@ const AddInvioces = ({
       Name: "",
       Qty: 1,
       Description: "",
-      Rate: 0,
-    }); // Reset the modal input field
-    console.log("new items aree", formData);
+      Rate: null,
+    });
+    console.log("new items are", formData);
   };
 
   const handleQuantityChange = (itemId, event, add) => {
@@ -647,6 +646,39 @@ const AddInvioces = ({
           const updatedItem = { ...item };
           updatedItem.Rate = parseFloat(event.target.value);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
+  };
+
+  const handleCostChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.PurchasePrice = parseFloat(event.target.value);
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.PurchasePrice = parseFloat(event.target.value);
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
           return updatedItem;
         }
         return item;
@@ -1331,7 +1363,17 @@ const AddInvioces = ({
                               <td>
                                 {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                               </td>
-                              <td>{item.PurchasePrice}</td>
+                              <td>
+                                <input
+                                  type="number"
+                                  style={{ width: "7em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.PurchasePrice}
+                                  onChange={(e) =>
+                                    handleCostChange(item.ItemId, e, 0)
+                                  }
+                                />
+                              </td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
@@ -1467,9 +1509,38 @@ const AddInvioces = ({
                           </h5>
                         </td>
                         <td>
-                          <h5 style={{ margin: "0" }}>
-                            {itemInput.PurchasePrice}
-                          </h5>
+                          <div className="col-sm-9">
+                            <input
+                              type="number"
+                              name="Rate"
+                              style={{ width: "7em" }}
+                              className="form-control form-control-sm"
+                              value={
+                                selectedItem?.PurchasePrice ||
+                                itemInput.PurchasePrice ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  PurchasePrice: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  PurchasePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </div>
                         </td>
                         <td></td>
                       </tr>
@@ -1479,7 +1550,7 @@ const AddInvioces = ({
               </div>
             </div>
 
-            <div className="itemtitleBar">
+            {/* <div className="itemtitleBar">
               <h4>Additional Costs</h4>
             </div>
             <div className="card-body  pt-0">
@@ -1674,7 +1745,7 @@ const AddInvioces = ({
                   </table>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <div className="card-body">
               <div className=" row">
@@ -2085,12 +2156,13 @@ const AddInvioces = ({
                       type="button"
                       className="btn btn-sm btn-outline-primary estm-action-btn"
                       onClick={() => {
-                        sendEmail(
-                          `/invoices/invoice-preview?id=${idParam}`,
-                          formData.CustomerId,
-                          0,
-                          false
-                        );
+                        // sendEmail(
+                        //   `/invoices/invoice-preview?id=${idParam}`,
+                        //   formData.CustomerId,
+                        //   0,
+                        //   false
+                        // );
+                        navigate(`/send-mail?title=${"Invoice"}`);
                       }}
                     >
                       <Email />

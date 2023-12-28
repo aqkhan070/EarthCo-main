@@ -64,6 +64,16 @@ import Items from "./components/Items/Items";
 import AddItem from "./components/Items/AddItem";
 import ItemIndex from "./components/Items/ItemIndex";
 import GenralReport from "./components/Reports/GenralReport";
+import SendMail from "./components/Reports/SendMail";
+import AddRisingCanes from "./components/Reports/WeeklyReport/RisingCanes/AddRisingCanes";
+import RisingCaneTable from "./components/Reports/WeeklyReport/RisingCanes/RisingCaneTable";
+import RisingCanesPreview from "./components/Reports/WeeklyReport/RisingCanes/RisingCanesPreview";
+import PunchListPhotoOnly from "./components/PunchListPhotoOnly/PunchListPhotoOnly";
+import AddPLPhotoOnly from "./components/PunchListPhotoOnly/AddPLPhotoOnly";
+import PLPhotoOnlyPreview from "./components/PunchListPhotoOnly/PLPhotoOnlyPreview";
+import IrrigationAuditTable from "./components/IrrigationAudit/IrrigationAuditTable";
+import AddIrrigationAudit from "./components/IrrigationAudit/AddIrrigationAudit";
+import IrrigationAuditPreview from "./components/IrrigationAudit/IrrigationAuditPreview";
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -143,10 +153,7 @@ function App() {
               <Route path="irrigation/audit-report" element={<Audit />} />
               <Route path="punchlist" element={<PunchListIndex />} />
               <Route path="summary-report" element={<SummaryReport />} />
-              <Route
-                path="PunchlistPreview"
-                element={<PunchlistPreview />}
-              />
+              <Route path="PunchlistPreview" element={<PunchlistPreview />} />
               <Route
                 path="summary-report-preview"
                 element={<SummaryReportPreview />}
@@ -170,6 +177,24 @@ function App() {
                 path="landscape/landscape-report"
                 element={<Landscape />}
               />
+              <Route path="send-mail" element={<SendMail />} />
+              <Route path="weekly-reports/add-rising-canes" element={<AddRisingCanes />} />
+              <Route path="weekly-reports/rising-canes" element={<RisingCaneTable />} />
+              <Route path="weekly-reports/rising-canes-preview" element={<RisingCanesPreview />} />
+
+              <Route path="punchList-photos-only" element={<PunchListPhotoOnly />} />
+              <Route path="punchList-photos-only/add" element={<AddPLPhotoOnly />} />
+              <Route path="punchList-photos-only/preview" element={<PLPhotoOnlyPreview />} />
+
+              <Route path="irrigation-audit" element={<IrrigationAuditTable />} />
+              <Route path="irrigation-audit/add" element={<AddIrrigationAudit />} />
+              <Route path="irrigation-audit/preview" element={<IrrigationAuditPreview />} />
+
+              
+
+
+
+              
             </Route>
             <Route path="*" element={<ErrorPage />} />
           </Routes>

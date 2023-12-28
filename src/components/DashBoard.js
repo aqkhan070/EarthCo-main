@@ -3,7 +3,6 @@ import EstimateTR from "./Estimates/EstimateTR";
 import ServiceRequestTR from "./ServiceRequest/ServiceRequestTR";
 import { DataContext } from "../context/AppData";
 import { RoutingContext } from "../context/RoutesContext";
-import $ from "jquery";
 import "datatables.net";
 import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
@@ -69,17 +68,16 @@ const DashBoard = () => {
           </div>
 
           <div className="col-md-3">
-            
-                <SessionContextProvider supabaseClient={supabase}>
-                  <DashBoardCalender />
-                </SessionContextProvider>
-                
-              </div>
-            </div>
+            <SessionContextProvider supabaseClient={supabase}>
+              <DashBoardCalender />
+            </SessionContextProvider>
           </div>
-
+        </div>
+        <div className="col-md-12">
+          {" "}
           <DashBoardCards dashBoardData={dashBoardData} />
-       
+        </div>
+      </div>
     </>
   );
 };

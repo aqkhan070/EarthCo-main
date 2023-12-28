@@ -336,7 +336,7 @@ const PunchlistModal2 = ({
 
                 <div className="col-md-6 mb-3">
                   <label className="form-label">
-                    Assigned To <span className="text-danger">*</span>
+                    Regional Manager <span className="text-danger">*</span>
                   </label>
                   <Autocomplete
                     id="staff-autocomplete"

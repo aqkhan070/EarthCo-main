@@ -227,7 +227,7 @@ const IrrigationForm = () => {
         color={snackBarColor}
         text={snackBarText}
       />
-      <div className="card-body">
+      <div className="container-fluid">
         <div className="card">
           <div className="card-body p-0">
             <div className="itemtitleBar">
@@ -342,7 +342,7 @@ const IrrigationForm = () => {
 
                   <div className="col-md-3 ">
                     <div className="col-md-12">
-                      <label className="form-label">Irrigation number</label>
+                      <label className="form-label">Controller Number</label>
                     </div>
                     <TextField
                       type="text"
@@ -351,7 +351,7 @@ const IrrigationForm = () => {
                       onChange={handleInputChange}
                       value={formData.IrrigationNumber}
                       className="form-control form-control-sm"
-                      placeholder="Irrigation Number"
+                      placeholder="Controller Number"
                     />
                   </div>
                   <div className="col-md-6 text-right mt-3">

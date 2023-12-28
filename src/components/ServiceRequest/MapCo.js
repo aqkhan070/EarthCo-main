@@ -319,6 +319,39 @@ function GoogleMapApi() {
       });
   };
 
+  const handleSearch = () => {
+    const input = searchInputRef.current;
+
+    if (
+      input &&
+      window.google &&
+      window.google.maps &&
+      window.google.maps.places
+    ) {
+      const autocomplete = new window.google.maps.places.Autocomplete(input);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          const newMarkers = [
+            ...markers,
+            {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+            },
+          ];
+          setMarkers(newMarkers);
+          setSRMapData(newMarkers);
+          // saveMarkersToLocalStorage(newMarkers);
+
+          // Center the map on the selected place
+          if (map) {
+            map.panTo(place.geometry.location);
+          }
+        }
+      });
+    }
+  };
+
   return (
     <>
       <LoadScript
@@ -327,10 +360,10 @@ function GoogleMapApi() {
       >
         <div>
           <TextField
-            ref={searchInputRef}
+            inputRef={searchInputRef}
             type="text"
             placeholder="Search for a place"
-            // onChange={handleSearch}
+            onChange={handleSearch}
             size="small"
             variant="outlined"
             className="my-3"

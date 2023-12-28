@@ -19,8 +19,10 @@ import {
 import { Form } from "react-bootstrap";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const DashBoardSR = ({ dashBoardData }) => {
+  const navigate = useNavigate();
   useEffect(() => {
     console.log(",,,,,,,,,,", dashBoardData);
   });
@@ -46,7 +48,19 @@ const DashBoardSR = ({ dashBoardData }) => {
           </TableHead>
           <TableBody>
             {dashBoardData.ServiceRequestData?.map((customer, rowIndex) => (
-              <TableRow className="material-tbl-alignment" key={rowIndex} hover>
+              <TableRow
+                className="material-tbl-alignment"
+                onClick={() => {
+                  // setServiceRequestId(customer.ServiceRequestId);
+                  // setShowContent(false);
+                  // console.log("////////", serviceRequestId);
+                  navigate(
+                    `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                  );
+                }}
+                key={rowIndex}
+                hover
+              >
                 <TableCell>{customer.CustomerName}</TableCell>
                 <TableCell>{customer.Assign}</TableCell>
                 <TableCell>{customer.ServiceRequestNumber}</TableCell>

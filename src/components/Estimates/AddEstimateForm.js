@@ -27,6 +27,9 @@ import { RoutingContext } from "../../context/RoutesContext";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
+import Contacts from "../CommonComponents/Contacts";
+import ServiceLocations from "../CommonComponents/ServiceLocations";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
@@ -113,6 +116,7 @@ const AddEstimateForm = () => {
   const { invoiceList, fetchInvoices } = useFetchInvoices();
   const { billList, fetchBills } = useFetchBills();
   const { PoList, fetchPo } = useFetchPo();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
@@ -244,6 +248,7 @@ const AddEstimateForm = () => {
 
     handleInputChange(simulatedEvent);
   };
+  const [selectedContactData, setSelectedContactData] = useState({});
 
   const handleContactAutocompleteChange = (event, newValue) => {
     const simulatedEvent = {
@@ -252,6 +257,10 @@ const AddEstimateForm = () => {
         value: newValue ? newValue.ContactId : "",
       },
     };
+
+    setSelectedContactData(newValue);
+    fetchEmail(newValue.Email);
+    console.log("selected contact", newValue);
 
     handleInputChange(simulatedEvent);
   };
@@ -548,24 +557,18 @@ const AddEstimateForm = () => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      // Make an API request when the search text changes
-
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-          console.log("item list is", response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+        console.log("item list is", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const deleteItem = (itemId, isCost) => {
@@ -697,7 +700,41 @@ const AddEstimateForm = () => {
     }
   };
 
+  const handleCostChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.PurchasePrice = parseFloat(event.target.value);
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.PurchasePrice = parseFloat(event.target.value);
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+  };
+
   useEffect(() => {
+    fetchEmail(formData.ContactId);
     console.log(" testing....", formData);
   }, [formData]);
 
@@ -978,6 +1015,7 @@ const AddEstimateForm = () => {
                           label=""
                           onClick={() => {
                             setName("");
+                            fetchCustomers();
                           }}
                           onChange={(e) => {
                             fetchCustomers(e.target.value);
@@ -1117,9 +1155,27 @@ const AddEstimateForm = () => {
                   <div className="col-md-3 mt-2"></div>
 
                   <div className="col-md-3  mt-2">
-                    <label className="form-label">
-                      Service location <span className="text-danger">*</span>
-                    </label>
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Service Locations
+                          <span className="text-danger">*</span>{" "}
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <ServiceLocations
+                            fetchServiceLocations={fetchServiceLocations}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+
                     <Autocomplete
                       id="inputState19"
                       size="small"
@@ -1229,9 +1285,25 @@ const AddEstimateForm = () => {
                   <div className="col-md-3 mt-2"></div>
 
                   <div className="col-md-3  mt-2">
-                    <label className="form-label">
-                      Contact<span className="text-danger">*</span>
-                    </label>
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Contact<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <Contacts
+                            fetctContacts={fetctContacts}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
                     <Autocomplete
                       id="inputState299"
                       size="small"
@@ -1441,7 +1513,17 @@ const AddEstimateForm = () => {
                                 <td>
                                   {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                                 </td>
-                                <td>{item.PurchasePrice}</td>
+                                <td>
+                                  <input
+                                    type="number"
+                                    style={{ width: "7em" }}
+                                    className="form-control form-control-sm"
+                                    value={item.PurchasePrice}
+                                    onChange={(e) =>
+                                      handleCostChange(item.ItemId, e, 0)
+                                    }
+                                  />
+                                </td>
                                 <td>
                                   <div className="badgeBox">
                                     <Button
@@ -1579,9 +1661,38 @@ const AddEstimateForm = () => {
                             </h5>
                           </td>
                           <td>
-                            <h5 style={{ margin: "0" }}>
-                              {itemInput.PurchasePrice}
-                            </h5>
+                            <div className="col-sm-9">
+                              <input
+                                type="number"
+                                name="Rate"
+                                style={{ width: "7em" }}
+                                className="form-control form-control-sm"
+                                value={
+                                  selectedItem?.PurchasePrice ||
+                                  itemInput.PurchasePrice ||
+                                  ""
+                                }
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    PurchasePrice: Number(e.target.value),
+                                  })
+                                }
+                                onClick={(e) => {
+                                  setSelectedItem({
+                                    ...selectedItem,
+                                    PurchasePrice: 0,
+                                  });
+                                }}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                              />
+                            </div>
                           </td>
                           <td></td>
                         </tr>
@@ -1591,7 +1702,7 @@ const AddEstimateForm = () => {
                 </div>
               </div>
 
-              <div className="itemtitleBar">
+              {/* <div className="itemtitleBar">
                 <h4>Additional Costs</h4>
               </div>
               <div className="card-body  pt-0">
@@ -1786,7 +1897,7 @@ const AddEstimateForm = () => {
                     </table>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Files */}
 
@@ -2268,12 +2379,15 @@ const AddEstimateForm = () => {
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
-                            sendEmail(
-                              `/estimates/estimate-preview?id=${idParam}`,
-                              formData.CustomerId,
-                              formData.ContactId,
-                              false
+                            navigate(
+                              `/send-mail?title=${"Estimate"}&mail=${contactEmail}`
                             );
+                            // sendEmail(
+                            //   `/estimates/estimate-preview?id=${idParam}`,
+                            //   formData.CustomerId,
+                            //   formData.ContactId,
+                            //   false
+                            // );
                           }}
                         >
                           <Email />

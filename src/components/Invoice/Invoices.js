@@ -276,7 +276,7 @@ const Invoices = () => {
                               .map((invoice, index) => (
                                 <TableRow
                                   className="bill-tbl-alignment"
-                                  onDoubleClick={() => {
+                                  onClick={() => {
                                     // setSelectedInvoice(invoice.InvoiceId);
                                     // setShowContent(false);
                                     navigate(

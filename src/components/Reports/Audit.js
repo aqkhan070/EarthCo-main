@@ -161,12 +161,13 @@ const Audit = () => {
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={() => {
-                    sendEmail(
-                      `/irrigation/audit-report?id=${idParam}`,
-                      irrDetails.IrrigationData.CustomerId,
-                      0,
-                      false
-                    );
+                    // sendEmail(
+                    //   `/irrigation/audit-report?id=${idParam}`,
+                    //   irrDetails.IrrigationData.CustomerId,
+                    //   0,
+                    //   false
+                    // );
+                    navigate(`/send-mail?title=${"Irrigation"}`);
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>

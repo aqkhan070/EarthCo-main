@@ -339,12 +339,13 @@ const BillPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/bills/bill-preview?id=${idParam}`,
-                        billPreviewData.Data.SupplierId,
-                        0,
-                        true
-                      );
+                      // sendEmail(
+                      //   `/bills/bill-preview?id=${idParam}`,
+                      //   billPreviewData.Data.SupplierId,
+                      //   0,
+                      //   true
+                      // );
+                      navigate(`/send-mail?title=${"Bill"}`);
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

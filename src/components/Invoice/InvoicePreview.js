@@ -410,12 +410,13 @@ const InvoicePreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/invoices/invoice-preview?id=${idParam}`,
-                        InvoicePreviewData.Data.CustomerId,
-                        InvoicePreviewData.Data.ContactId,
-                        false
-                      );
+                      // sendEmail(
+                      //   `/invoices/invoice-preview?id=${idParam}`,
+                      //   InvoicePreviewData.Data.CustomerId,
+                      //   InvoicePreviewData.Data.ContactId,
+                      //   false
+                      // );
+                      navigate(`/send-mail?title=${"Invoice"}`);
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

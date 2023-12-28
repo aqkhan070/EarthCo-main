@@ -282,7 +282,7 @@ const ServiceRequestTR = ({
                                   field: columnFieldMapping[column],
                                   order:
                                     sorting.order === "asc" &&
-                                    sorting.field === columnFieldMapping[column]
+                                      sorting.field === columnFieldMapping[column]
                                       ? "desc"
                                       : "asc",
                                 })
@@ -313,7 +313,7 @@ const ServiceRequestTR = ({
                       .map((customer, rowIndex) => (
                         <TableRow
                           className="material-tbl-alignment"
-                          onDoubleClick={() => {
+                          onClick={() => {
                             // setServiceRequestId(customer.ServiceRequestId);
                             // setShowContent(false);
                             // console.log("////////", serviceRequestId);

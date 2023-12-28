@@ -13,7 +13,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
-
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 const PunchlistPreview = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -36,6 +36,7 @@ const PunchlistPreview = () => {
   const isMail = queryParams.get("isMail");
   const [pLData, setPLData] = useState({});
   const [pLDetailData, setPLDetailData] = useState([]);
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const fetchPLData = async () => {
     try {
@@ -44,6 +45,7 @@ const PunchlistPreview = () => {
         { headers }
       );
       console.log("selected pl is", res.data);
+      fetchEmail(res.data.ContactId);
       setPLData(res.data);
     } catch (error) {
       console.log("fetch PL api call error", error);
@@ -172,11 +174,14 @@ const PunchlistPreview = () => {
                 <button
                   className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                   onClick={() => {
-                    sendEmail(
-                      `/PunchlistPreview?id=${idParam}`,
-                      pLData.CustomerId,
-                      pLData.ContactId,
-                      false
+                    // sendEmail(
+                    //   `/PunchlistPreview?id=${idParam}`,
+                    //   pLData.CustomerId,
+                    //   pLData.ContactId,
+                    //   false
+                    // );
+                    navigate(
+                      `/send-mail?title=${"Punch List"}&mail=${contactEmail}`
                     );
                   }}
                 >

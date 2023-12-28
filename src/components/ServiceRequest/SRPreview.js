@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
-
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -36,6 +36,8 @@ const SRPreview = () => {
   const [sRPreviewData, setSRPreviewData] = useState({});
 
   const [showbuttons, setShowButtons] = useState(true);
+
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const handlePrint = () => {
     // setToggleFullscreen(false);
@@ -98,6 +100,7 @@ const SRPreview = () => {
         { headers }
       );
       setSRPreviewData(response.data);
+      fetchEmail(response.data.Data.ContactId);
 
       console.log("response.data.Data", response.data);
 
@@ -399,11 +402,14 @@ const SRPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/service-requests/service-request-preview?id=${idParam}`,
-                        sRPreviewData.Data.CustomerId,
-                        sRPreviewData.Data.ContactId,
-                        false
+                      // sendEmail(
+                      //   `/service-requests/service-request-preview?id=${idParam}`,
+                      //   sRPreviewData.Data.CustomerId,
+                      //   sRPreviewData.Data.ContactId,
+                      //   false
+                      // );
+                      navigate(
+                        `/send-mail?title=${"Service Request"}&mail=${contactEmail}`
                       );
                     }}
                   >

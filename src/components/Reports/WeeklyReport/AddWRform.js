@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +12,8 @@ import { DataContext } from "../../../context/AppData";
 import { NavLink } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import EventPopups from "../../Reusable/EventPopups";
+import Contacts from "../../CommonComponents/Contacts";
+import ServiceLocations from "../../CommonComponents/ServiceLocations";
 
 const AddWRform = () => {
   const icon = (
@@ -278,7 +279,9 @@ const AddWRform = () => {
       setSnackBarText(response.data.Message);
 
       setTimeout(() => {
-        navigate(`/weekly-reports/weekly-report-preview?id=${response.data.Id}`);
+        navigate(
+          `/weekly-reports/weekly-report-preview?id=${response.data.Id}`
+        );
       }, 4000);
 
       console.log("Data submitted successfully:", response.data.Id);
@@ -386,9 +389,26 @@ const AddWRform = () => {
                 />
               </div>
               <div className="col-md-3 ">
-                <label className="form-label">
-                  Service location <span className="text-danger">*</span>
-                </label>
+                <div className="row">
+                  <div className="col-md-auto">
+                    <label className="form-label">
+                      Service Location
+                      <span className="text-danger">*</span>{" "}
+                    </label>
+                  </div>
+                  <div className="col-md-3">
+                    {" "}
+                    {formData.CustomerId ? (
+                      <ServiceLocations
+                        fetchServiceLocations={fetchServiceLocations}
+                        fetchCustomers={fetchCustomers}
+                        customerId={formData.CustomerId}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
                 <Autocomplete
                   id="inputState19"
                   size="small"
@@ -418,9 +438,25 @@ const AddWRform = () => {
                 />
               </div>
               <div className="col-md-3 ">
-                <label className="form-label">
-                  Contact<span className="text-danger">*</span>
-                </label>
+                <div className="row">
+                  <div className="col-md-auto">
+                    <label className="form-label">
+                      Contact<span className="text-danger">*</span>
+                    </label>
+                  </div>
+                  <div className="col-md-3">
+                    {" "}
+                    {formData.CustomerId ? (
+                      <Contacts
+                        fetctContacts={fetctContacts}
+                        fetchCustomers={fetchCustomers}
+                        customerId={formData.CustomerId}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
                 <Autocomplete
                   id="inputState299"
                   size="small"

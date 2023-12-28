@@ -341,12 +341,13 @@ const POPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/purchase-order/purchase-order-preview?id=${idParam}`,
-                        PoPreviewData.Data.SupplierId,
-                        0,
-                        true
-                      );
+                      // sendEmail(
+                      //   `/purchase-order/purchase-order-preview?id=${idParam}`,
+                      //   PoPreviewData.Data.SupplierId,
+                      //   0,
+                      //   true
+                      // );
+                      navigate(`/send-mail?title=${"Puechase Order"}`);
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

@@ -12,6 +12,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../../Hooks/useSendEmail";
 import EventPopups from "../../Reusable/EventPopups";
 
+
 const WeeklyReport = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -318,12 +319,13 @@ const WeeklyReport = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                        customerParam,
-                        0,
-                        false
-                      );
+                      navigate(`/send-mail?title=${"Weekly Report"}`);
+                      // sendEmail(
+                      //   `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                      //   customerParam,
+                      //   0,
+                      //   false
+                      // );
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

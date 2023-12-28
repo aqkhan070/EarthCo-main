@@ -235,7 +235,7 @@ const Irrigationlist = () => {
                               Created Date
                             </TableSortLabel>
                           </TableCell>
-                          <TableCell>Controller Number</TableCell>
+
                           <TableCell>Report</TableCell>
                           {/* <TableCell align="center">Actions</TableCell> */}
                         </TableRow>
@@ -245,22 +245,23 @@ const Irrigationlist = () => {
                           irrigationlist.map((irr, index) => (
                             <TableRow
                               className="material-tbl-alignment"
-                              onDoubleClick={() => {
-                                // setShowContent(false);
-                                // setSelectedIrr(irr.IrrigationId);
-                                navigate(
-                                  `/irrigation/add-irrigation?id=${irr.IrrigationId}`
-                                );
-                              }}
                               hover
                               key={index}
                             >
                               <TableCell>{irr.IrrigationId}</TableCell>
-                              <TableCell>{irr.CustomerName}</TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  // setShowContent(false);
+                                  // setSelectedIrr(irr.IrrigationId);
+                                  navigate(
+                                    `/irrigation/add-irrigation?id=${irr.IrrigationId}`
+                                  );
+                                }}
+                              >{irr.CustomerName}</TableCell>
                               <TableCell>
                                 {TblDateFormat(irr.CreatedDate)}
                               </TableCell>
-                              <TableCell>Controller Number</TableCell>
+
                               <TableCell>
                                 <NavLink
                                   to={`/irrigation/audit-report?id=${irr.IrrigationId}`}

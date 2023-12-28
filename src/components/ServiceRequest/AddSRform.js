@@ -22,7 +22,11 @@ import { DataContext } from "../../context/AppData";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
+import ServiceLocations from "../CommonComponents/ServiceLocations";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
+
+import Contacts from "../CommonComponents/Contacts";
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -49,6 +53,7 @@ const AddSRform = () => {
   const { deleteSRFile } = useDeleteFile();
 
   const { name, setName, fetchName } = useFetchCustomerName();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const icon = (
     <svg
@@ -133,8 +138,8 @@ const AddSRform = () => {
   }, [PunchListData.ItemData]);
 
   useEffect(() => {
-    console.log("map data isss", sRMapData);
-  }, [sRMapData]);
+    fetchEmail(SRData.ServiceRequestData.ContactId);
+  }, [SRData]);
 
   const [itemInput, setItemInput] = useState({
     Name: "",
@@ -691,10 +696,28 @@ const AddSRform = () => {
                         </div>
 
                         <div className="col-xl-3 mb-2 col-md-3 ">
-                          <label className="form-label">
-                            Service Locations
-                            <span className="text-danger">*</span>
-                          </label>
+                          <div className="row">
+                            <div className="col-md-auto">
+                              <label className="form-label">
+                                Service Locations
+                                <span className="text-danger">*</span>{" "}
+                              </label>
+                            </div>
+                            <div className="col-md-3">
+                              {" "}
+                              {SRData.ServiceRequestData.CustomerId ? (
+                                <ServiceLocations
+                                  fetchServiceLocations={fetchServiceLocations}
+                                  fetchCustomers={fetchCustomers}
+                                  customerId={
+                                    SRData.ServiceRequestData.CustomerId
+                                  }
+                                />
+                              ) : (
+                                <></>
+                              )}
+                            </div>
+                          </div>
 
                           <Autocomplete
                             id="inputState19"
@@ -730,9 +753,27 @@ const AddSRform = () => {
                         </div>
 
                         <div className="col-xl-3 mb-2 col-md-9 ">
-                          <label className="form-label">
-                            Contacts<span className="text-danger">*</span>
-                          </label>
+                          <div className="row">
+                            <div className="col-md-auto">
+                              <label className="form-label">
+                                Contacts<span className="text-danger">*</span>
+                              </label>
+                            </div>
+                            <div className="col-md-3">
+                              {" "}
+                              {SRData.ServiceRequestData.CustomerId ? (
+                                <Contacts
+                                  fetctContacts={fetctContacts}
+                                  fetchCustomers={fetchCustomers}
+                                  customerId={
+                                    SRData.ServiceRequestData.CustomerId
+                                  }
+                                />
+                              ) : (
+                                <></>
+                              )}
+                            </div>
+                          </div>
 
                           <Autocomplete
                             id="inputState299"
@@ -1430,12 +1471,15 @@ const AddSRform = () => {
                         type="button"
                         className="btn btn-sm btn-outline-primary ms-1"
                         onClick={() => {
-                          sendEmail(
-                            `/service-requests/service-request-preview?id=${idParam}`,
-                            SRData.ServiceRequestData.CustomerId,
-                            SRData.ServiceRequestData.ContactId,
-                            false
+                          navigate(
+                            `/send-mail?title=${"Service Request"}&mail=${contactEmail}`
                           );
+                          // sendEmail(
+                          //   `/service-requests/service-request-preview?id=${idParam}`,
+                          //   SRData.ServiceRequestData.CustomerId,
+                          //   SRData.ServiceRequestData.ContactId,
+                          //   false
+                          // );
                         }}
                       >
                         <Email></Email>

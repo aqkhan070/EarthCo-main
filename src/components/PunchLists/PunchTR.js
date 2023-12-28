@@ -228,7 +228,7 @@ const PunchTR = ({
                   "",
                   "Customer Name",
                   "Title",
-                  "Assigned to",
+                  "Regional Manager",
                   "Date Created",
                   "Status",
                 ].map((column, index) => (
@@ -242,7 +242,7 @@ const PunchTR = ({
                             field: columnFieldMapping[column],
                             order:
                               sorting.order === "asc" &&
-                              sorting.field === columnFieldMapping[column]
+                                sorting.field === columnFieldMapping[column]
                                 ? "desc"
                                 : "asc",
                           })

@@ -287,7 +287,7 @@ const PurchaseOrder = () => {
                           filteredPo.map((po, index) => (
                             <TableRow
                               className="material-tbl-alignment"
-                              onDoubleClick={() => {
+                              onClick={() => {
                                 // setShowContent(false);
                                 // setselectedPo(po.PurchaseOrderId);
                                 navigate(

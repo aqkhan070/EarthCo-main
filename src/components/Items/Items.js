@@ -222,14 +222,14 @@ const Items = () => {
                     <TableBody>
                       {(rowsPerPage > 0
                         ? filteredItems.slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          )
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
                         : filteredItems
                       ).map((item, index) => (
                         <TableRow
                           className="material-tbl-alignment"
-                          onDoubleClick={() => {
+                          onClick={() => {
                             // setSelectedItem(item.ItemId);
                             // setShowContent(false);
                             navigate(`/items/add-item?id=${item.ItemId}`);

@@ -1742,12 +1742,14 @@ export const AddPO = ({}) => {
                             type="button"
                             className="btn btn-sm btn-outline-primary estm-action-btn"
                             onClick={() => {
-                              sendEmail(
-                                `/purchase-order/purchase-order-preview?id=${idParam}`,
-                                formData.SupplierId,
-                                0,
-                                true
-                              );
+                              navigate(`/send-mail?title=${"Purchase Order"}`);
+
+                              // sendEmail(
+                              //   `/purchase-order/purchase-order-preview?id=${idParam}`,
+                              //   formData.SupplierId,
+                              //   0,
+                              //   true
+                              // );
                             }}
                           >
                             <Email />
@@ -1755,7 +1757,8 @@ export const AddPO = ({}) => {
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-primary estm-action-btn me-2"
-                            onClick={() => {
+                             onClick={() => {
+                              
                               navigate(
                                 `/purchase-order/purchase-order-preview?id=${idParam}`
                               );

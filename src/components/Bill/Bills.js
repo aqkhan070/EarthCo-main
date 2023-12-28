@@ -220,7 +220,7 @@ const Bills = () => {
                       .map((bill) => (
                         <TableRow
                           className="bill-tbl-alignment"
-                          onDoubleClick={() => {
+                          onClick={() => {
                             // setshowContent(false);
                             // setselectedBill(bill.BillId);
                             navigate(`/bills/add-bill?id=${bill.BillId}`);

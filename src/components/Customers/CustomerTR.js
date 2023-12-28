@@ -196,7 +196,7 @@ const CustomerTR = ({
                               field: column,
                               order:
                                 sorting.order === "asc" &&
-                                sorting.field === column
+                                  sorting.field === column
                                   ? "desc"
                                   : "asc",
                             })
@@ -237,9 +237,10 @@ const CustomerTR = ({
                       <TableCell className="table-cell-align">
                         {customer.CustomerId}
                       </TableCell>
-                      <TableCell>{customer.CompanyName}</TableCell>
+
                       <TableCell>{customer.CustomerName}</TableCell>
-                      <TableCell>{customer.Address}</TableCell>
+                      <TableCell>{customer.ContactName}</TableCell>
+                      <TableCell>{customer.CompanyName}</TableCell>
                       <TableCell>{customer.Email}</TableCell>
                       <TableCell className="table-cell-align">
                         <Button

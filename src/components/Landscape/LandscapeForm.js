@@ -9,7 +9,8 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import { Autocomplete, TextField } from "@mui/material";
 import Cookies from "js-cookie";
 import EventPopups from "../Reusable/EventPopups";
-
+import Contacts from "../CommonComponents/Contacts";
+import ServiceLocations from "../CommonComponents/ServiceLocations";
 const LandscapeForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -245,9 +246,26 @@ const LandscapeForm = () => {
                     />
                   </div>
                   <div className="col-md-3 ">
-                    <label className="form-label">
-                      Service location <span className="text-danger">*</span>
-                    </label>
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Service Locations
+                          <span className="text-danger">*</span>{" "}
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <ServiceLocations
+                            fetchServiceLocations={fetchServiceLocations}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
                     <Autocomplete
                       id="inputState19"
                       size="small"
@@ -277,9 +295,25 @@ const LandscapeForm = () => {
                     />
                   </div>
                   <div className="col-md-3 ">
-                    <label className="form-label">
-                      Contact<span className="text-danger">*</span>
-                    </label>
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Contacts<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <Contacts
+                            fetctContacts={fetctContacts}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
                     <Autocomplete
                       id="inputState299"
                       size="small"
