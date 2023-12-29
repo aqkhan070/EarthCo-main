@@ -12,6 +12,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -45,6 +46,8 @@ const Landscape = () => {
     emailAlertTxt,
     emailAlertColor,
   } = useSendEmail();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
+
 
   const getLandscape = async () => {
     try {
@@ -53,6 +56,7 @@ const Landscape = () => {
         { headers }
       );
       setLandscapeData(res.data);
+      fetchEmail(res.data.ContactId)
       console.log("reponse landscape is", res.data);
     } catch (error) {
       console.log("api call error", error);
@@ -180,7 +184,7 @@ const Landscape = () => {
                     //   0,
                     //   false
                     // );
-                    navigate(`/send-mail?title=${"Monthly Landscape"}`);
+                    navigate(`/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`);
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>

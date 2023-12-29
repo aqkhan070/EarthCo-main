@@ -16,7 +16,6 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 
-
 const AddBill = ({
   setshowContent,
   fetchBills,
@@ -31,12 +30,13 @@ const AddBill = ({
   };
   const currentDate = new Date();
 
-  const { sendEmail,
+  const {
+    sendEmail,
     showEmailAlert,
     setShowEmailAlert,
     emailAlertTxt,
-    emailAlertColor
- } = useSendEmail();
+    emailAlertColor,
+  } = useSendEmail();
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -345,21 +345,17 @@ const AddBill = ({
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const handleAddItem = () => {
@@ -585,12 +581,12 @@ const AddBill = ({
         color={snackBarColor}
         text={snackBarText}
       />
-          <EventPopups
-    open={showEmailAlert}
-    setOpen={setShowEmailAlert}
-    color={emailAlertColor}
-    text={emailAlertTxt}
-  />
+      <EventPopups
+        open={showEmailAlert}
+        setOpen={setShowEmailAlert}
+        color={emailAlertColor}
+        text={emailAlertTxt}
+      />
 
       <div className="add-item">
         {/* <div className="tabSwitch">

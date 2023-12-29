@@ -21,15 +21,9 @@ import { Button } from "@mui/material";
 import InvoiceTitleBar from "./InvoiceTitleBar";
 import useSendEmail from "../Hooks/useSendEmail";
 import LoaderButton from "../Reusable/LoaderButton";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
-const AddInvioces = ({
-  setShowContent,
-  selectedInvoice,
-  fetchInvoices,
-  setSubmitRes,
-  setSelectedInvoice,
-  fetchFilterInvoice,
-}) => {
+const AddInvioces = ({}) => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -68,6 +62,7 @@ const AddInvioces = ({
 
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [profitPercentage, setProfitPercentage] = useState(0);
@@ -386,6 +381,7 @@ const AddInvioces = ({
     fetchServiceLocations(formData.CustomerId);
     fetctContacts(formData.CustomerId);
     fetchName(formData.CustomerId);
+    fetchCustomerEmail(formData.CustomerId);
     console.log("main payload isss", formData);
   }, [formData.CustomerId]);
 
@@ -692,6 +688,7 @@ const AddInvioces = ({
 
   useEffect(() => {
     console.log(" testing....", formData);
+    fetchCustomerEmail(formData.CustomerId);
   }, [formData]);
 
   // AC
@@ -829,12 +826,15 @@ const AddInvioces = ({
     const totalamount =
       newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
 
-    const calculatedTotalProfit =
-      newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
-
-    const calculatedProfitPercentage =
-      (calculatedTotalProfit / totalExpense) * 100;
-
+    let calculatedTotalProfit = 0;
+    if (subtotal > 0) {
+      calculatedTotalProfit =
+        newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+    }
+    let calculatedProfitPercentage = 0;
+    if (totalExpense > 0) {
+      calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    }
     setTotalExpense(newCostTotalAmount + newACTotalAmount);
 
     setSubtotal(newTotalAmount);
@@ -842,14 +842,14 @@ const AddInvioces = ({
     if (totalamount) {
       setTotalItemAmount(totalamount);
     }
-    if (calculatedTotalProfit) {
-      setTotalProfit(calculatedTotalProfit);
-    }
+
+    setTotalProfit(calculatedTotalProfit);
+
+    console.log("profit");
 
     setBalanceDue(totalItemAmount - paymentCredit);
-    if (calculatedProfitPercentage) {
-      setProfitPercentage(calculatedProfitPercentage.toFixed(2));
-    }
+
+    setProfitPercentage(calculatedProfitPercentage);
 
     // console.log("amounts are", calculatedProfitPercentage, shippingCost, calculatedTotalProfit, totalACAmount, totalItemAmount, subtotal);
   }, [
@@ -859,6 +859,7 @@ const AddInvioces = ({
     totalItemAmount,
     subtotal,
     totalExpense,
+    formData,
   ]);
 
   // files
@@ -993,7 +994,9 @@ const AddInvioces = ({
                   <Autocomplete
                     id="staff-autocomplete"
                     size="small"
-                    options={staffData}
+                    options={staffData.filter(
+                      (staff) => staff.Role === "Admin"
+                    )}
                     getOptionLabel={(option) => option.FirstName || ""}
                     value={
                       staffData.find(
@@ -1951,7 +1954,7 @@ const AddInvioces = ({
                       <tr>
                         <td className="left">Profit Margin(%)</td>
                         <td className="right text-right">
-                          {profitPercentage}%
+                          {profitPercentage.toFixed(2)}%
                         </td>
                       </tr>
                     </tbody>
@@ -2162,7 +2165,9 @@ const AddInvioces = ({
                         //   0,
                         //   false
                         // );
-                        navigate(`/send-mail?title=${"Invoice"}`);
+                        navigate(
+                          `/send-mail?title=${"Invoice"}&mail=${customerMail}`
+                        );
                       }}
                     >
                       <Email />

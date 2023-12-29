@@ -460,7 +460,7 @@ const SideBar = () => {
       path: "/weekly-reports",
     },
     {
-      label: "Weekly Reports",
+      label: "Weekly Reports - RC",
       path: "/weekly-reports/rising-canes",
     },
   ];

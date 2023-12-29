@@ -1,45 +1,5 @@
-import Contacts from "../CommonComponents/Contacts";
-import ServiceLocations from "../CommonComponents/ServiceLocations";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
-<>
-<div className="row">
-<div className="col-md-auto">
-  <label className="form-label">
-    Contacts<span className="text-danger">*</span>
-  </label>
-</div>
-<div className="col-md-3">
-  {" "}
-  {formData.CustomerId ? (
-    <Contacts
-      fetctContacts={fetctContacts}
-      fetchCustomers={fetchCustomers}
-      customerId={formData.CustomerId}
-    />
-  ) : (
-    <></>
-  )}
-</div>
-</div>
+const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
 
-<div className="row">
-<div className="col-md-auto">
-  <label className="form-label">
-    Service Locations
-    <span className="text-danger">*</span>{" "}
-  </label>
-</div>
-<div className="col-md-3">
-  {" "}
-  {formData.CustomerId ? (
-    <ServiceLocations
-      fetchServiceLocations={fetchServiceLocations}
-      fetchCustomers={fetchCustomers}
-      customerId={formData.CustomerId}
-    />
-  ) : (
-    <></>
-  )}
-</div>
-</div>
-</>
+&mail=${customerMail}

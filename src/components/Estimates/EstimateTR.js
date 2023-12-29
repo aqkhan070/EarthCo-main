@@ -30,6 +30,7 @@ import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 import DeleteAllModal from "./DeleteAllModal";
 import useGetEstimate from "../Hooks/useGetEstimate";
+import { DataContext } from "../../context/AppData";
 
 const theme = createTheme({
   palette: {
@@ -62,6 +63,7 @@ const EstimateTR = ({
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
   const { estmRecords, tableError, filterdEstm, getFilteredEstimate } =
     useGetEstimate();
+  const { PunchListData, setPunchListData } = useContext(DataContext);
 
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("EstimateId");
@@ -210,6 +212,7 @@ const EstimateTR = ({
   useEffect(() => {
     // Initial fetch of estimates
     getFilteredEstimate();
+    setPunchListData({});
   }, []);
 
   useEffect(() => {
@@ -325,7 +328,7 @@ const EstimateTR = ({
                       <button
                         className="btn btn-primary "
                         data-bs-dismiss="modal"
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
                         Yes
                       </button>
@@ -369,7 +372,7 @@ const EstimateTR = ({
                       <button
                         className="btn btn-primary "
                         data-bs-dismiss="modal"
-                        onClick={() => { }}
+                        onClick={() => {}}
                       >
                         Yes
                       </button>

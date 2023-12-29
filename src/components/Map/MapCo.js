@@ -1,182 +1,10 @@
-// import React, { useContext, useEffect, useRef } from "react";
-// import { DataContext } from "../../context/AppData";
-
-// import {
-//   GoogleMap,
-//   LoadScript,
-//   Marker,
-//   InfoWindow,
-// } from "@react-google-maps/api";
-
-// const containerStyle = {
-//   width: "100%",
-//   height: "500px",
-// };
-
-// const defaultCenter = {
-//   lat: 31.4237697,
-//   lng: 74.2678971,
-// };
-
-// function GoogleMapApi() {
-//   const { maplatLngs, setMaplatLngs } = useContext(DataContext);
-
-//   const [map, setMap] = React.useState(null);
-//   const [markers, setMarkers] = React.useState([
-//     {
-//       lat: 31.4237697,
-//       lng: 74.2678971,
-//     },
-//   ]);
-//   const [selectedMarker, setSelectedMarker] = React.useState(null);
-//   const searchInputRef = useRef(null);
-
-//   useEffect(() => {
-//     // Load markers from localStorage on component mount
-
-//     const savedMarkers = maplatLngs || [];
-//     console.log("map lat longs", markers);
-//     const newMarkers = {
-//       lat: maplatLngs.lat,
-//       lng: maplatLngs.lng,
-//     };
-
-//     setMarkers(newMarkers);
-//     console.log("map lat longs after", markers);
-//   }, [maplatLngs]);
-
-//   const saveMarkersToLocalStorage = (markers) => {
-//     localStorage.setItem("markers", JSON.stringify(markers));
-//   };
-
-//   const onLoad = React.useCallback(function callback(map) {
-//     const bounds = new window.google.maps.LatLngBounds(defaultCenter);
-//     map.fitBounds(bounds);
-//     setMap(map);
-//   }, []);
-
-//   const onUnmount = React.useCallback(function callback() {
-//     setMap(null);
-//   }, []);
-
-//   const handleSearch = () => {
-//     const input = searchInputRef.current;
-
-//     if (
-//       input &&
-//       window.google &&
-//       window.google.maps &&
-//       window.google.maps.places
-//     ) {
-//       const autocomplete = new window.google.maps.places.Autocomplete(input);
-//       autocomplete.addListener("place_changed", () => {
-//         const place = autocomplete.getPlace();
-//         if (place.geometry) {
-//           const newMarkers = [
-//             ...markers,
-//             {
-//               lat: place.geometry.location.lat(),
-//               lng: place.geometry.location.lng(),
-//             },
-//           ];
-//           // setMarkers(newMarkers);
-//           // saveMarkersToLocalStorage(newMarkers);
-
-//           // Center the map on the selected place
-//           if (map) {
-//             map.panTo(place.geometry.location);
-//           }
-//         }
-//       });
-//     }
-//   };
-
-//   const handleMapClick = (event) => {
-//     const clickedLat = event.latLng.lat();
-//     const clickedLng = event.latLng.lng();
-
-//     // setMarkers((prevMarkers) => {
-//     //   // Ensure prevMarkers is an array, or initialize it as an empty array if it's null or undefined
-//     //   const newMarkers = Array.isArray(prevMarkers) ? [...prevMarkers] : [];
-//     //   newMarkers.push({ lat: clickedLat, lng: clickedLng });
-//     //   // saveMarkersToLocalStorage(newMarkers);
-//     //   return newMarkers;
-//     // });
-//   };
-
-//   const handleMarkerClick = (marker) => {
-//     setSelectedMarker(marker);
-//   };
-
-//   const handleInfoWindowClose = () => {
-//     setSelectedMarker(null);
-//   };
-
-//   return (
-//     <LoadScript
-//       googleMapsApiKey="AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE"
-//       libraries={["places"]}
-//     >
-//       <div>
-//         {/* <input
-//           ref={searchInputRef}
-//           type="text"
-//           placeholder="Search for a place"
-//           onChange={handleSearch}
-//           style={{
-//             width: "300px", // Set the width as needed
-//             padding: "10px",
-//             fontSize: "16px",
-//             border: "1px solid #ccc",
-//             borderRadius: "5px",
-//             margin: "10px 0",
-//           }}
-//         /> */}
-
-//         <GoogleMap
-//           mapContainerStyle={containerStyle}
-//           center={defaultCenter}
-//           zoom={1}
-//           onLoad={onLoad}
-//           onUnmount={onUnmount}
-//           onClick={handleMapClick}
-//         >
-//           {/* Render markers for all clicked locations */}
-
-//           {/* {markers.map((marker, index) => ( */}
-//           <Marker
-//             // key={index}
-//             position={{ lat: markers.lat, lng: markers.lng }}
-//             // onClick={() => handleMarkerClick(marker)}
-//           />
-//           {/* ))} */}
-
-//           {selectedMarker && (
-//             <InfoWindow
-//               position={selectedMarker}
-//               onCloseClick={handleInfoWindowClose}
-//             >
-//               <div>
-//                 <p>Marker Info</p>
-//               </div>
-//             </InfoWindow>
-//           )}
-//         </GoogleMap>
-//       </div>
-//     </LoadScript>
-//   );
-// }
-
-// export default React.memo(GoogleMapApi);
-
 import {
   GoogleMap,
   LoadScript,
   Marker,
   InfoWindow,
 } from "@react-google-maps/api";
-import { memo, useContext, useEffect, useState } from "react";
-import { DataContext } from "../../context/AppData";
+import { memo, useState, useEffect } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -188,46 +16,36 @@ const defaultCenter = {
   lng: 74.2678971,
 };
 
-function GoogleMapApi() {
-  const { maplatLngs, setMaplatLngs } = useContext(DataContext);
-
+function GoogleMapApi({ mapData, toolTipData }) {
   const [map, setMap] = useState(null);
-  const [markers, setMarkers] = useState({});
   const [selectedMarker, setSelectedMarker] = useState(null);
 
   useEffect(() => {
-    // Get Current Location in my Browser
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const currentMarkers = { lat: latitude, lng: longitude };
-          setMarkers(currentMarkers);
-        },
-        (error) => {
-          console.error("Error getting user location:", error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  }, [map]);
-
-  useEffect(() => {
-    // Adjust Pin Locations in our screen
-    let latitude = maplatLngs?.lat ? maplatLngs.lat : markers.lat;
-    let longitude = maplatLngs?.lng ? maplatLngs.lng : markers.lng;
-
-    if (map) {
-      map.panTo({
-        lat: latitude,
-        lng: longitude,
-      });
+    if (map && mapData && mapData.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
-      bounds.extend(new window.google.maps.LatLng(latitude, longitude));
+      mapData.forEach((location) => {
+        if (isFinite(location.lat) && isFinite(location.lng)) {
+          bounds.extend(
+            new window.google.maps.LatLng(location.lat, location.lng)
+          );
+        }
+      });
       map.fitBounds(bounds);
     }
-  }, [markers, map, maplatLngs]);
+  }, [map, mapData]);
+
+  useEffect(() => {
+    console.log("toolTipData:", toolTipData);
+    if (
+      map &&
+      toolTipData &&
+      isFinite(toolTipData.lat) &&
+      isFinite(toolTipData.lng)
+    ) {
+      map.panTo(toolTipData);
+      map.setZoom(15); // Adjust zoom level as needed
+    }
+  }, [map, toolTipData]);
 
   const onLoad = (map) => {
     setMap(map);
@@ -235,6 +53,10 @@ function GoogleMapApi() {
 
   const onUnmount = () => {
     setMap(null);
+  };
+
+  const handleMarkerClick = (location) => {
+    setSelectedMarker(location);
   };
 
   const handleInfoWindowClose = () => {
@@ -254,19 +76,38 @@ function GoogleMapApi() {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
-          {Object.keys(maplatLngs).length ? (
-            <Marker position={maplatLngs} />
-          ) : (
-            <Marker position={markers} />
-          )}
+          {mapData.map((location, index) => (
+            <Marker
+              key={index}
+              position={{ lat: location.lat, lng: location.lng }}
+              onClick={() => handleMarkerClick(location)}
+            />
+          ))}
 
           {selectedMarker && (
             <InfoWindow
-              position={selectedMarker}
+              position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
               onCloseClick={handleInfoWindowClose}
             >
               <div>
-                <p>Marker Info</p>
+                <h6 className="pb-0 mb-0">
+                  <strong>Service Request Number:</strong>
+                </h6>
+                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                  {selectedMarker.ServiceRequestNumber}
+                </p>
+                <h6 className="pb-0 mb-0">
+                  <strong>Customer Name:</strong>
+                </h6>
+                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                  {selectedMarker.CustomerName}
+                </p>
+                <h6 className="pb-0 mb-0">
+                  <strong>Address:</strong>
+                </h6>
+                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                  {selectedMarker.Address}
+                </p>
               </div>
             </InfoWindow>
           )}
@@ -275,4 +116,5 @@ function GoogleMapApi() {
     </LoadScript>
   );
 }
+
 export default memo(GoogleMapApi);

@@ -517,21 +517,17 @@ export const AddPO = ({}) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const handleAddItem = () => {
@@ -1015,7 +1011,9 @@ export const AddPO = ({}) => {
                         <Autocomplete
                           id="staff-autocomplete"
                           size="small"
-                          options={staffData}
+                          options={staffData.filter(
+                            (staff) => staff.Role === "Regional Manager"
+                          )}
                           getOptionLabel={(option) => option.FirstName || ""}
                           value={
                             staffData.find(
@@ -1075,7 +1073,9 @@ export const AddPO = ({}) => {
                         <Autocomplete
                           id="staff-autocomplete"
                           size="small"
-                          options={staffData}
+                          options={staffData.filter(
+                            (staff) => staff.Role === "Regional Manager"
+                          )}
                           getOptionLabel={(option) => option.FirstName || ""}
                           value={
                             staffData.find(
@@ -1757,8 +1757,7 @@ export const AddPO = ({}) => {
                           <button
                             type="button"
                             className="btn btn-sm btn-outline-primary estm-action-btn me-2"
-                             onClick={() => {
-                              
+                            onClick={() => {
                               navigate(
                                 `/purchase-order/purchase-order-preview?id=${idParam}`
                               );

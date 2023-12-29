@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const ProposalSummary = () => {
   const {
@@ -32,6 +33,7 @@ const ProposalSummary = () => {
 
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const {
     sendEmail,
@@ -43,6 +45,8 @@ const ProposalSummary = () => {
 
   useEffect(() => {
     fetchReport(customerParam, yearParam, MonthParam, "proposal");
+    // fetchEmail(reportData[0].ContactId);
+    fetchCustomerEmail(customerParam);
 
     console.log("sr propoal dala", reportData);
   }, []);
@@ -157,7 +161,9 @@ const ProposalSummary = () => {
                       //   0,
                       //   false
                       // );
-                      navigate(`/send-mail?title=${"Proposal Summary"}`);
+                      navigate(
+                        `/send-mail?title=${"Proposal Summary"}&mail=${customerMail}`
+                      );
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

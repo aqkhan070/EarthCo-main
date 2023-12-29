@@ -11,7 +11,7 @@ import { DataContext } from "../../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../../Hooks/useSendEmail";
 import EventPopups from "../../Reusable/EventPopups";
-
+import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
 
 const WeeklyReport = () => {
   const token = Cookies.get("token");
@@ -37,7 +37,7 @@ const WeeklyReport = () => {
   const MonthParam = Number(queryParams.get("Month"));
   const yearParam = Number(queryParams.get("Year"));
   const isMail = queryParams.get("isMail");
-
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
   const [weeklyPreviewData, setWeeklyPreviewData] = useState({});
   const [files, setFiles] = useState([]);
   const getWeeklyPreview = async () => {
@@ -47,6 +47,7 @@ const WeeklyReport = () => {
         { headers }
       );
       setWeeklyPreviewData(res.data.Data);
+      fetchEmail(res.data.Data.ContactId);
       setFiles(res.data.FileData);
       console.log("reponse weekly is", res.data);
     } catch (error) {
@@ -157,7 +158,7 @@ const WeeklyReport = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.ContactId}</h5>{" "}
+                    <h5>{weeklyPreviewData.ContactName}</h5>{" "}
                   </div>
                   <div>
                     <h5>
@@ -319,7 +320,9 @@ const WeeklyReport = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      navigate(`/send-mail?title=${"Weekly Report"}`);
+                      navigate(
+                        `/send-mail?title=${"Weekly Report"}&mail=${contactEmail}`
+                      );
                       // sendEmail(
                       //   `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                       //   customerParam,

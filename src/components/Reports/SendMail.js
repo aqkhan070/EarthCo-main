@@ -178,6 +178,7 @@ const SendMail = () => {
                     <Chip
                       key={email}
                       label={email}
+                      size="small"
                       onDelete={() => handleRemoveEmail(email)}
                       color="primary"
                     />
@@ -207,6 +208,7 @@ const SendMail = () => {
                     <Chip
                       key={CC}
                       label={CC}
+                      size="small"
                       onDelete={() => handleRemoveCC(CC)}
                       color="primary"
                     />

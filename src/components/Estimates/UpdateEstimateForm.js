@@ -516,24 +516,20 @@ const UpdateEstimateForm = ({
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      // Make an API request when the search text changes
+    // Make an API request when the search text changes
 
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-          console.log("item list is", response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+        console.log("item list is", response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const deleteItem = (itemId) => {
@@ -1146,9 +1142,7 @@ const UpdateEstimateForm = ({
                             href=""
                             style={{ color: "blue" }}
                             onClick={() => {
-                              navigate(
-                                `/bills/addbill?id=${formData.BillId}`
-                              );
+                              navigate(`/bills/addbill?id=${formData.BillId}`);
                             }}
                           >
                             Go to Bill

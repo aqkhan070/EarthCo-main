@@ -74,6 +74,8 @@ import PLPhotoOnlyPreview from "./components/PunchListPhotoOnly/PLPhotoOnlyPrevi
 import IrrigationAuditTable from "./components/IrrigationAudit/IrrigationAuditTable";
 import AddIrrigationAudit from "./components/IrrigationAudit/AddIrrigationAudit";
 import IrrigationAuditPreview from "./components/IrrigationAudit/IrrigationAuditPreview";
+import TermsandConditions from "./pages/TermsandConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -84,6 +86,11 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LoginPage />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsandConditions />}
+            />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/ResetPassword" element={<ResetPassword />} />
 
             <Route path="/" element={<DashboardPage />}>
@@ -178,23 +185,44 @@ function App() {
                 element={<Landscape />}
               />
               <Route path="send-mail" element={<SendMail />} />
-              <Route path="weekly-reports/add-rising-canes" element={<AddRisingCanes />} />
-              <Route path="weekly-reports/rising-canes" element={<RisingCaneTable />} />
-              <Route path="weekly-reports/rising-canes-preview" element={<RisingCanesPreview />} />
+              <Route
+                path="weekly-reports/add-rising-canes"
+                element={<AddRisingCanes />}
+              />
+              <Route
+                path="weekly-reports/rising-canes"
+                element={<RisingCaneTable />}
+              />
+              <Route
+                path="weekly-reports/rising-canes-preview"
+                element={<RisingCanesPreview />}
+              />
 
-              <Route path="punchList-photos-only" element={<PunchListPhotoOnly />} />
-              <Route path="punchList-photos-only/add" element={<AddPLPhotoOnly />} />
-              <Route path="punchList-photos-only/preview" element={<PLPhotoOnlyPreview />} />
+              <Route
+                path="punchList-photos-only"
+                element={<PunchListPhotoOnly />}
+              />
+              <Route
+                path="punchList-photos-only/add"
+                element={<AddPLPhotoOnly />}
+              />
+              <Route
+                path="punchList-photos-only/preview"
+                element={<PLPhotoOnlyPreview />}
+              />
 
-              <Route path="irrigation-audit" element={<IrrigationAuditTable />} />
-              <Route path="irrigation-audit/add" element={<AddIrrigationAudit />} />
-              <Route path="irrigation-audit/preview" element={<IrrigationAuditPreview />} />
-
-              
-
-
-
-              
+              <Route
+                path="irrigation-audit"
+                element={<IrrigationAuditTable />}
+              />
+              <Route
+                path="irrigation-audit/add"
+                element={<AddIrrigationAudit />}
+              />
+              <Route
+                path="irrigation-audit/preview"
+                element={<IrrigationAuditPreview />}
+              />
             </Route>
             <Route path="*" element={<ErrorPage />} />
           </Routes>

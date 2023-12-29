@@ -492,7 +492,9 @@ const AddRisingCanes = () => {
                 <Autocomplete
                   id="staff-autocomplete"
                   size="small"
-                  options={staffData}
+                  options={staffData.filter(
+                    (staff) => staff.Role === "Regional Manager"
+                  )}
                   getOptionLabel={(option) => option.FirstName || ""}
                   value={
                     staffData.find(

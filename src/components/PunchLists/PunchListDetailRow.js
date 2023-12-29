@@ -37,13 +37,12 @@ const PunchListDetailRow = ({
   rowIndex,
   expandedRow,
   setPlDetailId,
+  fetchFilterdPunchList,
 }) => {
-  const {
-    PunchDetailData,
-    setPunchDetailData,
-    setPunchListData,
-    fetchFilterdPunchList,
-  } = useContext(DataContext);
+
+  
+  const { PunchDetailData, setPunchDetailData, setPunchListData } =
+    useContext(DataContext);
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState([]);
@@ -99,10 +98,25 @@ const PunchListDetailRow = ({
       fetchFilterdPunchList();
       console.log("delete pl details response", response.data);
     } catch (error) {
-      console.error(
-        "There was an error deleting the punch list detail:",
-        error
+      console.log("There was an error deleting the punch list detail:", error);
+    }
+  };
+
+  const changePlStatus = async (id, status) => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/PunchList/UpdatePunchlistStatus?PunchlistId=${id}&StatusId=${status}`,
+        {
+          headers,
+        }
       );
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText("Punch List Status Changed successfuly");
+      fetchFilterdPunchList();
+      console.log("delete pl details response", response.data);
+    } catch (error) {
+      console.log("There was an error deleting the punch list detail:", error);
     }
   };
 
@@ -148,7 +162,7 @@ const PunchListDetailRow = ({
                       </div>
                     </TableCell>
 
-                    <TableCell  colSpan={3}>
+                    <TableCell colSpan={3}>
                       {detail.ItemData.map((item) => {
                         return (
                           <div key={item.ItemId}>
@@ -179,10 +193,20 @@ const PunchListDetailRow = ({
                           <MenuItem onClick={() => {}} value={1}>
                             Select
                           </MenuItem>
-                          <MenuItem onClick={() => {}} value={2}>
+                          <MenuItem
+                            onClick={() => {
+                              changePlStatus(item.Data.PunchlistId, 1);
+                            }}
+                            value={2}
+                          >
                             Complete
                           </MenuItem>
-                          <MenuItem onClick={() => {}} value={3}>
+                          <MenuItem
+                            onClick={() => {
+                              changePlStatus(item.Data.PunchlistId, 2);
+                            }}
+                            value={3}
+                          >
                             Pending
                           </MenuItem>
                           <MenuItem

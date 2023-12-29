@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
@@ -32,7 +33,7 @@ const InvoicePreview = () => {
   const [printClicked, setPrintClicked] = useState(false);
 
   const [showbuttons, setShowButtons] = useState(true);
-
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
   const handlePrint = () => {
     // setToggleFullscreen(false);
     setShowButtons(false);
@@ -104,6 +105,7 @@ const InvoicePreview = () => {
       console.log("response.data.Data", response.data);
 
       console.log(" list is///////", response.data.Data);
+      fetchCustomerEmail(response.data.Data.CustomerId);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -144,8 +146,6 @@ const InvoicePreview = () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-    
-
       <div
         className={
           toggleFullscreen
@@ -416,7 +416,9 @@ const InvoicePreview = () => {
                       //   InvoicePreviewData.Data.ContactId,
                       //   false
                       // );
-                      navigate(`/send-mail?title=${"Invoice"}`);
+                      navigate(
+                        `/send-mail?title=${"Invoice"}&mail=${customerMail}`
+                      );
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

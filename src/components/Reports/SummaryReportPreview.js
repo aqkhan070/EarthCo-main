@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const SummaryReportPreview = () => {
   const {
@@ -38,6 +39,7 @@ const SummaryReportPreview = () => {
 
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
+    const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
 
   const isGeneralReport = window.location.pathname.includes("general-report");
 
@@ -90,7 +92,7 @@ const SummaryReportPreview = () => {
 
   useEffect(() => {
     fetchReport(customerParam, yearParam, MonthParam, "Service Request");
-
+    fetchCustomerEmail(customerParam);
     console.log("sr propoal dala", sRProposalData);
   }, []);
 
@@ -151,12 +153,16 @@ const SummaryReportPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
                     onClick={() => {
-                      sendEmail(
-                        `/summary-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                        customerParam,
-                        0,
-                        false
+                      navigate(
+                        `/send-mail?title=${"Service Request Summary Report"}&mail=${customerMail}`
                       );
+
+                      // sendEmail(
+                      //   `/summary-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+                      //   customerParam,
+                      //   0,
+                      //   false
+                      // );
                     }}
                   >
                     <i class="fa-regular fa-envelope"></i>

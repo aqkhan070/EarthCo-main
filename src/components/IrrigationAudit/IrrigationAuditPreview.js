@@ -12,6 +12,7 @@ import { DataContext } from "../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const IrrigationAuditPreview = () => {
   const token = Cookies.get("token");
@@ -21,6 +22,7 @@ const IrrigationAuditPreview = () => {
   const navigate = useNavigate();
 
   const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const {
     sendEmail,
@@ -48,6 +50,7 @@ const IrrigationAuditPreview = () => {
       );
       console.log("selected irrigation is", res.data);
       setIrrDetails(res.data[0]);
+      fetchEmail(res.data[0].Data.ContactId);
       setControllerData(res.data);
     } catch (error) {
       console.log("fetch irrigation api call error", error);
@@ -169,7 +172,9 @@ const IrrigationAuditPreview = () => {
                     //   0,
                     //   false
                     // );
-                    navigate(`/send-mail?title=${"Irrigation-Audit"}`);
+                    navigate(
+                      `/send-mail?title=${"Irrigation-Audit"}&mail=${contactEmail}`
+                    );
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>
@@ -243,7 +248,7 @@ const IrrigationAuditPreview = () => {
                     >
                       {" "}
                       <strong>By Regional Manager</strong>{" "}
-                      <div>{irrDetails?.Data.RegionalManagerId}</div>
+                      <div>{irrDetails?.Data.RegionalManagerName}</div>
                       <strong>Created</strong>{" "}
                       <div>{formatDate(irrDetails?.Data.CreatedDate)}</div>
                     </div>
@@ -287,83 +292,88 @@ const IrrigationAuditPreview = () => {
                         {" "}
                         {controllerData ? (
                           controllerData?.map((item) => {
-                            return (
-                              <tr
-                                key={
-                                  item.ControllerData.ControllerAuditReportId
-                                }
-                                className="Irr-preview-table-row"
-                              >
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
+                            if (item.ControllerData) {
+                              return (
+                                <tr
+                                  key={
+                                    item.ControllerData.ControllerAuditReportId
+                                  }
+                                  className="Irr-preview-table-row"
                                 >
-                                  {item.ControllerData.ControllerAuditReportId}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  {item.ControllerData.BrokenValve
-                                    ? "Yes"
-                                    : "No"}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  {item.ControllerData.BrokenLaterals
-                                    ? "Yes"
-                                    : "No"}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  {item.ControllerData.BrokenHeads
-                                    ? "Yes"
-                                    : "No"}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  {item.ControllerData.HowMany}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  {item.ControllerData.RepairMadeOrNeeded}
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  <img
-                                    src={`https://earthcoapi.yehtohoga.com/${item.ControllerData.ControllerPhotoPath}`}
-                                    style={{
-                                      width: "150px",
-                                      height: "120px",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                </td>
-                                <td
-                                  style={{ verticalAlign: "top" }}
-                                  className="tdbreak"
-                                >
-                                  <img
-                                    src={`https://earthcoapi.yehtohoga.com/${item.ControllerData.PhotoPath}`}
-                                    style={{
-                                      width: "150px",
-                                      height: "120px",
-                                      objectFit: "cover",
-                                    }}
-                                  />
-                                </td>
-                              </tr>
-                            );
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {
+                                      item.ControllerData
+                                        .ControllerAuditReportId
+                                    }
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {item.ControllerData.BrokenValve
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {item.ControllerData.BrokenLaterals
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {item.ControllerData.BrokenHeads
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {item.ControllerData.HowMany}
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    {item.ControllerData.RepairMadeOrNeeded}
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    <img
+                                      src={`https://earthcoapi.yehtohoga.com/${item.ControllerData.ControllerPhotoPath}`}
+                                      style={{
+                                        width: "150px",
+                                        height: "120px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                  </td>
+                                  <td
+                                    style={{ verticalAlign: "top" }}
+                                    className="tdbreak"
+                                  >
+                                    <img
+                                      src={`https://earthcoapi.yehtohoga.com/${item.ControllerData.PhotoPath}`}
+                                      style={{
+                                        width: "150px",
+                                        height: "120px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                  </td>
+                                </tr>
+                              );
+                            }
                           })
                         ) : (
                           <></>

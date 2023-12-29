@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const GenralReport = () => {
   const {
@@ -23,6 +24,7 @@ const GenralReport = () => {
   const customerParam = Number(queryParams.get("Customer"));
   const MonthParam = Number(queryParams.get("Month"));
   const yearParam = Number(queryParams.get("Year"));
+  const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
 
   const isMail = queryParams.get("isMail");
 
@@ -44,6 +46,7 @@ const GenralReport = () => {
       setToggleFullscreen(true);
     }, 3000);
   };
+
 
   const handleDownload = () => {
     const input = document.getElementById("General-preview");
@@ -85,6 +88,7 @@ const GenralReport = () => {
 
   useEffect(() => {
     console.log("sr data", sRProposalData);
+    fetchCustomerEmail(customerParam);
   }, []);
 
   return (
@@ -136,7 +140,7 @@ const GenralReport = () => {
                     //   0,
                     //   false
                     // );
-                    navigate(`/send-mail?title=${"Report"}`);
+                    navigate(`/send-mail?title=${"Report"}&mail=${customerMail}`);
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>

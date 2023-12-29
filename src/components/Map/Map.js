@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import MapCo from "./MapCo";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { DataContext } from "../../context/AppData";
+
 import { CircularProgress } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
 
@@ -13,8 +13,6 @@ const Map = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const { maplatLngs, setMaplatLngs } = useContext(DataContext);
-
   const [selectedType, setSelectedType] = useState("Inspect and Advise.");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -22,9 +20,6 @@ const Map = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
-  // const [filteredMapData, setFilteredMapData] = useState([]);
-
-  const [searchSR, setsearchSR] = useState("");
 
   const [mapData, setMapData] = useState([]);
 
@@ -59,18 +54,17 @@ const Map = () => {
     return typeMatches && queryMatches;
   });
 
+  const [toolTipData, setToolTipData] = useState({});
+
   const getLatLngs = (map) => {
-    if(!map.lat){
+    if (!map.lat) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Location not Found");
-      return
+      return;
     }
-    console.log("map dataa", map);
-    setMaplatLngs({
-      lat: map.lat,
-      lng: map.lng,
-    });
+
+    setToolTipData(map);
   };
 
   useEffect(() => {
@@ -87,7 +81,7 @@ const Map = () => {
 
   return (
     <>
-     <EventPopups
+      <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
         color={snackBarColor}
@@ -177,7 +171,7 @@ const Map = () => {
                 </div>
               </div>
               <div className="col-md-7">
-                <MapCo />
+                <MapCo mapData={mapData} toolTipData={toolTipData} />
               </div>
             </div>
           </div>

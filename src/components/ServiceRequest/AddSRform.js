@@ -25,7 +25,6 @@ import LoaderButton from "../Reusable/LoaderButton";
 import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
-
 import Contacts from "../CommonComponents/Contacts";
 const AddSRform = () => {
   const token = Cookies.get("token");
@@ -513,23 +512,17 @@ const AddSRform = () => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (searchText) {
-      // Make an API request when the search text changes
-
-      axios
-        .get(
-          `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
-          { headers }
-        )
-        .then((response) => {
-          setSearchResults(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching itemss data:", error);
-        });
-    } else {
-      setSearchResults([]); // Clear the search results when input is empty
-    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Item/GetSearchItemList?Search=${searchText}`,
+        { headers }
+      )
+      .then((response) => {
+        setSearchResults(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching itemss data:", error);
+      });
   }, [searchText]);
 
   const handleItemChange = (event) => {
@@ -898,7 +891,9 @@ const AddSRform = () => {
                           <Autocomplete
                             id="staff-autocomplete"
                             size="small"
-                            options={staffData}
+                            options={staffData.filter(
+                              (staff) => staff.Role === "Regional Manager"
+                            )}
                             getOptionLabel={(option) => option.FirstName || ""}
                             value={
                               staffData.find(

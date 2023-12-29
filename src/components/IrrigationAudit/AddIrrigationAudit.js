@@ -18,7 +18,6 @@ import AuditController from "./AuditController";
 import AuditControllerTable from "./AuditControllerTable";
 import Contacts from "../CommonComponents/Contacts";
 
-
 const AddIrrigationAudit = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -255,7 +254,7 @@ const AddIrrigationAudit = () => {
       console.log("selected irrigation is", res.data);
 
       setFormData(res.data[0].Data);
-        setControllerList(res.data);
+      setControllerList(res.data);
       //   setInputValue(res.data.IrrigationData.CustomerId);
       setIsLoading(false);
     } catch (error) {
@@ -387,7 +386,7 @@ const AddIrrigationAudit = () => {
                         />
                       </div> */}
                   <div className="col-md-3">
-                  <div className="row">
+                    <div className="row">
                       <div className="col-md-auto">
                         <label className="form-label">
                           Contacts<span className="text-danger">*</span>
@@ -440,7 +439,9 @@ const AddIrrigationAudit = () => {
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
-                      options={staffData}
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Regional Manager"
+                      )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
                         staffData.find(

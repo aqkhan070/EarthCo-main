@@ -873,12 +873,14 @@ const AddEstimateForm = () => {
     const totalamount =
       newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
 
-    const calculatedTotalProfit =
-      newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
-
-    const calculatedProfitPercentage =
-      (calculatedTotalProfit / totalExpense) * 100;
-
+    let calculatedTotalProfit =0;
+    if(subtotal>0){
+      calculatedTotalProfit=  newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+    }
+    let calculatedProfitPercentage = 0;
+    if (totalExpense > 0) {
+      calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    }
     setTotalExpense(newCostTotalAmount + newACTotalAmount);
 
     setSubtotal(newTotalAmount);
@@ -886,9 +888,10 @@ const AddEstimateForm = () => {
     if (totalamount) {
       setTotalItemAmount(totalamount);
     }
-    if (calculatedTotalProfit) {
+  
       setTotalProfit(calculatedTotalProfit);
-    }
+    
+    console.log("profit");
 
     setBalanceDue(totalItemAmount - paymentCredit);
 
@@ -902,6 +905,7 @@ const AddEstimateForm = () => {
     totalItemAmount,
     subtotal,
     totalExpense,
+    formData,
   ]);
 
   // filesss........
@@ -1070,7 +1074,6 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 "></div>
-
                   <div className=" col-md-3 mt-2">
                     <label className="form-label">
                       Date<span className="text-danger">*</span>
@@ -1093,7 +1096,37 @@ const AddEstimateForm = () => {
                       fullWidth
                     />
                   </div>
-
+                  <div className="col-md-3 mt-2 ">
+                    <label className="form-label">
+                      Regional Manager<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Regional Manager"
+                      )}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.RegionalManagerId
+                        ) || null
+                      }
+                      onChange={handleRMAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.RegionalManagerId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={submitClicked && !formData.RegionalManagerId}
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>{" "}
                   <div className="col-md-3 mt-2">
                     <label className="form-label">
                       Assigned To<span className="text-danger">*</span>
@@ -1101,7 +1134,9 @@ const AddEstimateForm = () => {
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
-                      options={staffData}
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Admin"
+                      )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
                         staffData.find(
@@ -1123,37 +1158,7 @@ const AddEstimateForm = () => {
                       )}
                     />
                   </div>
-                  <div className="col-md-3 mt-2 ">
-                    <label className="form-label">
-                      Regional Manager<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={staffData}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        staffData.find(
-                          (staff) => staff.UserId === formData.RegionalManagerId
-                        ) || null
-                      }
-                      onChange={handleRMAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.RegionalManagerId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          error={submitClicked && !formData.RegionalManagerId}
-                          placeholder="Choose..."
-                          className="bg-white"
-                        />
-                      )}
-                    />
-                  </div>
                   <div className="col-md-3 mt-2"></div>
-
                   <div className="col-md-3  mt-2">
                     <div className="row">
                       <div className="col-md-auto">
@@ -1204,7 +1209,6 @@ const AddEstimateForm = () => {
                       aria-label="Default select example"
                     />
                   </div>
-
                   <div className="col-md-3 mt-2">
                     <label className="form-label">
                       Requested by <span className="text-danger">*</span>
@@ -1234,7 +1238,6 @@ const AddEstimateForm = () => {
                       )}
                     />
                   </div>
-
                   <div className="col-md-3  mt-2">
                     <label className="form-label">
                       Linked Invoice
@@ -1281,9 +1284,7 @@ const AddEstimateForm = () => {
                       aria-label="Contact select"
                     />
                   </div>
-
                   <div className="col-md-3 mt-2"></div>
-
                   <div className="col-md-3  mt-2">
                     <div className="row">
                       <div className="col-md-auto">
@@ -1338,7 +1339,6 @@ const AddEstimateForm = () => {
                       aria-label="Contact select"
                     />
                   </div>
-
                   <div className="col-md-3  mt-2">
                     <label className="form-label">
                       Status<span className="text-danger">*</span>
@@ -1361,7 +1361,6 @@ const AddEstimateForm = () => {
                       <MenuItem value={5}>Rejected</MenuItem>
                     </Select>
                   </div>
-
                   <div className="col-md-3 mt-2 ">
                     <label className="form-label">
                       Linked Bill
@@ -1407,7 +1406,6 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-2"></div>
-
                   <div className="col-md-3  mt-2 ">
                     <label className="form-label">
                       Linked To Purchase Order

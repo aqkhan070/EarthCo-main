@@ -11,6 +11,7 @@ import { DataContext } from "../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const PLPhotoOnlyPreview = () => {
   const token = Cookies.get("token");
@@ -37,6 +38,8 @@ const PLPhotoOnlyPreview = () => {
   const yearParam = Number(queryParams.get("Year"));
   const isMail = queryParams.get("isMail");
 
+  const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
+
   const [weeklyPreviewData, setWeeklyPreviewData] = useState({});
   const [files, setFiles] = useState([]);
   const getPlPhotosOnly = async () => {
@@ -47,6 +50,7 @@ const PLPhotoOnlyPreview = () => {
       );
       setWeeklyPreviewData(res.data.Data);
       setFiles(res.data.FileData);
+      fetchCustomerEmail(res.data.Data.CustomerId)
       console.log("reponse weekly is", res.data);
     } catch (error) {
       console.log("api call error", error);
@@ -190,7 +194,7 @@ const PLPhotoOnlyPreview = () => {
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
                     onClick={() => {
-                      navigate(`/weekly-reports`);
+                      navigate(`/punchList-photos-only`);
                     }}
                   >
                     <i className="fa fa-backward"></i>
@@ -224,7 +228,7 @@ const PLPhotoOnlyPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      navigate(`/send-mail?title=${"PunchList - Photos only"}`);
+                      navigate(`/send-mail?title=${"PunchList - Photos only"}&mail=${customerMail}`);
                       // sendEmail(
                       //   `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                       //   customerParam,

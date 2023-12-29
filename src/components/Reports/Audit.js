@@ -12,6 +12,7 @@ import { DataContext } from "../../context/AppData";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const Audit = () => {
   const token = Cookies.get("token");
@@ -35,6 +36,7 @@ const Audit = () => {
   const isMail = queryParams.get("isMail");
 
   const [irrDetails, setIrrDetails] = useState({});
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const fetchIrrigation = async () => {
     if (idParam === 0) {
@@ -47,6 +49,7 @@ const Audit = () => {
       );
       console.log("selected irrigation is", res.data);
       setIrrDetails(res.data);
+      fetchCustomerEmail(res.data.IrrigationData.CustomerId);
     } catch (error) {
       console.log("fetch irrigation api call error", error);
     }
@@ -167,7 +170,9 @@ const Audit = () => {
                     //   0,
                     //   false
                     // );
-                    navigate(`/send-mail?title=${"Irrigation"}`);
+                    navigate(
+                      `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
+                    );
                   }}
                 >
                   <i class="fa-regular fa-envelope"></i>
@@ -323,7 +328,7 @@ const Audit = () => {
                                 <br />
                                 <strong>Flow Sensor?:</strong>
                                 <br />
-                                dxdiag123
+
                                 <br />
                                 <strong>No. of Valves:</strong>
                                 <br />
