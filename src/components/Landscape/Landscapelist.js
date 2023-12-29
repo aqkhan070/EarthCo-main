@@ -4,15 +4,12 @@ import { NavLink } from "react-router-dom";
 import axios from "axios";
 import LandscapeTR from "./LandscapeTR";
 
-
 const Landscapelist = () => {
-
-  
   return (
     <>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-xl-3  col-lg-6 col-sm-6">
+          {/* <div className="col-xl-3  col-lg-6 col-sm-6">
             <div className="widget-stat card">
               <div className="card-body p-4">
                 <div className="media ai-icon">
@@ -25,7 +22,7 @@ const Landscapelist = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       className="feather feather-file-text"
@@ -59,7 +56,7 @@ const Landscapelist = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       className="feather feather-database"
@@ -77,13 +74,12 @@ const Landscapelist = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="col-xl-12">
             <div className="card">
               <div className="card-body">
                 <div className="">
                   <div className="">
-                    
                     {/* <div
                       className="col-md-6"
                       style={{ display: "flex", justifyContent: "flex-end" }}
@@ -101,7 +97,7 @@ const Landscapelist = () => {
                     </div> */}
                   </div>
                 </div>
-                <div className="table-responsive">
+                <div>
                   <LandscapeTR></LandscapeTR>
                 </div>
               </div>

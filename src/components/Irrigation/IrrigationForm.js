@@ -1,263 +1,423 @@
-import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useContext, useEffect, useRef, useState } from "react";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+import { Form } from "react-bootstrap";
+import axios from "axios";
+import Cookies from "js-cookie";
+import ControllerTable from "./ControllerTable";
+import { NavLink, useNavigate } from "react-router-dom";
+import IrrigationControler from "./IrrigationControler";
+import Alert from "@mui/material/Alert";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import useCustomerSearch from "../Hooks/useCustomerSearch";
+import { CircularProgress } from "@mui/material";
+import EventPopups from "../Reusable/EventPopups";
+import LoaderButton from "../Reusable/LoaderButton";
 
 const IrrigationForm = () => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
 
-    const [showForm, setShowForm] = useState(false);
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+  const [formData, setFormData] = useState({});
+  const [customersList, setCustomersList] = useState([]);
+  const [showCustomersList, setShowCustomersList] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [sLList, setSLList] = useState([]);
+  const [contactList, setContactList] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedSL, setSelectedSL] = useState(null);
 
-    const toggleShowForm = () => {
-        setShowForm(!showForm);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const { name, setName, fetchName } = useFetchCustomerName();
+  const { customerSearch, fetchCustomers } = useCustomerSearch();
+
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
+  const [addSucces, setAddSucces] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleCustomerAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    setErrorMessage("");
+    const simulatedEvent = {
+      target: {
+        name: "CustomerId",
+        value: newValue ? newValue.UserId : "",
+      },
+    };
+
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
+    handleInputChange(simulatedEvent);
+  };
+
+  const fetchServiceLocations = async (id) => {
+    if (!id) {
+      return;
     }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`
+      )
+      .then((res) => {
+        setSLList(res.data);
+        console.log("service locations are", res.data);
+      })
+      .catch((error) => {
+        setSLList([]);
+        console.log("service locations fetch error", error);
+      });
+  };
 
-    return (
-        <>
-            <div className="card-body">
-                <div className="card">
-                    <div className="card-body p-0">
-                        <div className="itemtitleBar">
-                            <h4>General Information</h4>
-                        </div>
-                        <div className="card-body" style={{ padding: '1.5rem 5rem' }}>
-                            <div className="basic-form">
-                                <form>
-                                    <div className="row flexCenter">
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Customer Name</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="Customer Name" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Created</h5>
-                                            </div>
-                                            <input type="date" className="form-control" placeholder="Created" />
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const fetctContacts = async (id) => {
+    if (!id) {
+      return;
+    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
+      )
+      .then((res) => {
+        console.log("contacts data isss", res.data);
+        setContactList(res.data);
+      })
+      .catch((error) => {
+        setContactList([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
 
-                <button className="btn btn-primary mb-3" onClick={toggleShowForm}>Add Controller Info</button>
+  const handleSLAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ServiceLocationId",
+        value: newValue ? newValue.ServiceLocationId : "",
+      },
+    };
 
-                {showForm && <div className="card">
-                    <div className="card-body p-0">
-                        <div className="itemtitleBar">
-                            <h4>Controller Info</h4>
-                        </div>
-                        <div className="card-body" style={{ padding: '1.5rem 4rem' }}  >
-                            <div className="basic-form">
-                                <form>
-                                    <div className="row mb-3" style={{ display: 'flex', justifyContent: 'center' }}>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Controller Make and Model</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="Customer Name" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Photo of Controller</h5>
-                                            </div>
-                                            <input type='file' className="form-control" placeholder="Created" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Serial Number</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="Serial Number" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Controller Location Closest Adress</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="Controller Location Closest Adress" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Satellite Based</h5>
-                                            </div>
-                                            <div className="col-md-12 yesNoBtns">
-                                                <button type="button" className="btn light btn-dark col-md-6 YNbtn1">Yes</button>
-                                                <button type="button" className="btn light btn-dark col-md-6 YNbtn2">No</button>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Type of Water</h5>
-                                            </div>
-                                            <div className="col-md-12 yesNoBtns">
-                                                <button type="button" className="btn light btn-dark col-md-6 YNbtn1">Portable</button>
-                                                <button type="button" className="btn light btn-dark col-md-6 YNbtn2">Reclaimed</button>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Meter Number</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Meter Size</h5>
-                                            </div>
-                                            <div className="col-md-12 yesNoBtns">
-                                                <button type="button" className="btn light btn-dark col-md-2 YNbtn1">1/2</button>
-                                                <button type="button" className="btn light btn-dark col-md-3 YNbtnMid borderRight">3/4 "</button>
-                                                <button type="button" className="btn light btn-dark col-md-2 YNbtnMid borderRight">1 "</button>
-                                                <button type="button" className="btn light btn-dark col-md-3 YNbtnMid borderRight">11/2 "</button>
-                                                <button type="button" className="btn light btn-dark col-md-2 YNbtn2">2 "</button>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Number of Stations</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Number of Valves</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Number of Broken Main Lines</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Type of Valves</h5>
-                                            </div>
-                                            <div className="col-md-12 yesNoBtns">
-                                                <button type="button" className="btn light btn-dark col-md-4 YNbtn1">Plastic</button>
-                                                <button type="button" className="btn light btn-dark col-md-4 YNbtnMid borderRight">Brass</button>
-                                                <button type="button" className="btn light btn-dark col-md-4 YNbtn2">Mixed</button>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Leaking Valves</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Malfunctioning Valves</h5>
-                                            </div>
-                                            <input type="text" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Number of Broken Lateral Lines</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Number of Broken Heads</h5>
-                                            </div>
-                                            <input type="number" className="form-control" placeholder="" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Repairs Made</h5>
-                                            </div>
-                                            <div className="col-md-12">
-                                                <textarea className="form-txtarea form-control" rows="4" id="comment"></textarea>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Upgrades Made</h5>
-                                            </div>
-                                            <div className="col-md-12">
-                                                <textarea className="form-txtarea form-control" rows="4" id="comment"></textarea>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
-                                            <div className="col-md-12">
-                                                <h5>Photo</h5>
-                                            </div>
-                                            <input type="file" className="form-control" placeholder="Capture Photo" />
-                                        </div>
-                                        <div className="col-sm-5 mx-2 mb-3">
+    handleInputChange(simulatedEvent);
+  };
 
-                                        </div>
-                                    </div>
-                                    <div className="row text-end">
-                                        <div>
-                                            <button type="button" className="btn btn-warning me-1">Add</button>
-                                            <button type="button" className="btn btn-danger light ms-1">Clear</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>}
+  const handleContactAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "ContactId",
+        value: newValue ? newValue.ContactId : "",
+      },
+    };
 
-                <div className="col-xl-12">
-                    <div className="card">
-                        <div className="card-body">
-                            <div className="table-responsive active-projects style-1">
+    handleInputChange(simulatedEvent);
+  };
 
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th>
-                                                #
-                                            </th>
-                                            <th>Controller </th>
-                                            <th>Meter Info </th>
-                                            <th>Valve </th>
-                                            <th>Repairs / Upgrades</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                1
-                                            </td>
-                                            <td>
-                                                <div className="products">
-                                                    <div>
-                                                        <h6>Promenade</h6>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td><span>Master Valve</span></td>
-                                            <td>
-                                                <span>Evolution DX2</span>
-                                            </td>
-                                            <td>
-                                                Made repairs to the system.
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="col-xl-12 text-right">
-                                <div>
-                                    <NavLink to='/Dashboard/Irrigation'>
-                                        <button type='button' className="btn btn-primary me-1">Submit</button>
-                                    </NavLink>
-                                    <NavLink to='/Dashboard/Irrigation'>
-                                        <button className="btn btn-danger light ms-1">Cancel</button>
-                                    </NavLink>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const handleInputChange = (e, newValue) => {
+    setErrorMessage("");
+    setDisableButton(false);
+    const { name, value } = e.target;
 
+    setSelectedCustomer(newValue);
+    setSelectedSL(newValue);
+
+    // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
+
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  useEffect(() => {
+    fetchServiceLocations(formData.CustomerId);
+    fetctContacts(formData.CustomerId);
+    fetchName(formData.CustomerId);
+    console.log("main payload isss", formData);
+  }, [formData.CustomerId]);
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [disableButton, setDisableButton] = useState(false);
+
+  const handleSubmit = async () => {
+    setSubmitClicked(true);
+    if (!formData.CustomerId) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("please fill all required Fields");
+      setErrorMessage("please fill all required Fields");
+      return;
+    }
+    setDisableButton(true);
+
+    try {
+      const res = await axios.post(
+        `https://earthcoapi.yehtohoga.com/api/Irrigation/AddIrrigation`,
+        formData,
+        { headers }
+      );
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(res.data.Message);
+      setDisableButton(false);
+      setTimeout(() => {
+        navigate(`/irrigation`);
+      }, 4000);
+
+      console.log("data submitted successfuly", res.data);
+    } catch (error) {
+      console.log("error submitting data", error);
+      setDisableButton(false);
+    }
+  };
+
+  const [showForm, setShowForm] = useState(false);
+
+  const toggleShowForm = () => {
+    setShowForm(!showForm);
+  };
+
+  const [controllerList, setControllerList] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchIrrigation = async () => {
+    if (idParam === 0) {
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigation?id=${idParam}`,
+        { headers }
+      );
+      console.log("selected irrigation is", res.data);
+
+      setFormData(res.data.IrrigationData);
+      setControllerList(res.data.ControllerData);
+      setInputValue(res.data.IrrigationData.CustomerId);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+
+      console.log("fetch irrigation api call error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchIrrigation();
+  }, [idParam]);
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="center-loader">
+  //                       <CircularProgress />
+  //                     </div>
+  //   )
+  // }
+
+  return (
+    <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
+      <div className="container-fluid">
+        <div className="card">
+          <div className="card-body p-0">
+            <div className="itemtitleBar">
+              <h4>General Information</h4>
             </div>
-        </>
-    )
-}
+            <div className="card-body">
+              <div className="">
+                {/* {errorMessage ? (
+                  <Alert severity="error">{errorMessage}</Alert>
+                ) : null}
+                {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
 
-export default IrrigationForm
+                <div className="row mb-2 mx-1">
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Customer<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.CompanyName || ""}
+                      value={name ? { CompanyName: name } : null}
+                      onChange={handleCustomerAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.CompanyName}</h6>
+                            <small># {option.UserId}</small>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          onClick={() => {
+                            setName("");
+                          }}
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
+                          error={submitClicked && !formData.CustomerId}
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+
+                  {/* <div className="col-md-3">
+                      <label className="form-label">Service location</label>
+                      <Autocomplete
+                        id="inputState19"
+                        size="small"
+                        options={sLList}
+                        getOptionLabel={(option) => option.Name || ""}
+                        value={
+                          sLList.find(
+                            (customer) =>
+                              customer.ServiceLocationId ===
+                              formData.ServiceLocationId
+                          ) || null
+                        }
+                        onChange={handleSLAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.ServiceLocationId === value.ServiceLocationId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label=""
+                            placeholder="Service Locations"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Default select example"
+                      />
+                    </div> */}
+                  {/* <div className="col-md-3">
+                      <label className="form-label">Contact</label>
+
+                      <Autocomplete
+                        id="inputState299"
+                        size="small"
+                        options={contactList}
+                        getOptionLabel={(option) => option.FirstName || ""}
+                        value={
+                          contactList.find(
+                            (contact) =>
+                              contact.ContactId === formData.ContactId
+                          ) || null
+                        }
+                        onChange={handleContactAutocompleteChange}
+                        isOptionEqualToValue={(option, value) =>
+                          option.ContactId === value.ContactId
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label=""
+                            placeholder="Contacts"
+                            className="bg-white"
+                          />
+                        )}
+                        aria-label="Contact select"
+                      />
+                    </div> */}
+
+                  <div className="col-md-3 ">
+                    <div className="col-md-12">
+                      <label className="form-label">Controller Number</label>
+                    </div>
+                    <TextField
+                      type="text"
+                      size="small"
+                      name="IrrigationNumber"
+                      onChange={handleInputChange}
+                      value={formData.IrrigationNumber}
+                      className="form-control form-control-sm"
+                      placeholder="Controller Number"
+                    />
+                  </div>
+                  <div className="col-md-6 text-right mt-3">
+                    <div>
+                      {idParam === 0 ? null : (
+                        <button
+                          className="btn btn-dark btn-sm me-2"
+                          onClick={toggleShowForm}
+                        >
+                          Add Controller Info
+                        </button>
+                      )}
+                      {/* <button
+                        type="button"
+                        onClick={handleSubmit}
+                        className="btn btn-primary btn-sm me-1"
+                      >
+                        Submit
+                      </button> */}
+                      <LoaderButton
+                        varient="small"
+                        loading={disableButton}
+                        handleSubmit={handleSubmit}
+                      >
+                        Submit
+                      </LoaderButton>
+
+                      {/* <NavLink to="/irrigation">
+                  </NavLink> */}
+
+                      <button
+                        onClick={() => {
+                          // setShowContent(true);
+                          // setSelectedIrr(0);
+                          navigate(`/irrigation`);
+                        }}
+                        className="btn btn-danger btn-sm light ms-1"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {showForm && (
+          <IrrigationControler
+            setAddSucces={setAddSucces}
+            fetchIrrigation={fetchIrrigation}
+            toggleShowForm={toggleShowForm}
+            idParam={idParam}
+          />
+        )}
+
+        <ControllerTable
+          setAddSucces={setAddSucces}
+          fetchIrrigation={fetchIrrigation}
+          headers={headers}
+          controllerList={controllerList}
+        />
+      </div>
+    </>
+  );
+};
+
+export default IrrigationForm;

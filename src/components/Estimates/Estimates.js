@@ -4,23 +4,56 @@ import { useContext, useEffect, useRef, useState } from "react";
 import StatusCardsEst from "./StatusCardsEst";
 import { DataContext } from "../../context/AppData";
 import { RoutingContext } from "../../context/RoutesContext";
-import { Form } from "react-bootstrap";
-import axios from "axios";
+
 import { NavLink, useNavigate } from "react-router-dom";
-import $ from "jquery";
-import "datatables.net";
+
 import { Autocomplete, TextField } from "@mui/material";
 import StatusCards from "./StatusCards";
 import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from "js-cookie";
+import Alert from "@mui/material/Alert";
+import useGetEstimate from "../Hooks/useGetEstimate";
 
+const Estimates = ({ setestmPreviewId }) => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
-const Estimates = () => {
-  const activeRef = useRef(null);
+  const {
+    estimates,
+    estmRecords,
+    isLoading,
+    tableError,
+    getEstimate,
+    getFilteredEstimate,
+  } = useGetEstimate();
 
   // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
 
-  const [estimates, setEstimates] = useState([]);
+  const [open, setOpen] = useState(0);
+  const [closed, setClosed] = useState(0);
+  const [accepted, setAccepted] = useState(0);
+  useEffect(() => {
+    // Filter the estimates array to get only the entries with Status === "Pending"
+    const pendingEstimates = estimates.filter(
+      (estimate) => estimate.Status === "Pending"
+    );
+    const pendingClosed = estimates.filter(
+      (estimate) => estimate.Status === "Closed"
+    );
+    const pendingAccepted = estimates.filter(
+      (estimate) => estimate.Status === "Accepted"
+    );
+
+    // Update the state variable with the number of pending estimates
+    setOpen(pendingEstimates.length);
+    setClosed(pendingClosed.length);
+    setAccepted(pendingAccepted.length);
+  }, [estimates]);
+
+  const [statusId, setStatusId] = useState(0);
   const [selectedCustomer, setSelectCustomer] = useState({});
 
   const [customer, setCustomer] = useState("");
@@ -29,35 +62,15 @@ const Estimates = () => {
 
   const [locations, setLocations] = useState(["Select Customer First"]);
 
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [showStatusCards, setShowStatusCards] = useState(true);
 
   const navigate = useNavigate();
 
- 
-
   useEffect(() => {
-    const getEstimate = async () => {
-      try {
-        const response = await axios.get(
-          "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateList"
-        );
-        // console.log("estimate response is", response.data);
-        setEstimates(response.data);
-        if (response.data != null) {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("API Call Error:", error);
-      }
-    };
-
     getEstimate();
-  }, []);
-
-  useEffect(() => {
-    // getUsers();
-    $("#estimateTbl2").DataTable();
+    // getFilteredEstimate();
+    console.log("Test", estimates);
+    setShowStatusCards(true);
   }, []);
 
   useEffect(() => {
@@ -134,134 +147,152 @@ const Estimates = () => {
       serviceLocation !== ""
     ) {
       document.getElementById("closer").click();
-      navigate("/Dashboard/Estimates/Add-Estimate");
+      navigate("/estimates/add-estimate");
     }
   };
 
   const saveAddEstPop = () => {};
 
- 
-
   return (
-    <div className="container-fluid">
-      <div className="row">
-      <StatusCards />
-        {/* <StatusCardsEst
+    <>
+      <div className="container-fluid">
+        <div className="row">
+          {showStatusCards && (
+            <StatusCards
+              estmRecords={estmRecords}
+              statusId={statusId}
+              setStatusId={setStatusId}
+              closed={closed}
+              accepted={accepted}
+              open={open}
+            />
+          )}
+
+          {/* <StatusCardsEst
           drafts={28102}
           sent={7089}
           approved={4576}
           rejected={145}
           total={39912}
         /> */}
-        <div className="col-xl-12">
-          <div className="card">
-            <div className="card-body">
-              
-            {isLoading ? (
-                <div className="center-loader">
-                <CircularProgress style={{ color: "#789a3d" }} />
+          <div className="col-xl-12">
+            <div className="">
+              <div className="">
+                {tableError && (
+                  <Alert severity="error">Error Loading Estimates!</Alert>
+                )}
               </div>
-              ) : (
-                <div>
-                 
-                    <EstimateTR estimates={estimates} />
-                 
-                </div>
-              )}
-              
-                
-                
-              
             </div>
           </div>
         </div>
-      </div>
-      {/* modal */}
-      <div className="modal fade" id="basicModal">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Add Estimate</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <form onSubmit={saveAddEstPop}>
-              <div className="modal-body">
-                <div className="basic-form">
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">Customer</label>
-                    <div className="col-sm-8">
-                      <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        size="small"
-                        options={customerOptions}
-                        value={customer}
-                        onChange={handleChangeCustomer}
-                        sx={{ width: 300 }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Customer"
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="mb-4 row">
-                    <label className="col-sm-4 col-form-label">
-                      Quantity
-                    </label>
-                    <div className="col-sm-8">
-                      <Autocomplete
-                        disablePortal
-                        id="combo-box-demo cutomerAF"
-                        size="small"
-                        options={qtyOptions}
-                        value={serviceLocation}
-                        onChange={(e, val) => setServiceLocation(val)}
-                        sx={{ width: 300 }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Quantity"
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
+        {/* modal */}
+        <div className="modal fade" id="basicModal">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Add Estimate</h5>
                 <button
                   type="button"
-                  id="closer"
-                  className="btn btn-danger light"
+                  className="btn-close"
                   data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-               
-                <button
-                  type="button"
-                  onClick={() => {navigate("/Dashboard/Estimates/Add-Estimate")}}
-                  style={{ opacity: opacity }}
-                  className="btn btn-primary"
-                >
-                  Save
-                </button>
-               
+                ></button>
               </div>
-            </form>
+              <form onSubmit={saveAddEstPop}>
+                <div className="modal-body">
+                  <div className="basic-form">
+                    <div className="mb-3 row">
+                      <label className="col-sm-4 col-form-label">
+                        Customer
+                      </label>
+                      <div className="col-sm-8">
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo"
+                          size="small"
+                          options={customerOptions}
+                          value={customer}
+                          onChange={handleChangeCustomer}
+                          sx={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Customer"
+                              variant="outlined"
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-4 row">
+                      <label className="col-sm-4 col-form-label">
+                        Quantity
+                      </label>
+                      <div className="col-sm-8">
+                        <Autocomplete
+                          disablePortal
+                          id="combo-box-demo cutomerAF"
+                          size="small"
+                          options={qtyOptions}
+                          value={serviceLocation}
+                          onChange={(e, val) => setServiceLocation(val)}
+                          sx={{ width: 300 }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Quantity"
+                              variant="outlined"
+                            />
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    id="closer"
+                    className="btn btn-danger light"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate("/estimates/add-estimate");
+                    }}
+                    style={{ opacity: opacity }}
+                    className="btn btn-primary"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
+
+        {isLoading ? (
+          <div className="center-loader">
+            <CircularProgress style={{ color: "#789a3d" }} />
+          </div>
+        ) : (
+          <div>
+            <EstimateTR
+              headers={headers}
+              getEstimate={getEstimate}
+              estimates={estimates}
+              tableError={tableError}
+              setShowStatusCards={setShowStatusCards}
+              setestmPreviewId={setestmPreviewId}
+              statusId={statusId}
+            />
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo1 from "../assets/images/background/earthco_logo.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
-
+import Cookies from "js-cookie";
+import Alert from "@mui/material/Alert";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const LoginPage = () => {
+  const token = Cookies.get("token");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const [resetEmail, setResetEmail] = useState("");
+  const [resetRes, setResetRes] = useState("");
+  const [resetError, setResetError] = useState("");
 
   const [fName, setFName] = useState("");
   const [userName, setUserName] = useState("");
@@ -23,10 +28,49 @@ const LoginPage = () => {
   const [reTypePass, setReTypePass] = useState("");
   const [signError, setSignError] = useState("");
 
+  const [btndisable, setBtndisable] = useState(false);
+
+  const [privacypolicy, setPrivacypolicy] = useState(false);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSignError("");
+    setResetError("");
+    setResetRes("");
+    setError("");
+  }, [
+    email,
+    password,
+    resetEmail,
+    fName,
+    userName,
+    emailSIn,
+    passSignIn,
+    lastName,
+    address,
+    phone,
+    reTypePass,
+  ]);
+
+  const urlParams = new URLSearchParams(window.location.hash);
+  const accessToken = urlParams.get("#access_token");
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (token) {
+      // navigate(`/Dashboard`);
+    }
+    if (accessToken) {
+      navigate(`/Dashboard${hash}`);
+      localStorage.setItem("access_token", accessToken);
+    }
+    console.log("Full URL:", hash);
+    console.log("accessToken", accessToken);
+  }, []);
 
   const handleSubmitLogin = async (e) => {
     e.preventDefault();
+    setBtndisable(true);
 
     try {
       const response = await axios.post(
@@ -44,22 +88,27 @@ const LoginPage = () => {
 
       if (response.data.status === "success") {
         // if (response.status === 200){
-          sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userName", response.data.Data.FirstName);
+        sessionStorage.setItem("userRole", response.data.Data.RoleId);
+        sessionStorage.setItem("userId", response.data.Data.UserId);
+        setBtndisable(false);
         setError("");
         const token = response.data.token.data;
-        Cookies.set('token', token, { expires: 7 });
-        Cookies.set('userData', response.data.Data, { expires: 7 });
+        Cookies.set("token", token, { expires: 7 });
+        Cookies.set("userData", response.data.Data, { expires: 7 });
         // console.log("login response iss", Cookies.get('token'))
-        console.log("login response is",response.data)
+        console.log("login response is", response.data);
 
-        
-        navigate("/Dashboard"); 
+        navigate("/dashboard");
       } else {
         setError("Invalid email or password. Please try again.");
+        setBtndisable(false);
       }
     } catch (error) {
       console.log("Error logging in:", error);
-      setError("An error occurred while logging in. Please try again later.");
+      setError(error.response.data);
+      setBtndisable(false);
     }
   };
 
@@ -79,16 +128,20 @@ const LoginPage = () => {
         }
       );
 
+      setResetRes(response.data.status);
+      document.getElementById("nav-personal-tab").click();
+
       if (response.status === 200) {
         // Password reset request successful, you can display a success message or take other actions.
-        console.log("Password reset request successful");
+        console.log("Password reset request successful", response.data);
       } else {
         // Password reset request failed, display an error message.
         console.error("Password reset request failed:", response.data);
       }
     } catch (error) {
       // Handle any errors here
-      console.error("Error:", error);
+      console.error("Error:", error.response.data);
+      setResetError(error.response.data);
     }
   };
 
@@ -97,6 +150,12 @@ const LoginPage = () => {
 
     if (passSignIn !== reTypePass) {
       setSignError("Passwords do not match.");
+      return;
+    }
+    if (!privacypolicy) {
+      setSignError(
+        "Please Agree to the Privacy Policy and Terms and Conditions"
+      );
       return;
     }
 
@@ -119,21 +178,15 @@ const LoginPage = () => {
         }
       );
 
-      if (response.data.status === "success") {
-        // Registration successful, you can redirect the user to the dashboard or perform other actions
-        setSignError("");
-
-        console.log("Registration successful");
-        // Redirect the user to the dashboard or other pages as needed.
-      } else {
-        // Registration failed, display an error message
-        setSignError("Registration failed. Please try again.");
-      }
+      document.getElementById("backLogin").click();
+      setFName("");
+      setLastName("");
+      setAddress("");
+      setPhone("");
+      console.log(response.data);
     } catch (error) {
-      console.log("Error during registration:", error);
-      setSignError(
-        "An error occurred during registration. Please try again later."
-      );
+      console.log("Error during registration:", error.response.data);
+      setSignError(error.response.data);
     }
   };
 
@@ -162,7 +215,7 @@ const LoginPage = () => {
     <div className="page-wraper">
       <div className="browse-job login-style3">
         <div
-          className="bg-white"
+          className="bg-white row"
           style={{
             display: "flex",
             alignItems: "center",
@@ -208,6 +261,11 @@ const LoginPage = () => {
                         <h3 className="form-title m-t0">
                           Personal Information
                         </h3>
+                        {error && (
+                          <Alert severity="error">
+                            {error ? error : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -229,10 +287,14 @@ const LoginPage = () => {
                             className="form-control"
                             required
                             value={password}
-                            onChange={(e) => {setPassword(e.target.value); setError("")}}
+                            onChange={(e) => {
+                              setPassword(e.target.value);
+                              setError("");
+                            }}
                           />
                         </div>
-                        <h5 className="authError mb-2">{error}</h5>
+                        {/* <h5 className="authError mb-2">{error}</h5> */}
+
                         <div className="form-group text-left mb-3 forget-main">
                           <div
                             style={{
@@ -270,12 +332,16 @@ const LoginPage = () => {
                           </div>
                         </div>
                         <div className="text-center bottom">
-                          <button
-                            className="btn btn-primary button-md btn-block"
+                          <LoadingButton
+                            size="large"
+                            variant="contained"
+                            loading={btndisable}
+                            loadingPosition="start"
+                            fullWidth
                             type="submit"
                           >
-                            Sign Me In
-                          </button>
+                            <span>Sign Me In</span>
+                          </LoadingButton>
                         </div>
                       </form>
                       <button
@@ -292,6 +358,7 @@ const LoginPage = () => {
                         Create an account
                       </button>
                     </div>
+
                     {/* Forgot password */}
                     <div
                       className="tab-pane fade"
@@ -301,6 +368,16 @@ const LoginPage = () => {
                     >
                       <form className="dz-form" onSubmit={handleForgotPassword}>
                         <h3 className="form-title m-t0">Forget Password?</h3>
+                        {resetRes && (
+                          <Alert severity="success">
+                            {resetRes ? resetRes : "Error Adding Estimates"}
+                          </Alert>
+                        )}
+                        {resetError && (
+                          <Alert severity="error">
+                            {resetError ? resetError : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
@@ -311,13 +388,15 @@ const LoginPage = () => {
                         <div className="form-group mb-4">
                           <input
                             name="dzName"
-                            required=""
+                            required
                             className="form-control"
                             placeholder="Email Address"
                             type="text"
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
                           />
+                          {/* <div className="text-primary"> {resetRes}</div> */}
+                          {/* <div className="text-danger">{resetError}</div> */}
                         </div>
                         <div className="form-group clearfix text-left">
                           <button
@@ -353,39 +432,44 @@ const LoginPage = () => {
                         onSubmit={handleSubmitSignUp}
                       >
                         <h3 className="form-title">Sign Up</h3>
+                        {signError && (
+                          <Alert severity="error">
+                            {signError ? signError : "Error Adding Estimates"}
+                          </Alert>
+                        )}
                         <div className="dz-separator-outer m-b5">
                           <div className="dz-separator bg-primary style-liner"></div>
                         </div>
                         <p>Enter your personal details below: </p>
-                        <div className="form-group mt-3">
+                        {/* <div className="form-group mt-3">
                           <input
                             name="fullName"
-                            required=""
+                            required
                             value={fName}
                             onChange={(e) => setFName(e.target.value)}
                             className="form-control"
                             placeholder="Full Name"
                             type="text"
                           />
-                        </div>
+                        </div> */}
                         <div className="form-group mt-3">
                           <input
                             name="userName"
-                            required=""
+                            required
                             value={userName}
                             onChange={(e) => {
                               setUserName(e.target.value);
                               setSignError("");
                             }}
                             className="form-control"
-                            placeholder="User Name"
+                            placeholder="First name"
                             type="text"
                           />
                         </div>
                         <div className="form-group mt-3">
                           <input
                             name="lastName"
-                            required=""
+                            required
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             className="form-control"
@@ -396,7 +480,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3">
                           <input
                             name="email"
-                            required=""
+                            required
                             value={emailSIn}
                             onChange={(e) => {
                               setEmailSI(e.target.value);
@@ -404,13 +488,13 @@ const LoginPage = () => {
                             }}
                             className="form-control"
                             placeholder="Email Address"
-                            type="text"
+                            type="email"
                           />
                         </div>
                         <div className="form-group mt-3">
                           <input
                             name="password"
-                            required=""
+                            required
                             value={passSignIn}
                             onChange={(e) => {
                               setPassSignIn(e.target.value);
@@ -424,7 +508,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3 mb-2">
                           <input
                             name="dzName"
-                            required=""
+                            required
                             value={reTypePass}
                             onChange={handleChangePass2}
                             className="form-control"
@@ -433,11 +517,10 @@ const LoginPage = () => {
                           />
                         </div>
 
-                        
                         <div className="form-group mt-3">
                           <input
                             name="address"
-                            required=""
+                            required
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             className="form-control"
@@ -448,7 +531,7 @@ const LoginPage = () => {
                         <div className="form-group mt-3">
                           <input
                             name="phone"
-                            required=""
+                            required
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             className="form-control"
@@ -457,8 +540,8 @@ const LoginPage = () => {
                           />
                         </div>
 
-                        <h4 className="authError mb-1">{signError}</h4>
-                        <div className="mb-3">
+                        {/* <h4 className="authError mb-1">{signError}</h4> */}
+                        {/* <div className="mb-3">
                           <span className="form-check float-start me-2 ">
                             <input
                               type="checkbox"
@@ -473,8 +556,41 @@ const LoginPage = () => {
                               I agree to the Terms of Service Privacy Policy
                             </label>
                           </span>
-                        </div>
+                        </div> */}
                         <br />
+                        <span className="form-check d-inline-block">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            id="check1"
+                            name="Terms"
+                            checked={privacypolicy}
+                            onChange={() => {
+                              setPrivacypolicy(!privacypolicy);
+                            }}
+                          />
+                          <label className="form-check-label" htmlFor="check1">
+                            I agree to{" "}
+                            <span
+                              className="text-primary"
+                              style={{ cursor: "pointer" }}
+                              data-bs-toggle="modal"
+                              data-bs-target={`#privacyPolicy`}
+                            >
+                              Privacy Policy
+                            </span>{" "}
+                            and{" "}
+                            <span
+                              className="text-primary"
+                              style={{ cursor: "pointer" }}
+                              data-bs-toggle="modal"
+                              data-bs-target={`#termsAndConditions`}
+                            >
+                              Terms & Conditions
+                            </span>
+                          </label>
+                        </span>
+
                         <div className="form-group signBtns mt-3">
                           <button
                             onClick={clearInputs}
@@ -494,6 +610,264 @@ const LoginPage = () => {
                           </button>
                         </div>
                       </form>
+                      <div
+                        className="modal fade"
+                        id="privacyPolicy"
+                        tabIndex="-1"
+                        aria-labelledby="privacyPolicyLabel"
+                        aria-hidden="true"
+                      >
+                        <div
+                          className="modal-dialog modal-dialog-centered"
+                          role="document"
+                        >
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title">Privacy Policy</h5>
+
+                              <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                              ></button>
+                            </div>
+                            <div className="modal-body">
+                              <h4>Introduction</h4>
+                              <li>
+                                Earthco Landscape ("we," "us," or "our")
+                                operates Earthco Web Application
+                                ("Application"). This Privacy Policy outlines
+                                the types of information collected from users of
+                                the Application and how we use, disclose, and
+                                protect that information.
+                              </li>
+                              <h5 className="mb-0">Information We Collect</h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  <strong>Personal Information:</strong> When
+                                  you use the Application, we may collect
+                                  certain personally identifiable information,
+                                  such as names, email addresses, or other
+                                  contact information voluntarily provided by
+                                  users.
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  <strong>Usage Data: </strong>: We may collect
+                                  information on how the Application is accessed
+                                  and used ("Usage Data"). This Usage Data may
+                                  include information such as your computer's
+                                  Internet Protocol address, browser type,
+                                  browser version, pages visited, time and date
+                                  of your visit, and other diagnostic data.
+                                </div>
+                              </div>
+
+                              <h5 className="mb-0">Use of Information</h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  We may use the collected information for
+                                  various purposes, including but not limited to
+                                  providing and maintaining the Application,
+                                  improving user experience, sending updates or
+                                  notifications, and analyzing usage trends.
+                                </div>
+                              </div>
+                              <h5 className="mb-0">Data Security</h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  EarthCo takes reasonable measures to secure
+                                  and protect the information collected.
+                                  However, no method of transmission over the
+                                  internet or electronic storage is completely
+                                  secure. We cannot guarantee absolute security
+                                  of your data.
+                                </div>
+                              </div>
+
+                              <h5 className="mb-0">
+                                Disclosure of Information
+                              </h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  We do not disclose or share personal
+                                  information except in cases required by law or
+                                  to protect our rights or property.
+                                </div>
+                              </div>
+
+                              <h5 className="mb-0">
+                                Changes to This Privacy Policy
+                              </h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  We reserve the right to update or change our
+                                  Privacy Policy at any time. Your continued use
+                                  of the Application after we post any
+                                  modifications to the Privacy Policy on this
+                                  page will constitute your acknowledgment of
+                                  the modifications and your consent to abide
+                                  and be bound by the updated Privacy Policy.
+                                </div>
+                              </div>
+
+                              <h5 className="mb-0">Contact Us</h5>
+                              <div className="row">
+                                <div className="col-md-1 text-end">&#9679;</div>
+                                <div className="col-md-11">
+                                  If you have any questions about this Privacy
+                                  Policy, please contact us at [Contact
+                                  Information]
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className="modal fade"
+                        id="termsAndConditions"
+                        tabIndex="-1"
+                        aria-labelledby="privacyPolicyLabel"
+                        aria-hidden="true"
+                      >
+                        <div
+                          className="modal-dialog modal-dialog-centered"
+                          role="document"
+                        >
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h4 className="modal-title">
+                                Application Name: Earthco Web App
+                              </h4>
+
+                              <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                              ></button>
+                            </div>
+
+                            <div className="modal-body">
+                              <h5>
+                                IMPORTANT: READ CAREFULLY BEFORE USING THE
+                                APPLICATION
+                              </h5>
+                              <>
+                                This End User License Agreement ("Agreement") is
+                                a legal agreement between you (either an
+                                individual or an entity) and Earthco Landscape
+                                governing your use of Earthco Web Application
+                                ("Application"). By accessing or using this
+                                Application, you agree to be bound by the terms
+                                and conditions of this Agreement.
+                              </>
+                              <div className="row mt-2">
+                                <div className="col-md-1 text-end">1.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>License Grant: </strong>Earthco grants
+                                  you a non-exclusive, non-transferable, limited
+                                  license to use the Application solely for
+                                  internal purposes in accordance with this
+                                  Agreement.{" "}
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-md-1 text-end">2.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Restrictions: </strong>You shall not
+                                  (a) sublicense, sell, rent, lease, or
+                                  distribute the Application; (b) modify, adapt,
+                                  translate, reverse engineer, decompile, or
+                                  disassemble the Application; (c) remove any
+                                  copyright, trademark, or other proprietary
+                                  rights notices contained in or on the
+                                  Application; (d) use the Application in any
+                                  unlawful manner or for any illegal purpose;
+                                  (e) use the Application to infringe upon any
+                                  third-party rights; (f) use the Application to
+                                  transmit viruses or any harmful code that may
+                                  damage the Application or third-party systems.
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col-md-1 text-end">3.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Intellectual Property: </strong>
+                                  Earthco retains all rights, title, and
+                                  interest in and to the Application, including
+                                  all intellectual property rights. This
+                                  Agreement does not grant you any rights to
+                                  patents, copyrights, trade secrets,
+                                  trademarks, or any other rights in respect to
+                                  the Application.
+                                </div>
+                              </div>{" "}
+                              <div className="row">
+                                <div className="col-md-1 text-end">4.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Termination: </strong>This Agreement
+                                  is effective until terminated. Earthco may
+                                  terminate this Agreement at any time without
+                                  notice if you fail to comply with any term of
+                                  this Agreement. Upon termination, you must
+                                  cease all use of the Application and destroy
+                                  all copies of the Application in your
+                                  possession or control.
+                                </div>
+                              </div>{" "}
+                              <div className="row">
+                                <div className="col-md-1 text-end">5.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Disclaimer of Warranty: </strong>The
+                                  Application is provided "as is" without any
+                                  warranty, express or implied. Earthco
+                                  disclaims all warranties and conditions with
+                                  regard to the Application, including but not
+                                  limited to, fitness for a particular purpose,
+                                  merchantability, non-infringement, or
+                                  accuracy.
+                                </div>
+                              </div>{" "}
+                              <div className="row">
+                                <div className="col-md-1 text-end">6.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Limitation of Liability: </strong>no
+                                  event shall Earthco be liable for any direct,
+                                  indirect, incidental, special, consequential,
+                                  or punitive damages arising out of or in any
+                                  way connected with the use or inability to use
+                                  the Application.
+                                </div>
+                              </div>{" "}
+                              <div className="row">
+                                <div className="col-md-1 text-end">7.</div>
+                                <div className="col-md-11">
+                                  {" "}
+                                  <strong>Governing Law: </strong>This Agreement
+                                  shall be governed by and construed in
+                                  accordance with the laws of California,
+                                  without regard to its conflict of law
+                                  principles.
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

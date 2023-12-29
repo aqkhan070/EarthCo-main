@@ -6,7 +6,8 @@ import { Route, Routes } from 'react-router-dom'
 import ServiceRequest from './ServiceRequest'
 import { RoutingContext } from '../../context/RoutesContext'
 import AddSRform from './AddSRform'
-
+import SRPreview from './SRPreview'
+import UpdateSRForm from './UpdateSRForm'
 const ServiceIndex = () => {
 
     const { SRroute } = useContext(RoutingContext)
@@ -15,7 +16,9 @@ const ServiceIndex = () => {
         <>
             <Routes>
                 <Route path='' element={<SRlist />} />
-                <Route path='Add-SRform' element={<AddSRform />} />
+                <Route path='add-sRform' element={<AddSRform />} />
+                <Route path='update-sRform' element={<UpdateSRForm />} />
+                <Route path='service-request-preview' element={<SRPreview />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
             </Routes>
         </>

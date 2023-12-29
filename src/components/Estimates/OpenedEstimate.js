@@ -170,7 +170,7 @@ const OpenedEstimate = ({ oneEstimate, customer }) => {
                                 <table id="empoloyees-tblwrapper" className="table">
                                     <thead>
                                         <tr>
-                                            <th>Qty / Duration</th>
+                                            <th>Qty</th>
                                             <th>Name</th>
                                             <th>Description</th>
                                             <th>Rate</th>

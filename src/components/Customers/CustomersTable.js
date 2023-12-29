@@ -6,73 +6,85 @@ import "datatables.net";
 import CustomerModal from "../Modals/CustomerModal";
 import { CustomerContext } from "../../context/CustomerData";
 import CircularProgress from "@mui/material/CircularProgress";
-import Alert from '@mui/material/Alert';
-
+import Alert from "@mui/material/Alert";
+import Cookies from "js-cookie";
 
 const CustomersTable = () => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const { selectedCustomer } = useContext(CustomerContext);
   const [customers, setCustomers] = useState([]);
-  const [customerAddSuccess, setCustomerAddSuccess] = useState(false)
+  const [customerAddSuccess, setCustomerAddSuccess] = useState(false);
+  const [customerUpdateSuccess, setCustomerUpdateSuccess] = useState(false);
 
+  const [customerFetchError, setcustomerFetchError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [totalRecords, setTotalRecords] = useState(0);
 
-
-  const fetchCustomers = async () => {
+  const fetchFilterCustomers = async (
+    Search = "",
+    pageNo = 1,
+    PageLength = 10,
+    isAscending = false
+  ) => {
     try {
       const response = await axios.get(
-        "https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersList"
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomersServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&isAscending=${isAscending}`,
+        { headers }
       );
-      setCustomers(response.data);
+      setcustomerFetchError(false);
+      setCustomers(response.data.Data);
+      setTotalRecords(response.data.totalRecords);
       if (response.data != null) {
         setIsLoading(false);
       }
+    } catch (error) {
+      console.log("EEEEEEEEEEEEEEEEE", error);
 
-    }catch(error){
-      console.log("EEEEEEEEEEEEEEEEE",error);
-      if(error.response.status === 404){
-        setIsLoading(false);
-
-      }
-      else{
-        console.error("API Call Error:", error);
-
-      }
-
+      setIsLoading(false);
+      setcustomerFetchError(true);
+      setCustomers([]);
+      console.error("API Call Error:", error);
     }
   };
 
-
   useEffect(() => {
-    fetchCustomers();
-   
+    fetchFilterCustomers();
   }, []);
 
-
-  
-  
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="card">
-          <div className="mt-3">
-            {customerAddSuccess && <Alert severity="success">Customer Added/Updated Successfuly</Alert>}
-        
+        <div className="">
+          <div className="">
+            {customerAddSuccess && (
+              <Alert severity="success">Customer Added Successfuly</Alert>
+            )}
+            {customerUpdateSuccess && (
+              <Alert severity="success">Customer Updated Successfuly</Alert>
+            )}
           </div>
-          
-          
-          <div className="card-body">
 
-          {isLoading ? (
-                  <div className="center-loader">
-                    <CircularProgress style={{ color: "#789a3d" }} />
-                  </div>
-                ) : (
-                  <div>
-                     <CustomerTR customers={customers} setCustomerAddSuccess={setCustomerAddSuccess} fetchCustomers={fetchCustomers}/>
-                  </div>
-                )}
-           
-           
+          <div className="">
+            {isLoading ? (
+              <div className="center-loader">
+                <CircularProgress style={{ color: "#789a3d" }} />
+              </div>
+            ) : (
+              <div>
+                <CustomerTR
+                  customerFetchError={customerFetchError}
+                  headers={headers}
+                  customers={customers}
+                  setCustomerAddSuccess={setCustomerAddSuccess}
+                  setCustomerUpdateSuccess={setCustomerUpdateSuccess}
+                  fetchCustomers={fetchFilterCustomers}
+                  totalRecords={totalRecords}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -8,97 +8,79 @@ import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
+import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 
 const ServiceRequests = () => {
-  const [serviceRequest, setserviceRequest] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    isLoading,
+    fetchServiceRequest,
+    totalRecords,
+    serviceRequest,
+    sRfetchError,
+  } = useFetchServiceRequests();
 
   const token = Cookies.get("token");
-  const userdata = Cookies.get('userData');
-  
-  // const [locationOptions, setLocationOptions] = useState();
-
-
-  const fetchServiceRequest = async () => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    try {
-    const response = await axios.get(
-      "https://earthcoapi.yehtohoga.com/api/ServiceRequest/GetServiceRequestList",{headers}
-    );
-      if (response.data != null) {
-        setIsLoading(false);
-      }
-      setserviceRequest(response.data);
-      console.log("zzzzzzzzzzzzzzz", response.data);
-    } catch(error){
-      console.log("EEEEEEEEEEEEEEEEE",error);
-      if(error.response.status === 404){
-        setIsLoading(false);
-
-      }
-      else{
-        console.error("API Call Error:", error);
-
-      }
-
-    }
+  const headers = {
+    Authorization: `Bearer ${token}`,
   };
+  const userdata = Cookies.get("userData");
+  const [showCards, setShowCards] = useState(true);
+
+  // const [locationOptions, setLocationOptions] = useState();
+  const [open, setOpen] = useState(0);
+  const [closed, setClosed] = useState(0);
+
+  const [statusId, setStatusId] = useState(0);
+
+  useEffect(() => {
+    // Filter the estimates array to get only the entries with Status === "Pending"
+    const pendingEstimates = serviceRequest.filter(
+      (estimate) => estimate.Status === "Open"
+    );
+    const pendingClosed = serviceRequest.filter(
+      (estimate) => estimate.Status === "Closed"
+    );
+
+    // Update the state variable with the number of pending estimates
+    setOpen(pendingEstimates.length);
+    setClosed(pendingClosed.length);
+  }, [serviceRequest]);
 
   useEffect(() => {
     fetchServiceRequest();
-    console.log("cookies user data is",userdata.Firstname);
   }, []);
 
   return (
-    <div className="container-fluid">
-    
-      <div className="row">
-        <StatusCards newData={1178} open={5142} closed={71858} total={78178} />
-        <div className="col-xl-12">
-          <div className="card">
-            <div className="card-body">
-              {/* <div className="tbl-caption"> */}
-              {/* <div className="row p-3 "> */}
-              {/* <div className="col-md-3">
-                    <a
-                      href="/"
-                      className="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#basicModal"
-                    >
-                      + Add Service Request
-                    </a>
-                  </div> */}
-              {/* <div className="col-md-7"></div> */}
-              {/* <div
-                    className="col-md-2"
-                    style={{ display: "flex", justifyContent: "flex-end" }}
-                  >
-                    <div className="col-md-12">
-                      <Form.Select
-                        aria-label="Default select example"
-                        size="md"
-                      >
-                        <option selected>All</option>
-                        <option value="1">Current Month</option>
-                        <option value="2">Previous Month</option>
-                      </Form.Select>
-                    </div>
-                  </div> */}
-              {/* </div> */}
-              {/* </div> */}
+    <>
+      <div className="">
+        {showCards && (
+          <StatusCards
+            setStatusId={setStatusId}
+            statusId={statusId}
+            totalRecords
+            newData={1178}
+            open={totalRecords.totalOpenRecords}
+            closed={totalRecords.totalClosedRecords}
+            total={78178}
+          />
+        )}
+        <div className="">
+          <div className="">
+            <div className="">
               {isLoading ? (
                 <div className="center-loader">
-                <CircularProgress style={{ color: "#789a3d" }} />
-              </div>
+                  <CircularProgress style={{ color: "#789a3d" }} />
+                </div>
               ) : (
                 <div>
-                  
-                    <ServiceRequestTR serviceRequest={serviceRequest } />
-                 
+                  <ServiceRequestTR
+                    sRfetchError={sRfetchError}
+                    headers={headers}
+                    serviceRequest={serviceRequest}
+                    setShowCards={setShowCards}
+                    fetchServiceRequest={fetchServiceRequest}
+                    statusId={statusId}
+                  />
                 </div>
               )}
             </div>
@@ -157,7 +139,7 @@ const ServiceRequests = () => {
                 >
                   Close
                 </button>
-                {/* <NavLink to='/Dashboard/Service-Requests/Add'>
+                {/* <NavLink to='/service-requests/Add'>
                                     <button type="button" data-bs-dismiss="modal" className="btn btn-primary">Save</button>
                                 </NavLink> */}
               </div>
@@ -165,7 +147,7 @@ const ServiceRequests = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
