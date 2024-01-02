@@ -266,10 +266,11 @@ const AddStaff = ({}) => {
       console.log("Staff added successfully", customerInfo);
     } catch (error) {
       setLoadingButton(false);
-      if (error.response.status === 409) {
-        setAlert(true);
-      }
-      console.log("Roles API call error", error.response.status);
+      setOpenSnackBar(true);
+      setSnackBarColor("success");
+      setSnackBarText(error.response.data);
+
+      console.log("staff API call error", error);
     }
   };
 
@@ -407,46 +408,7 @@ const AddStaff = ({}) => {
                       </Select>
                     </FormControl>
                   </div>
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">
-                      Password<span className="text-danger">*</span>
-                    </label>
-                    <TextField
-                      type="password"
-                      className="form-control"
-                      variant="outlined"
-                      size="small"
-                      error={
-                        idParam === 0 && submitClicked && !customerInfo.Password
-                      }
-                      onChange={handleCustomerInfo}
-                      name="Password"
-                      id="passwordInput"
-                      placeholder="Password"
-                    />
-                  </div>
-                  <div className="col-md-3 mb-3">
-                    <label className="form-label">
-                      Confirm Password<span className="text-danger">*</span>
-                    </label>
-                    <TextField
-                      type="password"
-                      className="form-control"
-                      variant="outlined"
-                      size="small"
-                      onChange={handleCustomerInfo}
-                      // error={idParam !== 0 && submitClicked && !customerInfo.ConfirmPassword}
-                      id="confirmPasswordInput"
-                      name="ConfirmPassword"
-                      placeholder="Confirm Password"
-                    />
-                    {passwordMatch && (
-                      <div style={{ color: "red" }}>
-                        Passwords do not match.
-                      </div>
-                    )}
-                    {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
-                  </div>
+
                   <div className="col-md-3 mb-3">
                     <label
                       htmlFor="exampleFormControlInput4"
@@ -516,66 +478,76 @@ const AddStaff = ({}) => {
                   />
                 )} */}
                   </div>
-                  <div className="col-md-9 mt-4">
-                    {/* {addCustomerSuccess && (
-                      <Alert severity="success">
-                        {addCustomerSuccess
-                          ? addCustomerSuccess
-                          : "Susseccfully added/Updated staff"}
-                      </Alert>
-                    )}
 
-                    {alert && (
-                      <Alert severity="error">
-                        The Email/User already exists
-                      </Alert>
-                    )}
-                    {alertSuccess && (
-                      <Alert severity="success">
-                        Successfuly Added/Updated staff
-                      </Alert>
-                    )}
-                    {emptyFieldsError && (
-                      <Alert severity="error">
-                        Please fill all required fields
-                      </Alert>
-                    )}
-                    {emailError && (
-                      <Alert severity="error">Please enter valid email</Alert>
-                    )}
-                    {phoneError && (
-                      <Alert severity="error">Please enter valid Phone</Alert>
-                    )}
-                    {firstNameError && (
-                      <Alert severity="error">{firstNameError}</Alert>
-                    )}
-                    {lastNameError && (
-                      <Alert severity="error">{lastNameError}</Alert>
-                    )} */}
+                  <div className="itemtitleBar">
+                    <h4>Security Info</h4>
                   </div>
 
-                  <div className=" mt-4 col-md-3 text-end">
-                    <button
-                      className="btn btn-danger light ms-1"
-                      onClick={() => {
-                        navigate(`/staff`);
-                      }}
-                    >
-                      Cancel
-                    </button>{" "}
-                    {/* <button className="btn btn-primary me-1" onClick={addStaff}>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-3 mb-3">
+                        <label className="form-label">
+                          Password<span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="password"
+                          className="form-control"
+                          variant="outlined"
+                          size="small"
+                          error={
+                            idParam === 0 &&
+                            submitClicked &&
+                            !customerInfo.Password
+                          }
+                          onChange={handleCustomerInfo}
+                          name="Password"
+                          id="passwordInput"
+                          placeholder="Password"
+                        />
+                      </div>
+                      <div className="col-md-3 mb-3">
+                        <label className="form-label">
+                          Confirm Password<span className="text-danger">*</span>
+                        </label>
+                        <TextField
+                          type="password"
+                          className="form-control"
+                          variant="outlined"
+                          size="small"
+                          onChange={handleCustomerInfo}
+                          // error={idParam !== 0 && submitClicked && !customerInfo.ConfirmPassword}
+                          id="confirmPasswordInput"
+                          name="ConfirmPassword"
+                          placeholder="Confirm Password"
+                        />
+                        {passwordMatch && (
+                          <div style={{ color: "red" }}>
+                            Passwords do not match.
+                          </div>
+                        )}
+                        {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
+                      </div>
+
+                      <div className=" mt-4 col-md-6 text-end">
+                        <button
+                          className="btn btn-danger light ms-1"
+                          onClick={() => {
+                            navigate(`/staff`);
+                          }}
+                        >
+                          Cancel
+                        </button>{" "}
+                        {/* <button className="btn btn-primary me-1" onClick={addStaff}>
                       Submit
                     </button> */}
-                    <LoaderButton
-                      loading={loadingButton}
-                      handleSubmit={addStaff}
-                    >
-                      Save
-                    </LoaderButton>
-                   
-                  </div>
-                  <div className="row">
-                    <div className="col-md-12"></div>
+                        <LoaderButton
+                          loading={loadingButton}
+                          handleSubmit={addStaff}
+                        >
+                          Save
+                        </LoaderButton>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

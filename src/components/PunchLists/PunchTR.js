@@ -35,6 +35,7 @@ import TblDateFormat from "../../custom/TblDateFormat";
 import EventPopups from "../Reusable/EventPopups";
 import { NavLink, useNavigate } from "react-router-dom";
 
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -232,28 +233,7 @@ const PunchTR = ({
                   "Date Created",
                   "Status",
                 ].map((column, index) => (
-                  <TableCell key={index}>
-                    {index < 5 ? (
-                      <TableSortLabel
-                        active={sorting.field === columnFieldMapping[column]}
-                        direction={sorting.order}
-                        onClick={() =>
-                          setSorting({
-                            field: columnFieldMapping[column],
-                            order:
-                              sorting.order === "asc" &&
-                                sorting.field === columnFieldMapping[column]
-                                ? "desc"
-                                : "asc",
-                          })
-                        }
-                      >
-                        {column}
-                      </TableSortLabel>
-                    ) : (
-                      column
-                    )}
-                  </TableCell>
+                  <TableCell key={index}>{column}</TableCell>
                 ))}
                 <TableCell align="right">Actions</TableCell>
               </TableRow>

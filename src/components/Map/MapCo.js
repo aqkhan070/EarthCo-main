@@ -16,7 +16,7 @@ const defaultCenter = {
   lng: 74.2678971,
 };
 
-function GoogleMapApi({ mapData, toolTipData }) {
+function GoogleMapApi({ mapData = [], toolTipData }) {
   const [map, setMap] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
 

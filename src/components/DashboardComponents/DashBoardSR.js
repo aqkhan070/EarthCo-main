@@ -47,38 +47,46 @@ const DashBoardSR = ({ dashBoardData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dashBoardData.ServiceRequestData?.map((customer, rowIndex) => (
-              <TableRow
-                className="material-tbl-alignment"
-                onClick={() => {
-                  // setServiceRequestId(customer.ServiceRequestId);
-                  // setShowContent(false);
-                  // console.log("////////", serviceRequestId);
-                  navigate(
-                    `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
-                  );
-                }}
-                key={rowIndex}
-                hover
-              >
-                <TableCell>{customer.CustomerName}</TableCell>
-                <TableCell>{customer.Assign}</TableCell>
-                <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                <TableCell>
-                  <span
-                    style={{
-                      backgroundColor: customer.StatusColor,
-                    }}
-                    className="badge badge-pill "
-                  >
-                    {customer.Status}
-                  </span>
+            {dashBoardData.ServiceRequestData.length <= 0 ? (
+              <TableRow>
+                <TableCell colSpan={12} align="center">
+                  No Record Found
                 </TableCell>
-                <TableCell>{customer.WorkRequest}</TableCell>
-                <TableCell>{TblDateFormat(customer.CreatedDate)}</TableCell>
-                <TableCell>{customer.Type}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              dashBoardData.ServiceRequestData?.map((customer, rowIndex) => (
+                <TableRow
+                  className="material-tbl-alignment"
+                  onClick={() => {
+                    // setServiceRequestId(customer.ServiceRequestId);
+                    // setShowContent(false);
+                    // console.log("////////", serviceRequestId);
+                    navigate(
+                      `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                    );
+                  }}
+                  key={rowIndex}
+                  hover
+                >
+                  <TableCell>{customer.CustomerName}</TableCell>
+                  <TableCell>{customer.Assign}</TableCell>
+                  <TableCell>{customer.ServiceRequestNumber}</TableCell>
+                  <TableCell>
+                    <span
+                      style={{
+                        backgroundColor: customer.StatusColor,
+                      }}
+                      className="badge badge-pill "
+                    >
+                      {customer.Status}
+                    </span>
+                  </TableCell>
+                  <TableCell>{customer.WorkRequest}</TableCell>
+                  <TableCell>{TblDateFormat(customer.CreatedDate)}</TableCell>
+                  <TableCell>{customer.Type}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

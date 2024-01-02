@@ -75,6 +75,7 @@ const LandscapeTR = () => {
       }
     } catch (error) {
       console.log("api call error", error);
+      setIsLoading(false);
     }
   };
 
@@ -171,33 +172,44 @@ const LandscapeTR = () => {
                 </TableCell> */}
                 {["#", "Customer Name", "Requested by", "Date Created"].map(
                   (headCell) => (
-                    <TableCell key={headCell}>
-                      <TableSortLabel>{headCell}</TableSortLabel>
-                    </TableCell>
+                    <TableCell key={headCell}>{headCell}</TableCell>
                   )
                 )}
-                <TableCell align="right">Actions</TableCell>
+                {/* <TableCell align="right">Actions</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredReports.map((report, index) => (
-                <TableRow
-                  key={report.MonthlyLandsacpeId}
-                  hover
-                  className="material-tbl-alignment"
-                >
-                  <TableCell>{report.MonthlyLandsacpeId}</TableCell>
-                  <TableCell>{report.CompanyName}</TableCell>
+              {filteredReports.length <= 0 ? (
+                <TableRow>
+                  {" "}
+                  <TableCell align="center" colSpan={12}>
+                    No Record Found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredReports.map((report, index) => (
+                  <TableRow
+                    key={report.MonthlyLandsacpeId}
+                    hover
+                    className="material-tbl-alignment"
+                    onClick={() => {
+                      navigate(
+                        `/landscape/add-landscape?id=${report.MonthlyLandsacpeId}`
+                      );
+                    }}
+                  >
+                    <TableCell>{report.MonthlyLandsacpeId}</TableCell>
+                    <TableCell>{report.CompanyName}</TableCell>
 
-                  <TableCell>{report.RequestByName}</TableCell>
+                    <TableCell>{report.RequestByName}</TableCell>
 
-                  <TableCell>{TblDateFormat(report.CreatedDate)}</TableCell>
+                    <TableCell>{TblDateFormat(report.CreatedDate)}</TableCell>
 
-                  {/* <TableCell>...</TableCell> */}
-                  {/* <TableCell>...</TableCell> */}
-                  <TableCell align="right">
-                    <div>
-                      {/* <Button
+                    {/* <TableCell>...</TableCell> */}
+                    {/* <TableCell>...</TableCell> */}
+                    {/* <TableCell align="right">
+                      <div>
+                         <Button
                             className="delete-button"
                             onClick={() => {
                               setSelectedItem(estimate.EstimateId);
@@ -206,19 +218,20 @@ const LandscapeTR = () => {
                             }}
                           >
                             <Create />
-                          </Button> */}
-                      <Button className="delete-button">
-                        <Delete
-                          color="error"
-                          onClick={() =>
-                            handleDelete(report.MonthlyLandsacpeId)
-                          }
-                        />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                          </Button>
+                        <Button className="delete-button">
+                          <Delete
+                            color="error"
+                            onClick={() =>
+                              handleDelete(report.MonthlyLandsacpeId)
+                            }
+                          />
+                        </Button>
+                      </div>
+                    </TableCell> */}
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
           <TablePagination

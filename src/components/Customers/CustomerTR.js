@@ -183,30 +183,7 @@ const CustomerTR = ({
                     "Actions",
                   ].map((column, index) => (
                     <TableCell className="table-cell-align" key={index}>
-                      {index < 5 ? (
-                        <TableSortLabel
-                          active={sorting.field === column}
-                          direction={
-                            ["asc", "desc"].includes(sorting.order)
-                              ? sorting.order
-                              : "asc"
-                          }
-                          onClick={() =>
-                            setSorting({
-                              field: column,
-                              order:
-                                sorting.order === "asc" &&
-                                  sorting.field === column
-                                  ? "desc"
-                                  : "asc",
-                            })
-                          }
-                        >
-                          {column}
-                        </TableSortLabel>
-                      ) : (
-                        column
-                      )}
+                      {column}
                     </TableCell>
                   ))}
                 </TableRow>

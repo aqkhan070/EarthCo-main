@@ -15,7 +15,6 @@ import {
   Button,
   IconButton,
   TablePagination,
-  TableSortLabel,
   TextField,
 } from "@mui/material";
 import formatDate from "../../../custom/FormatDate";
@@ -124,8 +123,6 @@ const WeeklyReportlist = () => {
     }
   });
 
-
-
   return (
     <>
       <TitleBar icon={icon} title="Weekly Landscape" />
@@ -164,20 +161,10 @@ const WeeklyReportlist = () => {
                         <TableRow className="material-tbl-alignment">
                           <TableCell className="ms-3">#</TableCell>
 
-                          <TableCell>
-                            <TableSortLabel>
-                              Assign / Appointment
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel>Customer</TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel>Created</TableSortLabel>
-                          </TableCell>
-                          <TableCell align="right">
-                            <TableSortLabel>Preview</TableSortLabel>
-                          </TableCell>
+                          <TableCell>Assign / Appointment</TableCell>
+                          <TableCell>Customer</TableCell>
+                          <TableCell>Created</TableCell>
+                          <TableCell align="right">Preview</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -196,6 +183,11 @@ const WeeklyReportlist = () => {
                               className="material-tbl-alignment"
                               hover
                               key={staff.WeeklyReportId}
+                              onClick={() => {
+                                navigate(
+                                  `/weekly-reports/add-weekly-report?id=${staff.WeeklyReportId}`
+                                );
+                              }}
                             >
                               <TableCell className="ms-3">
                                 {staff.WeeklyReportId}

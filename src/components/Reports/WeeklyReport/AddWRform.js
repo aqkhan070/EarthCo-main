@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,9 @@ import { Form } from "react-bootstrap";
 import EventPopups from "../../Reusable/EventPopups";
 import Contacts from "../../CommonComponents/Contacts";
 import ServiceLocations from "../../CommonComponents/ServiceLocations";
+import { ready } from "jquery";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoaderButton from "../../Reusable/LoaderButton";
 
 const AddWRform = () => {
   const icon = (
@@ -53,17 +56,18 @@ const AddWRform = () => {
     </svg>
   );
 
+  const queryParams = new URLSearchParams(window.location.search);
+  const idParam = Number(queryParams.get("id"));
+
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const { loggedInUser, setLoggedInUser } = useContext(DataContext);
+
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
 
-  const [customers, setCustomers] = useState([]);
-  const [serviceLocations, setServiceLocations] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [contacts, setContacts] = useState([]);
   const [formData, setFormData] = useState({});
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
@@ -76,6 +80,8 @@ const AddWRform = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
+
+  const [prevFiles, setPrevFiles] = useState([]);
 
   const navigate = useNavigate();
 
@@ -124,6 +130,30 @@ const AddWRform = () => {
     }
   };
 
+  const [loading, setLoading] = useState(true);
+
+  const getWeeklyPreview = async () => {
+    if (!idParam) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/WeeklyReport/GetWeeklyReport?id=${idParam}`,
+        { headers }
+      );
+      setFormData(res.data.Data);
+      setPrevFiles(res.data.FileData);
+      setLoading(false);
+
+      console.log("reponse weekly is", res.data);
+    } catch (error) {
+      setLoading(false);
+
+      console.log("api call error", error);
+    }
+  };
+
   useEffect(() => {
     fetchServiceLocations(formData.CustomerId);
     fetctContacts(formData.CustomerId);
@@ -134,6 +164,7 @@ const AddWRform = () => {
 
   useEffect(() => {
     fetchStaffList();
+    getWeeklyPreview();
   }, []);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
@@ -187,8 +218,6 @@ const AddWRform = () => {
     setEmptyFieldsError(false);
     const { name, value, type, checked } = e.target;
 
-    setSelectedCustomer(newValue);
-
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
     const adjustedValue = [
       "UserId",
@@ -214,8 +243,9 @@ const AddWRform = () => {
   };
 
   const [emptyFieldsError, setEmptyFieldsError] = useState(false);
-
+  const [disableButton, setDisableButton] = useState(false);
   const handleSubmit = (e) => {
+    setDisableButton(true);
     setSubmitClicked(true);
     e.preventDefault();
     if (
@@ -228,6 +258,8 @@ const AddWRform = () => {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("please fill all required fields");
+      setDisableButton(false);
+
       console.log("Required fields are empty");
       return;
     }
@@ -277,6 +309,7 @@ const AddWRform = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      setDisableButton(false);
 
       setTimeout(() => {
         navigate(
@@ -287,6 +320,7 @@ const AddWRform = () => {
       console.log("Data submitted successfully:", response.data.Id);
     } catch (error) {
       console.error("API Call Error:", error);
+      setDisableButton(false);
     }
 
     // Logging FormData contents (for debugging purposes)
@@ -343,433 +377,511 @@ const AddWRform = () => {
       />
 
       <div className="container-fluid">
-        <div className="card">
-          <div className="itemtitleBar">
-            <h4>Customer Information</h4>
+        {loading ? (
+          <div className="center-loader">
+            <CircularProgress />
           </div>
-          <div className="card-body">
-            <div className="row ">
-              <div className="col-md-3">
-                <label className="form-label">
-                  Customers <span className="text-danger">*</span>
-                </label>
-                <Autocomplete
-                  id="staff-autocomplete"
-                  size="small"
-                  options={customerSearch}
-                  getOptionLabel={(option) => option.CompanyName || ""}
-                  value={name ? { CompanyName: name } : null}
-                  onChange={handleCustomerAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.UserId === value.CustomerId
-                  }
-                  renderOption={(props, option) => (
-                    <li {...props}>
-                      <div className="customer-dd-border">
-                        <h6> {option.CompanyName}</h6>
-                        <small># {option.UserId}</small>
-                      </div>
-                    </li>
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      onClick={() => {
-                        setName("");
-                      }}
-                      onChange={(e) => {
-                        fetchCustomers(e.target.value);
-                      }}
-                      placeholder="Choose..."
-                      error={submitClicked && !formData.CustomerId}
-                      className="bg-white"
-                    />
-                  )}
-                />
+        ) : (
+          <>
+            <div className="card">
+              <div className="itemtitleBar">
+                <h4>Customer Information</h4>
               </div>
-              <div className="col-md-3 ">
-                <div className="row">
-                  <div className="col-md-auto">
-                    <label className="form-label">
-                      Service Location
-                      <span className="text-danger">*</span>{" "}
-                    </label>
-                  </div>
-                  <div className="col-md-3">
-                    {" "}
-                    {formData.CustomerId ? (
-                      <ServiceLocations
-                        fetchServiceLocations={fetchServiceLocations}
-                        fetchCustomers={fetchCustomers}
-                        customerId={formData.CustomerId}
-                      />
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                <Autocomplete
-                  id="inputState19"
-                  size="small"
-                  options={sLList}
-                  getOptionLabel={(option) => option.Name || ""}
-                  value={
-                    sLList.find(
-                      (customer) =>
-                        customer.ServiceLocationId ===
-                        formData.ServiceLocationId
-                    ) || null
-                  }
-                  onChange={handleSLAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.ServiceLocationId === value.ServiceLocationId
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      placeholder="Service Locations"
-                      error={submitClicked && !formData.ServiceLocationId}
-                      className="bg-white"
-                    />
-                  )}
-                  aria-label="Default select example"
-                />
-              </div>
-              <div className="col-md-3 ">
-                <div className="row">
-                  <div className="col-md-auto">
-                    <label className="form-label">
-                      Contact<span className="text-danger">*</span>
-                    </label>
-                  </div>
-                  <div className="col-md-3">
-                    {" "}
-                    {formData.CustomerId ? (
-                      <Contacts
-                        fetctContacts={fetctContacts}
-                        fetchCustomers={fetchCustomers}
-                        customerId={formData.CustomerId}
-                      />
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                <Autocomplete
-                  id="inputState299"
-                  size="small"
-                  options={contactList}
-                  getOptionLabel={(option) => option.FirstName || ""}
-                  value={
-                    contactList.find(
-                      (contact) => contact.ContactId === formData.ContactId
-                    ) || null
-                  }
-                  onChange={handleContactAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.ContactId === value.ContactId
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      placeholder="Contacts"
-                      error={submitClicked && !formData.ContactId}
-                      className="bg-white"
-                    />
-                  )}
-                  aria-label="Contact select"
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">
-                  Assign/Appointment <span className="text-danger">*</span>
-                </label>
-                <Autocomplete
-                  id="staff-autocomplete"
-                  size="small"
-                  options={staffData.filter(
-                    (staff) => staff.Role === "Regional Manager"
-                  )}
-                  getOptionLabel={(option) => option.FirstName || ""}
-                  value={
-                    staffData.find(
-                      (staff) => staff.UserId === formData.AssignTo
-                    ) || null
-                  }
-                  onChange={handleRBAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.UserId === value.AssignTo
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      error={submitClicked && !formData.AssignTo}
-                      placeholder="Choose..."
-                      className="bg-white"
-                    />
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="itemtitleBar">
-            <h4>General Information</h4>
-          </div>
-          <div className="card-body ">
-            <div className="row ">
-              <div className="col-md-3 ">
-                <label className="form-label">Job Name</label>
-                <input
-                  type="text"
-                  onChange={handleInputChange}
-                  name="JobName"
-                  className="form-control"
-                  placeholder="Job Name"
-                />
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">Report For Week of:</label>
-                <input
-                  type="date"
-                  name="ReportForWeekOf"
-                  onChange={handleInputChange}
-                  className="form-control"
-                  placeholder="Created"
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">This week's rotation:</label>
-
-                <input
-                  type="number"
-                  className="form-control"
-                  onChange={handleInputChange}
-                  name="Thisweekrotation"
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">Next weeks rotation: </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  onChange={handleInputChange}
-                  name="Nextweekrotation"
-                />
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label">Notes:</label>
-                <div className="col-md-12">
-                  <textarea
-                    className="form-txtarea form-control"
-                    rows="3"
-                    name="Notes"
-                    onChange={handleInputChange}
-                    id="comment"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="itemtitleBar">
-            <h4>Proposals</h4>
-          </div>
-          <div className="card-body ">
-            <div className="basic-form">
-              {/* <div className="col-md-12"> */}
-              <div className="row">
-                <div className="col-md-4">
-                  <label className="form-label">Proposals Completed</label>
-                  <div className="mb-3">
-                    <textarea
-                      className=" form-control"
-                      rows="3"
-                      onChange={handleInputChange}
-                      name="ProposalsCompleted"
-                      id="comment"
-                    ></textarea>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <label className="form-label">Proposals Submitted</label>
-
-                  <div className="mb-3">
-                    <textarea
-                      className=" form-control"
-                      rows="3"
-                      onChange={handleInputChange}
-                      name="ProposalsSubmitted"
-                      id="comment"
-                    ></textarea>
-                  </div>
-                </div>
-
-                <div className="col-md-4">
-                  <label className="form-label">Notes</label>
-
-                  <div className="mb-3">
-                    <textarea
-                      className="form-control"
-                      rows="3"
-                      onChange={handleInputChange}
-                      name="ProposalsNotes"
-                      id="comment"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-              {/* </div> */}
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="estDataBox">
-            <div className="itemtitleBar">
-              <h4>Files</h4>
-            </div>
-          </div>
-          <div className="card-body">
-            <div className="row mt-2">
-              <div className="col-md-4 col-lg-4">
-                <div className="basic-form">
-                  <label className="form-label">Attachments</label>
-                  <div className="dz-default dlab-message upload-img mb-3">
-                    <form action="#" className="dropzone">
-                      <svg
-                        width="41"
-                        height="40"
-                        viewBox="0 0 41 40"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                          stroke="#DADADA"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                        <path
-                          d="M20.5 20V35"
-                          stroke="#DADADA"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                        <path
-                          d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                          stroke="#DADADA"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                        <path
-                          d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                          stroke="#DADADA"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        ></path>
-                      </svg>
-                      <div className="fallback mb-3">
-                        <input name="file" type="file" onChange={trackFile} />
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-
-              {Files.map((file, index) => (
-                <div
-                  key={index}
-                  className="col-md-2 col-md-2 mt-3 image-container"
-                  style={{
-                    width: "150px", // Set the desired width
-                    height: "120px", // Set the desired height
-                    margin: "1em",
-                    position: "relative",
-                  }}
-                >
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    style={{
-                      width: "150px",
-                      height: "120px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <p
-                    className="file-name-overlay"
+              <div className="card-body" style={{ position: "relative" }}>
+                {loggedInUser.userRole !== "1" && (
+                  <div
+                    className="overlay"
                     style={{
                       position: "absolute",
-                      bottom: "0",
-                      left: "13px",
-                      right: "0",
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      textAlign: "center",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
+                      top: 0,
+                      left: 0,
                       width: "100%",
-                      textOverflow: "ellipsis",
-                      padding: "5px",
+                      height: "100%",
+                      backgroundColor: "rgba(0, 0, 0, 0.05)",
+                      zIndex: 999,
                     }}
-                  >
-                    {file.name}
-                  </p>
-                  <span
-                    className="file-delete-button"
-                    style={{
-                      left: "140px",
-                    }}
-                    onClick={() => {
-                      handleDeleteFile(index);
-                    }}
-                  >
-                    <span>
-                      <Delete color="error" />
-                    </span>
-                  </span>
+                  ></div>
+                )}
+                <div className="row ">
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Customers <span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.CompanyName || ""}
+                      value={name ? { CompanyName: name } : null}
+                      onChange={handleCustomerAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.CompanyName}</h6>
+                            <small># {option.UserId}</small>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          onClick={() => {
+                            setName("");
+                          }}
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
+                          error={submitClicked && !formData.CustomerId}
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-md-3 ">
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Service Location
+                          <span className="text-danger">*</span>{" "}
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <ServiceLocations
+                            fetchServiceLocations={fetchServiceLocations}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <Autocomplete
+                      id="inputState19"
+                      size="small"
+                      options={sLList}
+                      getOptionLabel={(option) => option.Name || ""}
+                      value={
+                        sLList.find(
+                          (customer) =>
+                            customer.ServiceLocationId ===
+                            formData.ServiceLocationId
+                        ) || null
+                      }
+                      onChange={handleSLAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.ServiceLocationId === value.ServiceLocationId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Service Locations"
+                          error={submitClicked && !formData.ServiceLocationId}
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Default select example"
+                    />
+                  </div>
+                  <div className="col-md-3 ">
+                    <div className="row">
+                      <div className="col-md-auto">
+                        <label className="form-label">
+                          Contact<span className="text-danger">*</span>
+                        </label>
+                      </div>
+                      <div className="col-md-3">
+                        {" "}
+                        {formData.CustomerId ? (
+                          <Contacts
+                            fetctContacts={fetctContacts}
+                            fetchCustomers={fetchCustomers}
+                            customerId={formData.CustomerId}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <Autocomplete
+                      id="inputState299"
+                      size="small"
+                      options={contactList}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        contactList.find(
+                          (contact) => contact.ContactId === formData.ContactId
+                        ) || null
+                      }
+                      onChange={handleContactAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.ContactId === value.ContactId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Contacts"
+                          error={submitClicked && !formData.ContactId}
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Assign/Appointment <span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Regional Manager"
+                      )}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.AssignTo
+                        ) || null
+                      }
+                      onChange={handleRBAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.AssignTo
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          error={submitClicked && !formData.AssignTo}
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </div>
+            <div className="card">
+              <div className="itemtitleBar">
+                <h4>General Information</h4>
+              </div>
+              <div className="card-body ">
+                <div className="row ">
+                  <div className="col-md-3 ">
+                    <label className="form-label">Job Name</label>
+                    <input
+                      type="text"
+                      onChange={handleInputChange}
+                      name="JobName"
+                      className="form-control"
+                      placeholder="Job Name"
+                    />
+                  </div>
 
-        <div className="row text-end">
-          {emptyFieldsError && (
-            <Alert severity="error">Please fill all required fields</Alert>
-          )}
-          <div>
-            <button
-              className="btn btn-danger light me-2"
-              onClick={() => {
-                navigate("/weekly-reports");
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary me-1"
-              onClick={handleSubmit}
-            >
-              Save and Preview
-            </button>
-          </div>
-        </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Report For Week of:</label>
+                    <input
+                      type="date"
+                      name="ReportForWeekOf"
+                      onChange={handleInputChange}
+                      className="form-control"
+                      placeholder="Created"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">This week's rotation:</label>
+
+                    <input
+                      type="number"
+                      className="form-control"
+                      onChange={handleInputChange}
+                      name="Thisweekrotation"
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Next weeks rotation: </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      onChange={handleInputChange}
+                      name="Nextweekrotation"
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">Notes:</label>
+                    <div className="col-md-12">
+                      <textarea
+                        className="form-txtarea form-control"
+                        rows="3"
+                        name="Notes"
+                        onChange={handleInputChange}
+                        id="comment"
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="itemtitleBar">
+                <h4>Proposals</h4>
+              </div>
+              <div className="card-body ">
+                <div className="basic-form">
+                  {/* <div className="col-md-12"> */}
+                  <div className="row">
+                    <div className="col-md-4">
+                      <label className="form-label">Proposals Completed</label>
+                      <div className="mb-3">
+                        <textarea
+                          className=" form-control"
+                          rows="3"
+                          onChange={handleInputChange}
+                          name="ProposalsCompleted"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="form-label">Proposals Submitted</label>
+
+                      <div className="mb-3">
+                        <textarea
+                          className=" form-control"
+                          rows="3"
+                          onChange={handleInputChange}
+                          name="ProposalsSubmitted"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="form-label">Notes</label>
+
+                      <div className="mb-3">
+                        <textarea
+                          className="form-control"
+                          rows="3"
+                          onChange={handleInputChange}
+                          name="ProposalsNotes"
+                          id="comment"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  {/* </div> */}
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="estDataBox">
+                <div className="itemtitleBar">
+                  <h4>Files</h4>
+                </div>
+              </div>
+              <div className="card-body">
+                <div className="row mt-2">
+                  <div className="col-md-4 col-lg-4">
+                    <div className="basic-form">
+                      <label className="form-label">Attachments</label>
+                      <div className="dz-default dlab-message upload-img mb-3">
+                        <form action="#" className="dropzone">
+                          <svg
+                            width="41"
+                            height="40"
+                            viewBox="0 0 41 40"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M20.5 20V35"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                            <path
+                              d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                              stroke="#DADADA"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            ></path>
+                          </svg>
+                          <div className="fallback mb-3">
+                            <input
+                              name="file"
+                              type="file"
+                              onChange={trackFile}
+                            />
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  {Files.map((file, index) => (
+                    <div
+                      key={index}
+                      className="col-md-2 col-md-2 mt-3 image-container"
+                      style={{
+                        width: "150px", // Set the desired width
+                        height: "120px", // Set the desired height
+                        margin: "1em",
+                        position: "relative",
+                      }}
+                    >
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={file.name}
+                        style={{
+                          width: "150px",
+                          height: "120px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <p
+                        className="file-name-overlay"
+                        style={{
+                          position: "absolute",
+                          bottom: "0",
+                          left: "13px",
+                          right: "0",
+                          backgroundColor: "rgba(0, 0, 0, 0.3)",
+                          textAlign: "center",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          width: "100%",
+                          textOverflow: "ellipsis",
+                          padding: "5px",
+                        }}
+                      >
+                        {file.name}
+                      </p>
+                      <span
+                        className="file-delete-button"
+                        style={{
+                          left: "140px",
+                        }}
+                        onClick={() => {
+                          handleDeleteFile(index);
+                        }}
+                      >
+                        <span>
+                          <Delete color="error" />
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                  {prevFiles.map((file, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="col-md-2 col-md-2 mt-3 image-container"
+                        style={{
+                          width: "150px", // Set the desired width
+                          height: "120px", // Set the desired height
+                          margin: "1em",
+                          position: "relative",
+                        }}
+                      >
+                        <a
+                          href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </a>
+                        <p
+                          className="file-name-overlay"
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                            left: "13px",
+                            right: "0",
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            textAlign: "center",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            padding: "5px",
+                          }}
+                        ></p>
+                        <span
+                          className="file-delete-button"
+                          style={{
+                            left: "140px",
+                          }}
+                          onClick={() => {}}
+                        >
+                          <span>
+                            <Delete color="error" />
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="row text-end">
+              <div>
+                <LoaderButton
+                  loading={disableButton}
+                  handleSubmit={handleSubmit}
+                >
+                  Save and Preview
+                </LoaderButton>
+                <button
+                  className="btn btn-danger light me-2"
+                  onClick={() => {
+                    navigate("/weekly-reports");
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

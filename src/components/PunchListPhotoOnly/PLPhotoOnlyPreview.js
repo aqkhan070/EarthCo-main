@@ -237,7 +237,7 @@ const PLPhotoOnlyPreview = () => {
                       // );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

@@ -270,30 +270,7 @@ const ServiceRequestTR = ({
                         "Date Created",
                         "Type",
                       ].map((column, index) => (
-                        <TableCell key={index}>
-                          {index < 5 ? (
-                            <TableSortLabel
-                              active={
-                                sorting.field === columnFieldMapping[column]
-                              }
-                              direction={sorting.order}
-                              onClick={() =>
-                                setSorting({
-                                  field: columnFieldMapping[column],
-                                  order:
-                                    sorting.order === "asc" &&
-                                      sorting.field === columnFieldMapping[column]
-                                      ? "desc"
-                                      : "asc",
-                                })
-                              }
-                            >
-                              {column}
-                            </TableSortLabel>
-                          ) : (
-                            column
-                          )}
-                        </TableCell>
+                        <TableCell key={index}>{column}</TableCell>
                       ))}
                     </TableRow>
                   </TableHead>

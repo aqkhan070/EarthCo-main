@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
 import { Form } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import LandscapeTR from "./LandscapeTR";
 
 const Landscapelist = () => {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="container-fluid">

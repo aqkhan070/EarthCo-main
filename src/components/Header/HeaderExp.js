@@ -10,12 +10,43 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import useQuickBook from "../Hooks/useQuickBook";
 import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
+import Avatar from "@mui/material/Avatar";
+
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
+
+function stringAvatar(name) {
+  if (!name || !name.includes(" ")) {
+    // Handle the case where name is undefined or does not contain a space
+    return null; // or provide a default value or error handling logic
+  }
+
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
 
 const HeaderExp = () => {
-  const [loggedUser, setLoggenUser] = useState(
-    sessionStorage.getItem("userEmail")
-  );
-
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
   const state = urlParams.get("state");
@@ -24,6 +55,8 @@ const HeaderExp = () => {
   const navigate = useNavigate();
   const { mainControl, setMainControl, setShowSM, eliminate } =
     useContext(StyleContext);
+
+  const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
   const { connectToQB, genetareQBToken } = useQuickBook();
 
@@ -121,6 +154,13 @@ const HeaderExp = () => {
     console.log("State:", state);
     console.log("Realm ID:", realmId);
     genetareQBToken(code, realmId, state);
+    console.log("user details", loggedInUser);
+    setLoggedInUser({
+      userName: Cookies.get("userName"),
+      userEmail: Cookies.get("userEmail"),
+      userRole: Cookies.get("userRole"),
+      userId: Cookies.get("userId"),
+    });
   }, []);
 
   return (
@@ -143,16 +183,21 @@ const HeaderExp = () => {
             <nav className="navbar navbar-expand">
               <div className="collapse navbar-collapse justify-content-between">
                 <div className="header-left">
-                {dashBoardData.isQBToken ? <></> :  <iframe
-                    src="https://earthcoapi.yehtohoga.com/"
-                    scrolling="no"
-                    style={{
-                      height: "100%",
-                      overflowY: "hidden",
-                      marginTop: "-1.5%",
-                    }}
-                  ></iframe>}
-                 
+                  {dashBoardData.isQBToken ? (
+                    <span className="badge badge-pill badge-info p-2">
+                      Connected with QuickBooks
+                    </span>
+                  ) : (
+                    <iframe
+                      src="https://earthcoapi.yehtohoga.com/"
+                      scrolling="no"
+                      style={{
+                        height: "100%",
+                        overflowY: "hidden",
+                        marginTop: "-1.5%",
+                      }}
+                    ></iframe>
+                  )}
 
                   {/* <button
                     className="btn btn-info btn-sm"
@@ -428,13 +473,19 @@ const HeaderExp = () => {
                       >
                         <div className="header-info2 d-flex align-items-center">
                           <div className="header-media">
-                            <img src={profilePic} alt="" />
+                            <Avatar
+                              style={{ width: "30px", height: "30px" }}
+                              {...stringAvatar(loggedInUser.userName)}
+                            />
                           </div>
                           <div className="header-info">
                             <h6 className="admin-header">
-                              {sessionStorage.getItem("userName")}
+                              {loggedInUser.userName}
                             </h6>
-                            <p className="admin-header">{loggedUser}</p>
+                            <p className="admin-header">
+                              {" "}
+                              {loggedInUser.userEmail}
+                            </p>
                           </div>
                         </div>
                       </NavLink>
@@ -442,15 +493,14 @@ const HeaderExp = () => {
                         <div className="card border-0 mb-0">
                           <div className="card-header py-2">
                             <div className="products">
-                              <img
-                                src={profilePic}
-                                className="avatar avatar-md"
-                                alt=""
+                              <Avatar
+                                style={{ width: "30px", height: "30px" }}
+                                {...stringAvatar(loggedInUser.userName)}
                               />
                               <div>
-                                <h6> {sessionStorage.getItem("userName")}</h6>
+                                <h6> {loggedInUser.userName}</h6>
                                 <span>
-                                  {sessionStorage.getItem("userRole") == 1
+                                  {loggedInUser.userRole == 1
                                     ? " Admin"
                                     : "Staff"}
                                 </span>

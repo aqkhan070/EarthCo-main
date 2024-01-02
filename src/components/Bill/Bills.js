@@ -28,6 +28,7 @@ import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 
+
 const Bills = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
@@ -180,22 +181,14 @@ const Bills = () => {
                   <TableHead className="table-header">
                     <TableRow className=" bill-tbl-alignment">
                       <TableCell>
-                        <TableSortLabel
-                          active={orderBy === "SupplierName"}
-                          direction={orderBy === "SupplierName" ? order : "asc"}
-                          onClick={() => handleSort("SupplierName")}
-                        >
+                      
                           Vendor
-                        </TableSortLabel>
+                       
                       </TableCell>
                       <TableCell>
-                        <TableSortLabel
-                          active={orderBy === "DueDate"}
-                          direction={orderBy === "DueDate" ? order : "asc"}
-                          onClick={() => handleSort("DueDate")}
-                        >
+                       
                           Due Date
-                        </TableSortLabel>
+                       
                       </TableCell>
                       <TableCell className="text-end">Amount</TableCell>
                       <TableCell>Memo</TableCell>

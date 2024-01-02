@@ -254,15 +254,7 @@ const PurchaseOrder = () => {
                     <Table>
                       <TableHead className="table-header">
                         <TableRow className="material-tbl-alignment">
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "Vendor"}
-                              direction={orderBy === "Vendor" ? order : "asc"}
-                              onClick={() => handleRequestSort("Vendor")}
-                            >
-                              Vendor
-                            </TableSortLabel>
-                          </TableCell>
+                          <TableCell>Vendor</TableCell>
                           <TableCell>Date</TableCell>
                           <TableCell>Status</TableCell>
                           <TableCell>Regional Manager</TableCell>

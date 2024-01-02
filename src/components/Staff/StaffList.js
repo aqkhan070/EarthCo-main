@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 
-
 const StaffList = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -182,42 +181,10 @@ const StaffList = () => {
                 <TableHead className="table-header">
                   <TableRow className="material-tbl-alignment">
                     <TableCell className="ms-3">#</TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === "FirstName"}
-                        direction={orderBy === "FirstName" ? order : "asc"}
-                        onClick={() => handleSortRequest("FirstName")}
-                      >
-                        First Name
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === "LastName"}
-                        direction={orderBy === "LastName" ? order : "asc"}
-                        onClick={() => handleSortRequest("LastName")}
-                      >
-                        Last Name
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === "Email"}
-                        direction={orderBy === "Email" ? order : "asc"}
-                        onClick={() => handleSortRequest("Email")}
-                      >
-                        User Name
-                      </TableSortLabel>
-                    </TableCell>
-                    <TableCell>
-                      <TableSortLabel
-                        active={orderBy === "Role"}
-                        direction={orderBy === "Role" ? order : "asc"}
-                        onClick={() => handleSortRequest("Role")}
-                      >
-                        Role
-                      </TableSortLabel>
-                    </TableCell>
+                    <TableCell>First Name</TableCell>
+                    <TableCell>Last Name</TableCell>
+                    <TableCell>User Name</TableCell>
+                    <TableCell>Role</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>

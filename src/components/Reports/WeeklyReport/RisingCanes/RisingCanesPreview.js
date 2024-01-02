@@ -201,7 +201,7 @@ const RisingCanesPreview = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{formatDate(weeklyPreviewData.ReportForWeekOf)}</h5>
+                    <h5>{formatDate(weeklyPreviewData.ReportForWeekOf, false)}</h5>
                   </div>
                 </div>
               </div>
@@ -493,7 +493,7 @@ const RisingCanesPreview = () => {
                       //   );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

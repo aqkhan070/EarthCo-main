@@ -873,9 +873,10 @@ const AddEstimateForm = () => {
     const totalamount =
       newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
 
-    let calculatedTotalProfit =0;
-    if(subtotal>0){
-      calculatedTotalProfit=  newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+    let calculatedTotalProfit = 0;
+    if (subtotal > 0) {
+      calculatedTotalProfit =
+        newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
     if (totalExpense > 0) {
@@ -888,9 +889,9 @@ const AddEstimateForm = () => {
     if (totalamount) {
       setTotalItemAmount(totalamount);
     }
-  
-      setTotalProfit(calculatedTotalProfit);
-    
+
+    setTotalProfit(calculatedTotalProfit);
+
     console.log("profit");
 
     setBalanceDue(totalItemAmount - paymentCredit);
@@ -2361,15 +2362,19 @@ const AddEstimateForm = () => {
                             >
                               Purchase Order
                             </MenuItem>
-                            <MenuItem
-                              onClick={() => {
-                                LinkToPO();
-                                navigate("/invoices/add-invoices");
-                              }}
-                              value={3}
-                            >
-                              Invoice
-                            </MenuItem>
+                            {formData.BillId ? (
+                              <MenuItem
+                                onClick={() => {
+                                  LinkToPO();
+                                  navigate("/invoices/add-invoices");
+                                }}
+                                value={3}
+                              >
+                                Invoice
+                              </MenuItem>
+                            ) : (
+                              <></>
+                            )}
                           </Select>
                         </FormControl>
 

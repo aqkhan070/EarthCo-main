@@ -177,7 +177,7 @@ const IrrigationAuditPreview = () => {
                     );
                   }}
                 >
-                  <i class="fa-regular fa-envelope"></i>
+                  <i className="fa-regular fa-envelope"></i>
                 </button>
               )}
             </div>
@@ -250,7 +250,7 @@ const IrrigationAuditPreview = () => {
                       <strong>By Regional Manager</strong>{" "}
                       <div>{irrDetails?.Data.RegionalManagerName}</div>
                       <strong>Created</strong>{" "}
-                      <div>{formatDate(irrDetails?.Data.CreatedDate)}</div>
+                      <div>{formatDate(irrDetails?.Data.CreatedDate, false)}</div>
                     </div>
                   </div>
                   <div className="row mx-2">
@@ -289,7 +289,6 @@ const IrrigationAuditPreview = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {" "}
                         {controllerData ? (
                           controllerData?.map((item) => {
                             if (item.ControllerData) {

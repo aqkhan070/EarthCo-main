@@ -133,12 +133,7 @@ const AuditController = ({
   // };
 
   const trackAdditionalFile = (e) => {
-    if (additionalFiles.length >= 10) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("You can add file upto 10");
-      return;
-    }
+   
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setAdditionalFiles((prevFiles) => [...prevFiles, uploadedFile]);
@@ -201,7 +196,7 @@ const AuditController = ({
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">
-                Controller Name<span class="text-danger">*</span>
+                Controller Name<span className="text-danger">*</span>
               </label>
             </div>
             <TextField

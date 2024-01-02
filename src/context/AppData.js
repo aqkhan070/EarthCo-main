@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { createContext, useEffect, useState } from "react";
 
 const DataContext = createContext();
@@ -221,7 +222,12 @@ const DataFun = ({ children }) => {
     },
   ]);
 
-  const [loggedUser, setLoggedUser] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState({
+    userName: Cookies.get("userName"),
+    userEmail: Cookies.get("userEmail"),
+    userRole: Cookies.get("userRole"),
+    userId: Cookies.get("userId"),
+  });
 
   const [sRData, setSRData] = useState({});
   const [POData, setPOData] = useState({});
@@ -244,6 +250,7 @@ const DataFun = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        loggedInUser, setLoggedInUser,
         customerAddress,
         setCustomerAddress,
         toggleFullscreen,
@@ -270,8 +277,7 @@ const DataFun = ({ children }) => {
         sRData,
         users,
         setUsers,
-        loggedUser,
-        setLoggedUser,
+      
         contacts,
         setContacts,
         estimates,

@@ -33,13 +33,11 @@ const WeeklyReport = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
-  const customerParam = Number(queryParams.get("Customer"));
-  const MonthParam = Number(queryParams.get("Month"));
-  const yearParam = Number(queryParams.get("Year"));
   const isMail = queryParams.get("isMail");
   const { contactEmail, fetchEmail } = useFetchContactEmail();
   const [weeklyPreviewData, setWeeklyPreviewData] = useState({});
   const [files, setFiles] = useState([]);
+
   const getWeeklyPreview = async () => {
     try {
       const res = await axios.get(
@@ -134,7 +132,7 @@ const WeeklyReport = () => {
               </div>
               <div className="row mb-2" style={{ padding: "2px" }}>
                 <div
-                  className="col-md-4 col-sm-4 addborder"
+                  className="col-md-4 col-sm-4 addborder border-end-0"
                   style={{ padding: "1%" }}
                 >
                   <div>
@@ -148,7 +146,7 @@ const WeeklyReport = () => {
                   </div>
                 </div>
                 <div
-                  className="col-md-4 col-sm-4 addborder"
+                  className="col-md-4 col-sm-4 addborder border-end-0"
                   style={{ padding: "1%" }}
                 >
                   <div>
@@ -171,7 +169,7 @@ const WeeklyReport = () => {
                   </div>
                 </div>
                 <div
-                  className="col-md-4 col-sm-4 addborder"
+                  className="col-md-4 col-sm-4 addborder "
                   style={{ padding: "1%" }}
                 >
                   <div>
@@ -186,7 +184,7 @@ const WeeklyReport = () => {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-4 col-sm-4 addborder">
+                <div className="col-md-4 col-sm-4 addborder border-end-0 border-bottom-0">
                   <div>
                     <h5>
                       {" "}
@@ -194,10 +192,12 @@ const WeeklyReport = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{formatDate(weeklyPreviewData.ReportForWeekOf)}</h5>
+                    <h5>
+                      {formatDate(weeklyPreviewData.ReportForWeekOf, false)}
+                    </h5>
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4 addborder">
+                <div className="col-md-4 col-sm-4 addborder border-end-0 border-bottom-0">
                   <div>
                     {" "}
                     <h5>
@@ -208,7 +208,7 @@ const WeeklyReport = () => {
                     <h5>{weeklyPreviewData.Thisweekrotation}</h5>{" "}
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4 addborder">
+                <div className="col-md-4 col-sm-4 addborder border-bottom-0">
                   <div>
                     {" "}
                     <h5>
@@ -219,7 +219,7 @@ const WeeklyReport = () => {
                     <h5>{weeklyPreviewData.Nextweekrotation}</h5>{" "}
                   </div>
                 </div>
-                <div className="col-md-12 addborder">
+                <div className="col-md-12 addborder border-bottom-0">
                   <div>
                     {" "}
                     <h5>
@@ -230,7 +230,7 @@ const WeeklyReport = () => {
                     <h5>null</h5>{" "}
                   </div>
                 </div>
-                <div className="col-md-12 addborder">
+                <div className="col-md-12 addborder border-bottom-0">
                   <div>
                     {" "}
                     <h5>
@@ -331,7 +331,7 @@ const WeeklyReport = () => {
                       // );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

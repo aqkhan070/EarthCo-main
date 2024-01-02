@@ -26,6 +26,8 @@ const Landscape = () => {
     setsRProposalData,
     toggleFullscreen,
     setToggleFullscreen,
+    loggedInUser,
+    setLoggedInUser,
   } = useContext(DataContext);
 
   const queryParams = new URLSearchParams(window.location.search);
@@ -48,7 +50,6 @@ const Landscape = () => {
   } = useSendEmail();
   const { contactEmail, fetchEmail } = useFetchContactEmail();
 
-
   const getLandscape = async () => {
     try {
       const res = await axios.get(
@@ -56,7 +57,7 @@ const Landscape = () => {
         { headers }
       );
       setLandscapeData(res.data);
-      fetchEmail(res.data.ContactId)
+      fetchEmail(res.data.ContactId);
       console.log("reponse landscape is", res.data);
     } catch (error) {
       console.log("api call error", error);
@@ -184,10 +185,12 @@ const Landscape = () => {
                     //   0,
                     //   false
                     // );
-                    navigate(`/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`);
+                    navigate(
+                      `/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`
+                    );
                   }}
                 >
-                  <i class="fa-regular fa-envelope"></i>
+                  <i className="fa-regular fa-envelope"></i>
                 </button>
               )}
             </div>
@@ -289,7 +292,7 @@ const Landscape = () => {
                     <div style={{ color: "black" }} className="text-start">
                       <p className="">
                         {" "}
-                        {formatDate(landscapeData.CreatedDate)}
+                        {formatDate(landscapeData.CreatedDate, false)}
                       </p>
                     </div>
                   </div>
@@ -307,7 +310,12 @@ const Landscape = () => {
                         <td>
                           <strong>Supervisor visited the job weekly:</strong>{" "}
                         </td>
-                        <td> {landscapeData.SupervisorVisitedthejobweekly}</td>
+                        <td>
+                          {" "}
+                          {landscapeData.SupervisorVisitedthejobweekly
+                            ? "Yes"
+                            : "No"}
+                        </td>
                       </tr>
                       <tr className="preview-table-row">
                         <td>
@@ -317,7 +325,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.CompletedLitterpickupofgroundareas}
+                          {landscapeData.CompletedLitterpickupofgroundareas
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -328,7 +338,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.Completedsweepingorblowingofwalkways}
+                          {landscapeData.Completedsweepingorblowingofwalkways
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -339,7 +351,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.HighpriorityareaswereVisitedweekly}
+                          {landscapeData.HighpriorityareaswereVisitedweekly
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -350,7 +364,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.VDitcheswerecleanedandinspected}
+                          {landscapeData.VDitcheswerecleanedandinspected
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -383,7 +399,12 @@ const Landscape = () => {
                         <td>
                           <strong>Turf was mowed and edged weekly: </strong>{" "}
                         </td>
-                        <td> {landscapeData.Trufwasmovedandedgedweekly}</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Trufwasmovedandedgedweekly
+                            ? "Yes"
+                            : "No"}
+                        </td>
                       </tr>
                       <tr className="landscap-preview-heading">
                         <td colSpan={2}>
@@ -398,9 +419,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {
-                            landscapeData.Shrubstrimmedaccordingtorotationschedule
-                          }
+                          {landscapeData.Shrubstrimmedaccordingtorotationschedule
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -422,9 +443,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {
-                            landscapeData.WateringofflowerbedsCompletedandchecked
-                          }
+                          {landscapeData.WateringofflowerbedsCompletedandchecked
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="landscap-preview-heading">
@@ -440,7 +461,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.Headswereadjustedformaximumcoverage}
+                          {landscapeData.Headswereadjustedformaximumcoverage
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -451,9 +474,9 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {
-                            landscapeData.Repairsweremadetomaintainaneffectivesystem
-                          }
+                          {landscapeData.Repairsweremadetomaintainaneffectivesystem
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
@@ -464,20 +487,28 @@ const Landscape = () => {
                         </td>
                         <td>
                           {" "}
-                          {landscapeData.Controllerswereinspectedandadjusted}
+                          {landscapeData.Controllerswereinspectedandadjusted
+                            ? "Yes"
+                            : "No"}
                         </td>
                       </tr>
                       <tr className="preview-table-row">
                         <td>
                           <strong>Main line was repaired: </strong>{" "}
                         </td>
-                        <td> {landscapeData.Mainlinewasrepaired}</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Mainlinewasrepaired ? "Yes" : "No"}
+                        </td>
                       </tr>
                       <tr className="preview-table-row">
                         <td>
                           <strong>Valve(s) was repaired: </strong>{" "}
                         </td>
-                        <td> {landscapeData.Valvewasrepaired}</td>
+                        <td>
+                          {" "}
+                          {landscapeData.Valvewasrepaired ? "Yes" : "No"}
+                        </td>
                       </tr>
                       <tr className="landscap-preview-heading">
                         <td colSpan={2}>

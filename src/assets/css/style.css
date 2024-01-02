@@ -53902,6 +53902,27 @@ padding: 0px !important;
     padding: 3px !important;
 }
 
+/* calender mui */
+.css-mvmu1r{
+    justify-content: start;
+}
+.css-1n2mv2k{
+    justify-content: start !important;
+    align-items: start !important;
+}
+.css-10qkmc3 {
+width: 30px !important;
+height: 30px !important;
+}
+.css-xg3pvj {
+    width: 29px !important;
+height: 30px !important;
+
+}
+.css-1dozdou{
+    padding-left: 4px !important;
+    padding-right: 81px !important;
+}
 /* .css-1nrlq1o-MuiFormControl-root{
     min-width: 100% !important;
 }
@@ -54073,7 +54094,9 @@ padding: 0px !important;
     display: flex;
     justify-content: center;
 }
-
+.preview-image-container{
+    
+}
 .selected-map{
     background-color: azure;
 }

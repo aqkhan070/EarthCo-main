@@ -8,7 +8,12 @@ const useFetchDashBoardData = () => {
       Authorization: `Bearer ${token}`,
     };
 
-    const [dashBoardData, setdashBoardData] = useState({})
+    const [dashBoardData, setdashBoardData] = useState({
+      EstimateData: [],
+      ServiceRequestData: []
+    })
+
+    const [loading, setLoading] = useState(true)
 
     const getDashboardData = async () => {
         try {
@@ -18,10 +23,13 @@ const useFetchDashBoardData = () => {
           );
           console.log("dashboard response is", response.data);
           setdashBoardData(response.data)
+          setLoading(false)
          
         } catch (error) {
          
           console.error("API Call Error:", error);
+          setLoading(false)
+
         }
       };
 
@@ -31,7 +39,7 @@ const useFetchDashBoardData = () => {
       }, [])
       
 
-  return {dashBoardData, getDashboardData}
+  return {dashBoardData, getDashboardData,loading}
 }
 
 export default useFetchDashBoardData

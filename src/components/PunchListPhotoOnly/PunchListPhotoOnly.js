@@ -28,6 +28,7 @@ import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchPunchListPhotos from "../Hooks/useFetchPunchListPhotos";
 import TitleBar from "../TitleBar";
+import EventPopups from "../Reusable/EventPopups";
 
 const PunchListPhotoOnly = () => {
   const icon = (
@@ -81,8 +82,38 @@ const PunchListPhotoOnly = () => {
     setTablePage(newPage);
   };
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
+  const deletePunchList = async (id) => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/PunchlistPhotoOnly/DeletePunchlistPhotoOnly?id=${id}`,
+        {
+          headers,
+        }
+      );
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("PunchList Deleted Successfully");
+
+      console.log("Customer deleted successfully:", response.data);
+      fetchFilterPLPhoto();
+      // window.location.reload();
+    } catch (error) {
+      console.error("There was an error deleting the customer:", error);
+    }
+  };
+
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <TitleBar icon={icon} title="Punchlist - Photos Only" />
       <div className="container-fluid">
         <div className="card">
@@ -135,6 +166,7 @@ const PunchListPhotoOnly = () => {
 
                     <TableCell>Date</TableCell>
                     <TableCell>Preview</TableCell>
+                    <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -157,6 +189,65 @@ const PunchListPhotoOnly = () => {
                           Open
                         </span>
                       </TableCell>
+                      <TableCell align="right">
+                        <Button
+                          data-bs-toggle="modal"
+                          data-bs-target={`#deleteModal${item.PunchlistPhotoOnlyId}`}
+                          className="btn btn-danger btn-icon-xxs "
+                        >
+                          {/* <i className="fas fa-trash-alt"></i> */}
+                          <Delete color="error"></Delete>
+                        </Button>
+                      </TableCell>
+                      <div
+                        className="modal fade"
+                        id={`deleteModal${item.PunchlistPhotoOnlyId}`}
+                        tabIndex="-1"
+                        aria-labelledby="deleteModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div
+                          className="modal-dialog modal-dialog-centered"
+                          role="document"
+                        >
+                          <div className="modal-content">
+                            <div className="modal-header">
+                              <h5 className="modal-title">Punch List Delete</h5>
+
+                              <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                              ></button>
+                            </div>
+                            <div className="modal-body text-center">
+                              <p>
+                                Are you sure you want to delete This PunchList
+                              </p>
+                            </div>
+
+                            <div className="modal-footer">
+                              <button
+                                type="button"
+                                id="closer"
+                                className="btn btn-danger light "
+                                data-bs-dismiss="modal"
+                              >
+                                Close
+                              </button>
+                              <button
+                                className="btn btn-primary "
+                                data-bs-dismiss="modal"
+                                onClick={() => {
+                                  deletePunchList(item.PunchlistPhotoOnlyId);
+                                }}
+                              >
+                                Yes
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </TableRow>
                   ))}
                 </TableBody>

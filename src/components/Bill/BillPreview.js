@@ -201,7 +201,7 @@ const BillPreview = () => {
                             <th>
                               {" "}
                               <h6 className="text-right mb-0">
-                                {formatDate(billPreviewData.Data.CreatedDate)}
+                                {formatDate(billPreviewData.Data.CreatedDate, false)}
                               </h6>
                             </th>
                           </tr>
@@ -348,7 +348,7 @@ const BillPreview = () => {
                       navigate(`/send-mail?title=${"Bill"}`);
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

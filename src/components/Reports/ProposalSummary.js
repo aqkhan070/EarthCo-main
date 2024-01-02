@@ -166,7 +166,7 @@ const ProposalSummary = () => {
                       );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 )}
               </div>
@@ -232,7 +232,7 @@ const ProposalSummary = () => {
                         {reportData.map((report, index) => {
                           return (
                             <tr className="preview-table-row" key={index}>
-                              <td>{formatDate(report.CreatedDate)}</td>
+                              <td>{formatDate(report.CreatedDate, false)}</td>
                               <td className="left strong">
                                 {report.EstimateNumber}
                               </td>

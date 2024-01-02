@@ -16,6 +16,8 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const Audit = () => {
   const token = Cookies.get("token");
+  const userData = Cookies.get("userData");
+
   const headers = {
     Authorization: `Bearer ${token}`,
   };
@@ -57,6 +59,7 @@ const Audit = () => {
 
   useEffect(() => {
     fetchIrrigation();
+    // console.log("user data izzz", JSON.parse(userData));
   }, []);
 
   const handlePrint = () => {
@@ -76,7 +79,7 @@ const Audit = () => {
       margin: 10,
       filename: "Irrigation-Audit.pdf",
       image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true }, // Set useCORS to true here
       jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
     });
 
@@ -175,7 +178,7 @@ const Audit = () => {
                     );
                   }}
                 >
-                  <i class="fa-regular fa-envelope"></i>
+                  <i className="fa-regular fa-envelope"></i>
                 </button>
               )}
             </div>
@@ -233,7 +236,10 @@ const Audit = () => {
                       {" "}
                       <strong>Created</strong>{" "}
                       <div>
-                        {formatDate(irrDetails?.IrrigationData.CreatedDate)}
+                        {formatDate(
+                          irrDetails?.IrrigationData.CreatedDate,
+                          false
+                        )}
                       </div>
                     </div>
                   </div>
@@ -257,7 +263,6 @@ const Audit = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {" "}
                         {irrDetails.ControllerData.map((item) => {
                           return (
                             <tr
@@ -378,6 +383,7 @@ const Audit = () => {
                                 <br />
                                 <strong>photo:</strong>
                                 <br />
+
                                 <img
                                   src={`https://earthcoapi.yehtohoga.com/${item.PhotoPath}`}
                                   style={{

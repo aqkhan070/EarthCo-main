@@ -203,7 +203,7 @@ const POPreview = () => {
                             <th>
                               {" "}
                               <h6 className="text-right mb-0">
-                                {formatDate(PoPreviewData.Data.CreatedDate)}
+                                {formatDate(PoPreviewData.Data.CreatedDate, false)}
                               </h6>
                             </th>
                           </tr>
@@ -350,7 +350,7 @@ const POPreview = () => {
                       navigate(`/send-mail?title=${"Puechase Order"}`);
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

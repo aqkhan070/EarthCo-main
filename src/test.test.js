@@ -1,5 +1,101 @@
-import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
+import { memo, useState, useEffect } from "react";
 
-const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
+const containerStyle = {
+  width: "100%",
+  height: "400px",
+};
 
-&mail=${customerMail}
+const defaultCenter = {
+  lat: 31.4237697,
+  lng: 74.2678971,
+};
+
+function GoogleMapApi({ mapData = [], toolTipData }) {
+  const [map, setMap] = useState(null);
+  const [selectedMarker, setSelectedMarker] = useState(null);
+
+  useEffect(() => {
+    if (map && mapData.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      mapData.forEach((location) => {
+        if (isFinite(location.lat) && isFinite(location.lng)) {
+          bounds.extend(
+            new window.google.maps.LatLng(location.lat, location.lng)
+          );
+        }
+      });
+      map.fitBounds(bounds);
+    }
+  }, [map, mapData]);
+
+  useEffect(() => {
+    console.log("toolTipData:", toolTipData);
+    if (
+      map &&
+      toolTipData &&
+      isFinite(toolTipData.lat) &&
+      isFinite(toolTipData.lng)
+    ) {
+      map.panTo(toolTipData);
+      map.setZoom(15); // Adjust zoom level as needed
+    }
+  }, [map, toolTipData]);
+
+  const onLoad = (map) => {
+    setMap(map);
+  };
+
+  const onUnmount = () => {
+    setMap(null);
+  };
+
+  const handleMarkerClick = (location) => {
+    setSelectedMarker(location);
+  };
+
+  const handleInfoWindowClose = () => {
+    setSelectedMarker(null);
+  };
+
+  return (
+    <LoadScript
+      googleMapsApiKey="AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE" // Replace with your actual API key
+      libraries={["places"]}
+    >
+      <div>
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={defaultCenter}
+          zoom={mapData.length > 0 ? undefined : 5} // Adjust initial zoom when there are no markers
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+        >
+          {mapData.map((location, index) => (
+            <Marker
+              key={index}
+              position={{ lat: location.lat, lng: location.lng }}
+              onClick={() => handleMarkerClick(location)}
+            />
+          ))}
+
+          {selectedMarker && (
+            <InfoWindow
+              position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+              onCloseClick={handleInfoWindowClose}
+            >
+              {/* ... */}
+            </InfoWindow>
+          )}
+        </GoogleMap>
+      </div>
+    </LoadScript>
+  );
+}
+
+export default memo(GoogleMapApi);

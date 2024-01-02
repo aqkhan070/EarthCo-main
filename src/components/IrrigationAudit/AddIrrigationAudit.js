@@ -29,10 +29,7 @@ const AddIrrigationAudit = () => {
   const [formData, setFormData] = useState({
     ReportDate: new Date().toISOString().substr(0, 10),
   });
-  const [customersList, setCustomersList] = useState([]);
-  const [showCustomersList, setShowCustomersList] = useState(true);
-  const [inputValue, setInputValue] = useState("");
-  const [disableSubmit, setDisableSubmit] = useState(true);
+
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -201,7 +198,12 @@ const AddIrrigationAudit = () => {
   const handleSubmit = async () => {
     setSubmitClicked(true);
 
-    if (!formData.CustomerId) {
+    if (
+      !formData.CustomerId ||
+      !formData.RegionalManagerId ||
+      !formData.Title ||
+      !formData.ContactId
+    ) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("please fill all required Fields");
@@ -243,7 +245,8 @@ const AddIrrigationAudit = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchIrrigation = async () => {
-    if (idParam === 0) {
+    if (!idParam) {
+      setIsLoading(false);
       return;
     }
     try {
@@ -289,74 +292,81 @@ const AddIrrigationAudit = () => {
         text={snackBarText}
       />
       <div className="container-fluid">
-        <div className="card">
-          <div className="card-body p-0">
-            <div className="itemtitleBar">
-              <h4>General Information</h4>
-            </div>
-            <div className="card-body">
-              <div className="">
-                {/* {errorMessage ? (
+        {isLoading ? (
+          <div className="center-loader">
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <div className="card">
+              <div className="card-body p-0">
+                <div className="itemtitleBar">
+                  <h4>General Information</h4>
+                </div>
+                <div className="card-body">
+                  <div className="">
+                    {/* {errorMessage ? (
                     <Alert severity="error">{errorMessage}</Alert>
                   ) : null}
                   {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
 
-                <div className="row mb-2 mx-1">
-                  <div className="col-md-3 ">
-                    <label className="form-label">Title</label>
+                    <div className="row mb-2 mx-1">
+                      <div className="col-md-3 ">
+                        <label className="form-label">Title</label>
 
-                    <TextField
-                      type="text"
-                      size="small"
-                      name="Title"
-                      onChange={handleInputChange}
-                      value={formData.Title}
-                      className="form-control form-control-sm"
-                      placeholder="Title"
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Customer<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={customerSearch}
-                      getOptionLabel={(option) => option.CompanyName || ""}
-                      value={name ? { CompanyName: name } : null}
-                      onChange={handleCustomerAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.CustomerId
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div className="customer-dd-border">
-                            <h6> {option.CompanyName}</h6>
-                            <small># {option.UserId}</small>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
                         <TextField
-                          {...params}
-                          label=""
-                          onClick={() => {
-                            setName("");
-                          }}
-                          onChange={(e) => {
-                            fetchCustomers(e.target.value);
-                          }}
-                          placeholder="Choose..."
-                          error={submitClicked && !formData.CustomerId}
-                          className="bg-white"
+                          type="text"
+                          size="small"
+                          name="Title"
+                          onChange={handleInputChange}
+                          value={formData.Title}
+                          className="form-control form-control-sm"
+                          placeholder="Title"
+                          error={submitClicked && !formData.Title}
                         />
-                      )}
-                    />
-                  </div>
+                      </div>
 
-                  {/* <div className="col-md-3">
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Customer<span className="text-danger">*</span>
+                        </label>
+                        <Autocomplete
+                          id="staff-autocomplete"
+                          size="small"
+                          options={customerSearch}
+                          getOptionLabel={(option) => option.CompanyName || ""}
+                          value={name ? { CompanyName: name } : null}
+                          onChange={handleCustomerAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.UserId === value.CustomerId
+                          }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div className="customer-dd-border">
+                                <h6> {option.CompanyName}</h6>
+                                <small># {option.UserId}</small>
+                              </div>
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              onClick={() => {
+                                setName("");
+                              }}
+                              onChange={(e) => {
+                                fetchCustomers(e.target.value);
+                              }}
+                              placeholder="Choose..."
+                              error={submitClicked && !formData.CustomerId}
+                              className="bg-white"
+                            />
+                          )}
+                        />
+                      </div>
+
+                      {/* <div className="col-md-3">
                         <label className="form-label">Service location</label>
                         <Autocomplete
                           id="inputState19"
@@ -385,158 +395,166 @@ const AddIrrigationAudit = () => {
                           aria-label="Default select example"
                         />
                       </div> */}
-                  <div className="col-md-3">
-                    <div className="row">
-                      <div className="col-md-auto">
-                        <label className="form-label">
-                          Contacts<span className="text-danger">*</span>
-                        </label>
-                      </div>
                       <div className="col-md-3">
-                        {" "}
-                        {formData.CustomerId ? (
-                          <Contacts
-                            fetctContacts={fetctContacts}
-                            fetchCustomers={fetchCustomers}
-                            customerId={formData.CustomerId}
-                          />
-                        ) : (
-                          <></>
-                        )}
+                        <div className="row">
+                          <div className="col-md-auto">
+                            <label className="form-label">
+                              Contacts<span className="text-danger">*</span>
+                            </label>
+                          </div>
+                          <div className="col-md-3">
+                            {" "}
+                            {formData.CustomerId ? (
+                              <Contacts
+                                fetctContacts={fetctContacts}
+                                fetchCustomers={fetchCustomers}
+                                customerId={formData.CustomerId}
+                              />
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </div>
+
+                        <Autocomplete
+                          id="inputState299"
+                          size="small"
+                          options={contactList}
+                          getOptionLabel={(option) => option.FirstName || ""}
+                          value={
+                            contactList.find(
+                              (contact) =>
+                                contact.ContactId === formData.ContactId
+                            ) || null
+                          }
+                          onChange={handleContactAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.ContactId === value.ContactId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Contacts"
+                              className="bg-white"
+                              error={submitClicked && !formData.ContactId}
+                            />
+                          )}
+                          aria-label="Contact select"
+                        />
                       </div>
-                    </div>
 
-                    <Autocomplete
-                      id="inputState299"
-                      size="small"
-                      options={contactList}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        contactList.find(
-                          (contact) => contact.ContactId === formData.ContactId
-                        ) || null
-                      }
-                      onChange={handleContactAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.ContactId === value.ContactId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          placeholder="Contacts"
-                          className="bg-white"
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Regional Manager{" "}
+                          <span className="text-danger">*</span>
+                        </label>
+                        <Autocomplete
+                          id="staff-autocomplete"
+                          size="small"
+                          options={staffData.filter(
+                            (staff) => staff.Role === "Regional Manager"
+                          )}
+                          getOptionLabel={(option) => option.FirstName || ""}
+                          value={
+                            staffData.find(
+                              (staff) =>
+                                staff.UserId === formData.RegionalManagerId
+                            ) || null
+                          }
+                          onChange={handleRBAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.UserId === value.RegionalManagerId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              error={
+                                submitClicked && !formData.RegionalManagerId
+                              }
+                              placeholder="Choose..."
+                              className="bg-white"
+                            />
+                          )}
                         />
-                      )}
-                      aria-label="Contact select"
-                    />
-                  </div>
+                      </div>
 
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Regional Manager <span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={staffData.filter(
-                        (staff) => staff.Role === "Regional Manager"
-                      )}
-                      getOptionLabel={(option) => option.FirstName || ""}
-                      value={
-                        staffData.find(
-                          (staff) => staff.UserId === formData.RegionalManagerId
-                        ) || null
-                      }
-                      onChange={handleRBAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.RegionalManagerId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          error={submitClicked && !formData.RegionalManagerId}
-                          placeholder="Choose..."
-                          className="bg-white"
+                      <div className="col-md-3">
+                        <label className="form-label">Created</label>
+                        <input
+                          type="date"
+                          name="ReportDate"
+                          value={formatDate(formData.ReportDate)}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          placeholder="Created"
                         />
-                      )}
-                    />
-                  </div>
+                      </div>
 
-                  <div className="col-md-3">
-                    <label className="form-label">Created</label>
-                    <input
-                      type="date"
-                      name="ReportDate"
-                      value={formatDate(formData.ReportDate)}
-                      onChange={handleInputChange}
-                      className="form-control"
-                      placeholder="Created"
-                    />
-                  </div>
-
-                  <div className="col-md-9 text-end mt-4">
-                    <div>
-                      {idParam === 0 ? null : (
-                        <button
-                          className="btn btn-dark btn-sm me-2"
-                          onClick={toggleShowForm}
-                        >
-                          Add Controller Info
-                        </button>
-                      )}
-                      {/* <button
+                      <div className="col-md-9 text-end mt-4">
+                        <div>
+                          {idParam === 0 ? null : (
+                            <button
+                              className="btn btn-dark btn-sm me-2"
+                              onClick={toggleShowForm}
+                            >
+                              Add Controller Info
+                            </button>
+                          )}
+                          {/* <button
                           type="button"
                           onClick={handleSubmit}
                           className="btn btn-primary btn-sm me-1"
                         >
                           Submit
                         </button> */}
-                      <LoaderButton
-                        varient="small"
-                        loading={disableButton}
-                        handleSubmit={handleSubmit}
-                      >
-                        Submit
-                      </LoaderButton>
+                          <LoaderButton
+                            varient="small"
+                            loading={disableButton}
+                            handleSubmit={handleSubmit}
+                          >
+                            Submit
+                          </LoaderButton>
 
-                      {/* <NavLink to="/irrigation">
+                          {/* <NavLink to="/irrigation">
                     </NavLink> */}
 
-                      <button
-                        onClick={() => {
-                          // setShowContent(true);
-                          // setSelectedIrr(0);
-                          navigate(`/irrigation-audit`);
-                        }}
-                        className="btn btn-danger btn-sm light ms-1"
-                      >
-                        Cancel
-                      </button>
+                          <button
+                            onClick={() => {
+                              // setShowContent(true);
+                              // setSelectedIrr(0);
+                              navigate(`/irrigation-audit`);
+                            }}
+                            className="btn btn-danger btn-sm light ms-1"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {showForm && (
-          <AuditController
-            setAddSucces={setAddSucces}
-            fetchIrrigation={fetchIrrigation}
-            toggleShowForm={toggleShowForm}
-            idParam={idParam}
-          />
+            {showForm && (
+              <AuditController
+                setAddSucces={setAddSucces}
+                fetchIrrigation={fetchIrrigation}
+                toggleShowForm={toggleShowForm}
+                idParam={idParam}
+              />
+            )}
+
+            <AuditControllerTable
+              setAddSucces={setAddSucces}
+              fetchIrrigation={fetchIrrigation}
+              headers={headers}
+              controllerList={controllerList}
+            />
+          </>
         )}
-
-        <AuditControllerTable
-          setAddSucces={setAddSucces}
-          fetchIrrigation={fetchIrrigation}
-          headers={headers}
-          controllerList={controllerList}
-        />
       </div>
     </>
   );

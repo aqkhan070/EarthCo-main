@@ -10,7 +10,7 @@ import IrrigationControler from "./IrrigationControler";
 import Alert from "@mui/material/Alert";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
-import { CircularProgress } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 
@@ -183,7 +183,8 @@ const IrrigationForm = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchIrrigation = async () => {
-    if (idParam === 0) {
+    if (!idParam) {
+      setIsLoading(false);
       return;
     }
     try {
@@ -228,60 +229,66 @@ const IrrigationForm = () => {
         text={snackBarText}
       />
       <div className="container-fluid">
-        <div className="card">
-          <div className="card-body p-0">
-            <div className="itemtitleBar">
-              <h4>General Information</h4>
-            </div>
-            <div className="card-body">
-              <div className="">
-                {/* {errorMessage ? (
+        {isLoading ? (
+          <div className="center-loader">
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <div className="card">
+              <div className="card-body p-0">
+                <div className="itemtitleBar">
+                  <h4>General Information</h4>
+                </div>
+                <div className="card-body">
+                  <div className="">
+                    {/* {errorMessage ? (
                   <Alert severity="error">{errorMessage}</Alert>
                 ) : null}
                 {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
 
-                <div className="row mb-2 mx-1">
-                  <div className="col-md-3">
-                    <label className="form-label">
-                      Customer<span className="text-danger">*</span>
-                    </label>
-                    <Autocomplete
-                      id="staff-autocomplete"
-                      size="small"
-                      options={customerSearch}
-                      getOptionLabel={(option) => option.CompanyName || ""}
-                      value={name ? { CompanyName: name } : null}
-                      onChange={handleCustomerAutocompleteChange}
-                      isOptionEqualToValue={(option, value) =>
-                        option.UserId === value.CustomerId
-                      }
-                      renderOption={(props, option) => (
-                        <li {...props}>
-                          <div className="customer-dd-border">
-                            <h6> {option.CompanyName}</h6>
-                            <small># {option.UserId}</small>
-                          </div>
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          onClick={() => {
-                            setName("");
-                          }}
-                          onChange={(e) => {
-                            fetchCustomers(e.target.value);
-                          }}
-                          placeholder="Choose..."
-                          error={submitClicked && !formData.CustomerId}
-                          className="bg-white"
+                    <div className="row mb-2 mx-1">
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Customer<span className="text-danger">*</span>
+                        </label>
+                        <Autocomplete
+                          id="staff-autocomplete"
+                          size="small"
+                          options={customerSearch}
+                          getOptionLabel={(option) => option.CompanyName || ""}
+                          value={name ? { CompanyName: name } : null}
+                          onChange={handleCustomerAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.UserId === value.CustomerId
+                          }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div className="customer-dd-border">
+                                <h6> {option.CompanyName}</h6>
+                                <small># {option.UserId}</small>
+                              </div>
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              onClick={() => {
+                                setName("");
+                              }}
+                              onChange={(e) => {
+                                fetchCustomers(e.target.value);
+                              }}
+                              placeholder="Choose..."
+                              error={submitClicked && !formData.CustomerId}
+                              className="bg-white"
+                            />
+                          )}
                         />
-                      )}
-                    />
-                  </div>
+                      </div>
 
-                  {/* <div className="col-md-3">
+                      {/* <div className="col-md-3">
                       <label className="form-label">Service location</label>
                       <Autocomplete
                         id="inputState19"
@@ -310,7 +317,7 @@ const IrrigationForm = () => {
                         aria-label="Default select example"
                       />
                     </div> */}
-                  {/* <div className="col-md-3">
+                      {/* <div className="col-md-3">
                       <label className="form-label">Contact</label>
 
                       <Autocomplete
@@ -340,81 +347,85 @@ const IrrigationForm = () => {
                       />
                     </div> */}
 
-                  <div className="col-md-3 ">
-                    <div className="col-md-12">
-                      <label className="form-label">Controller Number</label>
-                    </div>
-                    <TextField
-                      type="text"
-                      size="small"
-                      name="IrrigationNumber"
-                      onChange={handleInputChange}
-                      value={formData.IrrigationNumber}
-                      className="form-control form-control-sm"
-                      placeholder="Controller Number"
-                    />
-                  </div>
-                  <div className="col-md-6 text-right mt-3">
-                    <div>
-                      {idParam === 0 ? null : (
-                        <button
-                          className="btn btn-dark btn-sm me-2"
-                          onClick={toggleShowForm}
-                        >
-                          Add Controller Info
-                        </button>
-                      )}
-                      {/* <button
+                      <div className="col-md-3 ">
+                        <div className="col-md-12">
+                          <label className="form-label">
+                            Controller Number
+                          </label>
+                        </div>
+                        <TextField
+                          type="text"
+                          size="small"
+                          name="IrrigationNumber"
+                          onChange={handleInputChange}
+                          value={formData.IrrigationNumber}
+                          className="form-control form-control-sm"
+                          placeholder="Controller Number"
+                        />
+                      </div>
+                      <div className="col-md-6 text-right mt-3">
+                        <div>
+                          {idParam === 0 ? null : (
+                            <button
+                              className="btn btn-dark btn-sm me-2"
+                              onClick={toggleShowForm}
+                            >
+                              Add Controller Info
+                            </button>
+                          )}
+                          {/* <button
                         type="button"
                         onClick={handleSubmit}
                         className="btn btn-primary btn-sm me-1"
                       >
                         Submit
                       </button> */}
-                      <LoaderButton
-                        varient="small"
-                        loading={disableButton}
-                        handleSubmit={handleSubmit}
-                      >
-                        Submit
-                      </LoaderButton>
+                          <LoaderButton
+                            varient="small"
+                            loading={disableButton}
+                            handleSubmit={handleSubmit}
+                          >
+                            Submit
+                          </LoaderButton>
 
-                      {/* <NavLink to="/irrigation">
+                          {/* <NavLink to="/irrigation">
                   </NavLink> */}
 
-                      <button
-                        onClick={() => {
-                          // setShowContent(true);
-                          // setSelectedIrr(0);
-                          navigate(`/irrigation`);
-                        }}
-                        className="btn btn-danger btn-sm light ms-1"
-                      >
-                        Cancel
-                      </button>
+                          <button
+                            onClick={() => {
+                              // setShowContent(true);
+                              // setSelectedIrr(0);
+                              navigate(`/irrigation`);
+                            }}
+                            className="btn btn-danger btn-sm light ms-1"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {showForm && (
-          <IrrigationControler
-            setAddSucces={setAddSucces}
-            fetchIrrigation={fetchIrrigation}
-            toggleShowForm={toggleShowForm}
-            idParam={idParam}
-          />
+            {showForm && (
+              <IrrigationControler
+                setAddSucces={setAddSucces}
+                fetchIrrigation={fetchIrrigation}
+                toggleShowForm={toggleShowForm}
+                idParam={idParam}
+              />
+            )}
+
+            <ControllerTable
+              setAddSucces={setAddSucces}
+              fetchIrrigation={fetchIrrigation}
+              headers={headers}
+              controllerList={controllerList}
+            />
+          </>
         )}
-
-        <ControllerTable
-          setAddSucces={setAddSucces}
-          fetchIrrigation={fetchIrrigation}
-          headers={headers}
-          controllerList={controllerList}
-        />
       </div>
     </>
   );

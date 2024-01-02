@@ -275,7 +275,7 @@ const EstimatePreview = () => {
                               {" "}
                               <h6 className="text-right mb-0">
                                 {formatDate(
-                                  previewData.EstimateData.CreatedDate
+                                  previewData.EstimateData.CreatedDate, false
                                 )}
                               </h6>
                             </th>
@@ -424,7 +424,7 @@ const EstimatePreview = () => {
                       // );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

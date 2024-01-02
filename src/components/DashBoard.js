@@ -14,9 +14,10 @@ import useFetchDashBoardData from "./Hooks/useFetchDashBoardData";
 import DashBoardCalender from "./DashboardComponents/DashBoardCalender";
 import { createClient } from "@supabase/supabase-js";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const DashBoard = () => {
-  const { dashBoardData, getDashboardData } = useFetchDashBoardData();
+  const { dashBoardData, getDashboardData, loading } = useFetchDashBoardData();
   useEffect(() => {
     getDashboardData();
   }, []);
@@ -57,26 +58,34 @@ const DashBoard = () => {
     <>
       <TitleBar icon={icon} title="Dashboard" />
       <div className="container-fluid">
-        <div className="row">
-          <div className="col-md-9">
-            <div className="">
-              <DashBoardSR dashBoardData={dashBoardData} />
-            </div>
-            <div className="">
-              <DashboardEstm dashBoardData={dashBoardData} />
-            </div>
+        {loading ? (
+          <div className="center-loader">
+            <CircularProgress />
           </div>
+        ) : (
+          <>
+            <div className="row">
+              <div className="col-md-9">
+                <div className="">
+                  <DashBoardSR dashBoardData={dashBoardData} />
+                </div>
+                <div className="">
+                  <DashboardEstm dashBoardData={dashBoardData} />
+                </div>
+              </div>
 
-          <div className="col-md-3">
-            <SessionContextProvider supabaseClient={supabase}>
-              <DashBoardCalender />
-            </SessionContextProvider>
-          </div>
-        </div>
-        <div className="col-md-12">
-          {" "}
-          <DashBoardCards dashBoardData={dashBoardData} />
-        </div>
+              <div className="col-md-3">
+                <SessionContextProvider supabaseClient={supabase}>
+                  <DashBoardCalender />
+                </SessionContextProvider>
+              </div>
+            </div>
+            <div className="col-md-12">
+              {" "}
+              <DashBoardCards dashBoardData={dashBoardData} />
+            </div>
+          </>
+        )}
       </div>
     </>
   );

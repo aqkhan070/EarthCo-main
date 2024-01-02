@@ -235,40 +235,10 @@ const IrrigationAuditTable = () => {
                     <Table>
                       <TableHead className="table-header">
                         <TableRow className="material-tbl-alignment">
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "IrrigationId"}
-                              direction={
-                                orderBy === "IrrigationId" ? order : "asc"
-                              }
-                              onClick={() => handleRequestSort("IrrigationId")}
-                            >
-                              #
-                            </TableSortLabel>
-                          </TableCell>
+                          <TableCell>#</TableCell>
                           <TableCell>Title</TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "CustomerName"}
-                              direction={
-                                orderBy === "CustomerName" ? order : "asc"
-                              }
-                              onClick={() => handleRequestSort("CustomerName")}
-                            >
-                              Customer Name
-                            </TableSortLabel>
-                          </TableCell>
-                          <TableCell>
-                            <TableSortLabel
-                              active={orderBy === "CreatedDate"}
-                              direction={
-                                orderBy === "CreatedDate" ? order : "asc"
-                              }
-                              onClick={() => handleRequestSort("CreatedDate")}
-                            >
-                              Created Date
-                            </TableSortLabel>
-                          </TableCell>
+                          <TableCell>Customer Name</TableCell>
+                          <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
                           {/* <TableCell align="center">Actions</TableCell> */}

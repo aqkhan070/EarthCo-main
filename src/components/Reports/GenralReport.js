@@ -143,7 +143,7 @@ const GenralReport = () => {
                     navigate(`/send-mail?title=${"Report"}&mail=${customerMail}`);
                   }}
                 >
-                  <i class="fa-regular fa-envelope"></i>
+                  <i className="fa-regular fa-envelope"></i>
                 </button>
               )}
             </div>

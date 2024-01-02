@@ -165,7 +165,7 @@ const SummaryReportPreview = () => {
                       // );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 )}
               </div>
@@ -235,7 +235,7 @@ const SummaryReportPreview = () => {
                         {reportData.map((report, index) => {
                           return (
                             <tr className="preview-table-row" key={index}>
-                              <td>{formatDate(report.CreatedDate)}</td>
+                              <td>{formatDate(report.CreatedDate, false)}</td>
                               <td className="left strong">
                                 {report.ServiceRequestNumber}
                               </td>
@@ -246,7 +246,7 @@ const SummaryReportPreview = () => {
                                 {report.ActionTaken}
                               </td>
                               <td>{report.Status}</td>
-                              <td>{formatDate(report.CompletedDate)}</td>
+                              <td>{formatDate(report.CompletedDate, false)}</td>
                             </tr>
                           );
                         })}

@@ -263,7 +263,7 @@ const SRPreview = () => {
                             <th>
                               {" "}
                               <h6 className="text-right mb-0">
-                                {formatDate(sRPreviewData.Data.CreatedDate)}
+                                {formatDate(sRPreviewData.Data.CreatedDate, false)}
                               </h6>
                             </th>
                           </tr>
@@ -413,7 +413,7 @@ const SRPreview = () => {
                       );
                     }}
                   >
-                    <i class="fa-regular fa-envelope"></i>
+                    <i className="fa-regular fa-envelope"></i>
                   </button>
                 </div>
               )}

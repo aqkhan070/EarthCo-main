@@ -218,30 +218,8 @@ const Invoices = () => {
                                       ></label>
                                     </div>
                                   </TableCell> */}
-                              <TableCell>
-                                <TableSortLabel
-                                  active={orderBy === "InvoiceNumber"}
-                                  direction={
-                                    orderBy === "InvoiceNumber" ? order : "asc"
-                                  }
-                                  onClick={() =>
-                                    handleRequestSort("InvoiceNumber")
-                                  }
-                                >
-                                  Invoice
-                                </TableSortLabel>
-                              </TableCell>
-                              <TableCell>
-                                <TableSortLabel
-                                  active={orderBy === "IssueDate"}
-                                  direction={
-                                    orderBy === "IssueDate" ? order : "asc"
-                                  }
-                                  onClick={() => handleRequestSort("IssueDate")}
-                                >
-                                  Issue Date
-                                </TableSortLabel>
-                              </TableCell>
+                              <TableCell>Invoice</TableCell>
+                              <TableCell>Issue Date</TableCell>
                               <TableCell>Customer</TableCell>
                               {/* <TableCell>Service #</TableCell> */}
                               {/* <TableCell>PO #</TableCell> */}

@@ -175,7 +175,7 @@ const IrrigationControler = ({
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">
-                Controller Make and Model<span class="text-danger">*</span>
+                Controller Make and Model<span className="text-danger">*</span>
               </label>
             </div>
             <TextField
@@ -192,7 +192,7 @@ const IrrigationControler = ({
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">
-                Serial Number<span class="text-danger">*</span>
+                Serial Number<span className="text-danger">*</span>
               </label>
             </div>
             <TextField

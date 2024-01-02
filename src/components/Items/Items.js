@@ -187,44 +187,18 @@ const Items = () => {
                   <Table>
                     <TableHead className="table-header">
                       <TableRow className="material-tbl-alignment">
-                        <TableCell>
-                          <TableSortLabel
-                            active={orderBy === "ItemName"}
-                            direction={orderBy === "ItemName" ? order : "asc"}
-                            onClick={() => handleSortRequest("ItemName")}
-                          >
-                            Name
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell>
-                          <TableSortLabel
-                            active={orderBy === "SKU"}
-                            direction={orderBy === "SKU" ? order : "asc"}
-                            onClick={() => handleSortRequest("SKU")}
-                          >
-                            SKU
-                          </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="center">
-                          <TableSortLabel
-                            active={orderBy === "IncomeAccount"}
-                            direction={
-                              orderBy === "IncomeAccount" ? order : "asc"
-                            }
-                            onClick={() => handleSortRequest("IncomeAccount")}
-                          >
-                            Account #
-                          </TableSortLabel>
-                        </TableCell>
+                        <TableCell>Name</TableCell>
+                        <TableCell>SKU</TableCell>
+                        <TableCell align="center">Account #</TableCell>
                         {/* <TableCell className="text-end">Actions</TableCell> */}
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {(rowsPerPage > 0
                         ? filteredItems.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
                         : filteredItems
                       ).map((item, index) => (
                         <TableRow
