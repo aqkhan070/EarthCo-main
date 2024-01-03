@@ -76,13 +76,14 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
           onLoad={onLoad}
           onUnmount={onUnmount}
         >
-          {mapData.map((location, index) => (
-            <Marker
-              key={index}
-              position={{ lat: location.lat, lng: location.lng }}
-              onClick={() => handleMarkerClick(location)}
-            />
-          ))}
+          {mapData.length > 0 &&
+            mapData.map((location, index) => (
+              <Marker
+                key={index}
+                position={{ lat: location.lat, lng: location.lng }}
+                onClick={() => handleMarkerClick(location)}
+              />
+            ))}
 
           {selectedMarker && (
             <InfoWindow

@@ -13,6 +13,8 @@ import useCustomerSearch from "../Hooks/useCustomerSearch";
 import CircularProgress from "@mui/material/CircularProgress";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
+import { Print, Email, Download } from "@mui/icons-material";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -23,10 +25,9 @@ const IrrigationForm = () => {
     Authorization: `Bearer ${token}`,
   };
   const [formData, setFormData] = useState({});
-  const [customersList, setCustomersList] = useState([]);
-  const [showCustomersList, setShowCustomersList] = useState(true);
+
   const [inputValue, setInputValue] = useState("");
-  const [disableSubmit, setDisableSubmit] = useState(true);
+
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -35,6 +36,8 @@ const IrrigationForm = () => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
+
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -197,6 +200,7 @@ const IrrigationForm = () => {
       setFormData(res.data.IrrigationData);
       setControllerList(res.data.ControllerData);
       setInputValue(res.data.IrrigationData.CustomerId);
+      fetchCustomerEmail(res.data.IrrigationData.CustomerId);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -366,12 +370,43 @@ const IrrigationForm = () => {
                       <div className="col-md-6 text-right mt-3">
                         <div>
                           {idParam === 0 ? null : (
-                            <button
-                              className="btn btn-dark btn-sm me-2"
-                              onClick={toggleShowForm}
-                            >
-                              Add Controller Info
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                                onClick={() => {
+                                  navigate(
+                                    `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
+                                  );
+                                  // sendEmail(
+                                  //   `/estimates/estimate-preview?id=${idParam}`,
+                                  //   formData.CustomerId,
+                                  //   formData.ContactId,
+                                  //   false
+                                  // );
+                                }}
+                              >
+                                <Email />
+                              </button>
+
+                              <button
+                                type="button"
+                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                                onClick={() => {
+                                  navigate(
+                                    `/irrigation/audit-report?id=${idParam}`
+                                  );
+                                }}
+                              >
+                                <Print></Print>
+                              </button>
+                              <button
+                                className="btn btn-dark btn-sm me-2"
+                                onClick={toggleShowForm}
+                              >
+                                Add Controller Info
+                              </button>
+                            </>
                           )}
                           {/* <button
                         type="button"

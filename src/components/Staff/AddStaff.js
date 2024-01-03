@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import AdressModal from "../Modals/AdressModal";
 import TitleBar from "../TitleBar";
 import { Form } from "react-bootstrap";
@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import AddressInputs from "../Modals/AddressInputs";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
+import { DataContext } from "../../context/AppData";
 
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
@@ -53,6 +54,8 @@ const AddStaff = ({}) => {
       />
     </svg>
   );
+
+  const { loggedInUser } = useContext(DataContext);
 
   const [customerInfo, setCustomerInfo] = useState({
     RoleId: 4,
@@ -254,7 +257,9 @@ const AddStaff = ({}) => {
       setLoadingButton(false);
       setTimeout(() => {
         setAddCustomerSuccess("");
-        navigate(`/staff`);
+        loggedInUser.userRole == "1"
+          ? navigate(`/staff`)
+          : navigate(`/dashboard`);
       }, 4000);
 
       // setTimeout(() => {
@@ -381,33 +386,35 @@ const AddStaff = ({}) => {
                       placeholder="Email / Username"
                     />
                   </div>
-                  <div className="col-md-3 mb-3">
-                    <FormControl fullWidth variant="outlined">
-                      <label
-                        htmlFor="exampleFormControlInput4"
-                        className="form-label"
-                      >
-                        User Role <span className="text-danger">*</span>
-                      </label>
+                  {loggedInUser.userRole == "1" && (
+                    <div className="col-md-3 mb-3">
+                      <FormControl fullWidth variant="outlined">
+                        <label
+                          htmlFor="exampleFormControlInput4"
+                          className="form-label"
+                        >
+                          User Role <span className="text-danger">*</span>
+                        </label>
 
-                      <Select
-                        labelId="role-label"
-                        id="role-select"
-                        name="RoleId"
-                        value={customerInfo.RoleId}
-                        error={submitClicked && !customerInfo.RoleId}
-                        onChange={handleCustomerInfo}
-                        label=""
-                        size="small"
-                      >
-                        {userRoles.map((roles) => (
-                          <MenuItem key={roles.RoleId} value={roles.RoleId}>
-                            {roles.Role}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </div>
+                        <Select
+                          labelId="role-label"
+                          id="role-select"
+                          name="RoleId"
+                          value={customerInfo.RoleId}
+                          error={submitClicked && !customerInfo.RoleId}
+                          onChange={handleCustomerInfo}
+                          label=""
+                          size="small"
+                        >
+                          {userRoles.map((roles) => (
+                            <MenuItem key={roles.RoleId} value={roles.RoleId}>
+                              {roles.Role}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                  )}
 
                   <div className="col-md-3 mb-3">
                     <label
@@ -532,7 +539,9 @@ const AddStaff = ({}) => {
                         <button
                           className="btn btn-danger light ms-1"
                           onClick={() => {
-                            navigate(`/staff`);
+                            loggedInUser.userRole == "1"
+                              ? navigate(`/staff`)
+                              : navigate(`/dashboard`);
                           }}
                         >
                           Cancel

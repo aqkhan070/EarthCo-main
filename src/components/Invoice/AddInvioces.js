@@ -2065,11 +2065,9 @@ const AddInvioces = ({}) => {
                         left: "140px",
                       }}
                       onClick={() => {
-                        deleteInvoiceFile(file.BillFileId);
+                        deleteInvoiceFile(file.InvoiceFileId, getInvoice);
 
-                        setTimeout(() => {
-                          getInvoice();
-                        }, 1000);
+                       
                       }}
                     >
                       <span>
@@ -2091,7 +2089,7 @@ const AddInvioces = ({}) => {
                     }}
                   >
                     <img
-                      src={file.url}
+                      src={URL.createObjectURL(file)}
                       alt={file.name}
                       style={{
                         width: "150px",

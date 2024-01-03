@@ -88,17 +88,67 @@ const AuditControllerTable = ({
                             <Button
                               title="Delete"
                               type="button"
-                              // className="btn btn-danger btn-icon-xxs mx-1"
-                              onClick={() => {
-                                deleteController(
-                                  controller.ControllerData
-                                    ?.ControllerAuditReportId
-                                );
-                              }}
+                              data-bs-toggle="modal"
+                              data-bs-target={`#deleteModal${controller.ControllerData.ControllerAuditReportId}`}
                             >
                               {/* <i className="fa fa-trash"></i> */}
                               <Delete color="error"></Delete>
                             </Button>
+                            <div
+                              className="modal fade"
+                              id={`deleteModal${controller.ControllerData.ControllerAuditReportId}`}
+                              tabIndex="-1"
+                              aria-labelledby="deleteModalLabel"
+                              aria-hidden="true"
+                            >
+                              <div
+                                className="modal-dialog modal-dialog-centered"
+                                role="document"
+                              >
+                                <div className="modal-content">
+                                  <div className="modal-header">
+                                    <h5 className="modal-title">
+                                      Controller Delete
+                                    </h5>
+
+                                    <button
+                                      type="button"
+                                      className="btn-close"
+                                      data-bs-dismiss="modal"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body">
+                                    <p>
+                                      Are you sure you want to delete this
+                                      Controller
+                                    </p>
+                                  </div>
+
+                                  <div className="modal-footer">
+                                    <button
+                                      type="button"
+                                      id="closer"
+                                      className="btn btn-danger light "
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Close
+                                    </button>
+                                    <button
+                                      className="btn btn-primary "
+                                      data-bs-dismiss="modal"
+                                      onClick={() => {
+                                        deleteController(
+                                          controller.ControllerData
+                                            ?.ControllerAuditReportId
+                                        );
+                                      }}
+                                    >
+                                      Yes
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </td>
                         </tr>
                       );

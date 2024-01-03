@@ -98,6 +98,11 @@ const AddRisingCanes = () => {
       setFormData(res.data.Data);
       setPrevFiles(res.data.FileData);
       setLoading(false);
+      setSelectedContact({
+        ...selectedContact,
+        Email: res.data.Data.ContactEmail,
+        CompanyName: res.data.Data.ContactCompany,
+      });
 
       console.log("reponse weekly is", res.data);
     } catch (error) {
@@ -310,7 +315,7 @@ const AddRisingCanes = () => {
       );
 
       setTimeout(() => {
-        navigate(`/weekly-reports/rising-canes`);
+        navigate(`/weekly-reports/rising-canes-preview?id=${response.data.Id}`);
       }, 4000);
       setDisableButton(false);
 
@@ -318,7 +323,7 @@ const AddRisingCanes = () => {
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
 
-      console.log("Data submitted successfully:", response.data.Message);
+      console.log("Data submitted successfully:", response.data.Id);
     } catch (error) {
       console.error("API Call Error:", error);
       setDisableButton(false);
@@ -375,7 +380,7 @@ const AddRisingCanes = () => {
                     left: 0,
                     width: "100%",
                     height: "200%",
-                    backgroundColor: "rgba(0, 0, 0, 0.02)",
+                    backgroundColor: "rgba(0, 0, 0, 0)",
                     zIndex: 999,
                   }}
                 ></div>
@@ -1056,6 +1061,12 @@ const AddRisingCanes = () => {
               </div>
               <div className="row m-2">
                 <div className="col-md-12 mt-2 text-end">
+                  <LoaderButton
+                    loading={disableButton}
+                    handleSubmit={handleSubmit}
+                  >
+                    Save and Preview
+                  </LoaderButton>
                   <button
                     className="btn btn-danger light me-2"
                     onClick={() => {
@@ -1064,13 +1075,6 @@ const AddRisingCanes = () => {
                   >
                     Cancel
                   </button>
-
-                  <LoaderButton
-                    loading={disableButton}
-                    handleSubmit={handleSubmit}
-                  >
-                    Save
-                  </LoaderButton>
                 </div>
               </div>
             </div>

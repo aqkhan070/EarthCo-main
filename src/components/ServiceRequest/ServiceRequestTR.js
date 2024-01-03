@@ -78,18 +78,9 @@ const ServiceRequestTR = ({
   };
 
   const navigate = useNavigate();
-  const { setSRData } = useContext(DataContext);
+  const { setSRData, loggedInUser } = useContext(DataContext);
 
-  const columnFieldMapping = {
-    "Service Request #": "ServiceRequestNumber",
-    "Customer Name": "CustomerId",
-    "Assigned to": "Assign",
-    Status: "SRStatusId",
-    "Work Requested": "WorkRequest",
-    "Date Created": "CreatedDate",
-  };
-
-  const [pages, setpages] = useState(1);
+ 
 
   const [tablePage, setTablePage] = useState(0);
   const [sRsearch, setSRsearch] = useState("");
@@ -244,16 +235,18 @@ const ServiceRequestTR = ({
                       <MenuItem value={false}>Descending</MenuItem>
                     </Select>
                   </FormControl>
-                  <button
-                    className="btn btn-primary "
-                    onClick={() => {
-                      // setShowContent(false);
-                      // setServiceRequestId(0);
-                      navigate(`/service-requests/add-sRform`);
-                    }}
-                  >
-                    + Add Service Request
-                  </button>
+                  {loggedInUser.userRole == "1" && (
+                    <button
+                      className="btn btn-primary "
+                      onClick={() => {
+                        // setShowContent(false);
+                        // setServiceRequestId(0);
+                        navigate(`/service-requests/add-sRform`);
+                      }}
+                    >
+                      + Add Service Request
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="card-body pt-0">

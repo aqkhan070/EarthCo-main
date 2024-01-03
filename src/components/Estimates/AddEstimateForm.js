@@ -139,7 +139,7 @@ const AddEstimateForm = () => {
   const [btnDisable, setBtnDisable] = useState(false);
 
   const fetchEstimates = async () => {
-    if (idParam === 0) {
+    if (!idParam) {
       setLoading(false);
       return;
     }
@@ -2247,8 +2247,8 @@ const AddEstimateForm = () => {
                           >
                             <span
                               onClick={() => {
-                                deleteEstmFile(file.EstimateFileId);
-                                fetchEstimates();
+                                deleteEstmFile(file.EstimateFileId, fetchEstimates);
+                               
                               }}
                             >
                               <Delete color="error" />

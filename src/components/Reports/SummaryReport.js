@@ -55,12 +55,11 @@ const SummaryReport = () => {
 
   const navigate = useNavigate();
 
-  const { sRProposalData, setsRProposalData } = useContext(DataContext);
+  const { sRProposalData, setsRProposalData, loggedInUser } =
+    useContext(DataContext);
 
-  const [toggleReport, setToggleReport] = useState(false);
   const { customerSearch, fetchCustomers } = useCustomerSearch();
-  const { loading, reportError, reportData, fetchReport } =
-    useFetchProposalReports();
+
   const { name, setName, fetchName } = useFetchCustomerName();
 
   const months = [
@@ -286,14 +285,16 @@ const SummaryReport = () => {
                 <div className="row mt-2">
                   <div className="col-md-12">
                     {" "}
-                    <button
-                      onClick={() => {
-                        navigate("/landscape/add-landscape");
-                      }}
-                      className="btn btn-info btn-sm me-2"
-                    >
-                      Add LandScape
-                    </button>
+                    {loggedInUser.userRole == "1" && (
+                      <button
+                        onClick={() => {
+                          navigate("/landscape/add-landscape");
+                        }}
+                        className="btn btn-info btn-sm me-2"
+                      >
+                        Add LandScape
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         getLandscapeReportData();

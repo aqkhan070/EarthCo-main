@@ -1,95 +1,89 @@
-import axios from 'axios';
-import React, { useEffect } from 'react'
+import axios from "axios";
+import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 
 const useDeleteFile = () => {
-    const headers = {
-        Authorization: `Bearer ${Cookies.get("token")}`,
-      };
+  const headers = {
+    Authorization: `Bearer ${Cookies.get("token")}`,
+  };
 
-    const deleteEstmFile = async (id) => {
-        try {
-          const res = await axios.get(
-            `https://earthcoapi.yehtohoga.com/api/Estimate/DeleteEstimateFile?FileId=${id}`,
-            { headers }
-          );
-         
-          console.log("bill list is",  res.data);
-        } catch (error) {
-       
-          console.log("api call error", error);
-        }
-      };
+  const deleteEstmFile = async (id, fetchEstimates) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Estimate/DeleteEstimateFile?FileId=${id}`,
+        { headers }
+      );
 
-      const deleteSRFile = async (id) => {
-        try {
-          const res = await axios.get(
-            `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequestFile?FileId=${id}`,
-            { headers }
-          );
-         
-          console.log("bill list is",  res.data);
-        } catch (error) {
-       
-          console.log("api call error", error);
-        }
-      };
+      console.log("bill list is", res.data);
+      fetchEstimates();
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
 
-      const deletePOFile = async (id) => {
-        try {
-          const res = await axios.get(
-            `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/DeletePurchaseOrderFile?FileId=${id}`,
-            { headers }
-          );
-         
-          console.log("bill list is",  res.data);
-        } catch (error) {
-       
-          console.log("api call error", error);
-        }
-      };
+  const deleteSRFile = async (id, fetchSR) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/ServiceRequest/DeleteServiceRequestFile?FileId=${id}`,
+        { headers }
+      );
+      fetchSR();
 
-      const deleteBillFile = async (id) => {
-        try {
-          const res = await axios.get(
-            `https://earthcoapi.yehtohoga.com/api/Bill/DeleteBillFile?FileId=${id}`,
-            { headers }
-          );
-         
-          console.log("bill list is",  res.data);
-        } catch (error) {
-       
-          console.log("api call error", error);
-        }
-      };
+      console.log("bill list is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
 
-      const deleteInvoiceFile = async (id) => {
-        try {
-          const res = await axios.get(
-            `https://earthcoapi.yehtohoga.com/api/Bill/DeleteBillFile?FileId=${id}`,
-            { headers }
-          );
-         
-          console.log("bill list is",  res.data);
-        } catch (error) {
-       
-          console.log("api call error", error);
-        }
-      };
+  const deletePOFile = async (id, fetchpoData) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/PurchaseOrder/DeletePurchaseOrderFile?FileId=${id}`,
+        { headers }
+      );
+      fetchpoData();
 
-      useEffect(() => {
-        deleteEstmFile()
-        deleteSRFile()
-        deletePOFile()
-        deleteBillFile()
-        deleteInvoiceFile()
-      }, [])
-      
-    
-      
+      console.log("bill list is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
 
+  const deleteBillFile = async (id, getBill) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Bill/DeleteBillFile?FileId=${id}`,
+        { headers }
+      );
+      getBill();
+      console.log("bill list is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
 
-  return {deleteEstmFile, deleteSRFile, deletePOFile, deleteBillFile, deleteInvoiceFile}
-}
+  const deleteInvoiceFile = async (id, getInvoice) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Invoice/DeleteInvoiceFile?FileId=${id}`,
+        { headers }
+      );
 
-export default useDeleteFile
+      getInvoice();
+
+      console.log("bill list is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
+
+  return {
+    deleteEstmFile,
+    deleteSRFile,
+    deletePOFile,
+    deleteBillFile,
+    deleteInvoiceFile,
+  };
+};
+
+export default useDeleteFile;

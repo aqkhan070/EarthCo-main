@@ -160,7 +160,7 @@ const PunchListPhotoOnly = () => {
             <div className="card-body pt-0">
               <Table hover>
                 <TableHead className="table-header">
-                  <TableRow className=" bill-tbl-alignment">
+                  <TableRow className=" material-tbl-alignment">
                     <TableCell>Customer</TableCell>
                     <TableCell>Notes</TableCell>
 
@@ -171,7 +171,11 @@ const PunchListPhotoOnly = () => {
                 </TableHead>
                 <TableBody>
                   {tableData.map((item) => (
-                    <TableRow key={item.PunchlistPhotoOnlyId} hover>
+                    <TableRow
+                      className="material-tbl-alignment"
+                      key={item.PunchlistPhotoOnlyId}
+                      hover
+                    >
                       <TableCell>{item.CustomerName}</TableCell>
                       <TableCell>{item.Notes}</TableCell>
                       <TableCell>

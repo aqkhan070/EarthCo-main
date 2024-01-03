@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Table,
   TableBody,
@@ -22,42 +22,20 @@ import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
 import TblDateFormat from "../../custom/TblDateFormat";
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#7c9c3d",
-    },
-  },
-  typography: {
-    fontSize: 14, // Making font a bit larger
-  },
-  components: {
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          padding: "8px 16px", // Adjust cell padding to reduce height
-        },
-      },
-    },
-  },
-});
+import { DataContext } from "../../context/AppData";
+
 const LandscapeTR = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
 
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("EstimateId");
-  const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const [selectedItem, setSelectedItem] = useState();
-  const [showContent, setShowContent] = useState(true);
 
   const [reports, setReports] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
+  const { loggedInUser } = useContext(DataContext);
 
   const navigate = useNavigate();
 
@@ -100,16 +78,6 @@ const LandscapeTR = () => {
   //   return 0;
   // }
 
-  function stableSort(array, cmp) {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-      const order = cmp(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-  }
-
   const deleteReport = async (id) => {
     try {
       const response = await fetch(
@@ -127,12 +95,6 @@ const LandscapeTR = () => {
     }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this customer?")) {
-      deleteReport(id);
-    }
-  };
-
   return (
     <>
       {isLoading ? (
@@ -141,26 +103,19 @@ const LandscapeTR = () => {
         </div>
       ) : (
         <div>
-          <div className="row mb-2">
+          <div className="row ">
             <div className="col-md-12">
-              <div className="custom-search-container">
-                <TextField
-                  label="Search"
-                  variant="standard"
-                  size="small"
-                  // value={filtering}
-                  // onChange={(e) => setFiltering(e.target.value)}
-                />
-              </div>
               <div className="custom-button-container">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    navigate("/landscape/add-landscape");
-                  }}
-                >
-                  + Add
-                </button>
+                {loggedInUser.userRole == "1" && (
+                  <button
+                    className="btn btn-primary mb-2"
+                    onClick={() => {
+                      navigate("/landscape/add-landscape");
+                    }}
+                  >
+                    + Add
+                  </button>
+                )}
               </div>
             </div>
           </div>{" "}

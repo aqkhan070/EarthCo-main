@@ -1263,11 +1263,8 @@ const AddBill = ({}) => {
                       left: "140px",
                     }}
                     onClick={() => {
-                      deleteBillFile(file.BillFileId);
+                      deleteBillFile(file.BillFileId,getBill);
 
-                      setTimeout(() => {
-                        getBill();
-                      }, 1000);
                     }}
                   >
                     <span>

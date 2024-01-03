@@ -45,8 +45,13 @@ const AddSRform = () => {
     emailAlertColor,
   } = useSendEmail();
 
-  const { sRMapData, setSRMapData, PunchListData, setPunchListData } =
-    useContext(DataContext);
+  const {
+    sRMapData,
+    setSRMapData,
+    PunchListData,
+    setPunchListData,
+    loggedInUser,
+  } = useContext(DataContext);
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { deleteSRFile } = useDeleteFile();
@@ -641,7 +646,24 @@ const AddSRform = () => {
                     <div className="itemtitleBar">
                       <h4>Service Request Details</h4>
                     </div>{" "}
-                    <div className=" card-body">
+                    <div
+                      className=" card-body"
+                      style={{ position: "relative" }}
+                    >
+                      {loggedInUser.userRole !== "1" && (
+                        <div
+                          className="overlay"
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(0, 0, 0, 0)",
+                            zIndex: 999,
+                          }}
+                        ></div>
+                      )}
                       <div className="row">
                         <div className="col-md-3 mb-2">
                           <label className="form-label">
@@ -807,23 +829,48 @@ const AddSRform = () => {
                             aria-label="Contact select"
                           />
                         </div>
-                        <div className="col-lg-3 col-md-3 ">
-                          <label className="form-label">Status:</label>
-                          <FormControl fullWidth>
-                            <Select
-                              name="SRStatusId"
-                              value={SRData.ServiceRequestData.SRStatusId || 1}
-                              onChange={handleInputChange}
-                              size="small"
-                            >
-                              <MenuItem value={1}>Open</MenuItem>
-                              <MenuItem value={2}>Closed</MenuItem>
-                            </Select>
-                          </FormControl>
+                        <div className="col-xl-3 col-md-4">
+                          {" "}
+                          {/* Adjust the column size as needed */}
+                          <label className="form-label">
+                            Assign / Appointment:
+                            <span className="text-danger">*</span>
+                          </label>
+                          <Autocomplete
+                            id="staff-autocomplete"
+                            size="small"
+                            options={staffData.filter(
+                              (staff) => staff.Role === "Regional Manager"
+                            )}
+                            getOptionLabel={(option) => option.FirstName || ""}
+                            value={
+                              staffData.find(
+                                (staff) =>
+                                  staff.UserId ===
+                                  SRData.ServiceRequestData.Assign
+                              ) || null
+                            }
+                            onChange={handleStaffAutocompleteChange}
+                            isOptionEqualToValue={(option, value) =>
+                              option.UserId === value.Assign
+                            }
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label=""
+                                error={
+                                  submitClicked &&
+                                  !SRData.ServiceRequestData.Assign
+                                }
+                                placeholder="Choose..."
+                                className="bg-white"
+                              />
+                            )}
+                          />
                         </div>
                       </div>
 
-                      <div className="row  mt-2 mb-2">
+                      <div className="row  mt-2 ">
                         <div className="col-md-3">
                           {" "}
                           {/* Adjust the column size as needed */}
@@ -880,46 +927,23 @@ const AddSRform = () => {
                             placeholder="DueDate"
                           />
                         </div>
-
-                        <div className="col-xl-3 col-md-4">
-                          {" "}
-                          {/* Adjust the column size as needed */}
-                          <label className="form-label">
-                            Assign / Appointment:
-                            <span className="text-danger">*</span>
-                          </label>
-                          <Autocomplete
-                            id="staff-autocomplete"
+                        <div className="col-md-4"></div>
+                      </div>
+                    </div>
+                    <div className="row mx-1 mb-3">
+                      <div className="col-lg-3 col-md-3 ">
+                        <label className="form-label">Status:</label>
+                        <FormControl fullWidth>
+                          <Select
+                            name="SRStatusId"
+                            value={SRData.ServiceRequestData.SRStatusId || 1}
+                            onChange={handleInputChange}
                             size="small"
-                            options={staffData.filter(
-                              (staff) => staff.Role === "Regional Manager"
-                            )}
-                            getOptionLabel={(option) => option.FirstName || ""}
-                            value={
-                              staffData.find(
-                                (staff) =>
-                                  staff.UserId ===
-                                  SRData.ServiceRequestData.Assign
-                              ) || null
-                            }
-                            onChange={handleStaffAutocompleteChange}
-                            isOptionEqualToValue={(option, value) =>
-                              option.UserId === value.Assign
-                            }
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                label=""
-                                error={
-                                  submitClicked &&
-                                  !SRData.ServiceRequestData.Assign
-                                }
-                                placeholder="Choose..."
-                                className="bg-white"
-                              />
-                            )}
-                          />
-                        </div>
+                          >
+                            <MenuItem value={1}>Open</MenuItem>
+                            <MenuItem value={2}>Closed</MenuItem>
+                          </Select>
+                        </FormControl>
                       </div>
                     </div>
                   </div>
@@ -1331,10 +1355,8 @@ const AddSRform = () => {
                               left: "140px",
                             }}
                             onClick={() => {
-                              deleteSRFile(file.SRFileId);
-                              setTimeout(() => {
-                                fetchSR();
-                              }, 1000);
+                              deleteSRFile(file.SRFileId,fetchSR );
+                              
                             }}
                           >
                             <span>

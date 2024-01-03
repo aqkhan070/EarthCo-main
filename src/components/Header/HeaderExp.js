@@ -35,7 +35,22 @@ function stringToColor(string) {
 function stringAvatar(name) {
   if (!name || !name.includes(" ")) {
     // Handle the case where name is undefined or does not contain a space
-    return null; // or provide a default value or error handling logic
+    if (name) {
+      return {
+        sx: {
+          bgcolor: stringToColor(name),
+        },
+        children: name[0],
+      };
+    } else {
+      // Handle the case where name is undefined or empty
+      return {
+        sx: {
+          bgcolor: "#000000", // Provide a default background color
+        },
+        children: "U", // Provide a default character
+      };
+    }
   }
 
   return {
@@ -494,7 +509,11 @@ const HeaderExp = () => {
                           <div className="card-header py-2">
                             <div className="products">
                               <Avatar
-                                style={{ width: "30px", height: "30px" }}
+                                style={{
+                                  width: "30px",
+                                  height: "30px",
+                                  marginRight: "7px",
+                                }}
                                 {...stringAvatar(loggedInUser.userName)}
                               />
                               <div>
@@ -577,9 +596,7 @@ const HeaderExp = () => {
                                 className="dropdown-item ai-icon "
                                 onClick={() => {
                                   navigate(
-                                    `/staff/add-staff?id=${sessionStorage.getItem(
-                                      "userId"
-                                    )}`
+                                    `/staff/add-staff?id=${loggedInUser.userId}`
                                   );
                                 }}
                               >

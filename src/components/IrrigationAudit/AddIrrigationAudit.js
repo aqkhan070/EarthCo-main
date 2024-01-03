@@ -17,6 +17,8 @@ import formatDate from "../../custom/FormatDate";
 import AuditController from "./AuditController";
 import AuditControllerTable from "./AuditControllerTable";
 import Contacts from "../CommonComponents/Contacts";
+import { Print, Email, Download } from "@mui/icons-material";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const AddIrrigationAudit = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -39,6 +41,7 @@ const AddIrrigationAudit = () => {
   const [submitClicked, setSubmitClicked] = useState(false);
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -257,6 +260,7 @@ const AddIrrigationAudit = () => {
       console.log("selected irrigation is", res.data);
 
       setFormData(res.data[0].Data);
+      fetchEmail(res.data[0].Data.ContactId);
       setControllerList(res.data);
       //   setInputValue(res.data.IrrigationData.CustomerId);
       setIsLoading(false);
@@ -495,12 +499,43 @@ const AddIrrigationAudit = () => {
                       <div className="col-md-9 text-end mt-4">
                         <div>
                           {idParam === 0 ? null : (
-                            <button
-                              className="btn btn-dark btn-sm me-2"
-                              onClick={toggleShowForm}
-                            >
-                              Add Controller Info
-                            </button>
+                            <>
+                              <button
+                                type="button"
+                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                                onClick={() => {
+                                  navigate(
+                                    `/send-mail?title=${"Irrigation Audit"}&mail=${contactEmail}`
+                                  );
+                                  // sendEmail(
+                                  //   `/estimates/estimate-preview?id=${idParam}`,
+                                  //   formData.CustomerId,
+                                  //   formData.ContactId,
+                                  //   false
+                                  // );
+                                }}
+                              >
+                                <Email />
+                              </button>
+
+                              <button
+                                type="button"
+                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                                onClick={() => {
+                                  navigate(
+                                    `/irrigation-audit/preview?id=${idParam}`
+                                  );
+                                }}
+                              >
+                                <Print></Print>
+                              </button>
+                              <button
+                                className="btn btn-dark btn-sm me-2"
+                                onClick={toggleShowForm}
+                              >
+                                Add Controller Info
+                              </button>
+                            </>
                           )}
                           {/* <button
                           type="button"

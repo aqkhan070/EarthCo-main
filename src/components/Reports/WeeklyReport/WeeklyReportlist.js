@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import TitleBar from "../../TitleBar";
 import Cookies from "js-cookie";
@@ -20,6 +20,7 @@ import {
 import formatDate from "../../../custom/FormatDate";
 import { useNavigate } from "react-router-dom";
 import TblDateFormat from "../../../custom/TblDateFormat";
+import { DataContext } from "../../../context/AppData";
 
 const WeeklyReportlist = () => {
   const icon = (
@@ -65,7 +66,7 @@ const WeeklyReportlist = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-
+  const { loggedInUser } = useContext(DataContext);
   //   const [weeklyreportsError, setstaffFetchError] = useState(false);
   const [weeklyReport, setWeeklyReport] = useState(true);
   const [WeeklyReportData, setWeeklyReportData] = useState([]);
@@ -139,14 +140,16 @@ const WeeklyReportlist = () => {
               <div className="card-header flex-wrap d-flex justify-content-between  border-0">
                 <div></div>
                 <div className=" me-2">
-                  <button
-                    className="btn btn-primary "
-                    onClick={() => {
-                      navigate("/weekly-reports/add-weekly-report");
-                    }}
-                  >
-                    + Add Weekly Report
-                  </button>
+                  {loggedInUser.userRole == "1" && (
+                    <button
+                      className="btn btn-primary "
+                      onClick={() => {
+                        navigate("/weekly-reports/add-weekly-report");
+                      }}
+                    >
+                      + Add Weekly Report
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="card-body pt-0">

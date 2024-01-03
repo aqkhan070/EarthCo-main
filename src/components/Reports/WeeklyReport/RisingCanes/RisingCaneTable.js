@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import TitleBar from "../../../TitleBar";
 import {
   Table,
@@ -21,6 +21,8 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import TblDateFormat from "../../../../custom/TblDateFormat";
 import CircularProgress from "@mui/material/CircularProgress";
+import { DataContext } from "../../../../context/AppData";
+
 const RisingCaneTable = () => {
   const icon = (
     <svg
@@ -66,6 +68,7 @@ const RisingCaneTable = () => {
   };
 
   const navigate = useNavigate();
+  const { loggedInUser } = useContext(DataContext);
 
   const [weeklyReport, setWeeklyReport] = useState(true);
   const [WeeklyReportData, setWeeklyReportData] = useState([]);
@@ -99,14 +102,16 @@ const RisingCaneTable = () => {
         <div className="card">
           <div className="row mx-2 mt-2 mb-2">
             <div className="col-md-12 text-end">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  navigate(`/weekly-reports/add-rising-canes`);
-                }}
-              >
-                Add report
-              </button>
+              {loggedInUser.userRole == "1" && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    navigate(`/weekly-reports/add-rising-canes`);
+                  }}
+                >
+                  Add report
+                </button>
+              )}
             </div>
           </div>
 

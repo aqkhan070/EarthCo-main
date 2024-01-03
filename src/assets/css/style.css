@@ -14862,7 +14862,7 @@ svg.pulse-svg .third-circle {
 
 .header-right .header-media {
     width: 1.875rem;
-    height: 1.875rem;
+    /* height: 1.875rem; */
     margin-right: 7px;
 }
 

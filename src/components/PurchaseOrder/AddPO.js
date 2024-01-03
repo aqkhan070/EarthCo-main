@@ -1642,11 +1642,9 @@ export const AddPO = ({}) => {
                             left: "140px",
                           }}
                           onClick={() => {
-                            deletePOFile(file.PurchaseOrderFileId);
+                            deletePOFile(file.PurchaseOrderFileId, fetchpoData);
 
-                            setTimeout(() => {
-                              fetchpoData();
-                            }, 1000);
+                           
                           }}
                         >
                           <span>

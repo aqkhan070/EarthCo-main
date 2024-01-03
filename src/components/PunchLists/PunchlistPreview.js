@@ -284,7 +284,7 @@ const PunchlistPreview = () => {
                         <strong>Created</strong>{" "}
                       </div>
                       <div>
-                        <p>{TblDateFormat(pLData.CreatedDate)}</p>
+                        <p>{formatDate(pLData.CreatedDate, false)}</p>
                       </div>
                     </div>
                   </div>
