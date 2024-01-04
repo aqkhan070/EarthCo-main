@@ -170,6 +170,7 @@ const PunchListIndex = () => {
                       totalRecords={totalRecords}
                       setselectedPL={setselectedPL}
                       setPlDetailId={setPlDetailId}
+                      setAddPunchListData={setAddPunchListData}
                     />
                  
               </div>

@@ -35,7 +35,6 @@ import TblDateFormat from "../../custom/TblDateFormat";
 import EventPopups from "../Reusable/EventPopups";
 import { NavLink, useNavigate } from "react-router-dom";
 
-
 const theme = createTheme({
   palette: {
     primary: {
@@ -63,6 +62,7 @@ const PunchTR = ({
   statusId,
   setPlDetailId,
   totalRecords,
+  setAddPunchListData,
 }) => {
   const token = Cookies.get("token");
   const headers = {
@@ -215,6 +215,9 @@ const PunchTR = ({
               className="btn btn-primary"
               data-bs-toggle="modal"
               data-bs-target="#editPunch"
+              onClick={() => {
+                setAddPunchListData({});
+              }}
             >
               + Add PunchList
             </button>

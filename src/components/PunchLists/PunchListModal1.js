@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import useFetchPunchDetails from "../Hooks/useFetchPunchDetails";
 import { DataContext } from "../../context/AppData";
 import EventPopups from "../Reusable/EventPopups";
+import AddressInputs from "../Modals/AddressInputs";
 
 const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   const token = Cookies.get("token");
@@ -425,14 +426,20 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                 <div className="mb-3 row">
                   <label className="col-sm-3 col-form-label">Address</label>
                   <div className="col-sm-9">
-                    <input
+                    <AddressInputs
+                      address={formData.Address}
+                      name="Address"
+                      handleChange={handleChange}
+                      addressValue={formData.Address}
+                    />
+                    {/* <input
                       name="Address"
                       type="text"
                       value={formData.Address || ""}
                       onChange={handleChange}
                       className="form-control"
                       placeholder=""
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="row">

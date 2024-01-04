@@ -22,7 +22,8 @@ import EventPopups from "../Reusable/EventPopups";
 import EventsList from "./EventsList";
 import DateEventList from "./DateEventList";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
+import LogoutIcon from "@mui/icons-material/Logout";
+import SyncIcon from "@mui/icons-material/Sync";
 const DashBoardCalender = () => {
   const requestAbortController = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -516,35 +517,43 @@ const DashBoardCalender = () => {
         text={snackBarText}
       />
       <div className="card">
-        <div className="card-header border-0 pb-0 bg-primary">
-          <h4 className="heading no-wrap" style={{ color: "white" }}>
-            Upcoming Schedules
-          </h4>
+        <div className="calendertitleBar">
+          <div className="row">
+            <div className="col-sm-8">
+              <span>
+                <h5
+                  style={{
+                    color: "white",
+                  }}
+                >
+                  Upcomming Events
+                </h5>
+              </span>
+            </div>
+            <div className="col-sm-2">
+              <SyncIcon
+                style={{ cursor: "pointer", color: "white" }}
+                onClick={() => fetchGoogleEvents()}
+              />
+            </div>
+            <div className="col-sm-2">
+              <LogoutIcon
+                style={{ cursor: "pointer", color: "white" }}
+                onClick={() => signOut()}
+              />
+            </div>
+          </div>
         </div>
-
         <div className="card-body schedules-cal p-2">
           <div style={{ width: "100%" }}>
-            {/* <div className="p-0 bg-primary" style={{ color: "white" }}>
-              {session.user.email ? session.user.email : ""}
-            </div> */}
+            <div className="p-0 " style={{ color: "black" }}>
+              {session && session.user ? session.user.email : ""}
+            </div>
             {session ? (
               <>
-                <button
-                  className="btn btn-sm btn-secondary mb-2"
-                  onClick={() => signOut()}
-                >
-                  Sign Out
-                </button>
-
-                <button
-                  className="btn btn-sm btn-info mb-2 ms-2"
-                  onClick={() => fetchGoogleEvents()}
-                >
-                  Get Events
-                </button>
-
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateCalendar
+                    style={{ width: "20em" }}
                     defaultValue={initialValue}
                     loading={loading}
                     onMonthChange={handleMonthChange}

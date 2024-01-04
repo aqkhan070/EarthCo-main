@@ -52,99 +52,36 @@ const ServiceRequests = () => {
 
   return (
     <>
-      <div className="">
-        {showCards && (
-          <StatusCards
-            setStatusId={setStatusId}
-            statusId={statusId}
-            totalRecords
-            newData={1178}
-            open={totalRecords.totalOpenRecords}
-            closed={totalRecords.totalClosedRecords}
-            total={78178}
-          />
-        )}
-        <div className="">
-          <div className="">
-            <div className="">
-              {isLoading ? (
-                <div className="center-loader">
-                  <CircularProgress style={{ color: "#789a3d" }} />
-                </div>
-              ) : (
-                <div>
-                  <ServiceRequestTR
-                    sRfetchError={sRfetchError}
-                    headers={headers}
-                    serviceRequest={serviceRequest}
-                    setShowCards={setShowCards}
-                    fetchServiceRequest={fetchServiceRequest}
-                    statusId={statusId}
-                  />
-                </div>
-              )}
+      <div className="container-fluid">
+        <div className="row">
+          {showCards && (
+            <StatusCards
+              setStatusId={setStatusId}
+              statusId={statusId}
+              totalRecords
+              newData={1178}
+              open={totalRecords.totalOpenRecords}
+              closed={totalRecords.totalClosedRecords}
+              total={78178}
+            />
+          )}
+
+          {isLoading ? (
+            <div className="center-loader">
+              <CircularProgress style={{ color: "#789a3d" }} />
             </div>
-          </div>
-        </div>
-      </div>
-      {/* modal */}
-      <div className="modal fade" id="basicModal">
-        <div className="modal-dialog" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Add Service Request</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
+          ) : (
+            <div>
+              <ServiceRequestTR
+                sRfetchError={sRfetchError}
+                headers={headers}
+                serviceRequest={serviceRequest}
+                setShowCards={setShowCards}
+                fetchServiceRequest={fetchServiceRequest}
+                statusId={statusId}
+              />
             </div>
-            <form>
-              <div className="modal-body">
-                <div className="basic-form">
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">Customer</label>
-                  </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Service Location
-                    </label>
-                    <div className="col-sm-8">
-                      {/* <Form.Select aria-label="Default select example" size="md" value={serviceLocation} onChange={(e) => setServiceLocation(e.target.value)} id="inlineFormCustomSelect">
-                                                <option value="Select Customer First">Select Customer First...</option>
-                                                {locationOptions}
-                                            </Form.Select> */}
-                      <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        size="small"
-                        // value={serviceLocation}
-                        sx={{ width: 300 }}
-                        renderInput={(params) => (
-                          <TextField
-                            label="Service Location"
-                            variant="outlined"
-                          />
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-danger light"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                {/* <NavLink to='/service-requests/Add'>
-                                    <button type="button" data-bs-dismiss="modal" className="btn btn-primary">Save</button>
-                                </NavLink> */}
-              </div>
-            </form>
-          </div>
+          )}
         </div>
       </div>
     </>

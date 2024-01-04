@@ -80,8 +80,6 @@ const ServiceRequestTR = ({
   const navigate = useNavigate();
   const { setSRData, loggedInUser } = useContext(DataContext);
 
- 
-
   const [tablePage, setTablePage] = useState(0);
   const [sRsearch, setSRsearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
@@ -135,58 +133,6 @@ const ServiceRequestTR = ({
     setShowCards(true);
   }, []);
 
-  const handleSearch = (data) => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const prevMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
-    const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const threeMonthsAgoStart = new Date(
-      now.getFullYear(),
-      now.getMonth() - 3,
-      1
-    );
-
-    let dateFilteredData = [];
-
-    switch (filterDate) {
-      case "This Month":
-        dateFilteredData = data.filter(
-          (item) => new Date(item.CreatedDate) >= monthStart
-        );
-        break;
-      case "Previous Month":
-        dateFilteredData = data.filter(
-          (item) =>
-            new Date(item.CreatedDate) >= prevMonthStart &&
-            new Date(item.CreatedDate) <= prevMonthEnd
-        );
-        break;
-      case "Last three months":
-        dateFilteredData = data.filter(
-          (item) => new Date(item.CreatedDate) >= threeMonthsAgoStart
-        );
-        break;
-      default:
-        dateFilteredData = data;
-        break;
-    }
-
-    return dateFilteredData.filter((item) => {
-      const fieldsToSearch = [
-        item.CustomerId?.toString(),
-        item.ServiceRequestNumber?.toString(),
-        item.Assign?.toString(),
-        item.SRStatusId?.toString(),
-        item.WorkRequest?.toString(),
-        item.CreatedDate?.toString(),
-      ];
-
-      return fieldsToSearch.some((field) =>
-        field?.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-  };
-
   const sortedAndSearchedCustomers = sRFilterList;
   // handleSearch([...sRFilterList]).sort(
   //   (a, b) => {
@@ -208,7 +154,7 @@ const ServiceRequestTR = ({
     <>
       {showContent ? (
         <ThemeProvider theme={theme}>
-          <div className="container-fluid pt-0">
+          <div className="">
             <div className="card">
               <div className="card-header flex-wrap d-flex justify-content-between  border-0">
                 <div>

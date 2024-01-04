@@ -6,7 +6,6 @@ import { Create, Delete, Update } from "@mui/icons-material";
 
 import { Button } from "@mui/material";
 
-
 import { useFormik } from "formik";
 import { ServiceValidation, ValidationCustomer } from "./ValidationCustomer";
 import MapCo from "./MapCo";
@@ -15,7 +14,6 @@ import CustomerAddress from "./CustomerAddress/CustomerAddress";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import SLAddress from "./CustomerAddress/SLAddress";
-
 
 const ServiceLocations = ({
   getCustomerData,
@@ -38,20 +36,6 @@ const ServiceLocations = ({
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
-  const [showSRLocation, setShowSRLocation] = useState(false);
-
-  const handleSLChange = (e) => {
-    const { name, type, value } = e.target;
-
-    const updatedValue = e.target.value;
-
-    setServiceLocations((prevLocations) => ({
-      ...prevLocations,
-      CustomerId: idParam,
-      [name]: updatedValue,
-    }));
-    console.log("ssssssss", serviceLocations);
-  };
 
   const serviceFromInitialValue = {
     Name: "",
@@ -161,53 +145,6 @@ const ServiceLocations = ({
     },
   });
 
-  // const addServiceLocation = async (e) => {
-  //   e.preventDefault();
-  //   // Check if serviceLocations has data to add
-  //   if (Object.keys(serviceLocations).length === 0) {
-  //     alert("Service Locations data is empty");
-  //     return;
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       `https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation`,
-  //       serviceLocations,
-  //       { headers }
-  //     );
-
-  //     // Assuming that the response data has an ID that you want to append
-  //     const serviceLocationWithId = {
-  //       ...serviceLocations, // spread the existing serviceLocations fields
-  //       ServiceLocationId: response.data.Id, // add the new ID from the response
-  //     };
-  //     console.log("New service location to add:", serviceLocationWithId);
-  //     // Update your form state with the new service location object that includes the response ID
-  //     setSlForm((prevObjects) => {
-  //       const updatedSlForm = [...prevObjects, serviceLocationWithId];
-  //       console.log("Updated slForm:", updatedSlForm);
-  //       return updatedSlForm;
-  //     });
-
-  //     // Reset serviceLocations state to clear the form or set it for a new entry
-  //     setServiceLocations({
-  //       Name: "",
-  //       Address: "",
-  //       Phone: "",
-  //       AltPhone: "",
-  //       isBilltoCustomer: null,
-  //     });
-  //     getCustomerData();
-  //     setTimeout(() => {
-  //       setAddSLSuccess(false);
-  //     }, 3000);
-  //     setAddSLSuccess(true);
-
-  //     console.log("successfully sent service locations", response.data.Id);
-  //   } catch (error) {
-  //     console.log("service locations Post error", error);
-  //   }
-  // };
-
   const handleDelete = async (serviceLocationId) => {
     try {
       const response = await axios.get(
@@ -235,18 +172,9 @@ const ServiceLocations = ({
     console.log(updatedSlForm);
   };
 
-  // const isFormInvalid = () => {
-  //   // Check if any of these fields are empty or in the case of isBilltoCustomer, undefined
-  //   return (
-  //     !serviceLocations.Name ||
-  //     !serviceLocations.Address ||
-  //     !serviceLocations.Phone ||
-  //     serviceLocations.isBilltoCustomer === undefined
-  //   ); // Explicitly check for undefined
-  // };
-
   const handleRadioChange = (e) => {
     const { name, value } = e.target;
+    setServiceLocations({ ...serviceLocations, isBilltoCustomer: value });
 
     formikAddService.handleChange(e);
     formikAddService.setFieldValue(name, value);
@@ -324,9 +252,7 @@ const ServiceLocations = ({
                             onChange={handleRadioChange}
                             onBlur={formikAddService.handleBlur}
                             value={true}
-                            // checked={
-                            //   serviceLocations.isBilltoCustomer === true
-                            // }
+                            checked={serviceLocations.isBilltoCustomer === true}
                           />
                           <label
                             className="form-check-label"
@@ -344,10 +270,9 @@ const ServiceLocations = ({
                             onChange={handleRadioChange}
                             onBlur={formikAddService.handleBlur}
                             value={false}
-                            // checked={
-                            //   serviceLocations.isBilltoCustomer ===
-                            //   false
-                            // }
+                            checked={
+                              serviceLocations.isBilltoCustomer === false
+                            }
                           />
                           <label
                             className="form-check-label"
@@ -371,16 +296,12 @@ const ServiceLocations = ({
                       Address<span className="text-danger">*</span>
                     </label>
                     <div className="col-sm-9">
-                      {/* <MapCo
-                        setSLAddress={setSLAddress}
-                        sLAddress={sLAddress}
-                      /> */}
-
                       <SLAddress
-                       address={formikAddService.values.Address}
-                       name="Address"
-                       handleChange={formikAddService.handleChange}
-                       setSLAddress={setSLAddress}
+                        address={formikAddService.values.Address}
+                        name="Address"
+                        handleChange={formikAddService.handleChange}
+                        setSLAddress={setSLAddress}
+                        addressValue={sLAddress}
                       />
 
                       {/* <input
@@ -465,85 +386,85 @@ const ServiceLocations = ({
           </div>
         </div>
       </div>
-  
-        <div className="card">
-          <div className="">
-            <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
-              Service Locations
-            </h4>
-          </div>
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-8"></div>
-              <div className="col-md-4 text-end">
-                {" "}
-                <button
-                  className="btn btn-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#basicModal2"
-                  style={{ margin: "0px 20px 12px" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAddLocationClick();
-                  }}
-                >
-                  + Add Service Locations
-                </button>
-              </div>
+
+      <div className="card">
+        <div className="">
+          <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
+            Service Locations
+          </h4>
+        </div>
+        <div className="card-body">
+          <div className="row">
+            <div className="col-md-8"></div>
+            <div className="col-md-4 text-end">
+              {" "}
+              <button
+                className="btn btn-primary btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#basicModal2"
+                style={{ margin: "0px 20px 12px" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleAddLocationClick();
+                }}
+              >
+                + Add Service Locations
+              </button>
             </div>
+          </div>
 
-            <div className="col-xl-12">
-              <div className="card">
-                <div className="card-body p-0">
-                  <div className="estDataBox">
-                    <div className="table-responsive active-projects style-1">
-                      <table id="empoloyees-tblwrapper" className="table">
-                        <thead>
-                          <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone</th>
-                            <th>Alt Phone</th>
-                            <th>Bill to Customer</th>
-                            <th className="actions-head">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {slForm.map((slData, index) => (
-                            <tr key={slData.ServiceLocationId}>
-                              <td>{slData.ServiceLocationId}</td>
-                              <td>{slData.Name}</td>
-                              <td>{slData.Address}</td>
-                              <td>{slData.Phone}</td>
-                              <td>{slData.AltPhone}</td>
-                              <td>
-                                {slData.isBilltoCustomer
-                                  ? "Customer"
-                                  : "Service Location"}
-                              </td>
+          <div className="col-xl-12">
+            <div className="card">
+              <div className="card-body p-0">
+                <div className="estDataBox">
+                  <div className="table-responsive active-projects style-1">
+                    <table id="empoloyees-tblwrapper" className="table">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Name</th>
+                          <th>Address</th>
+                          <th>Phone</th>
+                          <th>Alt Phone</th>
+                          <th>Bill to Customer</th>
+                          <th className="actions-head">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {slForm.map((slData, index) => (
+                          <tr key={slData.ServiceLocationId}>
+                            <td>{slData.ServiceLocationId}</td>
+                            <td>{slData.Name}</td>
+                            <td>{slData.Address}</td>
+                            <td>{slData.Phone}</td>
+                            <td>{slData.AltPhone}</td>
+                            <td>
+                              {slData.isBilltoCustomer
+                                ? "Customer"
+                                : "Service Location"}
+                            </td>
 
-                              <td
-                                className="contact-actions"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <Create
-                                  className="custom-create-icon"
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#basicModal2"
-                                  onClick={() => {
-                                    console.log("sl data", slData);
-                                    setSLAddress((prevData) => ({
-                                      ...prevData,
-                                      Address: slData.Address,
-                                      lat: slData.lat,
-                                      lng: slData.lng,
-                                    }));
-                                    setServiceLocations(slData);
-                                    updateSL(slData.ServiceLocationId);
-                                  }}
-                                ></Create>
-                                {/* <Delete
+                            <td
+                              className="contact-actions"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <Create
+                                className="custom-create-icon"
+                                data-bs-toggle="modal"
+                                data-bs-target="#basicModal2"
+                                onClick={() => {
+                                  console.log("sl data", slData);
+                                  setSLAddress((prevData) => ({
+                                    ...prevData,
+                                    Address: slData.Address,
+                                    lat: slData.lat,
+                                    lng: slData.lng,
+                                  }));
+                                  setServiceLocations(slData);
+                                  updateSL(slData.ServiceLocationId);
+                                }}
+                              ></Create>
+                              {/* <Delete
                                           color="error"
                                           onClick={() =>
                                             handleDelete(
@@ -551,74 +472,73 @@ const ServiceLocations = ({
                                             )
                                           }
                                         ></Delete> */}
-                                <Button
-                                  color="error"
-                                  className="delete-button"
-                                  data-bs-toggle="modal"
-                                  data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
-                                >
-                                  <Delete />
-                                </Button>
-                              </td>
-                              <div
-                                className="modal fade"
-                                id={`sLDeleteModal${slData.ServiceLocationId}`}
-                                tabIndex="-1"
-                                aria-labelledby="deleteModalLabel"
-                                aria-hidden="true"
+                              <Button
+                                color="error"
+                                className="delete-button"
+                                data-bs-toggle="modal"
+                                data-bs-target={`#sLDeleteModal${slData.ServiceLocationId}`}
                               >
-                                <div className="modal-dialog" role="document">
-                                  <div className="modal-content">
-                                    <div className="modal-header">
-                                      <h5 className="modal-title">
-                                        Are you sure you want to delete{" "}
-                                        {slData.Name}?
-                                      </h5>
+                                <Delete />
+                              </Button>
+                            </td>
+                            <div
+                              className="modal fade"
+                              id={`sLDeleteModal${slData.ServiceLocationId}`}
+                              tabIndex="-1"
+                              aria-labelledby="deleteModalLabel"
+                              aria-hidden="true"
+                            >
+                              <div className="modal-dialog" role="document">
+                                <div className="modal-content">
+                                  <div className="modal-header">
+                                    <h5 className="modal-title">
+                                      Are you sure you want to delete{" "}
+                                      {slData.Name}?
+                                    </h5>
+                                    <button
+                                      type="button"
+                                      className="btn-close"
+                                      data-bs-dismiss="modal"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body">
+                                    <div className="basic-form text-center">
                                       <button
                                         type="button"
-                                        className="btn-close"
+                                        id="closer"
+                                        className="btn btn-danger light m-3"
                                         data-bs-dismiss="modal"
-                                      ></button>
-                                    </div>
-                                    <div className="modal-body">
-                                      <div className="basic-form text-center">
-                                        <button
-                                          type="button"
-                                          id="closer"
-                                          className="btn btn-danger light m-3"
-                                          data-bs-dismiss="modal"
-                                        >
-                                          Close
-                                        </button>
-                                        <button
-                                          className="btn btn-primary m-3"
-                                          data-bs-dismiss="modal"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            handleDelete(
-                                              slData.ServiceLocationId
-                                            );
-                                          }}
-                                        >
-                                          Yes
-                                        </button>
-                                      </div>
+                                      >
+                                        Close
+                                      </button>
+                                      <button
+                                        className="btn btn-primary m-3"
+                                        data-bs-dismiss="modal"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          handleDelete(
+                                            slData.ServiceLocationId
+                                          );
+                                        }}
+                                      >
+                                        Yes
+                                      </button>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                            </div>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-   
+      </div>
     </>
   );
 };

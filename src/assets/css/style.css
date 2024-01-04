@@ -54101,6 +54101,12 @@ height: 30px !important;
     background-color: azure;
 }
 
+.calendertitleBar {
+    background-color: #789a3d;
+    padding: 8px 9px;
+    border-radius: 10px 10px 0px 0px;
+}
+
 .css-1q04gal-MuiDateCalendar-root{
     width: 250px !important;
 }

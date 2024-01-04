@@ -9,7 +9,7 @@ import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
 import { useState, useRef, useEffect } from "react";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE"; // Replace with your API key
+const GOOGLE_MAPS_API_KEY = "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE";
 
 function loadScript(src, position, id) {
   if (!position) {
@@ -25,8 +25,13 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
-
+const SLAddress = ({
+  address,
+  name,
+  handleChange,
+  setSLAddress,
+  addressValue,
+}) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
@@ -120,13 +125,9 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
           value: newValue.description ? newValue.description : "",
         },
       };
-
-      
-
-
-
+  
       handleChange(simulatedEvent);
-
+  
       // Use the Google Maps Geocoding API to get latitude and longitude
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ address: newValue.description }, (results, status) => {
@@ -139,8 +140,7 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
             ...prevData,
             lat: latitude,
             lng: longitude,
-          }))
-
+          }));
         } else {
           console.log(
             "Geocode was not successful for the following reason: " + status
@@ -156,28 +156,27 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
         },
       };
       handleChange(simulatedEvent);
-    }
-
-    setSLAddress((prevData) => ({
+      setSLAddress((prevData) => ({
         ...prevData,
-        Address: newValue.description ? newValue.description : "",       
-      }))
-
+        Address: "",
+      }));
+    }
   };
+  
 
   return (
     <Autocomplete
       id="google-map-demo"
       // sx={{ width: 300 }}
       getOptionLabel={(option) =>
-        typeof option === "string" ? option : option.description
+        typeof option === "string" ? option : option?.description
       }
       filterOptions={(x) => x}
       options={options}
       autoComplete
       includeInputInList
       filterSelectedOptions
-      value={value || ""}
+      value={value || addressValue.Address || ""}
       noOptionsText="No locations"
       onChange={handleSelect}
       onInputChange={(event, newInputValue) => {
@@ -224,6 +223,6 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
       }}
     />
   );
-}
+};
 
-export default SLAddress
+export default SLAddress;

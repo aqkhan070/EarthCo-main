@@ -51,6 +51,8 @@ const AddSRform = () => {
     PunchListData,
     setPunchListData,
     loggedInUser,
+    sROBJ,
+    setSROBJ,
   } = useContext(DataContext);
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
@@ -471,6 +473,7 @@ const AddSRform = () => {
       );
 
       setSRList(response.data.Data);
+      // setSROBJ(response.data);
 
       setSRMapData(response.data.LatLongData);
 
@@ -1355,8 +1358,7 @@ const AddSRform = () => {
                               left: "140px",
                             }}
                             onClick={() => {
-                              deleteSRFile(file.SRFileId,fetchSR );
-                              
+                              deleteSRFile(file.SRFileId, fetchSR);
                             }}
                           >
                             <span>
@@ -1467,15 +1469,16 @@ const AddSRform = () => {
                             value={2}
                             onClick={() => {
                               // setEstimateLinkData("PO clicked")
+                              setSROBJ({});
 
-                              navigate("/estimates");
+                              navigate("/estimates/add-estimate");
                             }}
                           >
                             Estimate
                           </MenuItem>
                           <MenuItem
                             onClick={() => {
-                              navigate("/invoices/AddInvioces");
+                              navigate("/invoices/add-invoices");
                             }}
                             value={3}
                           >

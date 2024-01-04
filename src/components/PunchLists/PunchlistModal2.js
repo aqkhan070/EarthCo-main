@@ -130,6 +130,7 @@ const PunchlistModal2 = ({
       [name]: value,
       StatusId: 2,
     }));
+    console.log("handle change",addPunchListData )
   };
 
   const handleSubmit = async (event) => {
@@ -178,6 +179,8 @@ const PunchlistModal2 = ({
   useEffect(() => {
     setemptyFieldError(false);
   }, [addPunchListData]);
+
+  
 
   useEffect(() => {
     console.log("punch list dataaa", addPunchListData);

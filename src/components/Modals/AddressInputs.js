@@ -25,7 +25,7 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const AddressInputs = ({ address, name, handleChange }) => {
+const AddressInputs = ({ address, name, handleChange, addressValue }) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
@@ -159,7 +159,7 @@ const AddressInputs = ({ address, name, handleChange }) => {
       autoComplete
       includeInputInList
       filterSelectedOptions
-      value={value || ""}
+      value={value || addressValue || ""}
       noOptionsText="No locations"
       onChange={handleSelect}
       onInputChange={(event, newInputValue) => {

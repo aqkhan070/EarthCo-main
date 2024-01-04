@@ -124,46 +124,50 @@ const Map = () => {
                     <div className="card-body pt-0">
                       <div className="tab-content">
                         <div style={{ height: "70vh", overflowY: "scroll" }}>
-                          {filteredMapData.map((map) => (
-                            <div
-                              style={{ cursor: "pointer" }}
-                              key={map.ServiceRequestId}
-                              className="tab-pane active"
-                            >
-                              <div className="row serviceLocations py-0">
-                                <div
-                                  onClick={() => {
-                                    getLatLngs(map);
-                                    setselectedSR(map.ServiceRequestId);
-                                  }}
-                                  className="col-md-12"
-                                >
+                          {filteredMapData.length <= 0 ? (
+                            <h4 className="mt-3">No Record Found</h4>
+                          ) : (
+                            filteredMapData.map((map) => (
+                              <div
+                                style={{ cursor: "pointer" }}
+                                key={map.ServiceRequestId}
+                                className="tab-pane active"
+                              >
+                                <div className="row serviceLocations py-0">
                                   <div
-                                    className={
-                                      selectedSR === map.ServiceRequestId
-                                        ? "locationInfo selected-map"
-                                        : "locationInfo"
-                                    }
+                                    onClick={() => {
+                                      getLatLngs(map);
+                                      setselectedSR(map.ServiceRequestId);
+                                    }}
+                                    className="col-md-12"
                                   >
-                                    <div className="col-md-3 flex-box">
-                                      <p>{map.ServiceRequestNumber}</p>
-                                    </div>
-                                    <div className="col-md-9">
-                                      <div className="media-body">
-                                        <h6 className="mb-1">
-                                          {map.CustomerName}
-                                        </h6>
-                                        <p className="mb-1">{map.Address}</p>
-                                        <span className="badge badge-primary">
-                                          {map.Type}
-                                        </span>
+                                    <div
+                                      className={
+                                        selectedSR === map.ServiceRequestId
+                                          ? "locationInfo selected-map"
+                                          : "locationInfo"
+                                      }
+                                    >
+                                      <div className="col-md-3 flex-box">
+                                        <p>{map.ServiceRequestNumber}</p>
+                                      </div>
+                                      <div className="col-md-9">
+                                        <div className="media-body">
+                                          <h6 className="mb-1">
+                                            {map.CustomerName}
+                                          </h6>
+                                          <p className="mb-1">{map.Address}</p>
+                                          <span className="badge badge-primary">
+                                            {map.Type}
+                                          </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))
+                          )}
                         </div>
                       </div>
                     </div>

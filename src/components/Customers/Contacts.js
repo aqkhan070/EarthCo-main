@@ -1,31 +1,18 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+
 import axios from "axios";
-import AdressModal from "../Modals/AdressModal";
-import { Form } from "react-bootstrap";
+
 import { Create, Delete, Update } from "@mui/icons-material";
-import Alert from "@mui/material/Alert";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+
 import { Button } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import validator from "validator";
-import CircularProgress from "@mui/material/CircularProgress";
+
 import AddressInputs from "../Modals/AddressInputs";
 import { useFormik } from "formik";
-import { ServiceValidation, ValidationCustomer } from "./ValidationCustomer";
-import MapCo from "./MapCo";
+import { ValidationCustomer } from "./ValidationCustomer";
+
 import Cookies from "js-cookie";
-import CustomerAddress from "./CustomerAddress/CustomerAddress";
+
 import EventPopups from "../Reusable/EventPopups";
-import LoaderButton from "../Reusable/LoaderButton";
 
 const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
   const token = Cookies.get("token");
@@ -40,7 +27,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
   //   const [contactDataList, setContactDataList] = useState([]);
   const [contactAddSuccess, setContactAddSuccess] = useState(false);
   const [contactDelSuccess, setContactDelSuccess] = useState(false);
-  const [showContacts, setShowContacts] = useState(false);
+
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -411,6 +398,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                         address={formik.values.Address}
                         name="Address"
                         handleChange={formik.handleChange}
+                        addressValue={contactData.Address}
                       />
                       {/* <input
                             name="Address"

@@ -247,9 +247,12 @@ const DataFun = ({ children }) => {
 
   const [customerAddress, setCustomerAddress] = useState("");
 
+  const [sROBJ, setSROBJ] = useState({})
+
   return (
     <DataContext.Provider
       value={{
+        sROBJ, setSROBJ,
         loggedInUser, setLoggedInUser,
         customerAddress,
         setCustomerAddress,

@@ -63,7 +63,10 @@ const AddEstimateForm = () => {
   const isEstimateUpdateRoute =
     window.location.pathname.includes("Update-Estimate");
 
-  const { PunchListData, setPunchListData } = useContext(DataContext);
+  const { PunchListData, setPunchListData, sROBJ, setSROBJ } =
+    useContext(DataContext);
+
+  
 
   useEffect(() => {
     fetchName(PunchListData.CustomerId);
@@ -89,9 +92,6 @@ const AddEstimateForm = () => {
     fetchStaffList();
     fetctContacts(PunchListData.CustomerId);
     console.log("PunchList Data link", PunchListData);
-    return () => {
-      setPunchListData({});
-    };
   }, [PunchListData]);
 
   const inputFile = useRef(null);
@@ -2247,8 +2247,10 @@ const AddEstimateForm = () => {
                           >
                             <span
                               onClick={() => {
-                                deleteEstmFile(file.EstimateFileId, fetchEstimates);
-                               
+                                deleteEstmFile(
+                                  file.EstimateFileId,
+                                  fetchEstimates
+                                );
                               }}
                             >
                               <Delete color="error" />
