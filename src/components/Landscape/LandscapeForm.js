@@ -1,12 +1,17 @@
 import React from "react";
-import { Form } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { Print, Email, Download } from "@mui/icons-material";
 import axios from "axios";
 import { useEffect, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
-import { Autocomplete, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  FormControl,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Cookies from "js-cookie";
 import EventPopups from "../Reusable/EventPopups";
 import Contacts from "../CommonComponents/Contacts";
@@ -14,6 +19,7 @@ import ServiceLocations from "../CommonComponents/ServiceLocations";
 import { DataContext } from "../../context/AppData";
 import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../Reusable/LoaderButton";
+import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 const LandscapeForm = () => {
   const token = Cookies.get("token");
@@ -23,12 +29,15 @@ const LandscapeForm = () => {
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
   const [customers, setCustomers] = useState([]);
   const [serviceLocations, setServiceLocations] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [contacts, setContacts] = useState([]);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    StatusId: 1,
+  });
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [staffData, setStaffData] = useState([]);
@@ -110,6 +119,7 @@ const LandscapeForm = () => {
       );
       setFormData(res.data);
       setLoading(false);
+      fetchEmail(res.data.ContactId);
 
       console.log("reponse landscape is", res.data);
     } catch (error) {
@@ -210,6 +220,8 @@ const LandscapeForm = () => {
       return;
     }
 
+    console.log("payload", formData);
+
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/AddMonthlyLandsacpe",
@@ -260,7 +272,7 @@ const LandscapeForm = () => {
                 <h4>Customer Information</h4>
               </div>
 
-              <div className="card-body pt-0" style={{ position: "relative" }}>
+              <div className="card-body py-0" style={{ position: "relative" }}>
                 {loggedInUser.userRole !== "1" && (
                   <div
                     className="overlay"
@@ -449,6 +461,23 @@ const LandscapeForm = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+              <div className="row">
+                {" "}
+                <div className="col-lg-3 col-md-3 ms-3 mb-3">
+                  <label className="form-label">Status:</label>
+                  <FormControl fullWidth>
+                    <Select
+                      name="StatusId"
+                      value={formData.StatusId || 1}
+                      onChange={handleInputChange}
+                      size="small"
+                    >
+                      <MenuItem value={1}>Open</MenuItem>
+                      <MenuItem value={2}>Closed</MenuItem>
+                    </Select>
+                  </FormControl>
                 </div>
               </div>
             </div>
@@ -1048,7 +1077,42 @@ const LandscapeForm = () => {
             </div>
 
             <div className="row text-end">
-              <div>
+              <div className="col-md-9 pe-0">
+                {idParam ? (
+                  <>
+                    <button
+                      type="button"
+                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      onClick={() => {
+                        navigate(
+                          `/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`
+                        );
+                        // sendEmail(
+                        //   `/estimates/estimate-preview?id=${idParam}`,
+                        //   formData.CustomerId,
+                        //   formData.ContactId,
+                        //   false
+                        // );
+                      }}
+                    >
+                      <Email />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      onClick={() => {
+                        navigate(`/landscape/landscape-report?id=${idParam}`);
+                      }}
+                    >
+                      <Print></Print>
+                    </button>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div className="col-md-3 ps-0">
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

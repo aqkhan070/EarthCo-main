@@ -1,15 +1,6 @@
 import React from "react";
 
-const StatusCards = ({
-  setStatusId,
-  estmRecords,
-  statusId,
-  newData,
-  open,
-  closed,
-  total,
-  accepted,
-}) => {
+const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
   return (
     <>
       {/* <div className="col-xl-3 col-sm-6">
@@ -118,8 +109,22 @@ const StatusCards = ({
               </span>
               <div className="media-body">
                 <p className="mb-1">New</p>
-                <h4 className="mb-0">{estmRecords.totalNewRecords}</h4>
-                {/* <span className="badge badge-primary">15%</span> */}
+                <div className="row">
+                  <div className="col-md-4 col-sm-4">
+                    {" "}
+                    <h4 className="mb-0">{estmRecords.totalNewRecords}</h4>
+                    {/* <span className="badge badge-primary">15%</span> */}
+                  </div>
+                  <div className="col-md-8 col-sm-8 mt-2 text-end">
+                    <p>
+                      {" "}
+                      $
+                      {estmRecords.totalNewRecordsSum
+                        ? estmRecords.totalNewRecordsSum.toFixed(2)
+                        : "0.00"}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -160,8 +165,20 @@ const StatusCards = ({
               </span>
               <div className="media-body">
                 <p className="mb-1">Open Approved</p>
-                <h4 className="mb-0">{estmRecords.totalApprovedRecords}</h4>
-                {/* <span className="badge badge-warning">30%</span> */}
+                <div className="row">
+                  <div className="col-md-4 col-sm-4">
+                    <h4 className="mb-0">{estmRecords.totalApprovedRecords}</h4>
+                    {/* <span className="badge badge-warning">30%</span> */}
+                  </div>
+                  <div className="col-md-8 col-sm-8 mt-2 text-end">
+                    <p>
+                      $
+                      {estmRecords.totalApprovedRecordsSum
+                        ? estmRecords.totalApprovedRecordsSum.toFixed(2)
+                        : "0.00"}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -202,8 +219,21 @@ const StatusCards = ({
               </span>
               <div className="media-body">
                 <p className="mb-1">Closed Billed</p>
-                <h4 className="mb-0">{estmRecords.totalClosedRecords}</h4>
-                {/* <span className="badge badge-danger">55%</span> */}
+
+                <div className="row">
+                  <div className="col-md-4 col-sm-4">
+                    <h4 className="mb-0">{estmRecords.totalClosedRecords}</h4>
+                    {/* <span className="badge badge-danger">55%</span> */}
+                  </div>
+                  <div className="col-md-8 col-sm-8 mt-2 text-end">
+                    <p>
+                      $
+                      {estmRecords.totalClosedRecordsSum
+                        ? estmRecords.totalClosedRecordsSum.toFixed(2)
+                        : "0.00"}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

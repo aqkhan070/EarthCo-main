@@ -22,6 +22,7 @@ import axios from "axios";
 import TblDateFormat from "../../../../custom/TblDateFormat";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../../../context/AppData";
+import StatusCards from "../../../Landscape/StatusCards";
 
 const RisingCaneTable = () => {
   const icon = (
@@ -69,6 +70,8 @@ const RisingCaneTable = () => {
 
   const navigate = useNavigate();
   const { loggedInUser } = useContext(DataContext);
+  const [statusId, setStatusId] = useState(0);
+  const [records, setRecords] = useState({});
 
   const [weeklyReport, setWeeklyReport] = useState(true);
   const [WeeklyReportData, setWeeklyReportData] = useState([]);
@@ -81,6 +84,10 @@ const RisingCaneTable = () => {
       );
       setWeeklyReportData(res.data);
       setLoading(false);
+      setRecords({
+        open: res.data.filter((report) => report.StatusId === 1).length,
+        closed: res.data.filter((report) => report.StatusId === 2).length,
+      });
 
       setWeeklyReport(false);
       console.log("rising cane report data is", res.data);
@@ -91,14 +98,46 @@ const RisingCaneTable = () => {
     }
   };
 
+  const [filteredWeeklyReportData, setFilteredWeeklyReportData] = useState([]);
+
+  useEffect(() => {
+    let filteredReports =
+      statusId === 0
+        ? WeeklyReportData
+        : WeeklyReportData.filter((report) => report.StatusId === statusId);
+    setFilteredWeeklyReportData(filteredReports);
+  }, [statusId, WeeklyReportData]);
+
   useEffect(() => {
     fetchWeeklyReports();
   }, []);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // Handle change page
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Handle change rows per page
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <>
       <TitleBar icon={icon} title="Weekly Report- Rising Canes" />
       <div className="container-fluid">
+        <div className="row">
+          {" "}
+          <StatusCards
+            setStatusId={setStatusId}
+            statusId={statusId}
+            records={records}
+          />
+        </div>
         <div className="card">
           <div className="row mx-2 mt-2 mb-2">
             <div className="col-md-12 text-end">
@@ -141,76 +180,94 @@ const RisingCaneTable = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    WeeklyReportData.map((report) => (
-                      <TableRow
-                        key={report.WeeklyReportRCId}
-                        className="bill-tbl-alignment"
-                        hover
-                      >
-                        <TableCell
-                          onClick={() => {
-                            navigate(
-                              `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
-                            );
-                          }}
+                    filteredWeeklyReportData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((report) => (
+                        <TableRow
+                          key={report.WeeklyReportRCId}
+                          className="bill-tbl-alignment"
+                          hover
                         >
-                          {report.CompanyName}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => {
-                            navigate(
-                              `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
-                            );
-                          }}
-                        >
-                          {report.ContactName}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => {
-                            navigate(
-                              `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
-                            );
-                          }}
-                        >
-                          {report.RegionalManagerName}
-                        </TableCell>
-
-                        <TableCell
-                          onClick={() => {
-                            navigate(
-                              `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
-                            );
-                          }}
-                        >
-                          {report.ContactCompany}
-                        </TableCell>
-                        <TableCell
-                          onClick={() => {
-                            navigate(
-                              `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
-                            );
-                          }}
-                        >
-                          {TblDateFormat(report.ReportForWeekOf)}
-                        </TableCell>
-                        <TableCell>
-                          <span
+                          <TableCell
                             onClick={() => {
                               navigate(
-                                `/weekly-reports/rising-canes-preview?id=${report.WeeklyReportRCId}`
+                                `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
                               );
                             }}
-                            className="span-hover-pointer badge badge-pill badge-success "
                           >
-                            Open
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))
+                            {report.CompanyName}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
+                              );
+                            }}
+                          >
+                            {report.ContactName}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
+                              );
+                            }}
+                          >
+                            {report.RegionalManagerName}
+                          </TableCell>
+
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
+                              );
+                            }}
+                          >
+                            {report.ContactCompany}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/weekly-reports/add-rising-canes?id=${report.WeeklyReportRCId}`
+                              );
+                            }}
+                          >
+                            {TblDateFormat(report.ReportForWeekOf)}
+                          </TableCell>
+
+                          <TableCell>
+                            <span
+                              style={{
+                                backgroundColor: report.ReportStatusColor,
+                              }}
+                              onClick={() => {
+                                navigate(
+                                  `/weekly-reports/rising-canes-preview?id=${report.WeeklyReportRCId}`
+                                );
+                              }}
+                              className="span-hover-pointer badge badge-pill  "
+                            >
+                              {report.ReportStatus}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      ))
                   )}
                 </TableBody>
               </Table>
             )}
+
+            <TablePagination
+              component="div"
+              count={weeklyReport ? 0 : filteredWeeklyReportData.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
           </div>
         </div>
       </div>

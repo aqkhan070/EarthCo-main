@@ -31,6 +31,7 @@ const SLAddress = ({
   handleChange,
   setSLAddress,
   addressValue,
+  emptyerror
 }) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
@@ -39,6 +40,7 @@ const SLAddress = ({
 
   useEffect(() => {
     setValue(address);
+    console.log("address is", address);
   }, []);
 
   if (typeof window !== "undefined" && !loaded.current) {
@@ -61,7 +63,7 @@ const SLAddress = ({
     []
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
 
     if (!autocompleteService.current && window.google) {
@@ -83,6 +85,7 @@ const SLAddress = ({
 
         if (value) {
           newOptions = [value];
+      
         }
 
         if (results) {
@@ -125,9 +128,9 @@ const SLAddress = ({
           value: newValue.description ? newValue.description : "",
         },
       };
-  
+
       handleChange(simulatedEvent);
-  
+
       // Use the Google Maps Geocoding API to get latitude and longitude
       const geocoder = new window.google.maps.Geocoder();
       geocoder.geocode({ address: newValue.description }, (results, status) => {
@@ -162,7 +165,6 @@ const SLAddress = ({
       }));
     }
   };
-  
 
   return (
     <Autocomplete
@@ -183,7 +185,7 @@ const SLAddress = ({
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} size="small" placeholder="Address" fullWidth />
+        <TextField {...params} size="small" placeholder="Address" error={emptyerror} fullWidth />
       )}
       renderOption={(props, option) => {
         const matches =

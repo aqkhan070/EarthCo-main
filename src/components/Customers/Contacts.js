@@ -223,11 +223,11 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
   };
 
   const updateContact = (id) => {
-    console.log(id);
-    const updatedContacts = contactDataList.filter(
-      (contact) => contact.ContactId !== id
-    );
-    setContactDataList(updatedContacts);
+    // console.log(id);
+    // const updatedContacts = contactDataList.filter(
+    //   (contact) => contact.ContactId !== id
+    // );
+    // setContactDataList(updatedContacts);
   };
 
   //   useEffect(() => {

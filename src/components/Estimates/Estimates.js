@@ -162,14 +162,8 @@ const Estimates = ({ setestmPreviewId }) => {
               estmRecords={estmRecords}
               statusId={statusId}
               setStatusId={setStatusId}
-              closed={closed}
-              accepted={accepted}
-              open={open}
             />
           )}
-
-        
-          
         </div>
 
         {isLoading ? (

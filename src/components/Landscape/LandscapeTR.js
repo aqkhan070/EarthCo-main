@@ -24,7 +24,7 @@ import axios from "axios";
 import TblDateFormat from "../../custom/TblDateFormat";
 import { DataContext } from "../../context/AppData";
 
-const LandscapeTR = () => {
+const LandscapeTR = ({ setRecords, statusId }) => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
@@ -47,6 +47,12 @@ const LandscapeTR = () => {
       );
 
       setReports(response.data);
+
+      setRecords({
+        open: response.data.filter((report) => report.StatusId === 1).length,
+        closed: response.data.filter((report) => report.StatusId === 2).length,
+      });
+
       console.log("////////", response.data);
       if (response.data != null) {
         setIsLoading(false);
@@ -56,44 +62,14 @@ const LandscapeTR = () => {
       setIsLoading(false);
     }
   };
+  let filteredReports =
+    statusId === 0
+      ? reports
+      : reports.filter((report) => report.StatusId === statusId);
 
   useEffect(() => {
     fetchReports();
   }, []);
-
-  const filteredReports = reports;
-  //   .filter((e) =>
-  //     e.tblCustomer.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-  //   )
-  //   .sort(getSorting(order, orderBy));
-
-  // // ... Pagination, Sorting logic ...
-  // function desc(a, b, orderBy) {
-  //   if (b[orderBy] < a[orderBy]) {
-  //     return -1;
-  //   }
-  //   if (b[orderBy] > a[orderBy]) {
-  //     return 1;
-  //   }
-  //   return 0;
-  // }
-
-  const deleteReport = async (id) => {
-    try {
-      const response = await fetch(
-        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/DeleteMonthlyLandsacpe?id=${id}`,
-        {
-          headers,
-        }
-      );
-
-      // Handle the response. For example, you can reload the customers or show a success message
-      console.log("Customer deleted successfully:", response.data);
-      window.location.reload();
-    } catch (error) {
-      console.error("There was an error deleting the customer:", error);
-    }
-  };
 
   return (
     <>
@@ -125,11 +101,15 @@ const LandscapeTR = () => {
                 {/* <TableCell padding="checkbox">
                   <Checkbox />
                 </TableCell> */}
-                {["#", "Customer Name", "Requested by", "Date Created"].map(
-                  (headCell) => (
-                    <TableCell key={headCell}>{headCell}</TableCell>
-                  )
-                )}
+                {[
+                  "#",
+                  "Customer Name",
+                  "Requested by",
+                  "Status",
+                  "Date Created",
+                ].map((headCell) => (
+                  <TableCell key={headCell}>{headCell}</TableCell>
+                ))}
                 {/* <TableCell align="right">Actions</TableCell> */}
               </TableRow>
             </TableHead>
@@ -157,6 +137,17 @@ const LandscapeTR = () => {
                     <TableCell>{report.CompanyName}</TableCell>
 
                     <TableCell>{report.RequestByName}</TableCell>
+
+                    <TableCell>
+                      <span
+                        style={{
+                          backgroundColor: report.ReportStatusColor,
+                        }}
+                        className="span-hover-pointer badge badge-pill  "
+                      >
+                        {report.ReportStatus}
+                      </span>
+                    </TableCell>
 
                     <TableCell>{TblDateFormat(report.CreatedDate)}</TableCell>
 

@@ -1450,7 +1450,7 @@ const AddSRform = () => {
                 <div className="col-md-6 mb-3 text-right">
                   {idParam ? (
                     <>
-                      <FormControl className=" mx-2">
+                      {/* <FormControl className=" mx-2">
                         <Select
                           labelId="estimateLink"
                           aria-label="Default select example"
@@ -1485,7 +1485,7 @@ const AddSRform = () => {
                             Invoice
                           </MenuItem>
                         </Select>
-                      </FormControl>
+                      </FormControl> */}
 
                       <button
                         type="button"

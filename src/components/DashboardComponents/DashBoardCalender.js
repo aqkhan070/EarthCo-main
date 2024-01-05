@@ -530,18 +530,22 @@ const DashBoardCalender = () => {
                 </h5>
               </span>
             </div>
-            <div className="col-sm-2">
-              <SyncIcon
-                style={{ cursor: "pointer", color: "white" }}
-                onClick={() => fetchGoogleEvents()}
-              />
-            </div>
-            <div className="col-sm-2">
-              <LogoutIcon
-                style={{ cursor: "pointer", color: "white" }}
-                onClick={() => signOut()}
-              />
-            </div>
+            {session && (
+              <>
+                <div className="col-sm-2">
+                  <SyncIcon
+                    style={{ cursor: "pointer", color: "white" }}
+                    onClick={() => fetchGoogleEvents()}
+                  />
+                </div>
+                <div className="col-sm-2">
+                  <LogoutIcon
+                    style={{ cursor: "pointer", color: "white" }}
+                    onClick={() => signOut()}
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
         <div className="card-body schedules-cal p-2">

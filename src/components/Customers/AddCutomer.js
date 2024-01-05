@@ -108,10 +108,10 @@ const AddCustomer = () => {
       setCompanyData(response.data.Data);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
-      setSLAddress((prevData) => ({
-        ...prevData,
-        Address: response.data.Data.Address,
-      }));
+      // setSLAddress((prevData) => ({
+      //   ...prevData,
+      //   Address: response.data.Data.Address,
+      // }));
       console.log(response.data.ServiceLocationData);
     } catch (error) {
       setLoading(false);
@@ -179,7 +179,8 @@ const AddCustomer = () => {
       !companyData.CompanyName ||
       !companyData.FirstName ||
       !companyData.ContactName ||
-      !companyData.Email
+      !companyData.Email || 
+      !companyData.Address
     ) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -469,12 +470,13 @@ const AddCustomer = () => {
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
                         >
-                          Address
+                          Address<span className="text-danger">*</span>
                         </label>
                         <AddressInputs
                           address={companyData.Address}
                           name="Address"
                           handleChange={handleCompanyChange}
+                          emptyError={submitClicked && !companyData.Address}
                         />
                         {/* <TextField
                           type="text"

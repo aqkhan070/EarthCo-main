@@ -21,6 +21,7 @@ import formatDate from "../../../custom/FormatDate";
 import { useNavigate } from "react-router-dom";
 import TblDateFormat from "../../../custom/TblDateFormat";
 import { DataContext } from "../../../context/AppData";
+import StatusCards from "../../Landscape/StatusCards";
 
 const WeeklyReportlist = () => {
   const icon = (
@@ -61,6 +62,9 @@ const WeeklyReportlist = () => {
   );
   const navigate = useNavigate();
 
+  const [statusId, setStatusId] = useState(0);
+  const [records, setRecords] = useState({});
+
   const token = Cookies.get("token");
 
   const headers = {
@@ -80,6 +84,11 @@ const WeeklyReportlist = () => {
       setWeeklyReportData(res.data);
       setLoading(false);
 
+      setRecords({
+        open: res.data.filter((report) => report.StatusId === 1).length,
+        closed: res.data.filter((report) => report.StatusId === 2).length,
+      });
+
       setWeeklyReport(false);
       console.log("proposal report data is", res.data);
     } catch (error) {
@@ -92,6 +101,16 @@ const WeeklyReportlist = () => {
   useEffect(() => {
     fetchWeeklyReports();
   }, []);
+
+  const [filteredWeeklyReportData, setFilteredWeeklyReportData] = useState([]);
+
+  useEffect(() => {
+    let filteredReports =
+      statusId === 0
+        ? WeeklyReportData
+        : WeeklyReportData.filter((report) => report.StatusId === statusId);
+    setFilteredWeeklyReportData(filteredReports);
+  }, [statusId, WeeklyReportData]);
 
   // Pagination
   const [page, setPage] = useState(0);
@@ -116,25 +135,16 @@ const WeeklyReportlist = () => {
     setOrderBy(property);
   };
 
-  const sortedData = WeeklyReportData.slice().sort((a, b) => {
-    if (order === "asc") {
-      return a[orderBy] > b[orderBy] ? 1 : -1;
-    } else {
-      return b[orderBy] > a[orderBy] ? 1 : -1;
-    }
-  });
-
   return (
     <>
       <TitleBar icon={icon} title="Weekly Landscape" />
       <div className="container-fluid">
         <div className="row">
-          {/* <StatusCards
-            newData={1178}
-            open={5142}
-            closed={71858}
-            total={78178}
-          /> */}
+          <StatusCards
+            setStatusId={setStatusId}
+            statusId={statusId}
+            records={records}
+          />
           <div className="col-xl-12">
             <div className="card">
               <div className="card-header flex-wrap d-flex justify-content-between  border-0">
@@ -166,8 +176,8 @@ const WeeklyReportlist = () => {
 
                           <TableCell>Assign / Appointment</TableCell>
                           <TableCell>Customer</TableCell>
+                          <TableCell>Status</TableCell>
                           <TableCell>Created</TableCell>
-                          <TableCell align="right">Preview</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -178,46 +188,44 @@ const WeeklyReportlist = () => {
                             </TableCell>
                           </TableRow>
                         ) : (
-                          WeeklyReportData.slice(
-                            page * rowsPerPage,
-                            page * rowsPerPage + rowsPerPage
-                          ).map((staff) => (
-                            <TableRow
-                              className="material-tbl-alignment"
-                              hover
-                              key={staff.WeeklyReportId}
-                              onClick={() => {
-                                navigate(
-                                  `/weekly-reports/add-weekly-report?id=${staff.WeeklyReportId}`
-                                );
-                              }}
-                            >
-                              <TableCell className="ms-3">
-                                {staff.WeeklyReportId}
-                              </TableCell>
-                              <TableCell>{staff.RegionalManagerName}</TableCell>
-                              <TableCell>{staff.CompanyName}</TableCell>
-                              <TableCell>
-                                {TblDateFormat(staff.CreatedDate)}
-                              </TableCell>
-
-                              <TableCell align="right">
-                                {" "}
-                                <button
-                                  className="btn p-0"
-                                  onClick={() => {
-                                    navigate(
-                                      `/weekly-reports/weekly-report-preview?id=${staff.WeeklyReportId}`
-                                    );
-                                  }}
-                                >
-                                  <span className="badge badge-pill badge-success ">
-                                    Preview
-                                  </span>{" "}
-                                </button>
-                              </TableCell>
-                            </TableRow>
-                          ))
+                          filteredWeeklyReportData
+                            .slice(
+                              page * rowsPerPage,
+                              page * rowsPerPage + rowsPerPage
+                            )
+                            .map((staff) => (
+                              <TableRow
+                                className="material-tbl-alignment"
+                                hover
+                                key={staff.WeeklyReportId}
+                                onClick={() => {
+                                  navigate(
+                                    `/weekly-reports/add-weekly-report?id=${staff.WeeklyReportId}`
+                                  );
+                                }}
+                              >
+                                <TableCell className="ms-3">
+                                  {staff.WeeklyReportId}
+                                </TableCell>
+                                <TableCell>
+                                  {staff.RegionalManagerName}
+                                </TableCell>
+                                <TableCell>{staff.CompanyName}</TableCell>
+                                <TableCell>
+                                  <span
+                                    style={{
+                                      backgroundColor: staff.ReportStatusColor,
+                                    }}
+                                    className="span-hover-pointer badge badge-pill  "
+                                  >
+                                    {staff.ReportStatus}
+                                  </span>
+                                </TableCell>
+                                <TableCell>
+                                  {TblDateFormat(staff.CreatedDate)}
+                                </TableCell>
+                              </TableRow>
+                            ))
                         )}
                       </TableBody>
                     </Table>

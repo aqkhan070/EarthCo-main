@@ -155,7 +155,7 @@ const Landscape = () => {
                 <button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
                   onClick={() => {
-                    navigate(`/summary-report`);
+                    navigate(`/landscape`);
                   }}
                 >
                   <i className="fa fa-backward"></i>

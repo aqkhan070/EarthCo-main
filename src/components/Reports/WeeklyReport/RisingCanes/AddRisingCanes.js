@@ -2,19 +2,28 @@ import React, { useEffect, useContext, useState } from "react";
 import TitleBar from "../../../TitleBar";
 import useCustomerSearch from "../../../Hooks/useCustomerSearch";
 import useFetchCustomerName from "../../../Hooks/useFetchCustomerName";
-import { Alert, Autocomplete, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  FormControl,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
 import EventPopups from "../../../Reusable/EventPopups";
+import { Print, Email, Download } from "@mui/icons-material";
 
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import formatDate from "../../../../custom/FormatDate";
 import LoaderButton from "../../../Reusable/LoaderButton";
 import Contacts from "../../../CommonComponents/Contacts";
 import ServiceLocations from "../../../CommonComponents/ServiceLocations";
 import { DataContext } from "../../../../context/AppData";
 import CircularProgress from "@mui/material/CircularProgress";
+import useDeleteFile from "../../../Hooks/useDeleteFile";
+import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
 
 const AddRisingCanes = () => {
   const icon = (
@@ -65,10 +74,14 @@ const AddRisingCanes = () => {
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
+  const { deleteReportFile } = useDeleteFile();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
+
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
   const [formData, setFormData] = useState({
     ReportForWeekOf: new Date().toISOString().substr(0, 10),
+    StatusId: 1,
   });
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
@@ -96,6 +109,7 @@ const AddRisingCanes = () => {
       );
 
       setFormData(res.data.Data);
+      fetchEmail(res.data.Data.ContactId)
       setPrevFiles(res.data.FileData);
       setLoading(false);
       setSelectedContact({
@@ -125,6 +139,22 @@ const AddRisingCanes = () => {
       .catch((error) => {
         setSLList([]);
         console.log("service locations fetch error", error);
+      });
+  };
+  const [storeLocations, setStoreLocations] = useState([]);
+
+  const fetchStoreLocations = async () => {
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/WeeklyReport/GetStoreLocationList`,
+        { headers }
+      )
+      .then((res) => {
+        console.log("store locations are", res.data);
+        setStoreLocations(res.data);
+      })
+      .catch((error) => {
+        console.log("store locations fetch error", error);
       });
   };
 
@@ -173,6 +203,17 @@ const AddRisingCanes = () => {
       target: {
         name: "ServiceLocationId",
         value: newValue ? newValue.ServiceLocationId : "",
+      },
+    };
+
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleStoreAutocompleteChange = (event, newValue) => {
+    const simulatedEvent = {
+      target: {
+        name: "StoreLocationId",
+        value: newValue ? newValue.StoreLocationId : "",
       },
     };
 
@@ -259,7 +300,7 @@ const AddRisingCanes = () => {
     setSubmitClicked(true);
     if (
       !formData.CustomerId ||
-      !formData.ServiceLocationId ||
+      !formData.StoreLocationId ||
       !formData.ContactId ||
       !formData.RegionalManagerId
     ) {
@@ -303,7 +344,7 @@ const AddRisingCanes = () => {
     setDisableButton(true);
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data", // Important for multipart/form-data requests
+      "Content-Type": "multipart/form-data",
     };
     try {
       const response = await axios.post(
@@ -352,6 +393,7 @@ const AddRisingCanes = () => {
   useEffect(() => {
     fetchStaffList();
     getWeeklyPreview();
+    fetchStoreLocations();
   }, []);
 
   return (
@@ -425,7 +467,43 @@ const AddRisingCanes = () => {
                     )}
                   />
                 </div>
+
                 <div className="col-md-3 ">
+                  <div className="row">
+                    <label className="form-label">
+                      Store Location
+                      <span className="text-danger">*</span>{" "}
+                    </label>
+                  </div>
+                  <Autocomplete
+                    id="inputState19"
+                    size="small"
+                    options={storeLocations}
+                    getOptionLabel={(option) => option.Location || ""}
+                    value={
+                      storeLocations.find(
+                        (customer) =>
+                          customer.StoreLocationId === formData.StoreLocationId
+                      ) || null
+                    }
+                    onChange={handleStoreAutocompleteChange}
+                    isOptionEqualToValue={(option, value) =>
+                      option.StoreLocationId === value.StoreLocationId
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        placeholder="Store Locations"
+                        error={submitClicked && !formData.StoreLocationId}
+                        className="bg-white"
+                      />
+                    )}
+                    aria-label="Default select example"
+                  />
+                </div>
+
+                {/* <div className="col-md-3 ">
                   <div className="row">
                     <div className="col-md-auto">
                       <label className="form-label">
@@ -473,7 +551,7 @@ const AddRisingCanes = () => {
                     )}
                     aria-label="Default select example"
                   />
-                </div>
+                </div> */}
                 <div className="col-md-3 ">
                   <div className="row">
                     <div className="col-md-auto">
@@ -522,7 +600,7 @@ const AddRisingCanes = () => {
                 </div>
                 <div className="col-md-3">
                   <label className="form-label">
-                    Regional Manager <span className="text-danger">*</span>
+                    By Regional Manager <span className="text-danger">*</span>
                   </label>
                   <Autocomplete
                     id="staff-autocomplete"
@@ -582,6 +660,20 @@ const AddRisingCanes = () => {
               </div>
 
               <div className="row mt-4 mx-2 ">
+                <div className="col-lg-3 col-md-3  mb-2">
+                  <label className="form-label">Status:</label>
+                  <FormControl fullWidth>
+                    <Select
+                      name="StatusId"
+                      value={formData.StatusId || 1}
+                      onChange={handleInputChange}
+                      size="small"
+                    >
+                      <MenuItem value={1}>Open</MenuItem>
+                      <MenuItem value={2}>Closed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
                 <div className="col-md-3 mb-2">
                   <label className="form-label">Report For Week of:</label>
                   <input
@@ -806,9 +898,9 @@ const AddRisingCanes = () => {
                 </div>
 
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Describe the mulch condition and if we need to add any
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -821,9 +913,9 @@ const AddRisingCanes = () => {
                 </div>
 
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Describe the entrance condition
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -833,9 +925,9 @@ const AddRisingCanes = () => {
                   />
                 </div>
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Describe the drive-through condition
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -846,9 +938,9 @@ const AddRisingCanes = () => {
                 </div>
 
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Any additional notes management should be aware of
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -859,9 +951,9 @@ const AddRisingCanes = () => {
                 </div>
 
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Signature of RC on site manager
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -871,9 +963,9 @@ const AddRisingCanes = () => {
                   />
                 </div>
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Name of RC on site manager
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -883,10 +975,10 @@ const AddRisingCanes = () => {
                   />
                 </div>
                 <div className="col-md-6 mt-2">
-                  <lable className="form-label">
+                  <label className="form-label">
                     Describe the parameter of building including sign age street
                     facing planter set condition
-                  </lable>
+                  </label>
 
                   <input
                     className="form-control form-control-sm"
@@ -1049,7 +1141,13 @@ const AddRisingCanes = () => {
                         style={{
                           left: "140px",
                         }}
-                        onClick={() => {}}
+                        onClick={() => {
+                          deleteReportFile(
+                            "WeeklyReport/DeleteWeeklyReportRCFile?FileId=",
+                            file.WeeklyReportRCFileId,
+                            getWeeklyPreview
+                          );
+                        }}
                       >
                         <span>
                           <Delete color="error" />
@@ -1059,8 +1157,46 @@ const AddRisingCanes = () => {
                   );
                 })}
               </div>
-              <div className="row m-2">
-                <div className="col-md-12 mt-2 text-end">
+              <div className="row m-2 text-end">
+                <div className="col-md-9 mt-2 pe-0">
+                  {idParam ? (
+                    <>
+                      <button
+                        type="button"
+                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                        onClick={() => {
+                          navigate(
+                            `/send-mail?title=${"Weekly Report - Rising Canes"}&mail=${contactEmail}`
+                          );
+                          // sendEmail(
+                          //   `/estimates/estimate-preview?id=${idParam}`,
+                          //   formData.CustomerId,
+                          //   formData.ContactId,
+                          //   false
+                          // );
+                        }}
+                      >
+                        <Email />
+                      </button>
+
+                      <button
+                        type="button"
+                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                        onClick={() => {
+                          navigate(
+                            `/weekly-reports/rising-canes-preview?id=${idParam}`
+                          );
+                        }}
+                      >
+                        <Print></Print>
+                      </button>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+
+                <div className="col-md-3 ps-0 mt-2 ">
                   <LoaderButton
                     loading={disableButton}
                     handleSubmit={handleSubmit}

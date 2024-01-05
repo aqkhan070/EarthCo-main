@@ -4,19 +4,28 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCustomerSearch from "../../Hooks/useCustomerSearch";
 import useFetchCustomerName from "../../Hooks/useFetchCustomerName";
-import { Alert, Autocomplete, TextField } from "@mui/material";
+import {
+  Alert,
+  Autocomplete,
+  TextField,
+  FormControl,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { Print, Email, Download } from "@mui/icons-material";
 import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import TitleBar from "../../TitleBar";
 import { DataContext } from "../../../context/AppData";
-import { NavLink } from "react-router-dom";
-import { Form } from "react-bootstrap";
+
 import EventPopups from "../../Reusable/EventPopups";
 import Contacts from "../../CommonComponents/Contacts";
 import ServiceLocations from "../../CommonComponents/ServiceLocations";
-import { ready } from "jquery";
+
 import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../../Reusable/LoaderButton";
+import useDeleteFile from "../../Hooks/useDeleteFile";
+import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
 
 const AddWRform = () => {
   const icon = (
@@ -65,10 +74,12 @@ const AddWRform = () => {
   };
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
+  const { deleteReportFile } = useDeleteFile();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ StatusId: 1 });
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [staffData, setStaffData] = useState([]);
@@ -144,6 +155,7 @@ const AddWRform = () => {
       );
       setFormData(res.data.Data);
       setPrevFiles(res.data.FileData);
+      fetchEmail(res.data.Data.ContactId);
       setLoading(false);
 
       console.log("reponse weekly is", res.data);
@@ -570,6 +582,23 @@ const AddWRform = () => {
                   </div>
                 </div>
               </div>
+              <div className="row">
+                {" "}
+                <div className="col-lg-3 col-md-3 ms-3 mb-3">
+                  <label className="form-label">Status:</label>
+                  <FormControl fullWidth>
+                    <Select
+                      name="StatusId"
+                      value={formData.StatusId || 1}
+                      onChange={handleInputChange}
+                      size="small"
+                    >
+                      <MenuItem value={1}>Open</MenuItem>
+                      <MenuItem value={2}>Closed</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
             </div>
             <div className="card">
               <div className="itemtitleBar">
@@ -849,7 +878,13 @@ const AddWRform = () => {
                           style={{
                             left: "140px",
                           }}
-                          onClick={() => {}}
+                          onClick={() => {
+                            deleteReportFile(
+                              "WeeklyReport/DeleteWeeklyReportFile?FileId=",
+                              file.WeeklyReportFileId,
+                              getWeeklyPreview
+                            );
+                          }}
                         >
                           <span>
                             <Delete color="error" />
@@ -863,7 +898,44 @@ const AddWRform = () => {
             </div>
 
             <div className="row text-end">
-              <div>
+              <div className="col-md-9 pe-0">
+                {idParam ? (
+                  <>
+                    <button
+                      type="button"
+                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      onClick={() => {
+                        navigate(
+                          `/send-mail?title=${"Weekly Report"}&mail=${contactEmail}`
+                        );
+                        // sendEmail(
+                        //   `/estimates/estimate-preview?id=${idParam}`,
+                        //   formData.CustomerId,
+                        //   formData.ContactId,
+                        //   false
+                        // );
+                      }}
+                    >
+                      <Email />
+                    </button>
+
+                    <button
+                      type="button"
+                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      onClick={() => {
+                        navigate(
+                          `/weekly-reports/weekly-report-preview?id=${idParam}`
+                        );
+                      }}
+                    >
+                      <Print></Print>
+                    </button>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div className="col-md-3 ps-0">
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

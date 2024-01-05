@@ -13,6 +13,8 @@ import useSendEmail from "../../../Hooks/useSendEmail";
 import EventPopups from "../../../Reusable/EventPopups";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
+
 const RisingCanesPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -40,6 +42,8 @@ const RisingCanesPreview = () => {
 
   const [weeklyPreviewData, setWeeklyPreviewData] = useState({});
   const [files, setFiles] = useState([]);
+  const { contactEmail, fetchEmail } = useFetchContactEmail();
+
   const getWeeklyPreview = async () => {
     try {
       const res = await axios.get(
@@ -47,6 +51,8 @@ const RisingCanesPreview = () => {
         { headers }
       );
       setWeeklyPreviewData(res.data.Data);
+      fetchEmail(res.data.Data.ContactId)
+
       setFiles(res.data.FileData);
       console.log("reponse weekly is", res.data);
     } catch (error) {
@@ -155,7 +161,7 @@ const RisingCanesPreview = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.ServiceLocationName}</h5>
+                    <h5>{weeklyPreviewData.StoreLocationName}</h5>
                   </div>
                 </div>
                 <div
@@ -483,7 +489,7 @@ const RisingCanesPreview = () => {
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
                       navigate(
-                        `/send-mail?title=${"Weekly Report - Rising Canes"}`
+                        `/send-mail?title=${"Weekly Report - Rising Canes"}&mail=${contactEmail}`
                       );
                       //   sendEmail(
                       //     `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,

@@ -25,7 +25,13 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const AddressInputs = ({ address, name, handleChange, addressValue }) => {
+const AddressInputs = ({
+  address,
+  name,
+  handleChange,
+  addressValue,
+  emptyError,
+}) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
@@ -166,7 +172,13 @@ const AddressInputs = ({ address, name, handleChange, addressValue }) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} size="small" placeholder="Address" fullWidth />
+        <TextField
+          {...params}
+          size="small"
+          placeholder="Address"
+          error={emptyError}
+          fullWidth
+        />
       )}
       renderOption={(props, option) => {
         const matches =
