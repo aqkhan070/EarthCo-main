@@ -1,20 +1,15 @@
 import { Alert, FormControl, MenuItem, Select, TextField } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import { DataContext } from "../../context/AppData";
 
-const AddItem = ({
-  selectedItem,
-  setShowContent,
-
-  getFilteredItemsList,
-  setSuccessRes,
-  setSelectedItem,
-}) => {
+const AddItem = ({}) => {
+  const { loggedInUser } = useContext(DataContext);
   const [formData, setFormData] = useState({});
   const [incomeAccountList, setIncomeAccountList] = useState([]);
 
@@ -75,6 +70,7 @@ const AddItem = ({
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : parsedValue,
+      CompanyId: Number(loggedInUser.CompanyId),
     }));
     console.log(formData);
   };

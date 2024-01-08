@@ -63,10 +63,8 @@ const AddEstimateForm = () => {
   const isEstimateUpdateRoute =
     window.location.pathname.includes("Update-Estimate");
 
-  const { PunchListData, setPunchListData, sROBJ, setSROBJ } =
+  const { PunchListData, setPunchListData, sROBJ, setSROBJ, loggedInUser } =
     useContext(DataContext);
-
-  
 
   useEffect(() => {
     fetchName(PunchListData.CustomerId);
@@ -424,7 +422,6 @@ const AddEstimateForm = () => {
       !formData.ContactId ||
       !formData.RequestedBy ||
       !formData.RegionalManagerId ||
-      !formData.RequestedBy ||
       !formData.AssignTo ||
       !formData.EstimateStatusId
     ) {
@@ -442,6 +439,7 @@ const AddEstimateForm = () => {
       ...formData,
       EstimateId: id,
       EstimateNumber: number,
+      CompanyId: Number(loggedInUser.CompanyId),
       TotalAmount: totalItemAmount || 0,
       ProfitPercentage: profitPercentage || 0,
       Shipping: shippingCost || 0,
@@ -1217,7 +1215,9 @@ const AddEstimateForm = () => {
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
-                      options={staffData}
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Regional Manager"
+                      )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
                         staffData.find(

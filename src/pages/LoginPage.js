@@ -96,13 +96,20 @@ const LoginPage = () => {
           },
         }
       );
-
+      console.log("login response", response.data);
+      if (response.data.MultipleCompanies) {
+        navigate("/company-select");
+      } else {
+        navigate("/dashboard");
+      }
       if (response.data.status === "success") {
         // if (response.status === 200){
         Cookies.set("userEmail", email, { expires: 7 });
         Cookies.set("userName", response.data.Data.FirstName, { expires: 7 });
         Cookies.set("userRole", response.data.Data.RoleId, { expires: 7 });
         Cookies.set("userId", response.data.Data.UserId, { expires: 7 });
+        Cookies.set("CompanyName", response.data.CompanyName, { expires: 7 });
+        Cookies.set("CompanyId", response.data.CompanyId, { expires: 7 });
         setBtndisable(false);
         setError("");
         const token = response.data.token.data;
@@ -110,8 +117,6 @@ const LoginPage = () => {
         // Cookies.set("userData", response.data.Data, { expires: 7 });
         // console.log("login response iss", Cookies.get('token'))
         // console.log("login response is", response.data);
-
-        navigate("/dashboard");
       } else {
         setError("Invalid email or password. Please try again.");
         setBtndisable(false);

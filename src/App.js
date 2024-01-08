@@ -76,7 +76,7 @@ import AddIrrigationAudit from "./components/IrrigationAudit/AddIrrigationAudit"
 import IrrigationAuditPreview from "./components/IrrigationAudit/IrrigationAuditPreview";
 import TermsandConditions from "./pages/TermsandConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-
+import CompanySelect from "./pages/CompanySelect";
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
 
@@ -166,6 +166,7 @@ function App() {
                 element={<SummaryReportPreview />}
               />
               <Route path="general-report" element={<GenralReport />} />
+              <Route path="/company-select" element={<CompanySelect />} />
 
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>

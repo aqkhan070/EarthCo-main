@@ -73,6 +73,7 @@ import AddPLPhotoOnly from "../components/PunchListPhotoOnly/AddPLPhotoOnly.js";
 import IrrigationAuditTable from "../components/IrrigationAudit/IrrigationAuditTable.js";
 import AddIrrigationAudit from "../components/IrrigationAudit/AddIrrigationAudit.js";
 import IrrigationAuditPreview from "../components/IrrigationAudit/IrrigationAuditPreview.js";
+import CompanySelect from "./CompanySelect.js";
 
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -122,6 +123,9 @@ const DashboardPage = () => {
     "irrigation-audit/preview"
   );
 
+  const isCompanySelectRoute =
+    window.location.pathname.includes("company-select");
+
   const isPreview =
     !isEstimatePreviewRoute &&
     !isSRPreviewRoute &&
@@ -144,7 +148,9 @@ const DashboardPage = () => {
       {token ? (
         <>
           {toggleFullscreen && isPreview && <HeaderExp />}
-          {toggleFullscreen && isPreview && <SideBar />}
+          {toggleFullscreen && isPreview && !isCompanySelectRoute && (
+            <SideBar />
+          )}
 
           <div
             className={
@@ -156,6 +162,7 @@ const DashboardPage = () => {
           >
             <Routes>
               <Route path="/dashBoard" element={<DashBoard />} />
+
               <Route
                 path="/customers/*"
                 element={
@@ -232,6 +239,7 @@ const DashboardPage = () => {
                 element={<SummaryReportPreview />}
               />
               <Route path="general-report" element={<GenralReport />} />
+              <Route path="/company-select" element={<CompanySelect />} />
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />

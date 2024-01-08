@@ -22,6 +22,7 @@ import InvoiceTitleBar from "./InvoiceTitleBar";
 import useSendEmail from "../Hooks/useSendEmail";
 import LoaderButton from "../Reusable/LoaderButton";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import { DataContext } from "../../context/AppData";
 
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
@@ -39,7 +40,7 @@ const AddInvioces = ({}) => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-
+  const { loggedInUser } = useContext(DataContext);
   const currentDate = new Date();
   const [formData, setFormData] = useState({
     currentDate: currentDate,
@@ -414,6 +415,7 @@ const AddInvioces = ({}) => {
         InvoiceId: idParam,
         TotalAmount: totalItemAmount || 0,
         ProfitPercentage: Number(profitPercentage) || 0,
+        CompanyId : Number(loggedInUser.CompanyId),
       };
     } else {
       InvoiceData = {
@@ -421,6 +423,7 @@ const AddInvioces = ({}) => {
         InvoiceId: idParam || 0,
         TotalAmount: totalItemAmount || 0,
         ProfitPercentage: Number(profitPercentage) || 0,
+        CompanyId : Number(loggedInUser.CompanyId),
       };
     }
 
@@ -2066,8 +2069,6 @@ const AddInvioces = ({}) => {
                       }}
                       onClick={() => {
                         deleteInvoiceFile(file.InvoiceFileId, getInvoice);
-
-                       
                       }}
                     >
                       <span>

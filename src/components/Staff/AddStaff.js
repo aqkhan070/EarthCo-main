@@ -17,6 +17,8 @@ import AddressInputs from "../Modals/AddressInputs";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import { DataContext } from "../../context/AppData";
+import Autocomplete from "@mui/material/Autocomplete";
+import useFetchCompanyList from "../Hooks/useFetchCompanyList";
 
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
@@ -60,6 +62,10 @@ const AddStaff = ({}) => {
   const [customerInfo, setCustomerInfo] = useState({
     RoleId: 4,
   });
+
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
+  const { fetchCompanies, companies } = useFetchCompanyList();
+
   const [userRoles, setUserRoles] = useState([]);
   const [alert, setAlert] = useState(false);
   const [alertSuccess, setAlertSuccess] = useState(false);
@@ -103,6 +109,7 @@ const AddStaff = ({}) => {
 
   useEffect(() => {
     getRoles();
+    fetchCompanies();
   }, []);
 
   const validateForm = () => {
@@ -123,6 +130,10 @@ const AddStaff = ({}) => {
     setFormValid(requiredFieldsNotEmpty);
   };
 
+  const handleCompanyChange = (event, newValue) => {
+    setSelectedCompanies(newValue.map((company) => company.CompanyId));
+  };
+
   const handleCustomerInfo = (event) => {
     setEmptyFieldsError(false);
     setEmailError(false);
@@ -138,6 +149,7 @@ const AddStaff = ({}) => {
       const updatedData = {
         ...prevData,
         [name]: newValue,
+        CompanyId : Number(loggedInUser.CompanyId),
       };
 
       if (name === "Password" || name === "ConfirmPassword") {
@@ -155,13 +167,7 @@ const AddStaff = ({}) => {
 
     console.log("customer info", customerInfo);
     setAlert(false);
-
-    validateForm();
   };
-
-  useEffect(() => {
-    validateForm(); // re-validate form when component mounts or updates
-  }, [customerInfo]);
 
   const addStaff = async () => {
     setSubmitClicked(true);
@@ -171,7 +177,8 @@ const AddStaff = ({}) => {
       !customerInfo.FirstName ||
       !customerInfo.LastName ||
       !customerInfo.Email ||
-      !customerInfo.RoleId
+      !customerInfo.RoleId ||
+      selectedCompanies.length <= 0
     ) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
@@ -246,7 +253,7 @@ const AddStaff = ({}) => {
     try {
       const response = await axios.post(
         `https://earthcoapi.yehtohoga.com/api/Staff/AddStaff`,
-        customerInfo,
+        { StaffData: customerInfo, CompanyIds: selectedCompanies },
         { headers }
       );
 
@@ -292,6 +299,7 @@ const AddStaff = ({}) => {
 
       console.log("staffdata izzzzzz", response.data);
       setCustomerInfo(response.data.Data);
+      setSelectedCompanies(response.data.CompanyIds);
       setLoading(false);
     } catch (error) {
       console.log("error fetching staff data", error);
@@ -455,7 +463,7 @@ const AddStaff = ({}) => {
                       placeholder="Alt Phone"
                     />
                   </div>
-                  <div className="col-md-6" style={{ position: "relative" }}>
+                  <div className="col-md-3" style={{ position: "relative" }}>
                     <label className="form-label">Address</label>
 
                     <AddressInputs
@@ -484,6 +492,31 @@ const AddStaff = ({}) => {
                     handleAdress={setAdress1}
                   />
                 )} */}
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Select Company<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      multiple
+                      size="small"
+                      options={companies}
+                      getOptionLabel={(option) => option.CompanyName || ""}
+                      onChange={handleCompanyChange}
+                      value={companies.filter((company) =>
+                        selectedCompanies.includes(company.CompanyId)
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Select Company"
+                          className="bg-white"
+                          error={submitClicked && selectedCompanies.length <= 0}
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
                   </div>
 
                   <div className="itemtitleBar">

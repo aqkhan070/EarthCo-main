@@ -66,6 +66,8 @@ const HeaderExp = () => {
   const code = urlParams.get("code");
   const state = urlParams.get("state");
   const realmId = urlParams.get("realmId");
+  const isCompanySelectRoute =
+    window.location.pathname.includes("company-select");
 
   const navigate = useNavigate();
   const { mainControl, setMainControl, setShowSM, eliminate } =
@@ -175,6 +177,8 @@ const HeaderExp = () => {
       userEmail: Cookies.get("userEmail"),
       userRole: Cookies.get("userRole"),
       userId: Cookies.get("userId"),
+      CompanyName: Cookies.get("CompanyName"),
+      CompanyId: Cookies.get("CompanyId"),
     });
   }, []);
 
@@ -184,13 +188,15 @@ const HeaderExp = () => {
         <NavLink className="brand-logo" style={{ background: "#181818" }}>
           <img style={{ width: "55%", marginLeft: "20%" }} src={logo} alt="" />
         </NavLink>
-        <div className="nav-control" onClick={toggleSideBar} ref={eliminate}>
-          <div className="hamburger">
-            <span className="line"></span>
-            <span className="line"></span>
-            <span className="line"></span>
+        {!isCompanySelectRoute && (
+          <div className="nav-control" onClick={toggleSideBar} ref={eliminate}>
+            <div className="hamburger">
+              <span className="line"></span>
+              <span className="line"></span>
+              <span className="line"></span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
       <div>
         <div className="header">
@@ -213,6 +219,9 @@ const HeaderExp = () => {
                       }}
                     ></iframe>
                   )}
+                  <p className="ms-2" style={{ color: "white" }}>
+                    {loggedInUser.CompanyName}
+                  </p>
 
                   {/* <button
                     className="btn btn-info btn-sm"

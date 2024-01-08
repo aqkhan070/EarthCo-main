@@ -12,10 +12,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
+
 import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddressInputs from "../Modals/AddressInputs";
@@ -25,6 +22,8 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import Contacts from "./Contacts";
 import ServiceLocations from "./ServiceLocations";
+import { DataContext } from "../../context/AppData";
+
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -66,6 +65,7 @@ const AddCustomer = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
   const navigate = useNavigate();
+  const { loggedInUser } = useContext(DataContext);
 
   const [allowLogin, setAllowLogin] = useState(false);
 
@@ -300,6 +300,7 @@ const AddCustomer = () => {
         ...prevFormData,
         [name]: value,
         isLoginAllow: allowLogin,
+        CompanyId : Number(loggedInUser.CompanyId),
       };
 
       // Additional checks for the username and password fields

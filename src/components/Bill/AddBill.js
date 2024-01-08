@@ -16,6 +16,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import { DataContext } from "../../context/AppData";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -35,22 +36,12 @@ const AddBill = ({}) => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
   const navigate = useNavigate();
+  const { loggedInUser } = useContext(DataContext);
   const [formData, setFormData] = useState({
     BillDate: currentDate,
     DueDate: null,
     PurchaseOrderId: null,
   });
-  const [customersList, setCustomersList] = useState([]);
-  const [showCustomersList, setShowCustomersList] = useState(true);
-  const [inputValue, setInputValue] = useState("");
-  const [disableSubmit, setDisableSubmit] = useState(true);
-  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
-
-  const [sLList, setSLList] = useState([]);
-  const [contactList, setContactList] = useState([]);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [selectedSL, setSelectedSL] = useState(null);
-  const [billNumber, setBillNumber] = useState(0);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -95,91 +86,6 @@ const AddBill = ({}) => {
     getBill();
   }, []);
 
-  const handleAutocompleteChange = async (e) => {
-    // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
-    setInputValue(e.target.value);
-    if (!e.target.value) {
-      return;
-    }
-    try {
-      setShowCustomersList(true); // Show the list when typing
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`,
-        { headers }
-      );
-      console.log("customers search list", res.data);
-      setCustomersList(res.data);
-    } catch (error) {
-      console.log("customer search api error", error);
-    }
-  };
-  const selectCustomer = (customer) => {
-    setFormData({ ...formData, CustomerId: customer.UserId });
-
-    setInputValue(customer.CompanyName); // Add this line to update the input value
-    setShowCustomersList(false);
-  };
-
-  const fetchServiceLocations = async (id) => {
-    if (!id) {
-      return;
-    }
-    axios
-      .get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`,
-        { headers }
-      )
-      .then((res) => {
-        setSLList(res.data);
-        console.log("service locations are", res.data);
-      })
-      .catch((error) => {
-        setSLList([]);
-        console.log("service locations fetch error", error);
-      });
-  };
-
-  const fetctContacts = async (id) => {
-    if (!id) {
-      return;
-    }
-    axios
-      .get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
-        { headers }
-      )
-      .then((res) => {
-        console.log("contacts data isss", res.data);
-        setContactList(res.data);
-      })
-      .catch((error) => {
-        setContactList([]);
-        console.log("contacts data fetch error", error);
-      });
-  };
-
-  const handleSLAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "ServiceLocationId",
-        value: newValue ? newValue.ServiceLocationId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-
-  const handleContactAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "ContactId",
-        value: newValue ? newValue.ContactId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-
   const fetchVendors = async () => {
     axios
       .get(`https://earthcoapi.yehtohoga.com/api/Supplier/GetSupplierList`, {
@@ -203,15 +109,12 @@ const AddBill = ({}) => {
     };
     if (newValue) {
       setSupplierAddress(newValue.Address);
-      handleInputChange(simulatedEvent);
+      handleChange(simulatedEvent);
     } else {
-      // Handle the case where newValue is null or undefined
-      setSupplierAddress(""); // Set the supplierAddress to an appropriate default value
-      // Optionally, you can call handleInputChange with an appropriate event object
-      // handleInputChange(simulatedEvent);
+      setSupplierAddress("");
     }
 
-    handleInputChange(simulatedEvent);
+    handleChange(simulatedEvent);
   };
 
   const fetchTags = async () => {
@@ -278,18 +181,15 @@ const AddBill = ({}) => {
 
   const handleInputChange = (e, newValue) => {
     setSubmitClicked(false);
-    setEmptyFieldsError(false);
+
     setDisableButton(false);
     const { name, value } = e.target;
-
-    setSelectedCustomer(newValue);
-    setSelectedSL(newValue);
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
   };
   const handleChange = (e) => {
     setSubmitClicked(false);
-    setEmptyFieldsError(false);
+
     setDisableButton(false);
 
     // Extract the name and value from the event target
@@ -311,11 +211,6 @@ const AddBill = ({}) => {
   };
 
   useEffect(() => {
-    fetchServiceLocations(formData.CustomerId);
-    fetctContacts(formData.CustomerId);
-    console.log("main payload isss", formData);
-  }, [formData]);
-  useEffect(() => {
     fetchVendors();
     fetchTags();
     fetchTerms();
@@ -335,7 +230,6 @@ const AddBill = ({}) => {
   const [selectedItem, setSelectedItem] = useState({});
   const [showItem, setShowItem] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
-  const inputRef = useRef(null);
 
   useEffect(() => {
     axios
@@ -472,18 +366,15 @@ const AddBill = ({}) => {
   };
 
   // submit handler
-  const [emptyFieldsError, setEmptyFieldsError] = useState(false);
+
   const [submitClicked, setSubmitClicked] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
-
-  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
 
     if (!formData.SupplierId || !formData.BillDate) {
-      setEmptyFieldsError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -499,10 +390,7 @@ const AddBill = ({}) => {
       BillId: idParam,
       tblBillItems: itemsList,
       Currency: "usd",
-
-      // CreatedBy: 2,
-      // EditBy: 2,
-      // isActive: true,
+      CompanyId: Number(loggedInUser.CompanyId),
     };
 
     console.log("BillData:", BillData);
@@ -543,15 +431,12 @@ const AddBill = ({}) => {
       setSnackBarText(response.data.Message);
       setDisableButton(false);
 
-      setAddCustomerSuccess(response.data.Message);
       setTimeout(() => {
-        setAddCustomerSuccess("");
         navigate(`/bills`);
       }, 4000);
 
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
-      setErrorMessage(error.response.data);
       console.error("API Call Error:", error);
       setDisableButton(false);
     }
@@ -567,7 +452,7 @@ const AddBill = ({}) => {
 
   return (
     <>
-      <BillTitle billNumber={billNumber} />
+      <BillTitle />
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
@@ -603,95 +488,6 @@ const AddBill = ({}) => {
               <h4>Bill Details</h4>
             </div>
             <div className="card-body">
-              {/* <div className="row mb-2 mx-1">
-              <div className="col-xl-3">
-                <label className="form-label">Customer</label>
-                <input
-                  type="text"
-                  name="CustomerId"
-                  value={inputValue} // Bind the input value state to the value of the input
-                  onChange={handleAutocompleteChange}
-                  placeholder="Customers"
-                  className="form-control form-control-sm"
-                />
-                {showCustomersList && customersList && (
-                  <ul
-                    style={{ top: "83px" }}
-                    className="search-results-container"
-                  >
-                    {customersList.map((customer) => (
-                      <li
-                        style={{ cursor: "pointer" }}
-                        key={customer.UserId}
-                        onClick={() => {
-                          selectCustomer(customer);
-                        }} // Use the selectCustomer function
-                      >
-                        {customer.CompanyName}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              <div className="col-xl-3">
-                <label className="form-label">Service location</label>
-                <Autocomplete
-                  id="inputState19"
-                  size="small"
-                  options={sLList}
-                  getOptionLabel={(option) => option.Name || ""}
-                  value={
-                    sLList.find(
-                      (customer) =>
-                        customer.ServiceLocationId ===
-                        formData.ServiceLocationId
-                    ) || null
-                  }
-                  onChange={handleSLAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.ServiceLocationId === value.ServiceLocationId
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      placeholder="Service Locations"
-                      className="bg-white"
-                    />
-                  )}
-                  aria-label="Default select example"
-                />
-              </div>
-              <div className="col-xl-3">
-                <label className="form-label">Contact</label>
-
-                <Autocomplete
-                  id="inputState299"
-                  size="small"
-                  options={contactList}
-                  getOptionLabel={(option) => option.FirstName || ""}
-                  value={
-                    contactList.find(
-                      (contact) => contact.ContactId === formData.ContactId
-                    ) || null
-                  }
-                  onChange={handleContactAutocompleteChange}
-                  isOptionEqualToValue={(option, value) =>
-                    option.ContactId === value.ContactId
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label=""
-                      placeholder="Contacts"
-                      className="bg-white"
-                    />
-                  )}
-                  aria-label="Contact select"
-                />
-              </div>
-            </div> */}
               <div className="row mt-2">
                 <div className="basic-form ">
                   <form>
@@ -1263,8 +1059,7 @@ const AddBill = ({}) => {
                       left: "140px",
                     }}
                     onClick={() => {
-                      deleteBillFile(file.BillFileId,getBill);
-
+                      deleteBillFile(file.BillFileId, getBill);
                     }}
                   >
                     <span>

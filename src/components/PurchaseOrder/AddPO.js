@@ -25,6 +25,8 @@ import TitleBar from "../TitleBar";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
+import { DataContext } from "../../context/AppData";
+
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -36,7 +38,7 @@ export const AddPO = ({}) => {
   const idParam = Number(queryParams.get("id"));
 
   // setselectedPo = idParam;
-
+  const { loggedInUser } = useContext(DataContext);
   const initialFormData = {
     PurchaseOrderId: idParam,
     StatusId: 1,
@@ -691,6 +693,7 @@ export const AddPO = ({}) => {
       Amount: totalAmount,
       PurchaseOrderId: idParam,
       tblPurchaseOrderItems: itemsList,
+      CompanyId: Number(loggedInUser.CompanyId),
 
       // CreatedBy: 2,
       // EditBy: 2,
@@ -1643,8 +1646,6 @@ export const AddPO = ({}) => {
                           }}
                           onClick={() => {
                             deletePOFile(file.PurchaseOrderFileId, fetchpoData);
-
-                           
                           }}
                         >
                           <span>
