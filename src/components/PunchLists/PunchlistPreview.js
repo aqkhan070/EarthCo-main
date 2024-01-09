@@ -337,7 +337,7 @@ const PunchlistPreview = () => {
                             </td>
                             <td>
                               {" "}
-                              <p>{item.DetailData.isComplete}</p>
+                              <p>{pLData.Status}</p>
                             </td>
                           </tr>
                         ))}

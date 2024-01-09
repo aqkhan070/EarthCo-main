@@ -172,6 +172,9 @@ const IrrigationForm = () => {
     } catch (error) {
       console.log("error submitting data", error);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 

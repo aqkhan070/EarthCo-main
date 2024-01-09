@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 import EventPopups from "../Reusable/EventPopups";
@@ -8,6 +8,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import ReactQuill from "react-quill"; // Import the rich text editor component
 import "react-quill/dist/quill.snow.css"; // Import styles for the rich text editor
 import axios from "axios";
+import { DataContext } from "../../context/AppData";
 
 const SendMail = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -17,6 +18,8 @@ const SendMail = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+
+  const { selectedImages, setSelectedImages } = useContext(DataContext);
 
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState([]);
@@ -138,6 +141,12 @@ const SendMail = () => {
     for (let [key, value] of postData.entries()) {
       console.log("fpayload....", key, value);
     }
+  };
+
+  const handleDeleteImage = (indexToDelete) => {
+    const updatedImages = [...selectedImages];
+    updatedImages.splice(indexToDelete, 1);
+    setSelectedImages(updatedImages);
   };
 
   useEffect(() => {
@@ -334,6 +343,67 @@ const SendMail = () => {
                     }}
                   >
                     <span>
+                      <Delete color="error" />
+                    </span>
+                  </span>
+                </div>
+              ))}
+              {selectedImages.map((file, index) => (
+                <div
+                  key={index}
+                  className="col-md-2 col-md-2 mt-3 image-container"
+                  style={{
+                    width: "150px",
+                    height: "120px",
+                    margin: "1em",
+                    position: "relative",
+                  }}
+                >
+                  <a
+                    href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                      alt={file.FileName}
+                      style={{
+                        width: "150px",
+                        height: "120px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </a>
+                  <p
+                    className="file-name-overlay"
+                    style={{
+                      position: "absolute",
+                      bottom: "0",
+                      left: "13px",
+                      right: "0",
+                      backgroundColor: "rgba(0, 0, 0, 0.3)",
+                      textAlign: "center",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      width: "100%",
+                      textOverflow: "ellipsis",
+                      padding: "5px",
+                    }}
+                  >
+                    {file.FileName}
+                  </p>
+
+                  <span
+                    className="file-delete-button"
+                    style={{
+                      left: "140px",
+                    }}
+                  >
+                    <span
+                      onClick={() => {
+                        handleDeleteImage(index);
+                      }}
+                    >
                       <Delete color="error" />
                     </span>
                   </span>

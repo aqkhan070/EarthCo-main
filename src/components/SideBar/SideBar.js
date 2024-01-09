@@ -6,10 +6,21 @@ import { DataContext } from "../../context/AppData";
 
 const SideBar = () => {
   const subShowRef = useRef(null);
+  const irrShowRef = useRef(null);
+  const pLShowRef = useRef(null);
   const sidebarRef = useRef(null);
 
-  const { showSubMenu, setShowSM, mainControl, setMainControl, eliminate } =
-    useContext(StyleContext);
+  const {
+    showSubMenu,
+    setShowSM,
+    mainControl,
+    setMainControl,
+    eliminate,
+    showIrrMenu,
+    setShowIrrMenu,
+    showPlMenu,
+    setShowPlMenu,
+  } = useContext(StyleContext);
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -288,130 +299,7 @@ const SideBar = () => {
         </svg>
       ),
     },
-    {
-      label: "Irrigation",
-      path: "/irrigation",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M13.9014 4.21895L18.0869 8.40445"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      label: "Irrigation Audit",
-      path: "/irrigation-audit",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M13.9014 4.21895L18.0869 8.40445"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      label: "Punchlist",
-      path: "/punchlist",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-          <path
-            d="M5.85754 12.2577H13.8646"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-        </svg>
-      ),
-    },
-    {
-      label: "PunchList Photo Only",
-      path: "/punchList-photos-only",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-          <path
-            d="M5.85754 12.2577H13.8646"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-        </svg>
-      ),
-    },
+
     {
       label: "Items",
       path: "/items",
@@ -586,131 +474,6 @@ const SideBar = () => {
         </svg>
       ),
     },
-
-    {
-      label: "Irrigation",
-      path: "/irrigation",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M13.9014 4.21895L18.0869 8.40445"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      label: "Irrigation Audit",
-      path: "/irrigation-audit",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M13.9014 4.21895L18.0869 8.40445"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      label: "Punchlist",
-      path: "/punchlist",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-          <path
-            d="M5.85754 12.2577H13.8646"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-        </svg>
-      ),
-    },
-    {
-      label: "PunchList Photo Only",
-      path: "/punchList-photos-only",
-      icon: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-          <path
-            d="M5.85754 12.2577H13.8646"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></path>
-        </svg>
-      ),
-    },
   ];
 
   const subMenu = [
@@ -736,9 +499,37 @@ const SideBar = () => {
     },
   ];
 
+  const irrMenu = [
+    {
+      label: "Irrigation",
+      path: "/irrigation",
+    },
+    {
+      label: "Controller Audit",
+      path: "/irrigation-audit",
+    },
+  ];
+
+  const pLMenu = [
+    {
+      label: "PunchList",
+      path: "/punchlist",
+    },
+    {
+      label: "PunchList Photos Only",
+      path: "/punchList-photos-only",
+    },
+  ];
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (subShowRef.current && !subShowRef.current.contains(event.target)) {
+        setSubHov(false);
+      }
+      if (irrShowRef.current && !irrShowRef.current.contains(event.target)) {
+        setSubHov(false);
+      }
+      if (pLShowRef.current && !pLShowRef.current.contains(event.target)) {
         setSubHov(false);
       }
     };
@@ -771,6 +562,28 @@ const SideBar = () => {
     } else {
       // toggleShowMenu();
       setShowSM(!showSubMenu);
+    }
+  };
+
+  const handleIrrLink = (event) => {
+    event.preventDefault();
+    if (mainControl === "tab") {
+      setSubHov(!showSubMenuHov);
+      setShowIrrMenu(false);
+    } else {
+      // toggleShowMenu();
+      setShowIrrMenu(!showIrrMenu);
+    }
+  };
+
+  const handlePlLink = (event) => {
+    event.preventDefault();
+    if (mainControl === "tab") {
+      setSubHov(!showSubMenuHov);
+      setShowPlMenu(false);
+    } else {
+      // toggleShowMenu();
+      setShowPlMenu(!showPlMenu);
     }
   };
 
@@ -845,7 +658,17 @@ const SideBar = () => {
     } else {
       document.getElementById("bottomChev").classList.remove("rotatezero");
     }
-  }, [showSubMenu]);
+    if (showIrrMenu === true) {
+      document.getElementById("irrbottomChev").classList.add("rotatezero");
+    } else {
+      document.getElementById("irrbottomChev").classList.remove("rotatezero");
+    }
+    if (showPlMenu === true) {
+      document.getElementById("plbottomChev").classList.add("rotatezero");
+    } else {
+      document.getElementById("plbottomChev").classList.remove("rotatezero");
+    }
+  }, [showSubMenu, showIrrMenu, showPlMenu]);
 
   return (
     <>
@@ -853,6 +676,169 @@ const SideBar = () => {
         <div className="deznav-scroll">
           <ul className="metismenu" id="menu">
             {loggedInUser.userRole == 1 ? renderOptions : renderOptionsRM}
+
+            <li>
+              <a
+                href="/"
+                className="expand-bottom"
+                onClick={handleIrrLink}
+                ref={irrShowRef}
+              >
+                <div className="menu-icon">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 22 22"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
+                      stroke="#888888"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
+                      stroke="#888888"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M13.9014 4.21895L18.0869 8.40445"
+                      stroke="#888888"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+                <span className="nav-text navLabel">
+                  Irrigation
+                  <span className="material-symbols-sharp" id="irrbottomChev">
+                    expand_more
+                  </span>
+                </span>
+              </a>
+              {showIrrMenu && (
+                <ul className="subMenu">
+                  <>
+                    {irrMenu.map((link, index) => {
+                      let activeClass = "";
+                      if (subClass === index) {
+                        activeClass = "activeSub";
+                      } else {
+                        activeClass = "";
+                      }
+                      // const activeSub = (indx) => {
+                      //     if (indx === indx) {
+                      //         setSubClass('activeSub')
+                      //     }
+                      // }
+                      // const deactiveSub = () => {
+                      //     setSubClass('')
+                      // }
+
+                      return (
+                        <li key={index}>
+                          <NavLink
+                            to={link.path}
+                            style={{ display: "flex" }}
+                            onMouseEnter={() => setSubClass(index)}
+                            onMouseLeave={() => setSubClass(-1)}
+                          >
+                            <div className="blueBarBox">
+                              <span id="blueBar" className={activeClass}></span>
+                            </div>
+                            {link.label}
+                          </NavLink>
+                        </li>
+                      );
+                    })}
+                  </>
+                </ul>
+              )}
+            </li>
+
+            <li>
+              <a
+                href="/"
+                className="expand-bottom"
+                onClick={handlePlLink}
+                ref={pLShowRef}
+              >
+                <div className="menu-icon">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M18.634 13.4211C18.634 16.7009 16.7007 18.6342 13.4209 18.6342H6.28738C2.99929 18.6342 1.06238 16.7009 1.06238 13.4211V6.27109C1.06238 2.99584 2.26688 1.06259 5.54763 1.06259H7.38096C8.03913 1.06351 8.65879 1.37242 9.05296 1.89951L9.88988 3.01234C10.2859 3.53851 10.9055 3.84834 11.5637 3.84926H14.1579C17.446 3.84926 18.6596 5.52309 18.6596 8.86984L18.634 13.4211Z"
+                      stroke="#888888"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M5.85754 12.2577H13.8646"
+                      stroke="#888888"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </svg>
+                </div>
+                <span className="nav-text navLabel">
+                  PunchList
+                  <span className="material-symbols-sharp" id="plbottomChev">
+                    expand_more
+                  </span>
+                </span>
+              </a>
+              {showPlMenu && (
+                <ul className="subMenu">
+                  <>
+                    {pLMenu.map((link, index) => {
+                      let activeClass = "";
+                      if (subClass === index) {
+                        activeClass = "activeSub";
+                      } else {
+                        activeClass = "";
+                      }
+                      // const activeSub = (indx) => {
+                      //     if (indx === indx) {
+                      //         setSubClass('activeSub')
+                      //     }
+                      // }
+                      // const deactiveSub = () => {
+                      //     setSubClass('')
+                      // }
+
+                      return (
+                        <li key={index}>
+                          <NavLink
+                            to={link.path}
+                            style={{ display: "flex" }}
+                            onMouseEnter={() => setSubClass(index)}
+                            onMouseLeave={() => setSubClass(-1)}
+                          >
+                            <div className="blueBarBox">
+                              <span id="blueBar" className={activeClass}></span>
+                            </div>
+                            {link.label}
+                          </NavLink>
+                        </li>
+                      );
+                    })}
+                  </>
+                </ul>
+              )}
+            </li>
+
             <li>
               <a
                 href="/"

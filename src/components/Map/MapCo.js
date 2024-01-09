@@ -1,10 +1,10 @@
+import React, { useState, useEffect, memo } from "react";
 import {
   GoogleMap,
-  LoadScript,
   Marker,
   InfoWindow,
+  useLoadScript,
 } from "@react-google-maps/api";
-import { memo, useState, useEffect } from "react";
 
 const containerStyle = {
   width: "100%",
@@ -35,7 +35,6 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
   }, [map, mapData]);
 
   useEffect(() => {
-    console.log("toolTipData:", toolTipData);
     if (
       map &&
       toolTipData &&
@@ -63,58 +62,61 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
     setSelectedMarker(null);
   };
 
-  return (
-    <LoadScript
-      googleMapsApiKey="AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE"
-      libraries={["places"]}
-    >
-      <div>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={defaultCenter}
-          zoom={1}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-        >
-          {mapData.length > 0 &&
-            mapData.map((location, index) => (
-              <Marker
-                key={index}
-                position={{ lat: location.lat, lng: location.lng }}
-                onClick={() => handleMarkerClick(location)}
-              />
-            ))}
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE",
+    libraries: ["places"],
+  });
 
-          {selectedMarker && (
-            <InfoWindow
-              position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-              onCloseClick={handleInfoWindowClose}
-            >
-              <div>
-                <h6 className="pb-0 mb-0">
-                  <strong>Service Request Number:</strong>
-                </h6>
-                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
-                  {selectedMarker.ServiceRequestNumber}
-                </p>
-                <h6 className="pb-0 mb-0">
-                  <strong>Customer Name:</strong>
-                </h6>
-                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
-                  {selectedMarker.CustomerName}
-                </p>
-                <h6 className="pb-0 mb-0">
-                  <strong>Address:</strong>
-                </h6>
-                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
-                  {selectedMarker.Address}
-                </p>
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      </div>
-    </LoadScript>
+  if (loadError) return <div>Error loading maps</div>;
+  if (!isLoaded) return <div>Loading Maps</div>;
+
+  return (
+    <div>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={defaultCenter}
+        zoom={1}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+      >
+        {mapData.length > 0 &&
+          mapData.map((location, index) => (
+            <Marker
+              key={index}
+              position={{ lat: location.lat, lng: location.lng }}
+              onClick={() => handleMarkerClick(location)}
+            />
+          ))}
+
+        {selectedMarker && (
+          <InfoWindow
+            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+            onCloseClick={handleInfoWindowClose}
+          >
+            <div>
+              <h6 className="pb-0 mb-0">
+                <strong>Service Request Number:</strong>
+              </h6>
+              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                {selectedMarker.ServiceRequestNumber}
+              </p>
+              <h6 className="pb-0 mb-0">
+                <strong>Customer Name:</strong>
+              </h6>
+              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                {selectedMarker.CustomerName}
+              </p>
+              <h6 className="pb-0 mb-0">
+                <strong>Address:</strong>
+              </h6>
+              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                {selectedMarker.Address}
+              </p>
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+    </div>
   );
 }
 

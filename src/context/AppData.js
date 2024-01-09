@@ -249,9 +249,12 @@ const DataFun = ({ children }) => {
 
   const [sROBJ, setSROBJ] = useState({})
 
+  const [selectedImages, setSelectedImages] = useState([]);
+
   return (
     <DataContext.Provider
       value={{
+        selectedImages, setSelectedImages,
         sROBJ, setSROBJ,
         loggedInUser, setLoggedInUser,
         customerAddress,

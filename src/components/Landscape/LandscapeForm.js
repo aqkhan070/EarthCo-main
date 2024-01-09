@@ -70,6 +70,7 @@ const LandscapeForm = () => {
   };
 
   const fetctContacts = async (id) => {
+    if(!id){return}
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -208,7 +209,7 @@ const LandscapeForm = () => {
     e.preventDefault();
     if (
       !formData.CustomerId ||
-      !formData.ServiceLocationId ||
+      
       !formData.ContactId ||
       !formData.RequestBy
     ) {
@@ -244,6 +245,9 @@ const LandscapeForm = () => {
       // Handle the error
       setDisableButton(false);
       console.error("API Post Error:", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 
@@ -329,7 +333,7 @@ const LandscapeForm = () => {
                           )}
                         />
                       </div>
-                      <div className="col-md-3 ">
+                      {/* <div className="col-md-3 ">
                         <div className="row">
                           <div className="col-md-auto">
                             <label className="form-label">
@@ -379,7 +383,7 @@ const LandscapeForm = () => {
                           )}
                           aria-label="Default select example"
                         />
-                      </div>
+                      </div> */}
                       <div className="col-md-3 ">
                         <div className="row">
                           <div className="col-md-auto">

@@ -169,6 +169,9 @@ const PunchlistModal2 = ({
       document.getElementById("punchListcloser").click();
     } catch (error) {
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
       console.error("Error sending dataaaaaaaa:", error);
       // console.log("Error sending dataaaaaa:",addPunchListData);
 

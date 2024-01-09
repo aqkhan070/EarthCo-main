@@ -35,11 +35,7 @@ function CustomTabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -179,7 +175,7 @@ const AddCustomer = () => {
       !companyData.CompanyName ||
       !companyData.FirstName ||
       !companyData.ContactName ||
-      !companyData.Email || 
+      !companyData.Email ||
       !companyData.Address
     ) {
       setOpenSnackBar(true);
@@ -259,7 +255,6 @@ const AddCustomer = () => {
       setSnackBarColor("error");
       setSnackBarText("Phone number is not valid");
 
-
       return;
     }
 
@@ -300,7 +295,7 @@ const AddCustomer = () => {
         ...prevFormData,
         [name]: value,
         isLoginAllow: allowLogin,
-        CompanyId : Number(loggedInUser.CompanyId),
+        CompanyId: Number(loggedInUser.CompanyId),
       };
 
       // Additional checks for the username and password fields
@@ -335,7 +330,7 @@ const AddCustomer = () => {
           <CircularProgress />
         </div>
       ) : (
-        <div className=" container-fluid">
+        <div className="container-fluid">
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="card ">
               <div className="">
@@ -366,30 +361,8 @@ const AddCustomer = () => {
 
                 <div className="row">
                   <div className="col-9">
+                    <div className="row"></div>
                     <div className="row">
-
-                    </div>
-                    <div className="row">
-                      <div className="col-xl-4 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Company Name <span className="text-danger">*</span>
-                        </label>
-
-                        <TextField
-                          type="text"
-                          className="form-control"
-                          name="CompanyName"
-                          variant="outlined"
-                          size="small"
-                          error={submitClicked && !companyData.CompanyName}
-                          value={companyData?.CompanyName || ""}
-                          onChange={handleCompanyChange}
-                          placeholder="Company Name"
-                        />
-                      </div>
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
@@ -426,6 +399,26 @@ const AddCustomer = () => {
                           onChange={handleCompanyChange}
                           error={submitClicked && !companyData.ContactName}
                           placeholder="Contact Name"
+                        />
+                      </div>
+                      <div className="col-xl-4 mb-3">
+                        <label
+                          htmlFor="exampleFormControlInput1"
+                          className="form-label"
+                        >
+                          Contact Company <span className="text-danger">*</span>
+                        </label>
+
+                        <TextField
+                          type="text"
+                          className="form-control"
+                          name="CompanyName"
+                          variant="outlined"
+                          size="small"
+                          error={submitClicked && !companyData.CompanyName}
+                          value={companyData?.CompanyName || ""}
+                          onChange={handleCompanyChange}
+                          placeholder="Contact Company"
                         />
                       </div>
                       {/* <div className="col-xl-4 mb-3">
@@ -751,14 +744,10 @@ const AddCustomer = () => {
           {/* contact modal */}
           {/* AhsanModel */}
 
-          {idParam === 0 ? null : (
-            <div>
-              {/* Contacts Table */}
-
-              {/* servive location form */}
-              {/* AhsanModel */}
-
-              {/* service location table */}
+          {idParam === 0 ? (
+            <></>
+          ) : (
+            <>
               <Box sx={{ width: "100%" }}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <Tabs
@@ -792,7 +781,7 @@ const AddCustomer = () => {
         Item Three
       </CustomTabPanel> */}
               </Box>
-            </div>
+            </>
           )}
         </div>
       )}

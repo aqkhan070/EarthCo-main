@@ -11,6 +11,23 @@
   transition: 0.3s;
 }
 
+#irrbottomChev {
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  font-weight: 300;
+  transform: rotate(-90deg);
+  transition: 0.3s;
+}
+#plbottomChev {
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  font-weight: 300;
+  transform: rotate(-90deg);
+  transition: 0.3s;
+}
+
 .rotatezero {
   transform: rotate(0deg) !important;
 }

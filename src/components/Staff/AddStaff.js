@@ -347,7 +347,7 @@ const AddStaff = ({}) => {
                       type="text"
                       className="form-control"
                       name="FirstName"
-                      id="exampleFormControlInput1"
+                  
                       variant="outlined"
                       size="small"
                       onChange={handleCustomerInfo}
@@ -372,7 +372,7 @@ const AddStaff = ({}) => {
                       name="LastName"
                       value={customerInfo.LastName}
                       error={submitClicked && !customerInfo.LastName}
-                      id="exampleFormControlInput4"
+                    
                       placeholder="Last Name"
                     />
                   </div>
@@ -390,7 +390,7 @@ const AddStaff = ({}) => {
                       error={
                         emailError || (submitClicked && !customerInfo.Email)
                       }
-                      id="exampleFormControlInput3"
+                    
                       placeholder="Email / Username"
                     />
                   </div>
@@ -406,7 +406,7 @@ const AddStaff = ({}) => {
 
                         <Select
                           labelId="role-label"
-                          id="role-select"
+                         
                           name="RoleId"
                           value={customerInfo.RoleId}
                           error={submitClicked && !customerInfo.RoleId}
@@ -440,7 +440,7 @@ const AddStaff = ({}) => {
                       size="small"
                       error={phoneError}
                       value={customerInfo.Phone}
-                      id="exampleFormControlInput4"
+                    
                       placeholder="Phone"
                     />
                   </div>
@@ -459,7 +459,7 @@ const AddStaff = ({}) => {
                       variant="outlined"
                       size="small"
                       value={customerInfo.AltPhone}
-                      id="exampleFormControlInput4"
+                  
                       placeholder="Alt Phone"
                     />
                   </div>
@@ -480,7 +480,7 @@ const AddStaff = ({}) => {
                       variant="outlined"
                       size="small"
                       value={customerInfo.Address}
-                      id="exampleFormControlInput3"
+                     
                       placeholder="Address"
                     />
                      {showPop1 || (
@@ -541,7 +541,7 @@ const AddStaff = ({}) => {
                           }
                           onChange={handleCustomerInfo}
                           name="Password"
-                          id="passwordInput"
+                        
                           placeholder="Password"
                         />
                       </div>
@@ -556,7 +556,7 @@ const AddStaff = ({}) => {
                           size="small"
                           onChange={handleCustomerInfo}
                           // error={idParam !== 0 && submitClicked && !customerInfo.ConfirmPassword}
-                          id="confirmPasswordInput"
+                      
                           name="ConfirmPassword"
                           placeholder="Confirm Password"
                         />

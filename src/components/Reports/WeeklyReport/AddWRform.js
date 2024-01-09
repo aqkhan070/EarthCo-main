@@ -113,6 +113,7 @@ const AddWRform = () => {
   };
 
   const fetctContacts = async (id) => {
+    if(!id){return}
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -333,6 +334,9 @@ const AddWRform = () => {
     } catch (error) {
       console.error("API Call Error:", error);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
 
     // Logging FormData contents (for debugging purposes)

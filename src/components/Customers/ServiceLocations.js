@@ -35,6 +35,17 @@ const ServiceLocations = ({
 
   const handleSubmit = async () => {
     setSubmitClicked(true);
+
+    const CId = idParam;
+
+    const updatedValues = {
+      ...formData,
+      CustomerId: CId,
+      Address: sLAddress.Address,
+      lat: sLAddress.lat,
+      lng: sLAddress.lng,
+    };
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       CustomerId: idParam,
@@ -76,7 +87,7 @@ const ServiceLocations = ({
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddServiceLocation",
-        formData,
+        updatedValues,
         {
           headers,
         }
@@ -292,16 +303,14 @@ const ServiceLocations = ({
       </div>
 
       <div className="card">
-        <div className="">
-          <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
-            Service Locations
-          </h4>
-        </div>
+        <h4 className="modal-title itemtitleBar" id="#gridSystemModal">
+          Service Locations
+        </h4>
+
         <div className="card-body">
           <div className="row">
             <div className="col-md-8"></div>
             <div className="col-md-4 text-end">
-              {" "}
               <button
                 className="btn btn-primary btn-sm"
                 data-bs-toggle="modal"
@@ -383,54 +392,54 @@ const ServiceLocations = ({
                               >
                                 <Delete />
                               </Button>
-                            </td>
-                            <div
-                              className="modal fade"
-                              id={`sLDeleteModal${slData.ServiceLocationId}`}
-                              tabIndex="-1"
-                              aria-labelledby="deleteModalLabel"
-                              aria-hidden="true"
-                            >
-                              <div className="modal-dialog" role="document">
-                                <div className="modal-content">
-                                  <div className="modal-header">
-                                    <h5 className="modal-title">
-                                      Are you sure you want to delete{" "}
-                                      {slData.Name}?
-                                    </h5>
-                                    <button
-                                      type="button"
-                                      className="btn-close"
-                                      data-bs-dismiss="modal"
-                                    ></button>
-                                  </div>
-                                  <div className="modal-body">
-                                    <div className="basic-form text-center">
+                              <div
+                                className="modal fade"
+                                id={`sLDeleteModal${slData.ServiceLocationId}`}
+                                tabIndex="-1"
+                                aria-labelledby="deleteModalLabel"
+                                aria-hidden="true"
+                              >
+                                <div className="modal-dialog" role="document">
+                                  <div className="modal-content">
+                                    <div className="modal-header">
+                                      <h5 className="modal-title">
+                                        Are you sure you want to delete
+                                        {slData.Name}?
+                                      </h5>
                                       <button
                                         type="button"
-                                        id="closer"
-                                        className="btn btn-danger light m-3"
+                                        className="btn-close"
                                         data-bs-dismiss="modal"
-                                      >
-                                        Close
-                                      </button>
-                                      <button
-                                        className="btn btn-primary m-3"
-                                        data-bs-dismiss="modal"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          handleDelete(
-                                            slData.ServiceLocationId
-                                          );
-                                        }}
-                                      >
-                                        Yes
-                                      </button>
+                                      ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                      <div className="basic-form text-center">
+                                        <button
+                                          type="button"
+                                          id="closer"
+                                          className="btn btn-danger light m-3"
+                                          data-bs-dismiss="modal"
+                                        >
+                                          Close
+                                        </button>
+                                        <button
+                                          className="btn btn-primary m-3"
+                                          data-bs-dismiss="modal"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleDelete(
+                                              slData.ServiceLocationId
+                                            );
+                                          }}
+                                        >
+                                          Yes
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>

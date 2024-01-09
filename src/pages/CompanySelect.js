@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EventPopups from "../components/Reusable/EventPopups";
+import LoadingButton from "@mui/lab/LoadingButton";
 
 const CompanySelect = () => {
   const token = Cookies.get("token");
@@ -29,7 +30,10 @@ const CompanySelect = () => {
     console.log(newValue);
   };
 
+  const [btndisable, setBtndisable] = useState(false);
+
   const handleConfirmClick = async () => {
+    setBtndisable(true);
     if (!selectedCompany.CompanyId) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -52,9 +56,14 @@ const CompanySelect = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.message);
+      setBtndisable(false);
       navigate(`/Dashboard`);
     } catch (error) {
+      setBtndisable(false);
       console.log("api call error", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 
@@ -79,7 +88,8 @@ const CompanySelect = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              minHeight: "100vh",
+              minHeight: "80vh",
+              marginRight: "20%",
             }}
           >
             <div className="login-form style-2" style={{ maxWidth: "500px" }}>
@@ -107,7 +117,7 @@ const CompanySelect = () => {
                           <div className="col-md-11 col-sm-11">
                             <h4>Select Company</h4>
                           </div>
-                          <div className="col-md-11 col-sm-11">
+                          <div className="col-md-12 col-sm-11">
                             <Autocomplete
                               size="small"
                               options={companies}
@@ -126,15 +136,17 @@ const CompanySelect = () => {
                               aria-label="Contact select"
                             />
                           </div>
-                          <div className="col-md-11 mt-3 text-end">
-                            <button
-                              style={{ width: "100%" }}
-                              className="btn btn-primary"
+                          <div className="col-md-12 mt-3 text-end">
+                            <LoadingButton
+                              size="large"
+                              variant="contained"
+                              loading={btndisable}
+                              loadingPosition="start"
+                              fullWidth
                               onClick={handleConfirmClick}
                             >
-                              {" "}
-                              Confirm
-                            </button>
+                              <span>Confirm</span>
+                            </LoadingButton>
                           </div>
                         </div>
                       </div>

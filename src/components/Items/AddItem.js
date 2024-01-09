@@ -112,6 +112,9 @@ const AddItem = ({}) => {
       setDisableButton(false);
       console.log("api call error", error.response.data.Message);
       console.log("api call error2", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 

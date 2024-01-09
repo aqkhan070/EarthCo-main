@@ -155,6 +155,9 @@ const IrrigationControler = ({
       console.error("API Call Error:", error.response.data);
       setDisableButton(false);
       setAddError(error.response.data);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 

@@ -33,98 +33,99 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
     Authorization: `Bearer ${token}`,
   };
 
-  const [contactData, setContactData] = useState({});
-
+  const [formData, setFormData] = useState({});
+  const [contactAddress, setContactAddress] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
+  const [submitClicked, setSubmitClicked] = useState(false);
 
-  // AhsanModel
-  const formInitialValues = {
-    CompanyName: "",
-    FirstName: "",
-    LastName: "",
-    Phone: "",
-    AltPhone: "",
-    Email: "",
-    Address: "",
-    Comments: "",
-  };
+  const handleSubmit = async () => {
+    setSubmitClicked(true);
 
-  useEffect(() => {
-    //console.log("Service Locations in useEffect:", serviceLocations);
-    formik.setValues({
-      CompanyName: contactData.CompanyName,
-      FirstName: contactData.FirstName,
-      LastName: contactData.LastName,
-      Phone: contactData.Phone,
-      AltPhone: contactData.AltPhone,
-      Email: contactData.Email,
-      Address: contactData.Address,
-      Comments: contactData.Comments,
-      ContactId: contactData.ContactId,
-    });
-  }, [contactData]);
+    const CId = customerId;
 
-  const resetForm = () => {
-    formik.resetForm();
-    //setContactAddSuccess(false);
-  };
+    const updatedValues = {
+      ...formData,
+      CustomerId: CId,
+      Address: contactAddress.Address || "",
+    };
 
-  const handleAddContactsClick = () => {
-    resetForm();
-  };
+    console.log("contact payload izzzz", updatedValues);
 
-  const formik = useFormik({
-    initialValues: formInitialValues,
-    validationSchema: ValidationCustomer,
+    if (!formData.Email || !formData.FirstName || !formData.LastName) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please fill all required fields");
+      console.log("check2 ");
 
-    onSubmit: async (values, action) => {
-      console.log(values);
+      return; // Return early if any required field is empty
+    }
 
-      const CId = customerId;
+    
 
-      const updatedValues = {
-        ...values,
-        CustomerId: CId,
-      };
-      console.log(updatedValues);
+    if (!validator.isLength(formData.FirstName, { min: 3, max: 30 })) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Name should be 3 to 30 characters");
+      console.log("Company name should be between 3 and 30 characters");
+      return;
+    }
 
-      try {
-        const response = await axios.post(
-          "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
-          updatedValues,
-          { headers }
-        );
-        console.log("successful contact api", response.data.Id);
-        //setShouldCloseModal(true);
-        setOpenSnackBar(true);
-        setSnackBarColor("success");
-        setSnackBarText(response.data.Message);
-        fetchCustomers();
-        fetctContacts(CId);
+    if (!validator.isLength(formData.LastName, { min: 3, max: 30 })) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Name should be 3 to 30 characters");
+      console.log("Company name should be between 3 and 30 characters");
+      return;
+    }
 
-        // Update the contactData with the response id, then add to list
-        setContactData((prevState) => ({
-          ...prevState,
-          ContactId: response.data.Id,
-        }));
+    
 
-        // Consider moving response id state update and contactDataList update here after the contactData state is guaranteed to be set
+    if (!validator.isEmail(formData.Email)) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Email must contain the @ symbol");
+      console.log("Email must contain the @ symbol");
+      return;
+    }
 
-        const closeButton = document.getElementById("closer");
-        if (closeButton) {
-          closeButton.click();
+    try {
+      const response = await axios.post(
+        "https://earthcoapi.yehtohoga.com/api/Customer/AddContact",
+        updatedValues,
+        {
+          headers,
         }
+      );
 
-        action.resetForm();
+      setContactAddress({});
+      setOpenSnackBar(true);
+      setSubmitClicked(false);
+      setSnackBarColor("success");
+      setSnackBarText(response.data.Message);
+      fetchCustomers();
+      fetctContacts(CId);
 
-        // Adding to contactDataList can be here as well to ensure it's added after contactData is set with new ContactId
-      } catch (error) {
-        console.log("api call error", error);
+      const closeButton = document.getElementById("closer");
+      if (closeButton) {
+        closeButton.click();
       }
-    },
-  });
+    } catch (error) {
+      console.log("error adding SL", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      CustomerId: customerId,
+      [name]: value,
+    }));
+    console.log("handle change form data", formData);
+  };
 
   return (
     <>
@@ -137,228 +138,186 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
       <div className="modal fade" id="basicModal">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
-            <form onSubmit={formik.handleSubmit}>
-              <div className="modal-header">
-                <h5 className="modal-title">Add Contact</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="basic-form">
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Contact Company<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <input
-                        type="text"
-                        name="CompanyName"
-                        className="form-control"
-                        placeholder="Contact Company"
-                        // onChange={handleContactChange}
-                        value={formik.values.CompanyName}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        //required
-                      />
-                      {formik.errors.CompanyName &&
-                      formik.touched.CompanyName ? (
-                        <small style={{ color: "red" }}>
-                          {formik.errors.CompanyName}
-                        </small>
-                      ) : null}
-                    </div>
+            <div className="modal-header">
+              <h5 className="modal-title">Add Contact</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="basic-form">
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">
+                    Contact Company
+                  </label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      name="CompanyName"
+                      className="form-control"
+                      placeholder="Contact Company"
+                      // onChange={handleContactChange}
+                      value={formData.CompanyName}
+                      onChange={handleChange}
+
+                      //required
+                    />
                   </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      First Name<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <input
-                        type="text"
-                        name="FirstName"
-                        className="form-control"
-                        placeholder="First Name"
-                        onChange={formik.handleChange}
-                        value={formik.values.FirstName}
-                        onBlur={formik.handleBlur}
-                        //required
-                      />
-                      {formik.errors.FirstName && formik.touched.FirstName ? (
-                        <small style={{ color: "red" }}>
-                          {formik.errors.FirstName}
-                        </small>
-                      ) : null}
-                    </div>
+                </div>
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">
+                    First Name<span className="text-danger">*</span>
+                  </label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      name="FirstName"
+                      className="form-control"
+                      placeholder="First Name"
+                      error={submitClicked && !formData.FirstName}
+                      onChange={handleChange}
+                      value={formData.FirstName}
+                    />
                   </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Last Name<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <input
-                        type="text"
-                        name="LastName"
-                        className="form-control"
-                        placeholder="Last Name"
-                        onChange={formik.handleChange}
-                        value={formik.values.LastName}
-                        onBlur={formik.handleBlur}
-                        //required
-                      />
-                      {formik.errors.LastName && formik.touched.LastName ? (
-                        <small style={{ color: "red" }}>
-                          {formik.errors.LastName}
-                        </small>
-                      ) : null}
-                    </div>
+                </div>
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">
+                    Last Name<span className="text-danger">*</span>
+                  </label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      name="LastName"
+                      size="small"
+                      className="form-control"
+                      placeholder="Last Name"
+                      onChange={handleChange}
+                      error={submitClicked && !formData.LastName}
+                      value={formData.LastName}
+                    />
                   </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Phone<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <input
-                        type="text"
-                        id="contactInp3"
-                        name="Phone"
-                        className="form-control"
-                        placeholder="Phone"
-                        onChange={formik.handleChange}
-                        value={formik.values.Phone}
-                        onBlur={formik.handleBlur}
-                        //required
-                      />
-                      {formik.errors.Phone && formik.touched.Phone ? (
-                        <small style={{ color: "red" }}>
-                          {formik.errors.Phone}
-                        </small>
-                      ) : null}
-                    </div>
+                </div>
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">
+                    Email<span className="text-danger">*</span>
+                  </label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="email"
+                      size="small"
+                      id="contactInp2"
+                      className="form-control"
+                      name="Email"
+                      placeholder="Email"
+                      error={submitClicked && !formData.Email}
+                      onChange={handleChange}
+                      value={formData.Email}
+
+                      //required
+                    />
                   </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">Alt Phone</label>
-                    <div className="col-sm-8">
-                      <input
-                        type="text"
-                        id="contactInp3"
-                        name="AltPhone"
-                        className="form-control"
-                        placeholder=" Alt Phone"
-                        onChange={formik.handleChange}
-                        value={formik.values.AltPhone}
-                        //required
-                      />
-                    </div>
+                </div>
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">Phone</label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="contactInp3"
+                      name="Phone"
+                      className="form-control"
+                      placeholder="Phone"
+                      onChange={handleChange}
+                      value={formData.Phone}
+                    />
                   </div>
-                  <div className="mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Email<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <input
-                        type="email"
-                        id="contactInp2"
-                        className="form-control"
-                        name="Email"
-                        placeholder="Email"
-                        onChange={formik.handleChange}
-                        value={formik.values.Email}
-                        onBlur={formik.handleBlur}
-                        //required
-                      />
-                      {formik.errors.Email && formik.touched.Email ? (
-                        <small style={{ color: "red" }}>
-                          {formik.errors.Email}
-                        </small>
-                      ) : null}
-                    </div>
+                </div>
+                {/* <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">Alt Phone</label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="contactInp3"
+                      name="AltPhone"
+                      className="form-control"
+                      placeholder=" Alt Phone"
+                      onChange={handleChange}
+                      value={formData.AltPhone}
+                      //required
+                    />
                   </div>
-                  <div className=" mb-3 row">
-                    <label className="col-sm-4 col-form-label">
-                      Address<span className="text-danger">*</span>
-                    </label>
-                    <div className="col-sm-8">
-                      <AddressInputs
-                        address={formik.values.Address}
-                        name="Address"
-                        handleChange={formik.handleChange}
-                      />
-                      {/* <input
-                            name="Address"
-                            className="form-control"
-                            placeholder="Address"
-                            onChange={formik.handleChange}
-                            value={formik.values.Address}
-                            onBlur={formik.handleBlur}
-                            //required
-                          /> */}
-                      {/* {formik.errors.Address && formik.touched.Address ? (
-                            <small style={{ color: "red" }}>
-                              {formik.errors.Address}
-                            </small>
-                          ) : null} */}
-                    </div>
+                </div> */}
+
+                <div className=" mb-3 row">
+                  <label className="col-sm-4 col-form-label">Address</label>
+                  <div className="col-sm-8">
+                    <AddressInputs
+                      address={formData.Address}
+                      name="Address"
+                      handleChange={handleChange}
+                      addressValue={formData.Address}
+                    />
                   </div>
-                  <div className=" mb-3 row">
-                    <label className="col-sm-4 col-form-label">Comments</label>
-                    <div className="col-sm-8">
-                      <textarea
-                        name="Comments"
-                        className="form-txtarea form-control"
-                        onChange={formik.handleChange}
-                        value={formik.values.Comments}
-                        rows="2"
-                      ></textarea>
-                    </div>
+                </div>
+                <div className=" mb-3 row">
+                  <label className="col-sm-4 col-form-label">Comments</label>
+                  <div className="col-sm-8">
+                    <textarea
+                      name="Comments"
+                      className="form-txtarea form-control"
+                      onChange={handleChange}
+                      value={formData.Comments}
+                      rows="2"
+                    ></textarea>
                   </div>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  id="closer"
-                  className="btn btn-danger light"
-                  data-bs-dismiss="modal"
-                  onClick={() => {
-                    setContactData({
-                      FirstName: "",
-                      LastName: "",
-                      Phone: "",
-                      AltPhone: "",
-                      Email: "",
-                      Address: "",
-                      Comments: "",
-                    });
-                  }}
-                >
-                  Close
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Save
-                </button>
-              </div>
-            </form>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                id="closer"
+                className="btn btn-danger light"
+                data-bs-dismiss="modal"
+                onClick={() => {
+                  setFormData({
+                    CompanyName: "",
+                    FirstName: "",
+                    LastName: "",
+                    Phone: "",
+                    AltPhone: "",
+                    Email: "",
+                    Address: "",
+                    Comments: "",
+                  });
+                }}
+              >
+                Close
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={handleSubmit}
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
+
+      <span
+        style={{ cursor: "pointer", color: "blue" }}
+        data-bs-toggle="modal"
+        data-bs-target="#basicModal"
       >
-        <span
-          style={{ cursor: "pointer", color: "blue" }}
-          data-bs-toggle="modal"
-          data-bs-target="#basicModal"
-          onClick={handleAddContactsClick}
-        >
-          + Add
-        </span>
-      </form>
+        + Add
+      </span>
     </>
   );
 };

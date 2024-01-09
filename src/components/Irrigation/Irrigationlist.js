@@ -59,22 +59,6 @@ const Irrigationlist = () => {
     setPage(0);
   };
 
-  const getIrrigationList = async () => {
-    try {
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Irrigation/GetIrrigationList`,
-        { headers }
-      );
-      console.log("irrigation data", res.data);
-      setIrrigationlist(res.data);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      setError(error.response.data.Message);
-      console.log("error fetching irrigations", error.response.data.Message);
-    }
-  };
-
   const [totalRecords, setTotalRecords] = useState(0);
   const [search, setSearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
@@ -204,6 +188,7 @@ const Irrigationlist = () => {
                         <TableRow className="material-tbl-alignment">
                           <TableCell>#</TableCell>
                           <TableCell>Customer Name</TableCell>
+                          <TableCell>Controller Numbers</TableCell>
                           <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
@@ -229,6 +214,13 @@ const Irrigationlist = () => {
                                 }}
                               >
                                 {irr.CustomerName}
+                              </TableCell>
+                              <TableCell>
+                                {irr.ControllerNumbers.map((number, index) =>
+                                  index === irr.ControllerNumbers.length - 1
+                                    ? number
+                                    : number + ", "
+                                )}
                               </TableCell>
                               <TableCell>
                                 {TblDateFormat(irr.CreatedDate)}

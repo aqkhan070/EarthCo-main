@@ -181,7 +181,7 @@ const IrrigationAuditTable = () => {
 
   return (
     <>
-      <TitleBar icon={icon} title="Irrigation - Audit" />
+      <TitleBar icon={icon} title="Controller - Audit" />
       <div className="container-fluid">
         <div className="row">
           <div className="col-xl-12">
@@ -236,8 +236,8 @@ const IrrigationAuditTable = () => {
                       <TableHead className="table-header">
                         <TableRow className="material-tbl-alignment">
                           <TableCell>#</TableCell>
-                          <TableCell>Title</TableCell>
                           <TableCell>Customer Name</TableCell>
+
                           <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
@@ -255,7 +255,6 @@ const IrrigationAuditTable = () => {
                               <TableCell>
                                 {irr.IrrigationAuditReportId}
                               </TableCell>
-                              <TableCell>{irr.Title}</TableCell>
                               <TableCell
                                 onClick={() => {
                                   // setShowContent(false);
@@ -267,6 +266,7 @@ const IrrigationAuditTable = () => {
                               >
                                 {irr.CustomerName}
                               </TableCell>
+
                               <TableCell>
                                 {TblDateFormat(irr.CreatedDate)}
                               </TableCell>

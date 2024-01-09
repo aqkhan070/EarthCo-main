@@ -4,9 +4,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { Form } from "react-bootstrap";
 import axios from "axios";
 import Cookies from "js-cookie";
-
 import { NavLink, useNavigate } from "react-router-dom";
-
 import Alert from "@mui/material/Alert";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useCustomerSearch from "../Hooks/useCustomerSearch";
@@ -204,7 +202,6 @@ const AddIrrigationAudit = () => {
     if (
       !formData.CustomerId ||
       !formData.RegionalManagerId ||
-      !formData.Title ||
       !formData.ContactId
     ) {
       setOpenSnackBar(true);
@@ -234,6 +231,9 @@ const AddIrrigationAudit = () => {
     } catch (error) {
       console.log("error submitting data", error);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 
@@ -315,7 +315,7 @@ const AddIrrigationAudit = () => {
                   {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
 
                     <div className="row mb-2 mx-1">
-                      <div className="col-md-3 ">
+                      {/* <div className="col-md-3 ">
                         <label className="form-label">Title</label>
 
                         <TextField
@@ -328,7 +328,7 @@ const AddIrrigationAudit = () => {
                           placeholder="Title"
                           error={submitClicked && !formData.Title}
                         />
-                      </div>
+                      </div> */}
 
                       <div className="col-md-3">
                         <label className="form-label">
@@ -496,7 +496,7 @@ const AddIrrigationAudit = () => {
                         />
                       </div>
 
-                      <div className="col-md-9 text-end mt-4">
+                      <div className="col-md-12 text-end mt-4">
                         <div>
                           {idParam === 0 ? null : (
                             <>

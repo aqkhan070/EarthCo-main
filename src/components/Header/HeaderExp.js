@@ -8,10 +8,12 @@ import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import useQuickBook from "../Hooks/useQuickBook";
+
 import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
 import Avatar from "@mui/material/Avatar";
-
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+import { Button } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -70,12 +72,20 @@ const HeaderExp = () => {
     window.location.pathname.includes("company-select");
 
   const navigate = useNavigate();
-  const { mainControl, setMainControl, setShowSM, eliminate } =
-    useContext(StyleContext);
+  const {
+    mainControl,
+    setMainControl,
+    setShowSM,
+    eliminate,
+    showIrrMenu,
+    setShowIrrMenu,
+    showPlMenu,
+    setShowPlMenu,
+  } = useContext(StyleContext);
 
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
-  const { connectToQB, genetareQBToken } = useQuickBook();
+
 
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
@@ -131,6 +141,8 @@ const HeaderExp = () => {
     $(".header-left").addClass("bodyChanges");
     $(".nav-header").addClass("toShort");
     setShowSM(false);
+    setShowIrrMenu(false);
+    setShowPlMenu(false);
   };
 
   const hideSideBar = () => {
@@ -152,6 +164,8 @@ const HeaderExp = () => {
     $(".header-left").removeClass("bodyChanges");
     $(".nav-header").removeClass("toShort");
     setShowSM(false);
+    setShowIrrMenu(false);
+    setShowPlMenu(false);
   };
 
   useEffect(() => {
@@ -170,7 +184,7 @@ const HeaderExp = () => {
     console.log("Code:", code);
     console.log("State:", state);
     console.log("Realm ID:", realmId);
-    genetareQBToken(code, realmId, state);
+
     console.log("user details", loggedInUser);
     setLoggedInUser({
       userName: Cookies.get("userName"),
@@ -205,9 +219,12 @@ const HeaderExp = () => {
               <div className="collapse navbar-collapse justify-content-between">
                 <div className="header-left">
                   {dashBoardData.isQBToken ? (
-                    <span className="badge badge-pill badge-info p-2">
+                    <button
+                      style={{ color: "white", backgroundColor: "grey" }}
+                      className="btn  p-2"
+                    >
                       Connected with QuickBooks
-                    </span>
+                    </button>
                   ) : (
                     <iframe
                       src="https://earthcoapi.yehtohoga.com/"
@@ -220,7 +237,7 @@ const HeaderExp = () => {
                     ></iframe>
                   )}
                   <p className="ms-2" style={{ color: "white" }}>
-                    {loggedInUser.CompanyName}
+                    {loggedInUser.CompanyName ? loggedInUser.CompanyName : ""}
                   </p>
 
                   {/* <button
@@ -482,9 +499,9 @@ const HeaderExp = () => {
 
                   <li className="nav-item align-items-center header-border">
                     <NavLink to="/" style={{ display: "contents" }}>
-                      <button href="/" className="btn btn-primary btn-sm">
-                        Logout
-                      </button>
+                      <Tooltip title="Logout" arrow>
+                        <PowerSettingsNewIcon sx={{ color: "red" }} />
+                      </Tooltip>
                     </NavLink>
                   </li>
                   <li className="nav-item ps-3">
@@ -640,7 +657,10 @@ const HeaderExp = () => {
                             </ul>
 
                             <ul>
-                              <li className="dropdown-item ai-icon ">
+                              <li
+                                className="dropdown-item ai-icon "
+                                style={{ cursor: "pointer" }}
+                              >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
                                   width="18"

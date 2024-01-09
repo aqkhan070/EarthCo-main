@@ -747,6 +747,9 @@ export const AddPO = ({}) => {
       setError(true);
       setErrorMessage(error.response.data);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
 
       console.error("API Call Error:", error);
     }

@@ -108,7 +108,7 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
                 </svg>
               </span>
               <div className="media-body">
-                <p className="mb-1">New</p>
+                <p className="mb-1">Pending</p>
                 <div className="row">
                   <div className="col-md-4 col-sm-4">
                     {" "}

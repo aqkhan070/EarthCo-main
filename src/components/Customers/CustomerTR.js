@@ -211,29 +211,54 @@ const CustomerTR = ({
                       onChange={() => setSelectedItem(customer.CustomerId)}
                     />
                   </TableCell>*/}
-                      <TableCell className="table-cell-align">
+                      <TableCell
+                        className="table-cell-align"
+                        onClick={() => {
+                          navigate(
+                            `/customers/add-customer?id=${customer.CustomerId}`
+                          );
+                        }}
+                      >
                         {customer.CustomerId}
                       </TableCell>
 
-                      <TableCell>{customer.CustomerName}</TableCell>
-                      <TableCell>{customer.ContactName}</TableCell>
-                      <TableCell>{customer.CompanyName}</TableCell>
-                      <TableCell>{customer.Email}</TableCell>
+                      <TableCell
+                        onClick={() => {
+                          navigate(
+                            `/customers/add-customer?id=${customer.CustomerId}`
+                          );
+                        }}
+                      >
+                        {customer.CustomerName}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          navigate(
+                            `/customers/add-customer?id=${customer.CustomerId}`
+                          );
+                        }}
+                      >
+                        {customer.ContactName}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          navigate(
+                            `/customers/add-customer?id=${customer.CustomerId}`
+                          );
+                        }}
+                      >
+                        {customer.CompanyName}
+                      </TableCell>
+                      <TableCell
+                        onClick={() => {
+                          navigate(
+                            `/customers/add-customer?id=${customer.CustomerId}`
+                          );
+                        }}
+                      >
+                        {customer.Email}
+                      </TableCell>
                       <TableCell className="table-cell-align">
-                        <Button
-                          onClick={() => {
-                            // setSelectedItem(customer.CustomerId);
-                            // console.log(",,,,,,,,,,", selectedItem);
-                            navigate(
-                              `/customers/add-customer?id=${customer.CustomerId}`
-                            );
-                            // setShowContent(false);
-                          }}
-                        >
-                          <Create />
-                          {/* <i className="fas fa-pencil-alt"></i> */}
-                        </Button>
-
                         <Button
                           // className="btn btn-danger btn-icon-xxs "
                           data-bs-toggle="modal"

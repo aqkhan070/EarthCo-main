@@ -133,7 +133,6 @@ const AuditController = ({
   // };
 
   const trackAdditionalFile = (e) => {
-   
     const uploadedFile = e.target.files[0];
     if (uploadedFile) {
       setAdditionalFiles((prevFiles) => [...prevFiles, uploadedFile]);
@@ -176,6 +175,9 @@ const AuditController = ({
       console.error("API Call Error:", error);
       setDisableButton(false);
       setAddError(error.response.data);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
   };
 
@@ -211,14 +213,16 @@ const AuditController = ({
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
-              <label className="form-label">Photo of Controller</label>
+              <label className="form-label">Controller Number</label>
             </div>
-            <input
-              type="file"
-              id="controllerPhoto"
+            <TextField
+              type="text"
+              size="small"
               className="form-control"
-              placeholder="Created"
-              onChange={handleControllerphotoInputChange}
+              name="ControllerNumber"
+              onChange={handleChange}
+              placeholder="Controller Number"
+              // error={submitClicked && !formData.ControllerNumber}
             />
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
@@ -258,14 +262,14 @@ const AuditController = ({
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
-              <label className="form-label">How Many?</label>
+              <label className="form-label">Photo of Controller</label>
             </div>
             <input
-              type="number"
-              name="HowMany"
-              onChange={handleChange}
+              type="file"
+              id="controllerPhoto"
               className="form-control"
-              placeholder=""
+              placeholder="Created"
+              onChange={handleControllerphotoInputChange}
             />
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
@@ -317,6 +321,18 @@ const AuditController = ({
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
+              <label className="form-label">How Many?</label>
+            </div>
+            <input
+              type="number"
+              name="HowMany"
+              onChange={handleChange}
+              className="form-control"
+              placeholder=""
+            />
+          </div>
+          <div className="col-sm-5 col-md-4 mb-3 ">
+            <div className="col-md-12">
               <label className="form-label">
                 Repair Made or Needed / Recommmendations
               </label>
@@ -331,7 +347,6 @@ const AuditController = ({
               ></textarea>
             </div>
           </div>
-          <div className="col-md-4"></div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Broken Heads?</label>

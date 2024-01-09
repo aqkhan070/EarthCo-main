@@ -44,7 +44,7 @@ const AddEstimateForm = () => {
     EstimateNotes: "",
     ServiceLocationNotes: "",
 
-    EstimateStatusId: 1,
+    EstimateStatusId: 4,
     tblEstimateItems: [],
   });
 
@@ -63,8 +63,13 @@ const AddEstimateForm = () => {
   const isEstimateUpdateRoute =
     window.location.pathname.includes("Update-Estimate");
 
-  const { PunchListData, setPunchListData, sROBJ, setSROBJ, loggedInUser } =
-    useContext(DataContext);
+  const {
+    PunchListData,
+    setPunchListData,
+    selectedImages,
+    setSelectedImages,
+    loggedInUser,
+  } = useContext(DataContext);
 
   useEffect(() => {
     fetchName(PunchListData.CustomerId);
@@ -203,6 +208,10 @@ const AddEstimateForm = () => {
   };
 
   const fetctContacts = async (id) => {
+    if (!id) {
+      return;
+    }
+
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -233,7 +242,6 @@ const AddEstimateForm = () => {
       });
   };
 
-  const [disableSubmit, setDisableSubmit] = useState(true);
   const [staffData, setStaffData] = useState([]);
 
   const handleSLAutocompleteChange = (event, newValue) => {
@@ -246,22 +254,25 @@ const AddEstimateForm = () => {
 
     handleInputChange(simulatedEvent);
   };
-  const [selectedContactData, setSelectedContactData] = useState({});
 
   const handleContactAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "ContactId",
-        value: newValue ? newValue.ContactId : "",
-      },
-    };
-
-    setSelectedContactData(newValue);
-    fetchEmail(newValue.Email);
-    console.log("selected contact", newValue);
-
-    handleInputChange(simulatedEvent);
+    if (newValue) {
+      const simulatedEvent = {
+        target: {
+          name: "ContactId",
+          value: newValue.ContactId || "", // Ensure 'value' is not null
+        },
+      };
+  
+      if (newValue.ContactId) {
+        fetchEmail(newValue.ContactId);
+      }
+      console.log("selected contact", newValue);
+  
+      handleInputChange(simulatedEvent);
+    }
   };
+  
 
   const handleInvoiceAutocompleteChange = (event, newValue) => {
     const simulatedEvent = {
@@ -502,6 +513,9 @@ const AddEstimateForm = () => {
       setErrorMessage(error.response.data);
       setSubmitError(true);
       setDisableButton(false);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
 
     // Logging FormData contents (for debugging purposes)
@@ -732,7 +746,11 @@ const AddEstimateForm = () => {
   };
 
   useEffect(() => {
-    fetchEmail(formData.ContactId);
+    if (formData.ContactId) {
+      
+      fetchEmail(formData.ContactId);
+    }
+
     console.log(" testing....", formData);
   }, [formData]);
 
@@ -953,14 +971,29 @@ const AddEstimateForm = () => {
     }
   };
 
-  useEffect(() => {
-    formData.CustomerId &&
-    formData.ServiceLocationId &&
-    formData.ContactId &&
-    formData.EstimateNumber
-      ? setDisableSubmit(false)
-      : setDisableSubmit(true);
-  }, [formData]);
+  // State to store selected images
+
+  const handleImageSelect = (image) => {
+    // Check if the image is already selected
+    const isSelected = selectedImages.some(
+      (selectedImage) => selectedImage.EstimateFileId === image.EstimateFileId
+    );
+
+    if (isSelected) {
+      // If already selected, remove it from the selectedImages state
+      setSelectedImages((prevSelectedImages) =>
+        prevSelectedImages.filter(
+          (selectedImage) =>
+            selectedImage.EstimateFileId !== image.EstimateFileId
+        )
+      );
+    } else {
+      // If not selected, add it to the selectedImages state
+      setSelectedImages((prevSelectedImages) => [...prevSelectedImages, image]);
+    }
+
+    console.log("selected images arew", selectedImages);
+  };
 
   return (
     <>
@@ -1356,7 +1389,7 @@ const AddEstimateForm = () => {
                       fullWidth
                     >
                       <MenuItem value={1}>Accepted</MenuItem>
-                      <MenuItem value={2}>Closed</MenuItem>
+                      <MenuItem value={2}>Closed - Billed</MenuItem>
                       <MenuItem value={3}>Converted</MenuItem>
                       <MenuItem value={4}>Pending</MenuItem>
                       <MenuItem value={5}>Rejected</MenuItem>
@@ -2197,8 +2230,8 @@ const AddEstimateForm = () => {
                           key={index}
                           className="col-md-2 col-md-2 mt-3 image-container"
                           style={{
-                            width: "150px", // Set the desired width
-                            height: "120px", // Set the desired height
+                            width: "150px",
+                            height: "120px",
                             margin: "1em",
                             position: "relative",
                           }}
@@ -2236,14 +2269,46 @@ const AddEstimateForm = () => {
                           >
                             {file.FileName}
                           </p>
+                          {selectedImages.some(
+                            (selectedImage) =>
+                              selectedImage.EstimateFileId ===
+                              file.EstimateFileId
+                          ) ? (
+                            <span
+                              className="checkbox"
+                              style={{
+                                position: "absolute",
+                                top: "3px",
+                                left: "14px",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={true}
+                                onChange={() => handleImageSelect(file)}
+                              />
+                            </span>
+                          ) : (
+                            <span
+                              className="checkbox"
+                              style={{
+                                position: "absolute",
+                                top: "3px",
+                                left: "14px",
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={false}
+                                onChange={() => handleImageSelect(file)}
+                              />
+                            </span>
+                          )}
                           <span
                             className="file-delete-button"
                             style={{
                               left: "140px",
                             }}
-                            // onClick={() => {
-                            //   handleDeleteFile(index);
-                            // }}
                           >
                             <span
                               onClick={() => {
@@ -2375,7 +2440,7 @@ const AddEstimateForm = () => {
                                 Invoice
                               </MenuItem>
                             ) : (
-                              <></>
+                              ""
                             )}
                           </Select>
                         </FormControl>

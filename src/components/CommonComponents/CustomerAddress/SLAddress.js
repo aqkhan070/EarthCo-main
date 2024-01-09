@@ -25,8 +25,13 @@ function loadScript(src, position, id) {
 
 const autocompleteService = { current: null };
 
-const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
-
+const SLAddress = ({
+  address,
+  name,
+  handleChange,
+  setSLAddress,
+  emptyerror,
+}) => {
   const [value, setValue] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
@@ -121,10 +126,6 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
         },
       };
 
-      
-
-
-
       handleChange(simulatedEvent);
 
       // Use the Google Maps Geocoding API to get latitude and longitude
@@ -139,8 +140,7 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
             ...prevData,
             lat: latitude,
             lng: longitude,
-          }))
-
+          }));
         } else {
           console.log(
             "Geocode was not successful for the following reason: " + status
@@ -152,17 +152,16 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
       const simulatedEvent = {
         target: {
           name: name,
-          value: "",
+          value: "", // Set the value to an empty string or handle it as needed
         },
       };
       handleChange(simulatedEvent);
     }
 
     setSLAddress((prevData) => ({
-        ...prevData,
-        Address: newValue.description ? newValue.description : "",       
-      }))
-
+      ...prevData,
+      Address: newValue ? newValue.description : "", // Check if newValue is null
+    }));
   };
 
   return (
@@ -184,7 +183,13 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
-        <TextField {...params} size="small" placeholder="Address" fullWidth />
+        <TextField
+          {...params}
+          size="small"
+          placeholder="Address"
+          error={emptyerror}
+          fullWidth
+        />
       )}
       renderOption={(props, option) => {
         const matches =
@@ -224,6 +229,6 @@ const SLAddress = ({ address, name, handleChange , setSLAddress}) => {
       }}
     />
   );
-}
+};
 
-export default SLAddress
+export default SLAddress;

@@ -109,7 +109,7 @@ const AddRisingCanes = () => {
       );
 
       setFormData(res.data.Data);
-      fetchEmail(res.data.Data.ContactId)
+      fetchEmail(res.data.Data.ContactId);
       setPrevFiles(res.data.FileData);
       setLoading(false);
       setSelectedContact({
@@ -159,6 +159,7 @@ const AddRisingCanes = () => {
   };
 
   const fetctContacts = async (id) => {
+    if(!id){return}
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -370,7 +371,7 @@ const AddRisingCanes = () => {
       setDisableButton(false);
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText("error Adding Weekly Report Rising-canes");
+      setSnackBarText(error.response.data);
     }
 
     // Logging FormData contents (for debugging purposes)

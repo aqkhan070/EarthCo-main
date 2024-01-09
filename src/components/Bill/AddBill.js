@@ -438,6 +438,9 @@ const AddBill = ({}) => {
       console.log("Data submitted successfully:", response.data.Message);
     } catch (error) {
       console.error("API Call Error:", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
       setDisableButton(false);
     }
 

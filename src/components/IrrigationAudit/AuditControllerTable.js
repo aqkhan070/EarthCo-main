@@ -52,6 +52,7 @@ const AuditControllerTable = ({
                 <tr>
                   <th>#</th>
                   <th>Controller Name</th>
+                  <th>Controller Number</th>
                   <th>Broken Valves</th>
                   <th>Broken Laterals</th>
                   <th>Broken Heads</th>
@@ -68,6 +69,7 @@ const AuditControllerTable = ({
                             {controller.ControllerData?.ControllerAuditReportId}
                           </td>
                           <td>{controller.ControllerData?.ControllerName}</td>
+                          <td></td>
                           <td>
                             {" "}
                             {controller.ControllerData?.BrokenValve

@@ -26,7 +26,7 @@ const useFetchPo = () => {
     } catch (error) {
       // setLoading(false);
       // setError(error.message);
-      console.log("api call error", error.message);
+      console.log("Purchase api call error", error);
     }
   };
 

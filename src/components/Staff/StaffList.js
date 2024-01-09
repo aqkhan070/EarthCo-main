@@ -159,7 +159,7 @@ const StaffList = () => {
             )}
 
             <div className="card-header border-0">
-              <dix className="col-md-12">
+              <div className="col-md-12">
                 <div className="text-right mt-2  ">
                   <Button
                     variant="contained"
@@ -174,7 +174,7 @@ const StaffList = () => {
                     + Add Staff
                   </Button>
                 </div>
-              </dix>
+              </div>
             </div>
             <div className="card-body pt-0">
               <Table>
@@ -204,24 +204,23 @@ const StaffList = () => {
                         hover
                         key={staff.UserId}
                       >
-                        <TableCell>{staff.UserId}</TableCell>
-                        <TableCell>{staff.FirstName}</TableCell>
-                        <TableCell>{staff.LastName}</TableCell>
-                        <TableCell>{staff.Email}</TableCell>
-                        <TableCell>{staff.Role}</TableCell>
-                        <TableCell align="right">
-                          <span
-                            // className=" btn btn-primary  btn-icon-xxs me-2"
-
-                            onClick={() => {
-                              // settoggleAddStaff(false);
-                              // setSelectedStaff(staff.UserId);
+                        <TableCell onClick={() => {                             
                               navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}
-                          >
-                            <Create color="success" />
-                            {/* <i className="fas fa-pencil-alt"></i> */}
-                          </span>
+                            }}>{staff.UserId}</TableCell>
+                        <TableCell onClick={() => {                             
+                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                            }}>{staff.FirstName}</TableCell>
+                        <TableCell onClick={() => {                             
+                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                            }}>{staff.LastName}</TableCell>
+                        <TableCell onClick={() => {                             
+                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                            }}>{staff.Email}</TableCell>
+                        <TableCell onClick={() => {                             
+                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                            }}>{staff.Role}</TableCell>
+                        <TableCell align="right">
+                         
                           <span
                             // className="btn btn-danger btn-icon-xxs "
                             data-bs-toggle="modal"

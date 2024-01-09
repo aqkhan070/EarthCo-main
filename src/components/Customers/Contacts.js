@@ -18,7 +18,6 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
-  const [contactData, setContactData] = useState({});
   const [formData, setFormData] = useState({});
   const [contactAddress, setContactAddress] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -35,15 +34,8 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
     }));
 
     console.log("contact payload izzzz", formData);
-   
-    if (
-      !formData.CompanyName ||
-      !formData.Address ||
-      !formData.Email ||
-      !formData.FirstName ||
-      !formData.LastName ||
-      !formData.Phone
-    ) {
+
+    if (!formData.Email || !formData.FirstName || !formData.LastName) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -179,7 +171,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
               <div className="basic-form">
                 <div className="mb-3 row">
                   <label className="col-sm-4 col-form-label">
-                    Contact Company<span className="text-danger">*</span>
+                    Contact Company
                   </label>
                   <div className="col-sm-8">
                     <TextField
@@ -190,7 +182,6 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                       placeholder="Contact Company"
                       // onChange={handleContactChange}
                       value={formData.CompanyName}
-                      error={submitClicked && !formData.CompanyName}
                       onChange={handleChange}
 
                       //required
@@ -233,40 +224,6 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                 </div>
                 <div className="mb-3 row">
                   <label className="col-sm-4 col-form-label">
-                    Phone<span className="text-danger">*</span>
-                  </label>
-                  <div className="col-sm-8">
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="contactInp3"
-                      name="Phone"
-                      className="form-control"
-                      placeholder="Phone"
-                      onChange={handleChange}
-                      error={submitClicked && !formData.Phone}
-                      value={formData.Phone}
-                    />
-                  </div>
-                </div>
-                <div className="mb-3 row">
-                  <label className="col-sm-4 col-form-label">Alt Phone</label>
-                  <div className="col-sm-8">
-                    <TextField
-                      type="text"
-                      size="small"
-                      id="contactInp3"
-                      name="AltPhone"
-                      className="form-control"
-                      placeholder=" Alt Phone"
-                      onChange={handleChange}
-                      value={formData.AltPhone}
-                      //required
-                    />
-                  </div>
-                </div>
-                <div className="mb-3 row">
-                  <label className="col-sm-4 col-form-label">
                     Email<span className="text-danger">*</span>
                   </label>
                   <div className="col-sm-8">
@@ -285,17 +242,46 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                     />
                   </div>
                 </div>
+                <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">Phone</label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="contactInp3"
+                      name="Phone"
+                      className="form-control"
+                      placeholder="Phone"
+                      onChange={handleChange}
+                      value={formData.Phone}
+                    />
+                  </div>
+                </div>
+                {/* <div className="mb-3 row">
+                  <label className="col-sm-4 col-form-label">Alt Phone</label>
+                  <div className="col-sm-8">
+                    <TextField
+                      type="text"
+                      size="small"
+                      id="contactInp3"
+                      name="AltPhone"
+                      className="form-control"
+                      placeholder=" Alt Phone"
+                      onChange={handleChange}
+                      value={formData.AltPhone}
+                      //required
+                    />
+                  </div>
+                </div> */}
+
                 <div className=" mb-3 row">
-                  <label className="col-sm-4 col-form-label">
-                    Address<span className="text-danger">*</span>
-                  </label>
+                  <label className="col-sm-4 col-form-label">Address</label>
                   <div className="col-sm-8">
                     <AddressInputs
                       address={formData.Address}
                       name="Address"
                       handleChange={handleChange}
                       addressValue={formData.Address}
-                      emptyError={submitClicked && !formData.Address}
                     />
                   </div>
                 </div>
@@ -322,7 +308,6 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                 onClick={() => {
                   getCustomerData();
                   setFormData({
-                    
                     CompanyName: "",
                     FirstName: "",
                     LastName: "",
@@ -349,11 +334,10 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
       </div>
 
       <div className="card">
-        <div className="">
-          <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
-            Contacts
-          </h4>
-        </div>
+        <h4 className="modal-title itemtitleBar" id="#gridSystemModal1">
+          Contacts
+        </h4>
+
         <div className="card-body">
           <div className="row">
             <div className="col-md-8"></div>
@@ -424,52 +408,53 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                            deleteContact(contact.ContactId)
                            }
                         ></Delete>*/}
-                            </td>
-                            <div
-                              className="modal fade"
-                              id={`contactDeleteModal${contact.ContactId}`}
-                              tabIndex="-1"
-                              aria-labelledby="deleteModalLabel"
-                              aria-hidden="true"
-                            >
-                              <div className="modal-dialog" role="document">
-                                <div className="modal-content">
-                                  <div className="modal-header">
-                                    <h5 className="modal-title">
-                                      Are you sure you want to delete{" "}
-                                      {contact.FirstName}?
-                                    </h5>
-                                    <button
-                                      type="button"
-                                      className="btn-close"
-                                      data-bs-dismiss="modal"
-                                    ></button>
-                                  </div>
-                                  <div className="modal-body">
-                                    <div className="basic-form text-center">
+
+                              <div
+                                className="modal fade"
+                                id={`contactDeleteModal${contact.ContactId}`}
+                                tabIndex="-1"
+                                aria-labelledby="deleteModalLabel"
+                                aria-hidden="true"
+                              >
+                                <div className="modal-dialog" role="document">
+                                  <div className="modal-content">
+                                    <div className="modal-header">
+                                      <h5 className="modal-title">
+                                        Are you sure you want to delete
+                                        {contact.FirstName}?
+                                      </h5>
                                       <button
                                         type="button"
-                                        id="closer"
-                                        className="btn btn-danger light m-3"
+                                        className="btn-close"
                                         data-bs-dismiss="modal"
-                                        onClick={() => {}}
-                                      >
-                                        Close
-                                      </button>
-                                      <button
-                                        className="btn btn-primary m-3"
-                                        data-bs-dismiss="modal"
-                                        onClick={() =>
-                                          delContact(contact.ContactId)
-                                        }
-                                      >
-                                        Yes
-                                      </button>
+                                      ></button>
+                                    </div>
+                                    <div className="modal-body">
+                                      <div className="basic-form text-center">
+                                        <button
+                                          type="button"
+                                          id="closer"
+                                          className="btn btn-danger light m-3"
+                                          data-bs-dismiss="modal"
+                                          onClick={() => {}}
+                                        >
+                                          Close
+                                        </button>
+                                        <button
+                                          className="btn btn-primary m-3"
+                                          data-bs-dismiss="modal"
+                                          onClick={() =>
+                                            delContact(contact.ContactId)
+                                          }
+                                        >
+                                          Yes
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
+                            </td>
                           </tr>
                         ))}
                       </tbody>

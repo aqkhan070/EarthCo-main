@@ -221,7 +221,7 @@ const AddPLPhotoOnly = () => {
       setDisableButton(false);
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText("error Adding Weekly Report Rising-canes");
+      setSnackBarText(error.response.data);
     }
 
     // Logging FormData contents (for debugging purposes)

@@ -431,6 +431,9 @@ const AddSRform = () => {
       setBtnDisable(false);
       setErrorMessage(error.response.data);
       setError(true);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(error.response.data);
     }
     for (let [key, value] of formData.entries()) {
       console.log("filessss", key, value);
