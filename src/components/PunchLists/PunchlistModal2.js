@@ -118,7 +118,7 @@ const PunchlistModal2 = ({
     handleChange(simulatedEvent);
   };
 
-  const [emptyFieldError, setemptyFieldError] = useState(false);
+  
   const [submitClicked, setSubmitClicked] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
 
@@ -143,7 +143,7 @@ const PunchlistModal2 = ({
       !addPunchListData.ContactId ||
       !addPunchListData.AssignedTo
     ) {
-      setemptyFieldError(true);
+    
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -179,9 +179,6 @@ const PunchlistModal2 = ({
     }
   };
 
-  useEffect(() => {
-    setemptyFieldError(false);
-  }, [addPunchListData]);
 
   
 

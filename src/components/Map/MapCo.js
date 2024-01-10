@@ -5,6 +5,7 @@ import {
   InfoWindow,
   useLoadScript,
 } from "@react-google-maps/api";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const containerStyle = {
   width: "100%",
@@ -68,7 +69,7 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
   });
 
   if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded) return <div>Loading Maps</div>;
+  if (!isLoaded) return <div className="map-loader"><CircularProgress /></div>;
 
   return (
     <div>

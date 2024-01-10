@@ -610,7 +610,6 @@ const LoginPage = () => {
                                 <input
                                   type="checkbox"
                                   className="form-check-input"
-                                  id="check1"
                                   name="Terms"
                                   checked={privacypolicy}
                                   onChange={() => {

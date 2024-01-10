@@ -307,6 +307,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
     const PunchlistDetailData = {
       ...formData,
       tblPunchlistItems: itemsList,
+      StatusId: 1,
     };
 
     console.log("PunchlistDetailData:", PunchlistDetailData);

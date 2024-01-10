@@ -14,7 +14,7 @@ const CustomerIndex = () => {
 
     return (
         <>
-            <TitleBar icon={icon} title='customers' />
+            <TitleBar icon={icon} title='Customers' />
             <Routes>
                 <Route path='' element={<CustomersTable />} />
                 <Route path='add-customer' element={<AddCutomer />} />

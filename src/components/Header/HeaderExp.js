@@ -85,8 +85,6 @@ const HeaderExp = () => {
 
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
-
-
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -236,9 +234,17 @@ const HeaderExp = () => {
                       }}
                     ></iframe>
                   )}
-                  <p className="ms-2" style={{ color: "white" }}>
-                    {loggedInUser.CompanyName ? loggedInUser.CompanyName : ""}
-                  </p>
+                  <Tooltip title="Click to Change Company" arrow>
+                    <p
+                      className="ms-2"
+                      style={{ color: "white", cursor: "pointer" }}
+                      onClick={() => {
+                        navigate("/company-select");
+                      }}
+                    >
+                      {loggedInUser.CompanyName ? loggedInUser.CompanyName : ""}
+                    </p>
+                  </Tooltip>
 
                   {/* <button
                     className="btn btn-info btn-sm"

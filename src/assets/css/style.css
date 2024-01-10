@@ -53672,6 +53672,11 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
     height: 40vh; /* This makes the loader take up the entire viewport height */
     
   }
+  .map-loader{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .card-header{
     padding: 0.5em !important;
@@ -54034,11 +54039,22 @@ height: 30px !important;
 
 
 
-.material-tbl-alignment td{
+.material-tbl-alignment td {
     padding: 8px 8px !important;
     font-size: 0.900rem;
     cursor: pointer;
-}
+    white-space: normal; /* Prevent long strings from wrapping in the same cell */
+    overflow: hidden; /* Hide overflowing content */
+    text-overflow: ellipsis;
+    max-height: 40px;
+    max-width: 12vw;
+  }
+  
+  .material-tbl-alignment .multiline-td {
+    white-space: normal; /* Allow text to wrap onto multiple lines */
+    max-height: 40px; /* Set a maximum height for two lines of text */
+    overflow: hidden; /* Hide overflowing content beyond the specified height */
+  }
 .material-tbl-alignment th{
     padding: 8px 8px !important;
     font-size: 0.900rem;

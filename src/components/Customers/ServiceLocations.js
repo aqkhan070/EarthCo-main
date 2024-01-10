@@ -98,7 +98,7 @@ const ServiceLocations = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
-
+      setSubmitClicked(false)
       const closeButton = document.getElementById("closerLocation");
       if (closeButton) {
         closeButton.click();
@@ -274,6 +274,7 @@ const ServiceLocations = ({
                 data-bs-dismiss="modal"
                 onClick={() => {
                   getCustomerData();
+                  setSubmitClicked(true)
                   setSLAddress({}); // Resetting SLAddress
                   setFormData({
                     // Resetting formData

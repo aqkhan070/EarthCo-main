@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-import { TextField } from "@mui/material";
+import { CircularProgress, TextField } from "@mui/material";
 import { toPng } from "html-to-image";
 import { DataContext } from "../../context/AppData";
 import SyncIcon from "@mui/icons-material/Sync";
+
 const containerStyle = {
   width: "100%",
   height: "300px",
@@ -136,7 +137,11 @@ function GoogleMapApi() {
   }
 
   if (!isLoaded) {
-    return <div>Loading maps...</div>;
+    return (
+      <div className="map-loader">
+        <CircularProgress />
+      </div>
+    );
   }
 
   return (

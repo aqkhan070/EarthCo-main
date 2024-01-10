@@ -30,7 +30,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import Contacts from "../CommonComponents/Contacts";
 import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
-
+import Checkbox from "@mui/material/Checkbox";
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -56,12 +56,9 @@ const AddEstimateForm = () => {
     emailAlertColor,
   } = useSendEmail();
 
-  const { setestmPreviewId } = useContext(RoutingContext);
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-  const isEstimateUpdateRoute =
-    window.location.pathname.includes("Update-Estimate");
 
   const {
     PunchListData,
@@ -99,23 +96,12 @@ const AddEstimateForm = () => {
 
   const inputFile = useRef(null);
   const [Files, setFiles] = useState([]);
-
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [tags, setTags] = useState([]);
-
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [selectedSL, setSelectedSL] = useState(null);
-
-  const [submitError, setSubmitError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [addCustomerSuccess, setAddCustomerSuccess] = useState("");
   const [disableButton, setDisableButton] = useState(false);
-
-  const [emptyFieldsError, setEmptyFieldsError] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const { invoiceList, fetchInvoices } = useFetchInvoices();
   const { billList, fetchBills } = useFetchBills();
   const { PoList, fetchPo } = useFetchPo();
@@ -162,7 +148,9 @@ const AddEstimateForm = () => {
         FileData: response.data.EstimateFileData,
       }));
       fetchName(response.data.EstimateItemData.CustomerId);
-
+      setSelectedContacts(
+        response.data.EstimateContactData.map((contact) => contact.ContactId)
+      );
       // Combine EstimateItemData and EstimateCostItemData into tblEstimateItems
       const combinedItems = [
         ...response.data.EstimateItemData,
@@ -192,6 +180,9 @@ const AddEstimateForm = () => {
   };
 
   const fetchServiceLocations = async (id) => {
+    if (!id) {
+      return;
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerServiceLocation?id=${id}`,
@@ -242,79 +233,6 @@ const AddEstimateForm = () => {
       });
   };
 
-  const [staffData, setStaffData] = useState([]);
-
-  const handleSLAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "ServiceLocationId",
-        value: newValue ? newValue.ServiceLocationId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-
-  const handleContactAutocompleteChange = (event, newValue) => {
-    if (newValue) {
-      const simulatedEvent = {
-        target: {
-          name: "ContactId",
-          value: newValue.ContactId || "", // Ensure 'value' is not null
-        },
-      };
-  
-      if (newValue.ContactId) {
-        fetchEmail(newValue.ContactId);
-      }
-      console.log("selected contact", newValue);
-  
-      handleInputChange(simulatedEvent);
-    }
-  };
-  
-
-  const handleInvoiceAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "InvoiceId",
-        value: newValue ? newValue.InvoiceId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-  const handleBillAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "BillId",
-        value: newValue ? newValue.BillId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-
-  const handlePoAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "PurchaseOrderId",
-        value: newValue ? newValue.PurchaseOrderId : "",
-      },
-    };
-
-    handleInputChange(simulatedEvent);
-  };
-
-  const handleTagAutocompleteChange = (event, newValues) => {
-    const tagString = newValues.map((tag) => tag.Tag).join(", ");
-
-    setFormData((prevData) => ({
-      ...prevData,
-      Tags: tagString,
-      ProfitPercentage: 0,
-    }));
-  };
   const fetchStaffList = async () => {
     try {
       const response = await axios.get(
@@ -328,70 +246,42 @@ const AddEstimateForm = () => {
       console.log("error getting staff list", error);
     }
   };
-  const handleStaffAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
+
+  const [staffData, setStaffData] = useState([]);
+
+  const handleAutocompleteChange = (
+    fieldName,
+    valueProperty,
+    event,
+    newValue
+  ) => {
     const simulatedEvent = {
       target: {
-        name: "AssignTo",
-        value: newValue ? newValue.UserId : "",
+        name: fieldName,
+        value: newValue ? newValue[valueProperty] : "",
       },
     };
 
-    // Assuming handleInputChange is defined somewhere within YourComponent
-    // Call handleInputChange with the simulated event
     handleInputChange(simulatedEvent);
   };
 
-  const handleCustomerAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
-    const simulatedEvent = {
-      target: {
-        name: "CustomerId",
-        value: newValue ? newValue.UserId : "",
-      },
-    };
-    handleInputChange(simulatedEvent);
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const handleContactChange = (event, newValue) => {
+    setSelectedContacts(newValue.map((company) => company.ContactId));
   };
 
-  const handleClearSelection = () => {
-    setSelectedCustomer(null);
-  };
+  const handleTagAutocompleteChange = (event, newValues) => {
+    const tagString = newValues.map((tag) => tag.Tag).join(", ");
 
-  const handleRBAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
-    const simulatedEvent = {
-      target: {
-        name: "RequestedBy",
-        value: newValue ? newValue.UserId : "",
-      },
-    };
-
-    // Assuming handleInputChange is defined somewhere within YourComponent
-    // Call handleInputChange with the simulated event
-    handleInputChange(simulatedEvent);
-  };
-
-  const handleRMAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
-    const simulatedEvent = {
-      target: {
-        name: "RegionalManagerId",
-        value: newValue ? newValue.UserId : "",
-      },
-    };
-
-    // Assuming handleInputChange is defined somewhere within YourComponent
-    // Call handleInputChange with the simulated event
-    handleInputChange(simulatedEvent);
+    setFormData((prevData) => ({
+      ...prevData,
+      Tags: tagString,
+    }));
   };
 
   const handleInputChange = (e, newValue) => {
-    setEmptyFieldsError(false);
     setDisableButton(false);
     const { name, value } = e.target;
-
-    setSelectedCustomer(newValue);
-    setSelectedSL(newValue);
 
     // Convert to number if the field is CustomerId, Qty, Rate, or EstimateStatusId
     const adjustedValue = [
@@ -407,13 +297,6 @@ const AddEstimateForm = () => {
       : value;
 
     setFormData((prevData) => ({ ...prevData, [name]: adjustedValue }));
-
-    // if (name === "UserId" && value != 0) {
-    //   console.log(value);
-    //   fetchServiceLocations(value);
-    //   fetctContacts(value);
-    // }
-    // console.log("opopopopopop", formData);
   };
 
   const LinkToPO = () => {
@@ -426,40 +309,52 @@ const AddEstimateForm = () => {
   const handleSubmit = (id = idParam, number = formData.EstimateNumber) => {
     setSubmitClicked(true);
 
+    console.log("formdata in handlesubmit", formData);
+
     if (
       !formData.IssueDate ||
       !formData.CustomerId ||
       !formData.ServiceLocationId ||
-      !formData.ContactId ||
       !formData.RequestedBy ||
       !formData.RegionalManagerId ||
       !formData.AssignTo ||
-      !formData.EstimateStatusId
+      !formData.EstimateStatusId ||
+      selectedContacts.length <= 0
     ) {
-      setEmptyFieldsError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
       return;
     }
+
+    if (formData.tblEstimateItems.length <= 0) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please Add Atleast one Item");
+      return;
+    }
     const postData = new FormData();
 
     // Merge the current items with the new items for EstimateData
+    console.log("mergedcontactData:", selectedContacts);
+    const contactIdArray = selectedContacts.map((contact) => ({
+      ContactId: contact,
+    }));
     const mergedEstimateData = {
       ...formData,
       EstimateId: id,
       EstimateNumber: number,
+      ContactId: selectedContacts[0],
       CompanyId: Number(loggedInUser.CompanyId),
       TotalAmount: totalItemAmount || 0,
       ProfitPercentage: profitPercentage || 0,
       Shipping: shippingCost || 0,
-      // CreatedBy: 2,
-      // EditBy: 2,
-      // isActive: true,
+      tblEstimateContacts: contactIdArray,
     };
 
     console.log("mergedEstimateData:", mergedEstimateData);
+    console.log("mergedcontactData:", selectedContacts);
     // console.log("data:", data);
 
     postData.append("EstimateData", JSON.stringify(mergedEstimateData));
@@ -475,12 +370,6 @@ const AddEstimateForm = () => {
 
     submitData(postData);
   };
-
-  // const appendFilesToFormData = (formData) => {
-  //   Files.forEach((fileObj) => {
-  //     formData.append("Files", fileObj.actualFile);
-  //   });
-  // };
 
   const submitData = async (postData) => {
     const headers = {
@@ -500,18 +389,15 @@ const AddEstimateForm = () => {
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
 
-      setAddCustomerSuccess(response.data.Message);
       setDisableButton(false);
       setTimeout(() => {
-        setAddCustomerSuccess("");
         navigate(`/estimates`);
       }, 4000);
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
       console.error("API Call Error:", error);
-      setErrorMessage(error.response.data);
-      setSubmitError(true);
+
       setDisableButton(false);
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -564,9 +450,6 @@ const AddEstimateForm = () => {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedItem, setSelectedItem] = useState({});
-  const [showItem, setShowItem] = useState(true);
-  const [itemBtnDisable, setItemBtnDisable] = useState(true);
-  const inputRef = useRef(null);
 
   useEffect(() => {
     axios
@@ -594,7 +477,6 @@ const AddEstimateForm = () => {
   };
 
   const handleItemChange = (event) => {
-    setShowItem(true);
     setSearchText(event.target.value);
 
     setSelectedItem({}); // Clear selected item when input changes
@@ -612,9 +494,7 @@ const AddEstimateForm = () => {
       PurchasePrice: item.PurchasePrice,
       isCost: false,
     });
-    itemInput ? setItemBtnDisable(false) : setItemBtnDisable(true);
 
-    setShowItem(false);
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", item);
@@ -745,15 +625,6 @@ const AddEstimateForm = () => {
     }
   };
 
-  useEffect(() => {
-    if (formData.ContactId) {
-      
-      fetchEmail(formData.ContactId);
-    }
-
-    console.log(" testing....", formData);
-  }, [formData]);
-
   // AC
 
   const [aCInput, setACInput] = useState({
@@ -766,8 +637,6 @@ const AddEstimateForm = () => {
   const [searchACResults, setSearchACResults] = useState([]);
   const [selectedACItem, setSelectedACItem] = useState({});
   const [showACItem, setShowACItem] = useState(true);
-  const [itemACBtnDisable, setItemACBtnDisable] = useState(true);
-  const inputACRef = useRef(null);
 
   useEffect(() => {
     if (searchACText) {
@@ -825,7 +694,6 @@ const AddEstimateForm = () => {
       Rate: item.PurchasePrice,
       isCost: true,
     });
-    aCInput ? setItemACBtnDisable(false) : setItemACBtnDisable(true);
 
     setShowACItem(false);
     setSearchACResults([]); // Clear the search results
@@ -908,8 +776,6 @@ const AddEstimateForm = () => {
 
     setTotalProfit(calculatedTotalProfit);
 
-    console.log("profit");
-
     setBalanceDue(totalItemAmount - paymentCredit);
 
     setProfitPercentage(calculatedProfitPercentage);
@@ -922,7 +788,6 @@ const AddEstimateForm = () => {
     totalItemAmount,
     subtotal,
     totalExpense,
-    formData,
   ]);
 
   // filesss........
@@ -1033,7 +898,14 @@ const AddEstimateForm = () => {
                       options={customerSearch}
                       getOptionLabel={(option) => option.CompanyName || ""}
                       value={name ? { CompanyName: name } : null}
-                      onChange={handleCustomerAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "CustomerId",
+                          "UserId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.CustomerId
                       }
@@ -1144,7 +1016,14 @@ const AddEstimateForm = () => {
                           (staff) => staff.UserId === formData.RegionalManagerId
                         ) || null
                       }
-                      onChange={handleRMAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "RegionalManagerId",
+                          "UserId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.RegionalManagerId
                       }
@@ -1175,7 +1054,14 @@ const AddEstimateForm = () => {
                           (staff) => staff.UserId === formData.AssignTo
                         ) || null
                       }
-                      onChange={handleStaffAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "AssignTo",
+                          "UserId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.AssignTo
                       }
@@ -1225,7 +1111,14 @@ const AddEstimateForm = () => {
                             formData.ServiceLocationId
                         ) || null
                       }
-                      onChange={handleSLAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "ServiceLocationId",
+                          "ServiceLocationId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.ServiceLocationId === value.ServiceLocationId
                       }
@@ -1257,7 +1150,14 @@ const AddEstimateForm = () => {
                           (staff) => staff.UserId === formData.RequestedBy
                         ) || null
                       }
-                      onChange={handleRBAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "RequestedBy",
+                          "UserId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.RequestedBy
                       }
@@ -1303,7 +1203,14 @@ const AddEstimateForm = () => {
                           (invoice) => invoice.InvoiceId === formData.InvoiceId
                         ) || null
                       }
-                      onChange={handleInvoiceAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "InvoiceId",
+                          "InvoiceId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.InvoiceId === value.InvoiceId
                       }
@@ -1339,7 +1246,29 @@ const AddEstimateForm = () => {
                         )}
                       </div>
                     </div>
+
                     <Autocomplete
+                      multiple
+                      size="small"
+                      options={contactList}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      onChange={handleContactChange}
+                      value={contactList.filter((company) =>
+                        selectedContacts.includes(company.ContactId)
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Select Contacts"
+                          className="bg-white"
+                          error={submitClicked && selectedContacts.length <= 0}
+                        />
+                      )}
+                      aria-label="Contact select"
+                    />
+
+                    {/* <Autocomplete
                       id="inputState299"
                       size="small"
                       options={contactList}
@@ -1349,7 +1278,14 @@ const AddEstimateForm = () => {
                           (contact) => contact.ContactId === formData.ContactId
                         ) || null
                       }
-                      onChange={handleContactAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "ContactId",
+                          "ContactId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.ContactId === value.ContactId
                       }
@@ -1371,7 +1307,7 @@ const AddEstimateForm = () => {
                         />
                       )}
                       aria-label="Contact select"
-                    />
+                    /> */}
                   </div>
                   <div className="col-md-3  mt-2">
                     <label className="form-label">
@@ -1424,7 +1360,14 @@ const AddEstimateForm = () => {
                           (bill) => bill.BillId === formData.BillId
                         ) || null
                       }
-                      onChange={handleBillAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "BillId",
+                          "BillId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.BillId === value.BillId
                       }
@@ -1474,7 +1417,14 @@ const AddEstimateForm = () => {
                             po.PurchaseOrderId === formData.PurchaseOrderId
                         ) || null
                       }
-                      onChange={handlePoAutocompleteChange}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "PurchaseOrderId",
+                          "PurchaseOrderId",
+                          event,
+                          newValue
+                        )
+                      }
                       isOptionEqualToValue={(option, value) =>
                         option.PurchaseOrderId === value.PurchaseOrderId
                       }
@@ -1940,11 +1890,10 @@ const AddEstimateForm = () => {
                       <div className="col-md-12 col-lg-12">
                         <div className="basic-form">
                           <form>
-                            {/* <h4 className="card-title">Estimate Notes</h4> */}
                             <label className="form-label">Estimate Notes</label>
                             <div className="mb-3">
                               <textarea
-                                placeholder=" EstimateNotes"
+                                placeholder=" Estimate Notes"
                                 value={formData.EstimateNotes}
                                 name="EstimateNotes"
                                 onChange={handleInputChange}
@@ -2275,30 +2224,28 @@ const AddEstimateForm = () => {
                               file.EstimateFileId
                           ) ? (
                             <span
-                              className="checkbox"
+                              className=""
                               style={{
                                 position: "absolute",
                                 top: "3px",
                                 left: "14px",
                               }}
                             >
-                              <input
-                                type="checkbox"
+                              <Checkbox
                                 checked={true}
                                 onChange={() => handleImageSelect(file)}
                               />
                             </span>
                           ) : (
                             <span
-                              className="checkbox"
+                              className=""
                               style={{
                                 position: "absolute",
                                 top: "3px",
                                 left: "14px",
                               }}
                             >
-                              <input
-                                type="checkbox"
+                              <Checkbox
                                 checked={false}
                                 onChange={() => handleImageSelect(file)}
                               />
@@ -2381,25 +2328,7 @@ const AddEstimateForm = () => {
                   </div>
                 </div>
                 <div className="mb-2 row text-right">
-                  <div className="col-md-5 col-sm-4">
-                    {/* {addCustomerSuccess && (
-                      <Alert severity="success">
-                        {addCustomerSuccess
-                          ? addCustomerSuccess
-                          : "Susseccfully added/Updated estimate"}
-                      </Alert>
-                    )}
-                    {submitError && (
-                      <Alert severity="error">
-                        {errorMessage ? errorMessage : "Error Adding Estimates"}
-                      </Alert>
-                    )}
-                    {emptyFieldsError && (
-                      <Alert severity="error">
-                        Please fill all required fields
-                      </Alert>
-                    )} */}
-                  </div>
+                  <div className="col-md-5 col-sm-4"></div>
 
                   <div className="col-md-7 col-sm-7 p-0 ">
                     {idParam ? (
@@ -2422,7 +2351,6 @@ const AddEstimateForm = () => {
                             <MenuItem
                               value={2}
                               onClick={() => {
-                                // setEstimateLinkData("PO clicked")
                                 LinkToPO();
                                 navigate("/purchase-order/add-po");
                               }}
@@ -2452,12 +2380,6 @@ const AddEstimateForm = () => {
                             navigate(
                               `/send-mail?title=${"Estimate"}&mail=${contactEmail}`
                             );
-                            // sendEmail(
-                            //   `/estimates/estimate-preview?id=${idParam}`,
-                            //   formData.CustomerId,
-                            //   formData.ContactId,
-                            //   false
-                            // );
                           }}
                         >
                           <Email />
@@ -2478,20 +2400,15 @@ const AddEstimateForm = () => {
                     ) : (
                       <></>
                     )}{" "}
-                    <NavLink to="/estimates">
-                      <button
-                        className="btn btn-danger light ms-1 me-2"
-                        onClick={() => {
-                          if (isEstimateUpdateRoute) {
-                            navigate(`/estimates`);
-                            setPunchListData({});
-                            return;
-                          }
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </NavLink>
+                    <button
+                      className="btn btn-danger light ms-1 me-2"
+                      onClick={() => {
+                        navigate(`/estimates`);
+                        setPunchListData({});
+                      }}
+                    >
+                      Cancel
+                    </button>
                     {idParam ? (
                       <LoaderButton
                         loading={disableButton}
@@ -2504,14 +2421,6 @@ const AddEstimateForm = () => {
                         Save as copy
                       </LoaderButton>
                     ) : (
-                      // <button
-                      //   className="btn btn-secondary me-2"
-                      //   onClick={() => {
-                      //     handleSubmit(0, "");
-                      //   }}
-                      // >
-                      //   Save as copy
-                      // </button>
                       <></>
                     )}
                     <LoaderButton
@@ -2523,15 +2432,6 @@ const AddEstimateForm = () => {
                     >
                       Save
                     </LoaderButton>
-                    {/* <button
-                      type="submit"
-                      className="btn btn-primary me-2"
-                      onClick={() => {
-                        handleSubmit();
-                      }}
-                    >
-                      Save
-                    </button> */}
                   </div>
                 </div>
               </div>

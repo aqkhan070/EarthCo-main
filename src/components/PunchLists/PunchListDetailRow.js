@@ -30,7 +30,7 @@ import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import EventPopups from "../Reusable/EventPopups";
-
+import Tooltip from "@mui/material/Tooltip";
 const PunchListDetailRow = ({
   headers,
   item,
@@ -39,8 +39,6 @@ const PunchListDetailRow = ({
   setPlDetailId,
   fetchFilterdPunchList,
 }) => {
-
-  
   const { PunchDetailData, setPunchDetailData, setPunchListData } =
     useContext(DataContext);
   const navigate = useNavigate();
@@ -99,13 +97,16 @@ const PunchListDetailRow = ({
       console.log("delete pl details response", response.data);
     } catch (error) {
       console.log("There was an error deleting the punch list detail:", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Error deleting punch list detail");
     }
   };
 
   const changePlStatus = async (id, status) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/PunchList/UpdatePunchlistStatus?PunchlistId=${id}&StatusId=${status}`,
+        `https://earthcoapi.yehtohoga.com/api/PunchList/UpdatePunchlistDetailStatus?PunchlistDetailId=${id}&StatusId=${status}`,
         {
           headers,
         }
@@ -117,6 +118,11 @@ const PunchListDetailRow = ({
       console.log("delete pl details response", response.data);
     } catch (error) {
       console.log("There was an error deleting the punch list detail:", error);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(
+        "There was an error changing status of punch list detail:"
+      );
     }
   };
 
@@ -156,10 +162,32 @@ const PunchListDetailRow = ({
                           />
                         </a>
                         <div>
-                          <h6>{detail.DetailData.Notes}</h6>
+                          <Tooltip title={detail.DetailData.Notes} arrow>
+                            <h6
+                              style={{
+                                maxWidth: "7em",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {detail.DetailData.Notes}
+                            </h6>{" "}
+                          </Tooltip>
                           <span>{detail.DetailData.PunchlistDetailId}</span>
                         </div>
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        style={{
+                          backgroundColor:
+                            detail.DetailData.PunchlichlistDetailColor,
+                        }}
+                        className="badge badge-pill "
+                      >
+                        {detail.DetailData.PunchlichlistDetailStatus}
+                      </span>
                     </TableCell>
 
                     <TableCell colSpan={3}>
@@ -195,7 +223,10 @@ const PunchListDetailRow = ({
                           </MenuItem>
                           <MenuItem
                             onClick={() => {
-                              changePlStatus(item.Data.PunchlistId, 1);
+                              changePlStatus(
+                                detail.DetailData.PunchlistDetailId,
+                                1
+                              );
                             }}
                             value={2}
                           >
@@ -203,7 +234,10 @@ const PunchListDetailRow = ({
                           </MenuItem>
                           <MenuItem
                             onClick={() => {
-                              changePlStatus(item.Data.PunchlistId, 2);
+                              changePlStatus(
+                                detail.DetailData.PunchlistDetailId,
+                                2
+                              );
                             }}
                             value={3}
                           >

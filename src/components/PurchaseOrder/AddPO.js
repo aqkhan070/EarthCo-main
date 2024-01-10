@@ -132,31 +132,6 @@ export const AddPO = ({}) => {
     emailAlertColor,
   } = useSendEmail();
 
-  const handleAutocompleteChange = async (e) => {
-    // inputValue ? setDisableSubmit(false) : setDisableSubmit(true);
-    setInputValue(e.target.value);
-    if (!e.target.value) {
-      return;
-    }
-    try {
-      setShowCustomersList(true); // Show the list when typing
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetSearchCustomersList?Search=${e.target.value}`,
-        { headers }
-      );
-      console.log("customers search list", res.data);
-      setCustomersList(res.data);
-    } catch (error) {
-      console.log("customer search api error", error);
-    }
-  };
-  const selectCustomer = (customer) => {
-    setFormData({ ...formData, CustomerId: customer.UserId });
-
-    setInputValue(customer.CompanyName); // Add this line to update the input value
-    setShowCustomersList(false);
-  };
-
   const fetchpoData = async () => {
     if (idParam === 0) {
       return;
@@ -681,6 +656,14 @@ export const AddPO = ({}) => {
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
+      return;
+    }
+
+    if (itemsList.length <= 0) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please Add Atleast one item");
+
       return;
     }
     setDisableButton(true);

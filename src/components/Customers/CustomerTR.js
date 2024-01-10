@@ -258,7 +258,7 @@ const CustomerTR = ({
                       >
                         {customer.Email}
                       </TableCell>
-                      <TableCell className="table-cell-align">
+                      <TableCell className="table-cell-align" align="right">
                         <Button
                           // className="btn btn-danger btn-icon-xxs "
                           data-bs-toggle="modal"

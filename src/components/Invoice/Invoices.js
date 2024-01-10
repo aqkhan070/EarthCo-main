@@ -238,7 +238,6 @@ const Invoices = () => {
                             <TableRow>
                               {error ? (
                                 <TableCell className="text-center" colSpan={9}>
-                                  {" "}
                                   <div className="text-center">
                                     No Record Found
                                   </div>
@@ -278,7 +277,7 @@ const Invoices = () => {
                                   <TableCell>
                                     {TblDateFormat(invoice.IssueDate)}
                                   </TableCell>
-                                  <TableCell>{invoice.CustomerName}</TableCell>{" "}
+                                  <TableCell>{invoice.CustomerName}</TableCell>
                                   {/* <TableCell></TableCell> */}
                                   {/* <TableCell></TableCell> */}
                                   <TableCell>

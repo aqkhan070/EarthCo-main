@@ -88,12 +88,15 @@ const SendMail = () => {
   const handleSubmit = () => {
     const postData = new FormData();
 
+    const filePathsArray = selectedImages.map((image) => image.FilePath);
+
     // Merge the current items with the new items for EmailData
     const mergedEmailData = {
       Email: emails.join(","),
       CCEmail: CCs.join(","),
       Subject: subject,
       Body: editorContent,
+      FilePaths: filePathsArray,
     };
 
     console.log("mergedEmailData:", mergedEmailData);
@@ -153,6 +156,10 @@ const SendMail = () => {
     if (mail) {
       setEmails([...emails, mail]);
     }
+
+    return () => {
+      setSelectedImages([]);
+    };
   }, []);
 
   return (

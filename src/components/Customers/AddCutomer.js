@@ -376,7 +376,7 @@ const AddCustomer = () => {
                           name="FirstName"
                           variant="outlined"
                           size="small"
-                          value={companyData.FirstName}
+                          value={companyData.FirstName || ""}
                           error={submitClicked && !companyData.FirstName}
                           onChange={handleCompanyChange}
                           placeholder="Customer Name"
@@ -395,7 +395,7 @@ const AddCustomer = () => {
                           name="ContactName"
                           variant="outlined"
                           size="small"
-                          value={companyData.ContactName}
+                          value={companyData.ContactName || ""}
                           onChange={handleCompanyChange}
                           error={submitClicked && !companyData.ContactName}
                           placeholder="Contact Name"
@@ -453,7 +453,7 @@ const AddCustomer = () => {
                           name="Email"
                           variant="outlined"
                           size="small"
-                          value={companyData.Email}
+                          value={companyData.Email || ""}
                           error={submitClicked && !companyData.Email}
                           onChange={handleCompanyChange}
                           placeholder="Email"
@@ -572,7 +572,7 @@ const AddCustomer = () => {
                         <label className="form-label">Notes</label>
                         <textarea
                           name="Notes"
-                          value={companyData.Notes}
+                          value={companyData.Notes || ""}
                           onChange={handleCompanyChange}
                           className=" form-control "
                           rows="2"

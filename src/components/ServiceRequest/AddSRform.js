@@ -309,6 +309,11 @@ const AddSRform = () => {
     handleInputChange(simulatedEvent);
   };
 
+  const [selectedContacts, setSelectedContacts] = useState([]);
+  const handleContactChange = (event, newValue) => {
+    setSelectedContacts(newValue.map((company) => company.ContactId));
+  };
+
   const handleStaffAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
     const simulatedEvent = {
@@ -359,8 +364,8 @@ const AddSRform = () => {
     if (
       !SRData.ServiceRequestData.CustomerId ||
       !SRData.ServiceRequestData.ServiceLocationId ||
-      !SRData.ServiceRequestData.ContactId ||
-      !SRData.ServiceRequestData.Assign
+      !SRData.ServiceRequestData.Assign ||
+      selectedContacts.length <= 0
     ) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
@@ -372,10 +377,18 @@ const AddSRform = () => {
     setLoadingButton(true);
     setBtnDisable(true);
     const formData = new FormData();
+
+    const contactIdArray = selectedContacts.map((contact) => ({
+      ContactId: contact,
+    }));
+
     SRData.ServiceRequestData.tblSRItems = tblSRItems;
+    SRData.ServiceRequestData.ContactId = selectedContacts[0];
+    SRData.ServiceRequestData.tblServiceRequestContacts = contactIdArray;
     SRData.ServiceRequestData.tblServiceRequestLatLongs = sRMapData;
 
     console.log("servise request data before", SRData);
+
     formData.append(
       "ServiceRequestData",
       JSON.stringify(SRData.ServiceRequestData)
@@ -487,6 +500,8 @@ const AddSRform = () => {
           ...response.data.Data,
         },
       }));
+
+      setSelectedContacts(response.data.ContactData.map(contact => contact.ContactId));
 
       // Set the tblSRItems state with the response.data.tblSRItems
       setTblSRItems(response.data.ItemData);
@@ -797,6 +812,29 @@ const AddSRform = () => {
                           </div>
 
                           <Autocomplete
+                            multiple
+                            size="small"
+                            options={contactList}
+                            getOptionLabel={(option) => option.FirstName || ""}
+                            onChange={handleContactChange}
+                            value={contactList.filter((company) =>
+                              selectedContacts.includes(company.ContactId)
+                            )}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label=""
+                                placeholder="Select Contacts"
+                                className="bg-white"
+                                error={
+                                  submitClicked && selectedContacts.length <= 0
+                                }
+                              />
+                            )}
+                            aria-label="Contact select"
+                          />
+
+                          {/* <Autocomplete
                             id="inputState299"
                             size="small"
                             options={contactList}
@@ -833,7 +871,7 @@ const AddSRform = () => {
                               />
                             )}
                             aria-label="Contact select"
-                          />
+                          /> */}
                         </div>
                         <div className="col-xl-3 col-md-4">
                           {" "}

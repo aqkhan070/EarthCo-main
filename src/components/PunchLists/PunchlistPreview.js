@@ -337,7 +337,7 @@ const PunchlistPreview = () => {
                             </td>
                             <td>
                               {" "}
-                              <p>{pLData.Status}</p>
+                              <p>{item.DetailData.PunchlichlistDetailStatus}</p>
                             </td>
                           </tr>
                         ))}

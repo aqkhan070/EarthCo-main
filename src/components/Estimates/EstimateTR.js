@@ -619,30 +619,20 @@ const EstimateTR = ({
                     >&#8658;</button>
                     </div>
                   </div> */}
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
-                component="div"
-                count={estmRecords.totalRecords}
-                rowsPerPage={rowsPerPage}
-                page={tablePage} // Use tablePage for the table rows
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={(event) => {
-                  setRowsPerPage(parseInt(event.target.value, 10));
-                  setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                }}
-              />
-              {/* <TablePagination
+              {estmRecords.totalRecords && (
+                <TablePagination
                   rowsPerPageOptions={[10, 25, 50]}
                   component="div"
-                  count={filteredEstimates.length}
+                  count={estmRecords.totalRecords}
                   rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={(event, newPage) => setPage(newPage)}
+                  page={tablePage} // Use tablePage for the table rows
+                  onPageChange={handleChangePage}
                   onRowsPerPageChange={(event) => {
                     setRowsPerPage(parseInt(event.target.value, 10));
-                    setPage(0);
+                    setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
                   }}
-                /> */}
+                />
+              )}
             </div>
           </div>
         </div>

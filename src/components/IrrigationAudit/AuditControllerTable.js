@@ -69,7 +69,7 @@ const AuditControllerTable = ({
                             {controller.ControllerData?.ControllerAuditReportId}
                           </td>
                           <td>{controller.ControllerData?.ControllerName}</td>
-                          <td></td>
+                          <td>{controller.ControllerData?.ControllerNumber}</td>
                           <td>
                             {" "}
                             {controller.ControllerData?.BrokenValve
@@ -119,7 +119,7 @@ const AuditControllerTable = ({
                                       data-bs-dismiss="modal"
                                     ></button>
                                   </div>
-                                  <div className="modal-body">
+                                  <div className="modal-body text-center">
                                     <p>
                                       Are you sure you want to delete this
                                       Controller

@@ -109,7 +109,7 @@ const AddInvioces = ({}) => {
   };
 
   const getInvoice = async () => {
-    if (idParam === 0) {
+    if (!idParam) {
       return;
     }
     setLoading(true);
@@ -399,12 +399,21 @@ const AddInvioces = ({}) => {
 
     let InvoiceData = {}; // Declare InvoiceData in the outer scope
 
+  
+
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
       console.log("Required fields are empty");
+      return;
+    }
+      if (formData.tblInvoiceItems.length <= 0) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please Add Atleast one item");
+
       return;
     }
 
@@ -415,7 +424,7 @@ const AddInvioces = ({}) => {
         InvoiceId: idParam,
         TotalAmount: totalItemAmount || 0,
         ProfitPercentage: Number(profitPercentage) || 0,
-        CompanyId : Number(loggedInUser.CompanyId),
+        CompanyId: Number(loggedInUser.CompanyId),
       };
     } else {
       InvoiceData = {
@@ -423,7 +432,7 @@ const AddInvioces = ({}) => {
         InvoiceId: idParam || 0,
         TotalAmount: totalItemAmount || 0,
         ProfitPercentage: Number(profitPercentage) || 0,
-        CompanyId : Number(loggedInUser.CompanyId),
+        CompanyId: Number(loggedInUser.CompanyId),
       };
     }
 

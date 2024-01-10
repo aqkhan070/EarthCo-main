@@ -380,6 +380,13 @@ const AddBill = ({}) => {
       setSnackBarText("Please fill all required fields");
       return;
     }
+    if (itemsList.length <= 0) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Please Add Atleast one item");
+
+      return;
+    }
     setDisableButton(true);
 
     const postData = new FormData();
