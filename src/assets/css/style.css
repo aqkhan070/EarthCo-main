@@ -2590,7 +2590,7 @@ progress {
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #888888;
+    color: #201f1f;
     background-color: #F5F5F5;
     background-clip: padding-box;
     border: 1px solid #E6E6E6;
@@ -2614,7 +2614,7 @@ progress {
 }
 
 .form-control:focus {
-    color: #888888;
+    color: #201f1f;
     background-color: #F5F5F5;
     border-color: #86ccff;
     outline: 0;
@@ -35023,7 +35023,7 @@ input#checkAll.form-check-input:checked {
 
 .form-control {
     background: #fff;
-    color: #6e6e6e;
+    color: #201f1f;
     line-height: 1.5;
     font-size: 13px;
     height: 2.813rem;
@@ -35036,7 +35036,7 @@ input#checkAll.form-check-input:checked {
 .form-control.active {
     box-shadow: none;
     background: #fff;
-    color: #6e6e6e;
+    color: #201f1f;
 }
 
 .form-control:focus {

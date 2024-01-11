@@ -128,6 +128,7 @@ const SLAddress = ({
           value: newValue.description ? newValue.description : "",
         },
       };
+      console.log("new value is", newValue)
 
       handleChange(simulatedEvent);
 
@@ -141,6 +142,7 @@ const SLAddress = ({
           console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
           setSLAddress((prevData) => ({
             ...prevData,
+            Address : newValue.description,
             lat: latitude,
             lng: longitude,
           }));

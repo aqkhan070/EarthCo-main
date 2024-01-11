@@ -41,18 +41,29 @@ const Map = () => {
     }
   };
 
-  const filteredMapData = mapData.filter((map) => {
-    const typeMatches =
-      selectedType === "Select Type" || map.Type === selectedType;
-    const queryMatches =
-      map.ServiceRequestNumber.toLowerCase().includes(
-        searchQuery.toLowerCase()
-      ) ||
-      map.CustomerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      map.Type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      map.Address.toLowerCase().includes(searchQuery.toLowerCase());
-    return typeMatches && queryMatches;
-  });
+  const filteredMapData = mapData
+    .filter((map) => {
+      if (!map) {
+        return false; // Skip null or undefined map objects
+      }
+
+      const typeMatches =
+        selectedType === "Select Type" || map.Type === selectedType;
+      const queryMatches =
+        (map.ServiceRequestNumber &&
+          map.ServiceRequestNumber.toLowerCase().includes(
+            searchQuery.toLowerCase()
+          )) ||
+        (map.CustomerName &&
+          map.CustomerName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (map.Type &&
+          map.Type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (map.Address &&
+          map.Address.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      return typeMatches && queryMatches;
+    })
+    .sort((a, b) => b.ServiceRequestId - a.ServiceRequestId);
 
   const [toolTipData, setToolTipData] = useState({});
 
@@ -94,15 +105,17 @@ const Map = () => {
               <div className="col-md-5">
                 <div>
                   <div>
+                    <label>Search</label>
                     <input
                       type="text"
                       className="form-control input-default "
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search something"
+                      placeholder="Search SR #, Customer Name, Address, Type "
                     />
                   </div>
                   <div className="mt-2">
+                    <label>Select Type</label>
                     <Form.Select
                       className="form-control bg-white"
                       value={selectedType}

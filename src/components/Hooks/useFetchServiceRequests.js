@@ -1,12 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { DataContext } from "../../context/AppData";
 
 const useFetchServiceRequests = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const { statusId, setStatusId } = useContext(DataContext);
+
   const [isLoading, setIsLoading] = useState(true);
   const [serviceRequest, setserviceRequest] = useState([]);
   const [sRfetchError, setSRfetchError] = useState(true);
@@ -17,7 +20,7 @@ const useFetchServiceRequests = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0,
+    StatusId = statusId,
     isAscending = false
   ) => {
     try {

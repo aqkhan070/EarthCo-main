@@ -84,7 +84,7 @@ const AuditController = ({
     e.preventDefault();
     setSubmitClicked(true);
 
-    if (!formData.ControllerName) {
+    if (!formData.ControllerName || !formData.ControllerNumber) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -182,7 +182,7 @@ const AuditController = ({
   };
 
   return (
-    <div className="card">
+    <div>
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
@@ -213,7 +213,9 @@ const AuditController = ({
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
-              <label className="form-label">Controller Number</label>
+              <label className="form-label">
+                Controller Number<span className="text-danger">*</span>
+              </label>
             </div>
             <TextField
               type="text"
@@ -222,7 +224,7 @@ const AuditController = ({
               name="ControllerNumber"
               onChange={handleChange}
               placeholder="Controller Number"
-              // error={submitClicked && !formData.ControllerNumber}
+              error={submitClicked && !formData.ControllerNumber}
             />
           </div>
           <div className="col-sm-5 col-md-4 mb-3 ">

@@ -14,7 +14,7 @@ import EventPopups from "../../../Reusable/EventPopups";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const RisingCanesPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const RisingCanesPreview = () => {
         { headers }
       );
       setWeeklyPreviewData(res.data.Data);
-      fetchEmail(res.data.Data.ContactId)
+      fetchEmail(res.data.Data.ContactId);
 
       setFiles(res.data.FileData);
       console.log("reponse weekly is", res.data);
@@ -207,7 +207,9 @@ const RisingCanesPreview = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{formatDate(weeklyPreviewData.ReportForWeekOf, false)}</h5>
+                    <h5>
+                      {formatDate(weeklyPreviewData.ReportForWeekOf, false)}
+                    </h5>
                   </div>
                 </div>
               </div>
@@ -432,11 +434,17 @@ const RisingCanesPreview = () => {
                 {files.map((file, index) => {
                   return (
                     <div key={index} className="col-md-3 col-sm-4">
-                      <img
-                        src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                        className="weeklyimages"
-                        alt="weeklyimages"
-                      />
+                      {file.FilePath ? (
+                        <>
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            className="weeklyimages"
+                            alt="weeklyimages"
+                          />
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   );
                 })}
@@ -453,11 +461,12 @@ const RisingCanesPreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/weekly-reports/rising-canes`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

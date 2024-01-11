@@ -285,13 +285,13 @@ const Invoices = () => {
                                   </TableCell>
                                   <TableCell>{invoice.BillNumber}</TableCell>
                                   <TableCell>
-                                    {invoice.ProfitPercentage}
+                                    {invoice.ProfitPercentage?.toFixed(2)}
                                   </TableCell>
                                   <TableCell className="text-end">
-                                    {invoice.BalanceAmount}
+                                    {invoice.BalanceAmount?.toFixed(2)}
                                   </TableCell>
                                   <TableCell className="text-end">
-                                    {invoice.TotalAmount.toFixed(2)}
+                                    {invoice.TotalAmount?.toFixed(2)}
                                   </TableCell>
                                   <TableCell>
                                     <span

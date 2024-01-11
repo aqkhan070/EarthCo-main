@@ -18,10 +18,10 @@ const useQuickBook = () => {
 
       // Extract the URL from res.data and navigate to it without the base URL
       const url = new URL(res.data);
-      window.location.href = url.href;     
+      window.location.href = url.href;
 
       // Open the URL in a new tab
-    //   window.open(url.href, "_blank");
+      //   window.open(url.href, "_blank");
 
       console.log("Email response is", res.data);
     } catch (error) {
@@ -41,10 +41,25 @@ const useQuickBook = () => {
       console.log("error connecting to QB", error);
     }
   };
+  const syncQB = async (handlepopup) => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/SyncQB/SyncDataAPI`
+      );
+
+      handlepopup(true, "success", res.data);
+
+      console.log("synced qb", res.data);
+    } catch (error) {
+      console.log("error connecting to QB", error);
+      handlepopup(true, "error", "Error Syncing Quick Books");
+    }
+  };
 
   return {
     connectToQB,
     genetareQBToken,
+    syncQB,
   };
 };
 

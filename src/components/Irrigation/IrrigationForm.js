@@ -249,11 +249,6 @@ const IrrigationForm = () => {
                 </div>
                 <div className="card-body">
                   <div className="">
-                    {/* {errorMessage ? (
-                  <Alert severity="error">{errorMessage}</Alert>
-                ) : null}
-                {addSucces && <Alert severity="success">{addSucces}</Alert>} */}
-
                     <div className="row mb-2 mx-1">
                       <div className="col-md-3">
                         <label className="form-label">
@@ -295,65 +290,6 @@ const IrrigationForm = () => {
                         />
                       </div>
 
-                      {/* <div className="col-md-3">
-                      <label className="form-label">Service location</label>
-                      <Autocomplete
-                        id="inputState19"
-                        size="small"
-                        options={sLList}
-                        getOptionLabel={(option) => option.Name || ""}
-                        value={
-                          sLList.find(
-                            (customer) =>
-                              customer.ServiceLocationId ===
-                              formData.ServiceLocationId
-                          ) || null
-                        }
-                        onChange={handleSLAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.ServiceLocationId === value.ServiceLocationId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Service Locations"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
-                      />
-                    </div> */}
-                      {/* <div className="col-md-3">
-                      <label className="form-label">Contact</label>
-
-                      <Autocomplete
-                        id="inputState299"
-                        size="small"
-                        options={contactList}
-                        getOptionLabel={(option) => option.FirstName || ""}
-                        value={
-                          contactList.find(
-                            (contact) =>
-                              contact.ContactId === formData.ContactId
-                          ) || null
-                        }
-                        onChange={handleContactAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.ContactId === value.ContactId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Contacts"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Contact select"
-                      />
-                    </div> */}
-
                       <div className="col-md-3 ">
                         <div className="col-md-12">
                           <label className="form-label">
@@ -370,7 +306,25 @@ const IrrigationForm = () => {
                           placeholder="Controller Number"
                         />
                       </div>
-                      <div className="col-md-6 text-right mt-3">
+                      <div className="col-md-3 mt-4">
+                        <LoaderButton
+                          varient="small"
+                          loading={disableButton}
+                          handleSubmit={handleSubmit}
+                        >
+                          Save
+                        </LoaderButton>
+
+                        <button
+                          onClick={() => {
+                            navigate(`/irrigation`);
+                          }}
+                          className="btn btn-danger btn-sm light ms-1"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <div className="col-md-3 text-right mt-3">
                         <div>
                           {idParam === 0 ? null : (
                             <>
@@ -381,12 +335,6 @@ const IrrigationForm = () => {
                                   navigate(
                                     `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
                                   );
-                                  // sendEmail(
-                                  //   `/estimates/estimate-preview?id=${idParam}`,
-                                  //   formData.CustomerId,
-                                  //   formData.ContactId,
-                                  //   false
-                                  // );
                                 }}
                               >
                                 <Email />
@@ -403,42 +351,8 @@ const IrrigationForm = () => {
                               >
                                 <Print></Print>
                               </button>
-                              <button
-                                className="btn btn-dark btn-sm me-2"
-                                onClick={toggleShowForm}
-                              >
-                                Add Controller Info
-                              </button>
                             </>
                           )}
-                          {/* <button
-                        type="button"
-                        onClick={handleSubmit}
-                        className="btn btn-primary btn-sm me-1"
-                      >
-                        Submit
-                      </button> */}
-                          <LoaderButton
-                            varient="small"
-                            loading={disableButton}
-                            handleSubmit={handleSubmit}
-                          >
-                            Submit
-                          </LoaderButton>
-
-                          {/* <NavLink to="/irrigation">
-                  </NavLink> */}
-
-                          <button
-                            onClick={() => {
-                              // setShowContent(true);
-                              // setSelectedIrr(0);
-                              navigate(`/irrigation`);
-                            }}
-                            className="btn btn-danger btn-sm light ms-1"
-                          >
-                            Cancel
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -446,22 +360,35 @@ const IrrigationForm = () => {
                 </div>
               </div>
             </div>
+            <div className="card">
+              {idParam === 0 ? null : (
+                <div className="row ">
+                  <div className="col-md-12 text-end">
+                    <button
+                      className="btn btn-dark btn-sm m-3 mb-0"
+                      onClick={toggleShowForm}
+                    >
+                      Add Controller Info
+                    </button>
+                  </div>
+                </div>
+              )}
+              {showForm && (
+                <IrrigationControler
+                  setAddSucces={setAddSucces}
+                  fetchIrrigation={fetchIrrigation}
+                  toggleShowForm={toggleShowForm}
+                  idParam={idParam}
+                />
+              )}
 
-            {showForm && (
-              <IrrigationControler
+              <ControllerTable
                 setAddSucces={setAddSucces}
                 fetchIrrigation={fetchIrrigation}
-                toggleShowForm={toggleShowForm}
-                idParam={idParam}
+                headers={headers}
+                controllerList={controllerList}
               />
-            )}
-
-            <ControllerTable
-              setAddSucces={setAddSucces}
-              fetchIrrigation={fetchIrrigation}
-              headers={headers}
-              controllerList={controllerList}
-            />
+            </div>
           </>
         )}
       </div>

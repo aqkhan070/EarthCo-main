@@ -62,8 +62,6 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
       return; // Return early if any required field is empty
     }
 
-    
-
     if (!validator.isLength(formData.FirstName, { min: 3, max: 30 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -79,8 +77,6 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
       console.log("Company name should be between 3 and 30 characters");
       return;
     }
-
-    
 
     if (!validator.isEmail(formData.Email)) {
       setOpenSnackBar(true);
@@ -312,7 +308,7 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
       </div>
 
       <span
-        style={{ cursor: "pointer", color: "blue" }}
+        style={{ cursor: "pointer", color: "#779A3D" }}
         data-bs-toggle="modal"
         data-bs-target="#basicModal"
       >

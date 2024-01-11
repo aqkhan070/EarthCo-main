@@ -13,6 +13,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Audit = () => {
   const token = Cookies.get("token");
@@ -134,53 +135,59 @@ const Audit = () => {
       />
       <div className="container-fluid ">
         {toggleFullscreen ? (
-          <div className="row me-3">
-            <div className="col-md-11 text-end">
-              {" "}
-              {isMail ? (
-                <></>
-              ) : (
-                <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                  onClick={() => {
-                    navigate(`/irrigation`);
-                  }}
-                >
-                  <i className="fa fa-backward"></i>
-                </button>
-              )}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <i className="fa fa-print"></i>
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <i className="fa fa-download"></i>
-              </button>{" "}
-              {isMail ? (
-                <></>
-              ) : (
-                <button
-                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                  onClick={() => {
-                    // sendEmail(
-                    //   `/irrigation/audit-report?id=${idParam}`,
-                    //   irrDetails.IrrigationData.CustomerId,
-                    //   0,
-                    //   false
-                    // );
-                    navigate(
-                      `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
-                    );
-                  }}
-                >
-                  <i className="fa-regular fa-envelope"></i>
-                </button>
-              )}
+          <div className="print-page-width">
+            <div style={{ width: "28.7cm" }}>
+              <div className="row ">
+                <div className="col-md-1">
+                  {isMail ? (
+                    <></>
+                  ) : (
+                    <button
+                      className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                      onClick={() => {
+                        navigate(`/irrigation`);
+                      }}
+                    >
+                      <ArrowBackIcon sx={{ fontSize: 17 }} />
+                    </button>
+                  )}
+                </div>
+                <div className="col-md-11 text-end">
+                  {" "}
+                  <button
+                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                    onClick={handlePrint}
+                  >
+                    <i className="fa fa-print"></i>
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                    onClick={handleDownload}
+                  >
+                    <i className="fa fa-download"></i>
+                  </button>{" "}
+                  {isMail ? (
+                    <></>
+                  ) : (
+                    <button
+                      className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                      onClick={() => {
+                        // sendEmail(
+                        //   `/irrigation/audit-report?id=${idParam}`,
+                        //   irrDetails.IrrigationData.CustomerId,
+                        //   0,
+                        //   false
+                        // );
+                        navigate(
+                          `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
+                        );
+                      }}
+                    >
+                      <i className="fa-regular fa-envelope"></i>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         ) : (
@@ -300,14 +307,20 @@ const Audit = () => {
 
                                 <strong>Controller photo:</strong>
                                 <br />
-                                <img
-                                  src={`https://earthcoapi.yehtohoga.com/${item.ControllerPhotoPath}`}
-                                  style={{
-                                    width: "150px",
-                                    height: "120px",
-                                    objectFit: "cover",
-                                  }}
-                                />
+                                {item.ControllerPhotoPath ? (
+                                  <>
+                                    <img
+                                      src={`https://earthcoapi.yehtohoga.com/${item.ControllerPhotoPath}`}
+                                      style={{
+                                        width: "150px",
+                                        height: "120px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
                                 <br />
                               </td>
                               <td
@@ -383,15 +396,21 @@ const Audit = () => {
                                 <br />
                                 <strong>photo:</strong>
                                 <br />
+                                {item.PhotoPath ? (
+                                  <>
+                                    <img
+                                      src={`https://earthcoapi.yehtohoga.com/${item.PhotoPath}`}
+                                      style={{
+                                        width: "150px",
+                                        height: "120px",
+                                        objectFit: "cover",
+                                      }}
+                                    />
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
 
-                                <img
-                                  src={`https://earthcoapi.yehtohoga.com/${item.PhotoPath}`}
-                                  style={{
-                                    width: "150px",
-                                    height: "120px",
-                                    objectFit: "cover",
-                                  }}
-                                />
                                 <br />
                               </td>
                             </tr>

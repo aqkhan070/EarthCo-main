@@ -12,7 +12,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import TextField from "@mui/material/TextField";
-
 import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddressInputs from "../Modals/AddressInputs";

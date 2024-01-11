@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import ServiceRequestTR from "./ServiceRequestTR";
 import { useEffect, useState } from "react";
 import StatusCards from "./StatusCards";
@@ -9,6 +9,7 @@ import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
+import { DataContext } from "../../context/AppData";
 
 const ServiceRequests = () => {
   const {
@@ -29,8 +30,7 @@ const ServiceRequests = () => {
   // const [locationOptions, setLocationOptions] = useState();
   const [open, setOpen] = useState(0);
   const [closed, setClosed] = useState(0);
-
-  const [statusId, setStatusId] = useState(0);
+  const { statusId, setStatusId } = useContext(DataContext);
 
   useEffect(() => {
     // Filter the estimates array to get only the entries with Status === "Pending"
@@ -47,7 +47,11 @@ const ServiceRequests = () => {
   }, [serviceRequest]);
 
   useEffect(() => {
+    
     fetchServiceRequest();
+    return () => {
+      setStatusId(0)
+    }
   }, []);
 
   return (

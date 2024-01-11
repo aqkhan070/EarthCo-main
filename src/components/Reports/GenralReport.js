@@ -9,6 +9,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const GenralReport = () => {
   const {
@@ -112,8 +113,9 @@ const GenralReport = () => {
                   onClick={() => {
                     navigate(`/summary-report`);
                   }}
+                  style={{ padding: "5px 10px" }}
                 >
-                  <i className="fa fa-backward"></i>
+                  <ArrowBackIcon sx={{ fontSize: 17 }} />
                 </button>
               )}
               <button

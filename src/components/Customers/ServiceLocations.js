@@ -54,9 +54,9 @@ const ServiceLocations = ({
       lng: sLAddress.lng,
     }));
 
-    console.log("Sl payload izzzz", formData);
+    console.log("Sl payload izzzz", updatedValues);
 
-    if (!formData.Name || !formData.Address || !formData.Phone) {
+    if (!updatedValues.Name || !updatedValues.Address || !updatedValues.Phone) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -98,7 +98,7 @@ const ServiceLocations = ({
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
-      setSubmitClicked(false)
+      setSubmitClicked(false);
       const closeButton = document.getElementById("closerLocation");
       if (closeButton) {
         closeButton.click();
@@ -229,7 +229,7 @@ const ServiceLocations = ({
                       handleChange={handleChange}
                       setSLAddress={setSLAddress}
                       addressValue={formData}
-                      emptyerror={submitClicked && !formData.Address}
+                      emptyerror={submitClicked && !sLAddress.Address}
                     />
                   </div>
                 </div>
@@ -274,7 +274,7 @@ const ServiceLocations = ({
                 data-bs-dismiss="modal"
                 onClick={() => {
                   getCustomerData();
-                  setSubmitClicked(true)
+                  setSubmitClicked(true);
                   setSLAddress({}); // Resetting SLAddress
                   setFormData({
                     // Resetting formData

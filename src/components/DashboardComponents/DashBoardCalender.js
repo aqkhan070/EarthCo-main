@@ -24,6 +24,8 @@ import DateEventList from "./DateEventList";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SyncIcon from "@mui/icons-material/Sync";
+import Tooltip from "@mui/material/Tooltip";
+
 const DashBoardCalender = () => {
   const requestAbortController = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -532,18 +534,26 @@ const DashBoardCalender = () => {
             </div>
             {session && (
               <>
-                <div className="col-sm-2">
-                  <SyncIcon
-                    style={{ cursor: "pointer", color: "white" }}
-                    onClick={() => fetchGoogleEvents()}
-                  />
-                </div>
-                <div className="col-sm-2">
-                  <LogoutIcon
-                    style={{ cursor: "pointer", color: "white" }}
-                    onClick={() => signOut()}
-                  />
-                </div>
+                <Tooltip title="Refresh Calender" placement="top" arrow>
+                  <div className="col-sm-2">
+                    <SyncIcon
+                      style={{ cursor: "pointer", color: "white" }}
+                      onClick={() => fetchGoogleEvents()}
+                    />
+                  </div>
+                </Tooltip>
+                <Tooltip
+                  title="Signout from google"
+                  placement="top-start"
+                  arrow
+                >
+                  <div className="col-sm-2">
+                    <LogoutIcon
+                      style={{ cursor: "pointer", color: "white" }}
+                      onClick={() => signOut()}
+                    />
+                  </div>
+                </Tooltip>
               </>
             )}
           </div>

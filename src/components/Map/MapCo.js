@@ -6,6 +6,7 @@ import {
   useLoadScript,
 } from "@react-google-maps/api";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 
 const containerStyle = {
   width: "100%",
@@ -20,7 +21,7 @@ const defaultCenter = {
 function GoogleMapApi({ mapData = [], toolTipData }) {
   const [map, setMap] = useState(null);
   const [selectedMarker, setSelectedMarker] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (map && mapData && mapData.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -69,7 +70,12 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
   });
 
   if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded) return <div className="map-loader"><CircularProgress /></div>;
+  if (!isLoaded)
+    return (
+      <div className="map-loader">
+        <CircularProgress />
+      </div>
+    );
 
   return (
     <div>
@@ -94,19 +100,36 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
             position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
             onCloseClick={handleInfoWindowClose}
           >
-            <div>
-              <h6 className="pb-0 mb-0">
-                <strong>Service Request Number:</strong>
-              </h6>
-              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
-                {selectedMarker.ServiceRequestNumber}
-              </p>
-              <h6 className="pb-0 mb-0">
-                <strong>Customer Name:</strong>
-              </h6>
-              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
-                {selectedMarker.CustomerName}
-              </p>
+            <div className="row">
+              <div className="col-md-4">
+                <h6 className="pb-0 mb-0">
+                  
+                  <strong>Service Request #:</strong>
+                </h6>
+              </div>
+              <div
+                className="col-md-8"
+                style={{ cursor: "pointer", color: "blue" }}
+                onClick={() => {
+                  navigate(
+                    `/service-requests/add-sRform?id=${selectedMarker.ServiceRequestId}`
+                  );
+                }}
+              >
+                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                  {selectedMarker.ServiceRequestNumber}
+                </p>
+              </div>
+              <div className="col-md-4">
+                <h6 className="pb-0 mb-0">
+                  <strong>Customer:</strong>
+                </h6>
+              </div>{" "}
+              <div className="col-md-8">
+                <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+                  {selectedMarker.CustomerName}
+                </p>
+              </div>
               <h6 className="pb-0 mb-0">
                 <strong>Address:</strong>
               </h6>

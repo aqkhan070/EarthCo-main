@@ -188,7 +188,8 @@ const Irrigationlist = () => {
                         <TableRow className="material-tbl-alignment">
                           <TableCell>#</TableCell>
                           <TableCell>Customer Name</TableCell>
-                          <TableCell>Controller Numbers</TableCell>
+                          <TableCell>Controler Number</TableCell>
+                          <TableCell>Controllers Sr #</TableCell>
                           <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
@@ -206,8 +207,6 @@ const Irrigationlist = () => {
                               <TableCell>{irr.IrrigationId}</TableCell>
                               <TableCell
                                 onClick={() => {
-                                  // setShowContent(false);
-                                  // setSelectedIrr(irr.IrrigationId);
                                   navigate(
                                     `/irrigation/add-irrigation?id=${irr.IrrigationId}`
                                   );
@@ -215,14 +214,36 @@ const Irrigationlist = () => {
                               >
                                 {irr.CustomerName}
                               </TableCell>
-                              <TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  navigate(
+                                    `/irrigation/add-irrigation?id=${irr.IrrigationId}`
+                                  );
+                                }}
+                              >
+                                {" "}
+                                {irr.IrrigationNumber}
+                              </TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  navigate(
+                                    `/irrigation/add-irrigation?id=${irr.IrrigationId}`
+                                  );
+                                }}
+                              >
                                 {irr.ControllerNumbers.map((number, index) =>
                                   index === irr.ControllerNumbers.length - 1
                                     ? number
                                     : number + ", "
                                 )}
                               </TableCell>
-                              <TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  navigate(
+                                    `/irrigation/add-irrigation?id=${irr.IrrigationId}`
+                                  );
+                                }}
+                              >
                                 {TblDateFormat(irr.CreatedDate)}
                               </TableCell>
 

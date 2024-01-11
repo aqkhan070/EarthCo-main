@@ -83,7 +83,6 @@ const IrrigationControler = ({
     }
     setDisableButton(true);
 
-
     const postData = new FormData();
 
     // Merge the current items with the new items for EstimateData
@@ -162,14 +161,14 @@ const IrrigationControler = ({
   };
 
   return (
-    <div className="card">
+    <div className="mt-3">
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
         color={snackBarColor}
         text={snackBarText}
       />
-      <div className="itemtitleBar">
+      <div className="itemtitleBar ">
         <h4>Controller Info</h4>
       </div>
 

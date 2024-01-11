@@ -150,17 +150,25 @@ const PunchListDetailRow = ({
                   <TableRow>
                     <TableCell colSpan={3} sx={{ maxWidth: "7em" }}>
                       <div className="products">
-                        <a
-                          href={`https://earthcoapi.yehtohoga.com/${detail.DetailData.PhotoPath}`}
-                          target="_blank" // This attribute opens the link in a new tab
-                          rel="noopener noreferrer" // Recommended for security reasons
-                        >
-                          <img
-                            src={`https://earthcoapi.yehtohoga.com/${detail.DetailData.PhotoPath}`}
-                            className="avatar avatar-md"
-                            alt="PunchList Image"
-                          />
-                        </a>
+                        {detail.DetailData.PhotoPath ? (
+                          <>
+                            {" "}
+                            <a
+                              href={`https://earthcoapi.yehtohoga.com/${detail.DetailData.PhotoPath}`}
+                              target="_blank" // This attribute opens the link in a new tab
+                              rel="noopener noreferrer" // Recommended for security reasons
+                            >
+                              <img
+                                src={`https://earthcoapi.yehtohoga.com/${detail.DetailData.PhotoPath}`}
+                                className="avatar avatar-md"
+                                alt="PunchList Image"
+                              />
+                            </a>
+                          </>
+                        ) : (
+                          <div style={{ width: "5em" }}>No image found</div>
+                        )}
+
                         <div>
                           <Tooltip title={detail.DetailData.Notes} arrow>
                             <h6

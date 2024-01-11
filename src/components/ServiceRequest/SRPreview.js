@@ -13,6 +13,8 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -367,11 +369,12 @@ const SRPreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/service-requests`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                   <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

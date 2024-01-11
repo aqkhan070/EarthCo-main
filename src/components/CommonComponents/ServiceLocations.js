@@ -162,7 +162,7 @@ const ServiceLocations = ({
       </div>
 
       <span
-        style={{ cursor: "pointer", color: "blue" }}
+        style={{ cursor: "pointer", color: "#779A3D" }}
         data-bs-toggle="modal"
         data-bs-target="#basicModal2"
         onClick={(e) => {

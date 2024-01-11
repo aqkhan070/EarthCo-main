@@ -13,6 +13,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -154,11 +155,12 @@ const Landscape = () => {
               ) : (
                 <button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                  style={{ padding: "5px 10px" }}
                   onClick={() => {
                     navigate(`/landscape`);
                   }}
                 >
-                  <i className="fa fa-backward"></i>
+                 <ArrowBackIcon sx={{ fontSize: 17 }} />
                 </button>
               )}
               <button

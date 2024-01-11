@@ -399,8 +399,6 @@ const AddInvioces = ({}) => {
 
     let InvoiceData = {}; // Declare InvoiceData in the outer scope
 
-  
-
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
@@ -409,7 +407,7 @@ const AddInvioces = ({}) => {
       console.log("Required fields are empty");
       return;
     }
-      if (formData.tblInvoiceItems.length <= 0) {
+    if (formData.tblInvoiceItems.length <= 0) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please Add Atleast one item");
@@ -844,8 +842,11 @@ const AddInvioces = ({}) => {
         newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
-    if (totalExpense > 0) {
-      calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    // if (totalExpense > 0) {
+    //   calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    // } earlier calculations
+    if (totalamount > 0) {
+      calculatedProfitPercentage = (calculatedTotalProfit / totalamount) * 100;
     }
     setTotalExpense(newCostTotalAmount + newACTotalAmount);
 
@@ -1491,9 +1492,7 @@ const AddInvioces = ({}) => {
                               name="Rate"
                               style={{ width: "7em" }}
                               className="form-control form-control-sm"
-                              value={
-                                selectedItem?.SalePrice || itemInput.Rate || ""
-                              }
+                              value={itemInput.Rate || ""}
                               onChange={(e) =>
                                 setItemInput({
                                   ...itemInput,
@@ -1530,11 +1529,7 @@ const AddInvioces = ({}) => {
                               name="Rate"
                               style={{ width: "7em" }}
                               className="form-control form-control-sm"
-                              value={
-                                selectedItem?.PurchasePrice ||
-                                itemInput.PurchasePrice ||
-                                ""
-                              }
+                              value={itemInput.PurchasePrice || ""}
                               onChange={(e) =>
                                 setItemInput({
                                   ...itemInput,

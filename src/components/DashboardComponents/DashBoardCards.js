@@ -4,7 +4,7 @@ import { DataContext } from "../../context/AppData";
 
 const DashBoardCards = ({ dashBoardData }) => {
   const navigate = useNavigate();
-  const { loggedInUser } = useContext(DataContext);
+  const { loggedInUser, setStatusId } = useContext(DataContext);
 
   return (
     <div className="col-xl-12 wid-100">
@@ -16,6 +16,7 @@ const DashBoardCards = ({ dashBoardData }) => {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(`/service-requests`);
+                setStatusId(1);
               }}
             >
               <div className="d-flex align-items-center justify-content-between flex-wrap">
@@ -67,6 +68,7 @@ const DashBoardCards = ({ dashBoardData }) => {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(`/estimates`);
+                setStatusId(4);
               }}
             >
               <div className="d-flex align-items-center justify-content-between flex-wrap">
@@ -74,7 +76,7 @@ const DashBoardCards = ({ dashBoardData }) => {
                   <h4 style={{ color: "white" }}>
                     {dashBoardData.OpenEstimateCount}
                   </h4>
-                  <h5 style={{ color: "white" }}>Open Estimates</h5>
+                  <h5 style={{ color: "white" }}>Pending Estimates</h5>
                 </div>
                 <div>
                   <svg
@@ -113,6 +115,7 @@ const DashBoardCards = ({ dashBoardData }) => {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(`/estimates`);
+                setStatusId(1);
               }}
             >
               <div className="d-flex align-items-center justify-content-between flex-wrap">
@@ -120,7 +123,7 @@ const DashBoardCards = ({ dashBoardData }) => {
                   <h4 style={{ color: "white" }}>
                     {dashBoardData.ApprovedEstimateCount}
                   </h4>
-                  <h5 style={{ color: "white" }}>Approved Estimates</h5>
+                  <h5 style={{ color: "white" }}>Open Approved Estimates</h5>
                 </div>
                 <div>
                   <svg
@@ -266,6 +269,7 @@ const DashBoardCards = ({ dashBoardData }) => {
               style={{ cursor: "pointer" }}
               onClick={() => {
                 navigate(`/punchlist`);
+                setStatusId(2)
               }}
             >
               <div className="d-flex align-items-center justify-content-between flex-wrap">

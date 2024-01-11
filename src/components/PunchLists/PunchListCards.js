@@ -78,7 +78,7 @@ const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
                 </svg>
               </span>
               <div className="media-body">
-                <p className="mb-1">Open(Pending)</p>
+                <p className="mb-1">Open (Pending)</p>
                 <h4 className="mb-0">{totalRecords.totalNewRecords}</h4>
               </div>
             </div>

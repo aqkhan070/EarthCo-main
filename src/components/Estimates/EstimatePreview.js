@@ -15,6 +15,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -275,7 +276,8 @@ const EstimatePreview = () => {
                               {" "}
                               <h6 className="text-right mb-0">
                                 {formatDate(
-                                  previewData.EstimateData.CreatedDate, false
+                                  previewData.EstimateData.CreatedDate,
+                                  false
                                 )}
                               </h6>
                             </th>
@@ -380,11 +382,12 @@ const EstimatePreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/estimates`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

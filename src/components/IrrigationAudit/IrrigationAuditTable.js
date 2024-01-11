@@ -130,7 +130,7 @@ const IrrigationAuditTable = () => {
       setIsLoading(false);
       setIrrigationlist([]);
       setError(error.response.data.Message);
-      console.log("error fetching irrigations", error.response.data.Message);
+      console.log("error fetching irrigations", error);
     }
   };
 
@@ -237,7 +237,8 @@ const IrrigationAuditTable = () => {
                         <TableRow className="material-tbl-alignment">
                           <TableCell>#</TableCell>
                           <TableCell>Customer Name</TableCell>
-
+                          <TableCell>Regional Manager</TableCell>
+                          <TableCell>Controller Numbers</TableCell>
                           <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
@@ -267,7 +268,42 @@ const IrrigationAuditTable = () => {
                                 {irr.CustomerName}
                               </TableCell>
 
-                              <TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  // setShowContent(false);
+                                  // setSelectedIrr(irr.IrrigationId);
+                                  navigate(
+                                    `/irrigation-audit/add?id=${irr.IrrigationAuditReportId}`
+                                  );
+                                }}
+                              >
+                                {irr.RegionalManagerName}
+                              </TableCell>
+                              <TableCell
+                                onClick={() => {
+                                  // setShowContent(false);
+                                  // setSelectedIrr(irr.IrrigationId);
+                                  navigate(
+                                    `/irrigation-audit/add?id=${irr.IrrigationAuditReportId}`
+                                  );
+                                }}
+                              >
+                                {irr.ControllerNumbers.map((number, index) =>
+                                  index === irr.ControllerNumbers.length - 1
+                                    ? number
+                                    : number + ", "
+                                )}
+                              </TableCell>
+
+                              <TableCell
+                                onClick={() => {
+                                  // setShowContent(false);
+                                  // setSelectedIrr(irr.IrrigationId);
+                                  navigate(
+                                    `/irrigation-audit/add?id=${irr.IrrigationAuditReportId}`
+                                  );
+                                }}
+                              >
                                 {TblDateFormat(irr.CreatedDate)}
                               </TableCell>
 

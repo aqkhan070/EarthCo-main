@@ -14,6 +14,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 const PunchlistPreview = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -149,11 +151,12 @@ const PunchlistPreview = () => {
               ) : (
                 <button
                   className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                  style={{ padding: "5px 10px" }}
                   onClick={() => {
                     navigate(`/punchlist`);
                   }}
                 >
-                  <i className="fa fa-backward"></i>
+                <ArrowBackIcon sx={{ fontSize: 17 }} />
                 </button>
               )}
               <button
@@ -323,11 +326,12 @@ const PunchlistPreview = () => {
                               </strong>
                             </td>
                             <td className="tdbreak">
+                              {item.DetailData.PhotoPath? <>
                               <img
                                 style={{ width: "200px" }}
                                 src={`https://earthcoapi.yehtohoga.com/${item.DetailData.PhotoPath}`}
                                 alt=""
-                              />
+                              /></>: <></>}
                             </td>
                             <td className="tdbreak">
                               <strong>{item.DetailData.Address}</strong>

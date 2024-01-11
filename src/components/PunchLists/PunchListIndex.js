@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TitleBar from "../TitleBar";
 import { NavLink } from "react-router-dom";
 import { Form } from "react-bootstrap";
@@ -14,6 +14,7 @@ import { FormControl, Select, MenuItem } from "@mui/material";
 import PunchListCards from "./PunchListCards";
 import PunchListModal1 from "./PunchListModal1";
 import PunchlistModal2 from "./PunchlistModal2";
+import { DataContext } from "../../context/AppData";
 
 const PunchListIndex = () => {
   const token = Cookies.get("token");
@@ -36,7 +37,7 @@ const PunchListIndex = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedPL, setselectedPL] = useState(0);
   const [plDetailId, setPlDetailId] = useState(0);
-  const [statusId, setStatusId] = useState(0);
+
   const [addPunchListData, setAddPunchListData] = useState({
     Title: "",
     ContactName: "",
@@ -45,6 +46,7 @@ const PunchListIndex = () => {
     AssignedTo: "",
     CustomerId: null,
   });
+  const { statusId, setStatusId } = useContext(DataContext);
 
   const fetchStaffList = async () => {
     try {
@@ -75,7 +77,9 @@ const PunchListIndex = () => {
       });
   };
   const fetctContacts = async (id) => {
-    if(!id){return}
+    if (!id) {
+      return;
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -96,6 +100,9 @@ const PunchListIndex = () => {
     fetchCustomers();
     // fetchPunchList();
     fetchFilterdPunchList();
+    return () => {
+      setStatusId(0);
+    };
   }, []);
   useEffect(() => {
     fetchServiceLocations(addPunchListData.CustomerId);
@@ -107,7 +114,6 @@ const PunchListIndex = () => {
     // fetchPunchList();
     console.log("punchData data is", punchData);
   }, [punchData]); // This useEffect will run whenever punchData changes
-
 
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
@@ -163,17 +169,15 @@ const PunchListIndex = () => {
           ) : (
             <div className="col-xl-12">
               <div className="card">
-                
-                    <PunchTR
-                      punchData={punchData}
-                      fetchFilterdPunchList={fetchFilterdPunchList}
-                      statusId={statusId}
-                      totalRecords={totalRecords}
-                      setselectedPL={setselectedPL}
-                      setPlDetailId={setPlDetailId}
-                      setAddPunchListData={setAddPunchListData}
-                    />
-                 
+                <PunchTR
+                  punchData={punchData}
+                  fetchFilterdPunchList={fetchFilterdPunchList}
+                  statusId={statusId}
+                  totalRecords={totalRecords}
+                  setselectedPL={setselectedPL}
+                  setPlDetailId={setPlDetailId}
+                  setAddPunchListData={setAddPunchListData}
+                />
               </div>
             </div>
           )}
@@ -190,7 +194,6 @@ const PunchListIndex = () => {
         <PunchlistModal2
           selectedPL={selectedPL}
           addPunchListData={addPunchListData}
-      
           inputValue={inputValue}
           contactList={contactList}
           sLList={sLList}

@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const BillPreview = () => {
   const token = Cookies.get("token");
@@ -201,7 +202,10 @@ const BillPreview = () => {
                             <th>
                               {" "}
                               <h6 className="text-right mb-0">
-                                {formatDate(billPreviewData.Data.CreatedDate, false)}
+                                {formatDate(
+                                  billPreviewData.Data.CreatedDate,
+                                  false
+                                )}
                               </h6>
                             </th>
                           </tr>
@@ -305,11 +309,12 @@ const BillPreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/bills`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

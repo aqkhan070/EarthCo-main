@@ -10,14 +10,24 @@ import axios from "axios";
 import EventPopups from "../components/Reusable/EventPopups";
 import LoadingButton from "@mui/lab/LoadingButton";
 
+import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import InboxIcon from "@mui/icons-material/Inbox";
+import BusinessIcon from "@mui/icons-material/Business";
+import { CircularProgress } from "@mui/material";
+
 const CompanySelect = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const { fetchCompanies, companies } = useFetchCompanyList();
+  const { fetchCompanies, companies, loading, setloading } =
+    useFetchCompanyList();
   const { loggedInUser, setLoggedInUser } = useContext(DataContext);
-  const [selectedCompany, setSelectedCompany] = useState(null);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -25,16 +35,9 @@ const CompanySelect = () => {
 
   const navigate = useNavigate();
 
-  const handleCompanyChange = (event, newValue) => {
-    setSelectedCompany(newValue);
-    console.log(newValue);
-  };
-
-  const [btndisable, setBtndisable] = useState(false);
-
-  const handleConfirmClick = async () => {
-    setBtndisable(true);
-    if (!selectedCompany.CompanyId) {
+  const handleConfirmClick = async (id) => {
+    setloading(true);
+    if (!id) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please Select Company");
@@ -42,7 +45,7 @@ const CompanySelect = () => {
     }
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Staff/SelectCompany?CompanyId=${selectedCompany.CompanyId}`,
+        `https://earthcoapi.yehtohoga.com/api/Staff/SelectCompany?CompanyId=${id}`,
         { headers }
       );
       setLoggedInUser({
@@ -56,11 +59,13 @@ const CompanySelect = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.message);
-      setBtndisable(false);
+
       navigate(`/Dashboard`);
+      setloading(false);
     } catch (error) {
-      setBtndisable(false);
       console.log("api call error", error);
+      setloading(false);
+
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText(error.response.data);
@@ -93,67 +98,71 @@ const CompanySelect = () => {
             }}
           >
             <div className="login-form style-2" style={{ maxWidth: "500px" }}>
-              <div className="card-body">
-                <div className="logo-header">
-                  <img
-                    src={logo1}
-                    alt=""
-                    className="width-230 light-logo"
-                    style={{ width: "35%", marginLeft: "30%" }}
-                  />
-                  <img
-                    src={logo1}
-                    alt=""
-                    className="width-230 dark-logo"
-                    style={{ width: "35%", marginLeft: "30%" }}
-                  />
-                </div>
-
-                <div>
-                  <div>
-                    <div>
-                      <div>
-                        <div className="row">
-                          <div className="col-md-11 col-sm-11">
-                            <h4>Select Company</h4>
-                          </div>
-                          <div className="col-md-12 col-sm-11">
-                            <Autocomplete
-                              size="small"
-                              options={companies}
-                              getOptionLabel={(option) =>
-                                option.CompanyName || ""
-                              }
-                              onChange={handleCompanyChange}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  label=""
-                                  placeholder="Select Company"
-                                  className="bg-white"
-                                />
-                              )}
-                              aria-label="Contact select"
-                            />
-                          </div>
-                          <div className="col-md-12 mt-3 text-end">
-                            <LoadingButton
-                              size="large"
-                              variant="contained"
-                              loading={btndisable}
-                              loadingPosition="start"
-                              fullWidth
-                              onClick={handleConfirmClick}
-                            >
-                              <span>Confirm</span>
-                            </LoadingButton>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              {loading ? (
+                <>
+                  {" "}
+                  <div className="center-loader">
+                    <CircularProgress />
                   </div>
-                </div>
-              </div>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <div className="card-body">
+                    <div className="logo-header">
+                      <img
+                        src={logo1}
+                        alt=""
+                        className="width-230 light-logo"
+                        style={{ width: "35%", marginLeft: "30%" }}
+                      />
+                      <img
+                        src={logo1}
+                        alt=""
+                        className="width-230 dark-logo"
+                        style={{ width: "35%", marginLeft: "30%" }}
+                      />
+                    </div>
+
+                    <Box
+                      sx={{
+                        width: "100%",
+
+                        bgcolor: "background.paper",
+                      }}
+                    >
+                      <List>
+                        {companies.map((company) => (
+                          <>
+                            <ListItemButton
+                              key={company.CompanyId}
+                              onClick={(event) => {
+                                handleConfirmClick(company.CompanyId);
+                              }}
+                            >
+                              <ListItemIcon>
+                                <BusinessIcon
+                                  sx={{
+                                    fontSize: 30,
+                                  }}
+                                />
+                              </ListItemIcon>
+                              <ListItemText
+                                sx={{
+                                  color: "#303030",
+                                  fontSize: 30,
+                                }}
+                                primary={company.CompanyName}
+                              />
+                            </ListItemButton>
+                            <Divider />
+                          </>
+                        ))}
+                      </List>
+                    </Box>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

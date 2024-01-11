@@ -12,6 +12,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const PLPhotoOnlyPreview = () => {
   const token = Cookies.get("token");
@@ -38,7 +39,7 @@ const PLPhotoOnlyPreview = () => {
   const yearParam = Number(queryParams.get("Year"));
   const isMail = queryParams.get("isMail");
 
-  const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const [weeklyPreviewData, setWeeklyPreviewData] = useState({});
   const [files, setFiles] = useState([]);
@@ -50,7 +51,7 @@ const PLPhotoOnlyPreview = () => {
       );
       setWeeklyPreviewData(res.data.Data);
       setFiles(res.data.FileData);
-      fetchCustomerEmail(res.data.Data.CustomerId)
+      fetchCustomerEmail(res.data.Data.CustomerId);
       console.log("reponse weekly is", res.data);
     } catch (error) {
       console.log("api call error", error);
@@ -172,11 +173,17 @@ const PLPhotoOnlyPreview = () => {
                 {files.map((file, index) => {
                   return (
                     <div key={index} className="col-md-6 col-sm-6">
-                      <img
-                        src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                        className="weeklyimages"
-                        alt="weeklyimages"
-                      />
+                      {file.FilePath ? (
+                        <>
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            className="weeklyimages"
+                            alt="weeklyimages"
+                          />
+                        </>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   );
                 })}
@@ -193,11 +200,12 @@ const PLPhotoOnlyPreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/punchList-photos-only`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}
@@ -228,7 +236,9 @@ const PLPhotoOnlyPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
-                      navigate(`/send-mail?title=${"PunchList - Photos only"}&mail=${customerMail}`);
+                      navigate(
+                        `/send-mail?title=${"PunchList - Photos only"}&mail=${customerMail}`
+                      );
                       // sendEmail(
                       //   `/weekly-reports/weekly-report-preview?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
                       //   customerParam,

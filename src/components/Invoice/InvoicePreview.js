@@ -13,6 +13,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
@@ -376,11 +377,12 @@ const InvoicePreview = () => {
                 <div className="p-2 bd-highlight">
                   <button
                     className="btn btn-outline-primary btn-sm estm-action-btn"
+                    style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/invoices`);
                     }}
                   >
-                    <i className="fa fa-backward"></i>
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

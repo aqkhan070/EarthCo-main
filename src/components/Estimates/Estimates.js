@@ -31,7 +31,7 @@ const Estimates = ({ setestmPreviewId }) => {
 
   // const { estimates, setSingleObj } = useContext(DataContext);
   const { setEstimateRoute } = useContext(RoutingContext);
-
+  const { statusId, setStatusId } = useContext(DataContext);
   const [open, setOpen] = useState(0);
   const [closed, setClosed] = useState(0);
   const [accepted, setAccepted] = useState(0);
@@ -53,7 +53,7 @@ const Estimates = ({ setestmPreviewId }) => {
     setAccepted(pendingAccepted.length);
   }, [estimates]);
 
-  const [statusId, setStatusId] = useState(0);
+  // const [statusId, setStatusId] = useState(0);
   const [selectedCustomer, setSelectCustomer] = useState({});
 
   const [customer, setCustomer] = useState("");
@@ -71,6 +71,11 @@ const Estimates = ({ setestmPreviewId }) => {
     // getFilteredEstimate();
     console.log("Test", estimates);
     setShowStatusCards(true);
+
+    return () => {
+      setStatusId(0)
+    }
+  
   }, []);
 
   useEffect(() => {

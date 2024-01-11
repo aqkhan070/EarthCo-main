@@ -37,14 +37,14 @@ const ControllerTable = ({
   };
 
   return (
-    <div className="col-md-12">
+    <div>
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
         color={snackBarColor}
         text={snackBarText}
       />
-      <div className="card">
+      <div className="">
         <div className="card-body">
           <div className="table-responsive active-projects style-1">
             <table className="table">
@@ -52,6 +52,7 @@ const ControllerTable = ({
                 <tr>
                   <th>#</th>
                   <th>Controller </th>
+                  <th>Serial Number </th>
                   <th>Meter Info </th>
                   <th>Valve </th>
                   <th>Repairs / Upgrades</th>
@@ -64,6 +65,7 @@ const ControllerTable = ({
                     <tr key={index}>
                       <td>{controller.ControllerId}</td>
                       <td>{controller.MakeAndModel}</td>
+                      <td>{controller.SerialNumber}</td>
                       <td>{controller.MeterSize}</td>
                       <td>{controller.TypeofValves}</td>
                       <td>{controller.RepairsMade}</td>

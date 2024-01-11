@@ -359,6 +359,8 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
         isAfterPhoto: null,
       });
       fetchFilterdPunchList();
+      setSelectedFile(null);
+      setSelectedAfterFile(null);
       document.getElementById("formFile").value = "";
       document.getElementById("afterFile").value = "";
       setItemsList([]);

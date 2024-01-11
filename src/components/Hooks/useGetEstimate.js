@@ -1,18 +1,21 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { DataContext } from "../../context/AppData";
 
 const useGetEstimate = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const { statusId, setStatusId } = useContext(DataContext);
 
   const [estimates, setEstimates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tableError, setTableError] = useState(false);
   const [estmRecords, setEstmRecords] = useState({});
   const [filterdEstm, setFilterdEstm] = useState([]);
+
   const getEstimate = async () => {
     try {
       const response = await axios.get(
@@ -39,7 +42,7 @@ const useGetEstimate = () => {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0,
+    StatusId = statusId,
     isAscending = false
   ) => {
     try {

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { DataContext } from "../../context/AppData";
 
 function useFetchPunchList() {
   const token = Cookies.get("token");
@@ -11,6 +12,7 @@ function useFetchPunchList() {
   const [punchData, setPunchData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState({});
+  const { statusId, setStatusId } = useContext(DataContext);
 
   const fetchPunchList = async () => {
     try {
@@ -32,7 +34,7 @@ function useFetchPunchList() {
     Search = "",
     pageNo = 1,
     PageLength = 10,
-    StatusId = 0,
+    StatusId = statusId,
     isAscending = false
   ) => {
     try {

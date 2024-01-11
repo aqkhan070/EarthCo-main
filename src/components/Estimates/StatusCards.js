@@ -116,8 +116,7 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
                     {/* <span className="badge badge-primary">15%</span> */}
                   </div>
                   <div className="col-md-8 col-sm-8 mt-2 text-end">
-                    <p>
-                      {" "}
+                    <p style={{ color: "black" }}>
                       $
                       {estmRecords.totalNewRecordsSum
                         ? estmRecords.totalNewRecordsSum.toFixed(2)
@@ -171,7 +170,7 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
                     {/* <span className="badge badge-warning">30%</span> */}
                   </div>
                   <div className="col-md-8 col-sm-8 mt-2 text-end">
-                    <p>
+                    <p style={{ color: "black" }}>
                       $
                       {estmRecords.totalApprovedRecordsSum
                         ? estmRecords.totalApprovedRecordsSum.toFixed(2)
@@ -226,7 +225,7 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
                     {/* <span className="badge badge-danger">55%</span> */}
                   </div>
                   <div className="col-md-8 col-sm-8 mt-2 text-end">
-                    <p>
+                    <p style={{ color: "black" }}>
                       $
                       {estmRecords.totalClosedRecordsSum
                         ? estmRecords.totalClosedRecordsSum.toFixed(2)

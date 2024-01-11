@@ -37,15 +37,15 @@ const AuditControllerTable = ({
   };
 
   return (
-    <div className="col-md-12">
+    <div>
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
         color={snackBarColor}
         text={snackBarText}
       />
-      <div className="card">
-        <div className="card-body">
+      <div>
+        <div className="card-body pt-0">
           <div className="table-responsive active-projects style-1">
             <table className="table">
               <thead>

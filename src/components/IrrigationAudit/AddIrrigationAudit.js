@@ -370,35 +370,6 @@ const AddIrrigationAudit = () => {
                         />
                       </div>
 
-                      {/* <div className="col-md-3">
-                        <label className="form-label">Service location</label>
-                        <Autocomplete
-                          id="inputState19"
-                          size="small"
-                          options={sLList}
-                          getOptionLabel={(option) => option.Name || ""}
-                          value={
-                            sLList.find(
-                              (customer) =>
-                                customer.ServiceLocationId ===
-                                formData.ServiceLocationId
-                            ) || null
-                          }
-                          onChange={handleSLAutocompleteChange}
-                          isOptionEqualToValue={(option, value) =>
-                            option.ServiceLocationId === value.ServiceLocationId
-                          }
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label=""
-                              placeholder="Service Locations"
-                              className="bg-white"
-                            />
-                          )}
-                          aria-label="Default select example"
-                        />
-                      </div> */}
                       <div className="col-md-3">
                         <div className="row">
                           <div className="col-md-auto">
@@ -407,7 +378,6 @@ const AddIrrigationAudit = () => {
                             </label>
                           </div>
                           <div className="col-md-3">
-                            {" "}
                             {formData.CustomerId ? (
                               <Contacts
                                 fetctContacts={fetctContacts}
@@ -507,12 +477,6 @@ const AddIrrigationAudit = () => {
                                   navigate(
                                     `/send-mail?title=${"Irrigation Audit"}&mail=${contactEmail}`
                                   );
-                                  // sendEmail(
-                                  //   `/estimates/estimate-preview?id=${idParam}`,
-                                  //   formData.CustomerId,
-                                  //   formData.ContactId,
-                                  //   false
-                                  // );
                                 }}
                               >
                                 <Email />
@@ -520,7 +484,7 @@ const AddIrrigationAudit = () => {
 
                               <button
                                 type="button"
-                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                                className="mt-1 me-2 btn btn-sm btn-outline-primary estm-action-btn"
                                 onClick={() => {
                                   navigate(
                                     `/irrigation-audit/preview?id=${idParam}`
@@ -529,21 +493,9 @@ const AddIrrigationAudit = () => {
                               >
                                 <Print></Print>
                               </button>
-                              <button
-                                className="btn btn-dark btn-sm me-2"
-                                onClick={toggleShowForm}
-                              >
-                                Add Controller Info
-                              </button>
                             </>
                           )}
-                          {/* <button
-                          type="button"
-                          onClick={handleSubmit}
-                          className="btn btn-primary btn-sm me-1"
-                        >
-                          Submit
-                        </button> */}
+
                           <LoaderButton
                             varient="small"
                             loading={disableButton}
@@ -572,22 +524,35 @@ const AddIrrigationAudit = () => {
                 </div>
               </div>
             </div>
+            <div className="card">
+              {idParam === 0 ? null : (
+                <div className="row">
+                  <div className="col-md-12 text-end">
+                    <button
+                      className="btn btn-dark btn-sm m-3"
+                      onClick={toggleShowForm}
+                    >
+                      Add Controller Info
+                    </button>
+                  </div>
+                </div>
+              )}
+              {showForm && (
+                <AuditController
+                  setAddSucces={setAddSucces}
+                  fetchIrrigation={fetchIrrigation}
+                  toggleShowForm={toggleShowForm}
+                  idParam={idParam}
+                />
+              )}
 
-            {showForm && (
-              <AuditController
+              <AuditControllerTable
                 setAddSucces={setAddSucces}
                 fetchIrrigation={fetchIrrigation}
-                toggleShowForm={toggleShowForm}
-                idParam={idParam}
+                headers={headers}
+                controllerList={controllerList}
               />
-            )}
-
-            <AuditControllerTable
-              setAddSucces={setAddSucces}
-              fetchIrrigation={fetchIrrigation}
-              headers={headers}
-              controllerList={controllerList}
-            />
+            </div>
           </>
         )}
       </div>

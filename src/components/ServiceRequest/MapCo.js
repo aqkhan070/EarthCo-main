@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
-import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  useLoadScript,
+  InfoWindow,
+} from "@react-google-maps/api";
 import { CircularProgress, TextField } from "@mui/material";
 import { toPng } from "html-to-image";
 import { DataContext } from "../../context/AppData";
@@ -15,7 +20,7 @@ const libraries = ["places"];
 function GoogleMapApi() {
   const { sRMapData, setSRMapData } = useContext(DataContext);
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE",
+    googleMapsApiKey: "AIzaSyD1cYijM9cvPIRkJ3QtNFSMwLzADuO0DiE", // Replace with your API key
     libraries,
   });
 
@@ -23,6 +28,7 @@ function GoogleMapApi() {
   const searchInputRef = useRef(null);
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   useEffect(() => {
     handleCurrentLocation();
@@ -144,6 +150,18 @@ function GoogleMapApi() {
     );
   }
 
+  const handleDeleteMarker = () => {
+    // Remove the selectedMarker from the markers array and update state
+    const updatedMarkers = markers.filter(
+      (marker) => marker !== selectedMarker
+    );
+    setMarkers(updatedMarkers);
+    setSRMapData(updatedMarkers);
+
+    // Close the tooltip
+    setSelectedMarker(null);
+  };
+
   return (
     <>
       <div>
@@ -191,8 +209,27 @@ function GoogleMapApi() {
               <Marker
                 key={index}
                 position={{ lat: marker.lat, lng: marker.lng }}
+                onClick={() => setSelectedMarker(marker)} // Handle marker click
               />
             ))}
+
+            {selectedMarker && (
+              <InfoWindow
+                position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+                onCloseClick={() => setSelectedMarker(null)} // Close the tooltip
+              >
+                <div>
+                  <h5>Remove Marker?</h5>
+                  {/* <h6>Location: {selectedMarker}</h6> */}
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={handleDeleteMarker}
+                  >
+                    Delete Marker
+                  </button>{" "}
+                </div>
+              </InfoWindow>
+            )}
           </GoogleMap>
         </div>
         <button className="btn btn-primary mt-2" onClick={onhandleSaveLocation}>

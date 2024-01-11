@@ -763,8 +763,11 @@ const AddEstimateForm = () => {
         newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
-    if (totalExpense > 0) {
-      calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    // if (totalExpense > 0) {
+    //   calculatedProfitPercentage = (calculatedTotalProfit / totalExpense) * 100;
+    // } early calculation
+    if (totalamount > 0) {
+      calculatedProfitPercentage = (calculatedTotalProfit / totalamount) * 100;
     }
     setTotalExpense(newCostTotalAmount + newACTotalAmount);
 
@@ -1608,11 +1611,7 @@ const AddEstimateForm = () => {
                                 name="Rate"
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                value={
-                                  selectedItem?.SalePrice ||
-                                  itemInput.Rate ||
-                                  ""
-                                }
+                                value={itemInput.Rate || ""}
                                 onChange={(e) =>
                                   setItemInput({
                                     ...itemInput,
@@ -1646,11 +1645,11 @@ const AddEstimateForm = () => {
                             <div className="col-sm-9">
                               <input
                                 type="number"
-                                name="Rate"
+                                name="CostPrice"
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
                                 value={
-                                  selectedItem?.PurchasePrice ||
+                               
                                   itemInput.PurchasePrice ||
                                   ""
                                 }
@@ -1893,7 +1892,7 @@ const AddEstimateForm = () => {
                             <label className="form-label">Estimate Notes</label>
                             <div className="mb-3">
                               <textarea
-                                placeholder=" Estimate Notes"
+                                placeholder="Estimate Notes"
                                 value={formData.EstimateNotes}
                                 name="EstimateNotes"
                                 onChange={handleInputChange}

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/images/logo/earthco_logo_small.png";
+import qb from "../../assets/images/QuickBooks.png";
 import avatar1 from "../../assets/images/avatar/1.jpg";
 import profilePic from "../../assets/images/profile/profile.png";
 import { DataContext } from "../../context/AppData";
@@ -8,12 +9,16 @@ import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-
+import DoneIcon from "@mui/icons-material/Sync";
 import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { Button } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
+import BusinessIcon from "@mui/icons-material/Business";
+import useQuickBook from "../Hooks/useQuickBook";
+import EventPopups from "../Reusable/EventPopups";
+
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -87,8 +92,19 @@ const HeaderExp = () => {
 
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
+  const { syncQB } = useQuickBook();
+
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
+  const handlepopup = (open, color, text) => {
+    setOpenSnackBar(open);
+    setSnackBarColor(color);
+    setSnackBarText(text);
+  };
   const handleResize = () => {
     setScreenWidth(window.innerWidth);
   };
@@ -196,6 +212,12 @@ const HeaderExp = () => {
 
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="nav-header">
         <NavLink className="brand-logo" style={{ background: "#181818" }}>
           <img style={{ width: "55%", marginLeft: "20%" }} src={logo} alt="" />
@@ -217,12 +239,23 @@ const HeaderExp = () => {
               <div className="collapse navbar-collapse justify-content-between">
                 <div className="header-left">
                   {dashBoardData.isQBToken ? (
-                    <button
-                      style={{ color: "white", backgroundColor: "grey" }}
-                      className="btn  p-2"
-                    >
-                      Connected with QuickBooks
-                    </button>
+                    <div>
+                      <img
+                        style={{ width: "150px", marginLeft: "1em" }}
+                        src={qb}
+                        alt=""
+                      />
+                      <DoneIcon
+                        onClick={() => {
+                          syncQB(handlepopup);
+                        }}
+                        sx={{
+                          fontSize: 20,
+                          color: "#2C9F1C",
+                          cursor: "pointer",
+                        }}
+                      />
+                    </div>
                   ) : (
                     <iframe
                       src="https://earthcoapi.yehtohoga.com/"
@@ -234,17 +267,37 @@ const HeaderExp = () => {
                       }}
                     ></iframe>
                   )}
-                  <Tooltip title="Click to Change Company" arrow>
-                    <p
-                      className="ms-2"
-                      style={{ color: "white", cursor: "pointer" }}
-                      onClick={() => {
-                        navigate("/company-select");
-                      }}
-                    >
-                      {loggedInUser.CompanyName ? loggedInUser.CompanyName : ""}
-                    </p>
-                  </Tooltip>
+                  <div
+                    style={{
+                      borderLeft: "solid 1px white",
+                      marginLeft: "1em",
+                    }}
+                  >
+                    <Tooltip title="Click to Change Company" arrow>
+                      <div className="row">
+                        <div className="col-md-12 ms-3">
+                          {" "}
+                          <BusinessIcon
+                            sx={{
+                              fontSize: 23,
+                              color: "white",
+                            }}
+                          />
+                          <span
+                            className="ms-2"
+                            style={{ color: "white", cursor: "pointer" }}
+                            onClick={() => {
+                              navigate("/company-select");
+                            }}
+                          >
+                            {loggedInUser.CompanyName
+                              ? loggedInUser.CompanyName
+                              : ""}
+                          </span>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  </div>
 
                   {/* <button
                     className="btn btn-info btn-sm"
@@ -506,7 +559,7 @@ const HeaderExp = () => {
                   <li className="nav-item align-items-center header-border">
                     <NavLink to="/" style={{ display: "contents" }}>
                       <Tooltip title="Logout" arrow>
-                        <PowerSettingsNewIcon sx={{ color: "red" }} />
+                        <PowerSettingsNewIcon sx={{ color: "white" }} />
                       </Tooltip>
                     </NavLink>
                   </li>
