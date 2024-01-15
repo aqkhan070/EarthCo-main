@@ -165,106 +165,39 @@ const EstimatePreview = () => {
               <div id="estimate-preview" className=" get-preview ">
                 <div className="card-body perview-pd">
                   <div className="row mt-2">
-                    {/* <div className="col-md-12 mb-5"
-                  style={{
-                    borderBottom: "5px solid #5d9dd5",
-                 
-                  }}
-                ></div> */}
-                    <div className="col-md-2 col-sm-2">
-                      {" "}
-                      <img className="preview-Logo" src={logo} alt="" />
+                    <div className="col-md-4 col-sm-4">
+                      <h5 className="mb-0">EarthCo</h5>{" "}
+                      <h6 className="mb-0">
+                        1225 East Wakeham Avenue Santa Ana, California 92705 O
+                        714.571.0455 F 714.571.0580 CL# C27 823185 / D49 1025053
+                      </h6>{" "}
                     </div>
-                    <div className="col-md-7 col-sm-6"></div>
-                    <div className="col-md-3 col-sm-4 text-center table-cell-align">
-                      <h1>ESTIMATE</h1>
+                    <div className="col-md-4 col-sm-4 text-center">
+                      {" "}
+                      <h3>Proposal</h3>
+                    </div>
+                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                      <img
+                        className="preview-Logo"
+                        style={{ width: "160px" }}
+                        src={logo}
+                        alt=""
+                      />
                     </div>
                   </div>
 
-                  <div className="row mt-2">
-                    <div className="col-md-8  col-sm-8">
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td className="p-0">
-                              {" "}
-                              <h5 className="mb-0">EarthCo</h5>{" "}
-                              <h6 className="mb-0">
-                                {previewData.EstimateData.CustomerId}.{" "}
-                                {previewData.EstimateData.ContactName || ""}
-                              </h6>{" "}
-                              <h6 className="mb-2">
-                                {previewData.EstimateData.CustomerAddress}
-                              </h6>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"></td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"> </td>
-                          </tr>
-                          <tr>
-                            <td className="me-5 pe-2">
-                              <h5 className="mb-0">
-                                <strong>BILL TO</strong>
-                              </h5>
-                            </td>
-
-                            <td>
-                              <h5 className="mb-0">
-                                <strong>SHIP To</strong>
-                              </h5>
-                            </td>
-                          </tr>
-                          <tr className="py-0" style={{ maxHeight: "3em" }}>
-                            <td
-                              className="py-0"
-                              style={{
-                                verticalAlign: "top",
-                                maxWidth: "19em",
-                                width: "19em",
-                              }}
-                            >
-                              <h6 className="mb-0">
-                                <>
-                                  {previewData.EstimateData.ContactCompanyName}
-                                </>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{previewData.EstimateData.ContactName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{previewData.EstimateData.ContactAddress}</>
-                              </h6>
-                            </td>
-
-                            <td
-                              className="py-0"
-                              style={{
-                                verticalAlign: "top",
-                                maxWidth: "19em",
-                                width: "19em",
-                              }}
-                            >
-                              <h6 className="mb-0">
-                                <>
-                                  {previewData.EstimateData.ContactCompanyName}
-                                </>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{previewData.EstimateData.ContactName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{previewData.EstimateData.ContactAddress}</>
-                              </h6>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <h4 className="p-0 mb-0">
+                        <strong>Submitted to</strong>
+                      </h4>
+                      <h6 className="p-0 ">
+                        {previewData.EstimateData.CustomerName} -{" "}
+                        {previewData.EstimateData.ContactName}
+                      </h6>
                     </div>
-
-                    <div className="col-md-4 col-sm-4 ">
+                    <div className="col-md-2"></div>
+                    <div className="col-md-4">
                       <table className="preview-table">
                         <thead>
                           <tr>
@@ -285,18 +218,55 @@ const EstimatePreview = () => {
                         </thead>
                         <tbody>
                           <tr>
+                            <td className="table-cell-align mb-0 me-2">
+                              <h6 className="mb-0">Estimate #</h6>{" "}
+                            </td>
+
+                            <td className="table-cell-align mb-0 text-right">
+                              <h6 className="mb-0">
+                                {previewData.EstimateData.EstimateNumber}
+                              </h6>
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="table-cell-align me-2">
-                              <h6>Estimate #</h6>{" "}
+                              <h6 className="mb-0">Submitted by</h6>{" "}
                             </td>
 
                             <td className="table-cell-align text-right">
-                              <h6>{previewData.EstimateData.EstimateNumber}</h6>
+                              <h6 className="mb-0">
+                                {" "}
+                                {previewData.EstimateData.AssignToName}
+                              </h6>
                             </td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
+
+                  <div className="row mt-2">
+                    <div className="col-md-12 text-center">
+                      {" "}
+                      <h4 className="mb-0">
+                        <strong>South Peak</strong>
+                      </h4>{" "}
+                      <hr className="mt-0" />
+                    </div>
+                    <div className="col-md-12">
+                      {" "}
+                      <h4 className="mb-0">
+                        <strong>Description of work</strong>
+                      </h4>
+                      <h6 className="mb-0">
+                        {" "}
+                        {previewData.EstimateData.ServiceLocationNotes}
+                      </h6>
+                    </div>
+                  </div>
+                  <h5 className="mb-0">
+                    <strong>Item(s)</strong>
+                  </h5>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
                     <thead className="table-header">
                       <tr className="preview-table-head">
@@ -417,14 +387,10 @@ const EstimatePreview = () => {
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {
                       navigate(
-                        `/send-mail?title=${"Estimate"}&mail=${contactEmail}`
+                        `/send-mail?title=${"Estimate"}&mail=${contactEmail}&customer=${name}&number=${
+                          previewData.EstimateData.EstimateNumber
+                        }`
                       );
-                      // sendEmail(
-                      //   `/estimates/estimate-preview?id=${idParam}`,
-                      //   previewData.EstimateData.CustomerId,
-                      //   previewData.EstimateData.ContactId,
-                      //   false
-                      // );
                     }}
                   >
                     <i className="fa-regular fa-envelope"></i>

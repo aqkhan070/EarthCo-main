@@ -100,15 +100,11 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
             position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
             onCloseClick={handleInfoWindowClose}
           >
-            <div className="row">
-              <div className="col-md-4">
-                <h6 className="pb-0 mb-0">
-                  
-                  <strong>Service Request #:</strong>
-                </h6>
-              </div>
+            <div className="">
+              <h6 className="pb-0 mb-0">
+                <strong>Service Request #:</strong>
+              </h6>
               <div
-                className="col-md-8"
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => {
                   navigate(
@@ -120,12 +116,12 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
                   {selectedMarker.ServiceRequestNumber}
                 </p>
               </div>
-              <div className="col-md-4">
+              <div>
                 <h6 className="pb-0 mb-0">
                   <strong>Customer:</strong>
                 </h6>
               </div>{" "}
-              <div className="col-md-8">
+              <div>
                 <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
                   {selectedMarker.CustomerName}
                 </p>
@@ -133,7 +129,10 @@ function GoogleMapApi({ mapData = [], toolTipData }) {
               <h6 className="pb-0 mb-0">
                 <strong>Address:</strong>
               </h6>
-              <p className="mt-0 pt-0" style={{ lineHeight: "1.3" }}>
+              <p
+                className="mt-0 pt-0"
+                style={{ lineHeight: "1.3", maxWidth: "17em" }}
+              >
                 {selectedMarker.Address}
               </p>
             </div>

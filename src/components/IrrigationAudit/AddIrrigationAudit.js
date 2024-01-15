@@ -501,11 +501,10 @@ const AddIrrigationAudit = () => {
                             loading={disableButton}
                             handleSubmit={handleSubmit}
                           >
-                            Submit
+                            Save
                           </LoaderButton>
 
-                          {/* <NavLink to="/irrigation">
-                    </NavLink> */}
+                         
 
                           <button
                             onClick={() => {

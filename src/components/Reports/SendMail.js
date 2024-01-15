@@ -9,11 +9,14 @@ import ReactQuill from "react-quill"; // Import the rich text editor component
 import "react-quill/dist/quill.snow.css"; // Import styles for the rich text editor
 import axios from "axios";
 import { DataContext } from "../../context/AppData";
-
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 const SendMail = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const title = queryParams.get("title");
   const mail = queryParams.get("mail");
+  const customer = queryParams.get("customer");
+  const number = queryParams.get("number");
+  const isOpen = queryParams.get("isOpen");
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -26,7 +29,16 @@ const SendMail = () => {
   const [Files, setFiles] = useState([]);
   const [CCInput, setCCInput] = useState("");
   const [CCs, setCCs] = useState([]);
-  const [editorContent, setEditorContent] = useState("");
+  const [editorContent, setEditorContent] = useState(
+    `Dear  ${
+      customer ? customer : ""
+    } <br>Your ${title} has been created against ${title} number:${
+      number ? number : ""
+    }. We understand the importance of creating a beautiful and sustainable environment for your commercial space, and we are committed to delivering exceptional landscaping services that meet your unique needs.<br>Our dedicated team of experts is here to ensure that your landscaping dreams come to life, making your property not only aesthetically pleasing but also environmentally responsible.<br>Should you have any questions or require further assistance, please do not hesitate to contact our friendly customer support team. <br>Best Reguards <br>EarthCo Comercial Landscape`
+  );
+  const [subject, setSubject] = useState(
+    `${customer} ${title} #${number} is ${isOpen}`
+  );
 
   const [disableButton, setDisableButton] = useState(false);
   const [btnDisable, setBtnDisable] = useState(false);
@@ -82,8 +94,6 @@ const SendMail = () => {
     updatedFiles.splice(index, 1);
     setFiles(updatedFiles);
   };
-
-  const [subject, setSubject] = useState(title);
 
   const handleSubmit = () => {
     const postData = new FormData();
@@ -156,6 +166,38 @@ const SendMail = () => {
     if (mail) {
       setEmails([...emails, mail]);
     }
+    if (!number) {
+      setEditorContent(``);
+    }
+    if (title == `Service Request` && isOpen == "Open") {
+      setEditorContent(`Dear ${
+        customer ? customer : ""
+      } <br>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
+      <br>If you have any additional questions or concerns, please contact us at (Username). You can also reach us by telephone at 714.571.0455.
+      <br>Thank you for choosing Earthco.
+      <br>Sincerely,
+      (Regional Manager Name)`);
+    }
+    if (title == `Service Request` && isOpen == "Closed") {
+      setEditorContent(`Dear ${
+        customer ? customer : ""
+      } <br>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
+      <br>If you have any additional questions or concerns, please contact us at (Username). You can also reach us by telephone at 714.571.0455.
+      <br>Thank you for choosing Earthco.
+      <br>Sincerely,
+      <br>(Regional Manager Name)`);
+    }
+    if (title == `Estimate`) {
+      setEditorContent(`Hello
+      <br>Please see the attached proposal.  Please confirm receipt.
+      <br>Contact me if you have any questions.
+      <br>Thank you!
+      <br>Sincerely,
+      <br>(Username)
+      <br>EarthCo`);
+      setSubject(`Proposal ${number} for ${customer}
+      `);
+    }
 
     return () => {
       setSelectedImages([]);
@@ -176,14 +218,15 @@ const SendMail = () => {
         </div>
         <div className="card-body ">
           <div className="row text-center">
-            <div className="col-md-2">
+            <div className="col-md-1"></div>
+            <div className="col-md-1 text-start">
               {" "}
               <label className="form-label">To</label>
             </div>
-            <div className="col-md-8">
+            <div className="col-md-6">
               <TextField
                 fullWidth
-                variant="outlined"
+                variant="standard"
                 label=""
                 size="small"
                 value={emailInput}
@@ -206,14 +249,15 @@ const SendMail = () => {
           </div>
 
           <div className="row mt-2 text-center">
-            <div className="col-md-2">
+            <div className="col-md-1"></div>
+            <div className="col-md-1 text-start">
               {" "}
               <label className="form-label">Cc</label>
             </div>
-            <div className="col-md-8">
+            <div className="col-md-6">
               <TextField
                 fullWidth
-                variant="outlined"
+                variant="standard"
                 label=""
                 size="small"
                 value={CCInput}
@@ -236,13 +280,15 @@ const SendMail = () => {
           </div>
 
           <div className="row mt-2 text-center">
-            <div className="col-md-2">
+            <div className="col-md-1"></div>
+
+            <div className="col-md-1 text-start">
               <label className="form-label">Subject</label>
             </div>
-            <div className="col-md-8">
+            <div className="col-md-6">
               <TextField
                 fullWidth
-                variant="outlined"
+                variant="standard"
                 size="small"
                 placeholder="Proposal for"
                 label=""
@@ -253,194 +299,131 @@ const SendMail = () => {
               />
             </div>
 
-            <div className="row mt-2">
-              <div className="col-md-2">
-                <label className="form-label">Attachments</label>
-              </div>
-              <div className="col-md-4">
-                <div className="dz-default dlab-message upload-img mb-3">
-                  <form action="#" className="dropzone">
-                    <svg
-                      width="41"
-                      height="40"
-                      viewBox="0 0 41 40"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                        stroke="#DADADA"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                      <path
-                        d="M20.5 20V35"
-                        stroke="#DADADA"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                      <path
-                        d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
-                        stroke="#DADADA"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                      <path
-                        d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
-                        stroke="#DADADA"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                    </svg>
-                    <div className="fallback mb-3">
-                      <input name="file" type="file" onChange={trackFile} />
-                    </div>
-                  </form>
-                </div>
-              </div>
-              {Files.map((file, index) => (
-                <div
-                  key={index}
-                  className="col-md-2 mt-3 image-container"
-                  style={{
-                    width: "150px", // Set the desired width
-                    height: "120px", // Set the desired height
-                    margin: "1em",
-                    position: "relative",
-                  }}
-                >
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    style={{
-                      width: "150px",
-                      height: "120px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <p
-                    className="file-name-overlay"
-                    style={{
-                      position: "absolute",
-                      bottom: "0",
-                      left: "13px",
-                      right: "0",
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      textAlign: "center",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      width: "100%",
-                      textOverflow: "ellipsis",
-                      padding: "5px",
-                    }}
-                  >
-                    {file.name}
-                  </p>
-                  <span
-                    className="file-delete-button"
-                    style={{
-                      left: "140px",
-                    }}
-                    onClick={() => {
-                      handleDeleteFile(index);
-                    }}
-                  >
-                    <span>
-                      <Delete color="error" />
-                    </span>
-                  </span>
-                </div>
-              ))}
-              {selectedImages.map((file, index) => (
-                <div
-                  key={index}
-                  className="col-md-2 col-md-2 mt-3 image-container"
-                  style={{
-                    width: "150px",
-                    height: "120px",
-                    margin: "1em",
-                    position: "relative",
-                  }}
-                >
-                  <a
-                    href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                      alt={file.FileName}
-                      style={{
-                        width: "150px",
-                        height: "120px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </a>
-                  <p
-                    className="file-name-overlay"
-                    style={{
-                      position: "absolute",
-                      bottom: "0",
-                      left: "13px",
-                      right: "0",
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      textAlign: "center",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      width: "100%",
-                      textOverflow: "ellipsis",
-                      padding: "5px",
-                    }}
-                  >
-                    {file.FileName}
-                  </p>
-
-                  <span
-                    className="file-delete-button"
-                    style={{
-                      left: "140px",
-                    }}
-                  >
-                    <span
-                      onClick={() => {
-                        handleDeleteImage(index);
-                      }}
-                    >
-                      <Delete color="error" />
-                    </span>
-                  </span>
-                </div>
-              ))}
-            </div>
+            <div className="row mt-2"></div>
 
             <div className="row mt-2">
-              <div className="col-md-2"></div>
+              <div className="col-md-2 text-start"></div>
               <div className="col-md-8">
                 <ReactQuill
+                  className="text-start"
                   value={editorContent}
                   onChange={handleEditorChange}
                   placeholder="Write your message here..."
+                  theme="snow"
                 />
               </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12 text-end">
-              {" "}
-              <LoaderButton
-                disable={btnDisable}
-                loading={disableButton}
-                handleSubmit={() => {
-                  handleSubmit();
-                }}
-              >
-                Send
-              </LoaderButton>
+              <div className="col-md-2 text-start"></div>
+              <div className="col-md-2 text-start"></div>
+              <div className="col-md-3 text-start mt-2">
+                {selectedImages.map((file, index) => (
+                  <div className="card" style={{ height: "fit-content" }}>
+                    <div
+                      className="row g-0"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div className="col-md-4">
+                        <img
+                          src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          alt={file.name}
+                          className="img-fluid rounded-start "
+                        />
+                      </div>
+                      <div
+                        className="col-md-6 ps-1"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {file.FileName}
+                      </div>
+                      <div className="col-md-2 text-end">
+                        {" "}
+                        <Delete
+                          color="error"
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            handleDeleteImage(index);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {Files.map((file, index) => (
+                  <div className="card" style={{ height: "fit-content" }}>
+                    <div
+                      className="row g-0"
+                      style={{
+                        display: "flex", // Add flex display
+                        alignItems: "center", // Align items vertically in the middle
+                      }}
+                    >
+                      <div className="col-md-4">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          className="img-fluid rounded-start"
+                        />
+                      </div>
+                      <div
+                        className="ps-1 col-md-6"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {file.name}
+                      </div>
+                      <div className="col-md-2 text-end">
+                        {" "}
+                        <Delete
+                          color="error"
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            handleDeleteFile(index);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="col-md-5 text-end mt-3">
+                <AttachFileIcon
+                  sx={{
+                    fontSize: 23,
+                    color: "black",
+                    marginRight: "0.5em",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    const fileInput = document.createElement("input");
+                    fileInput.type = "file";
+                    fileInput.multiple = true;
+                    fileInput.click(); // Trigger the file input click event
+                    fileInput.addEventListener("change", trackFile);
+                  }}
+                />
+                <LoaderButton
+                  disable={btnDisable}
+                  loading={disableButton}
+                  handleSubmit={() => {
+                    handleSubmit();
+                  }}
+                >
+                  Send
+                </LoaderButton>
+              </div>
             </div>
           </div>
         </div>

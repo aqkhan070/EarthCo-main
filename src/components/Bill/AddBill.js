@@ -17,6 +17,7 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -42,6 +43,8 @@ const AddBill = ({}) => {
     DueDate: null,
     PurchaseOrderId: null,
   });
+
+  const { syncQB } = useQuickBook();
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -176,7 +179,7 @@ const AddBill = ({}) => {
       },
     };
 
-    handleInputChange(simulatedEvent);
+    handleChange(simulatedEvent);
   };
 
   const handleInputChange = (e, newValue) => {
@@ -432,6 +435,7 @@ const AddBill = ({}) => {
           headers,
         }
       );
+      syncQB(response.data.SyncId);
 
       setOpenSnackBar(true);
       setSnackBarColor("success");

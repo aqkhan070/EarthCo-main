@@ -82,7 +82,7 @@ const Irrigationlist = () => {
       setIsLoading(false);
       setIrrigationlist([]);
       setError(error.response.data.Message);
-      console.log("error fetching irrigations", error.response.data.Message);
+      console.log("error fetching irrigations", error);
     }
   };
 
@@ -188,8 +188,9 @@ const Irrigationlist = () => {
                         <TableRow className="material-tbl-alignment">
                           <TableCell>#</TableCell>
                           <TableCell>Customer Name</TableCell>
-                          <TableCell>Controler Number</TableCell>
-                          <TableCell>Controllers Sr #</TableCell>
+                          <TableCell>Regional Manager</TableCell>
+
+                          <TableCell>Controllers #</TableCell>
                           <TableCell>Created Date</TableCell>
 
                           <TableCell>Report</TableCell>
@@ -221,9 +222,9 @@ const Irrigationlist = () => {
                                   );
                                 }}
                               >
-                                {" "}
-                                {irr.IrrigationNumber}
+                                {irr.RegionalManagerName}
                               </TableCell>
+
                               <TableCell
                                 onClick={() => {
                                   navigate(

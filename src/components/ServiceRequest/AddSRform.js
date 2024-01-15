@@ -51,8 +51,6 @@ const AddSRform = () => {
     PunchListData,
     setPunchListData,
     loggedInUser,
-    sROBJ,
-    setSROBJ,
   } = useContext(DataContext);
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
@@ -109,7 +107,7 @@ const AddSRform = () => {
       CustomerId: 0,
       ServiceRequestNumber: "",
 
-      SRTypeId: 1,
+      SRTypeId: loggedInUser.userRole == 5 ? 3 : 1,
       SRStatusId: 1,
       Assign: "",
       WorkRequest: "",
@@ -265,13 +263,18 @@ const AddSRform = () => {
         { headers }
       );
       console.log("service request types are", res.data);
-      setSRTypes(res.data);
+
+      let filteredSRTypes = res.data; // Initialize with the original data
+
+      if (loggedInUser.userRole == 5) {
+        filteredSRTypes = res.data.filter((option) => option.SRTypeId === 3);
+      }
+
+      setSRTypes(filteredSRTypes);
     } catch (error) {
       console.log("error fetching SR types", error);
     }
   };
-
-  const [disableSubmit, setDisableSubmit] = useState(false);
 
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
@@ -501,7 +504,9 @@ const AddSRform = () => {
         },
       }));
 
-      setSelectedContacts(response.data.ContactData.map(contact => contact.ContactId));
+      setSelectedContacts(
+        response.data.ContactData.map((contact) => contact.ContactId)
+      );
 
       // Set the tblSRItems state with the response.data.tblSRItems
       setTblSRItems(response.data.ItemData);
@@ -519,9 +524,9 @@ const AddSRform = () => {
   useEffect(() => {
     fetchSR();
     fetchCustomers();
-    return () => {
-      setPunchListData({});
-    };
+    // return () => {
+    //   setPunchListData({});
+    // };
   }, []);
 
   useEffect(() => {
@@ -671,20 +676,23 @@ const AddSRform = () => {
                       className=" card-body"
                       style={{ position: "relative" }}
                     >
-                      {loggedInUser.userRole !== "1" && (
-                        <div
-                          className="overlay"
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0)",
-                            zIndex: 999,
-                          }}
-                        ></div>
-                      )}
+                      {loggedInUser.userRole == "1" ||
+                        (loggedInUser.userRole == "5" ? (
+                          <></>
+                        ) : (
+                          <div
+                            className="overlay"
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              backgroundColor: "rgba(0, 0, 0, 0)",
+                              zIndex: 999,
+                            }}
+                          ></div>
+                        ))}
                       <div className="row">
                         <div className="col-md-3 mb-2">
                           <label className="form-label">
@@ -1527,13 +1535,18 @@ const AddSRform = () => {
                           </MenuItem>
                         </Select>
                       </FormControl> */}
-
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-primary ms-1"
                         onClick={() => {
                           navigate(
-                            `/send-mail?title=${"Service Request"}&mail=${contactEmail}`
+                            `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
+                              SRData.ServiceRequestData.ServiceRequestNumber
+                            }&isOpen=${
+                              SRData.ServiceRequestData.SRStatusId === 1
+                                ? "Open"
+                                : "Closed"
+                            }`
                           );
                           // sendEmail(
                           //   `/service-requests/service-request-preview?id=${idParam}`,
@@ -1558,11 +1571,29 @@ const AddSRform = () => {
                       >
                         <Print></Print>
                       </button>
+                      <button
+                        className="btn btn-dark me-2"
+                        style={{ marginRight: "1em" }}
+                        onClick={() => {
+                          setPunchListData({
+                            CustomerId: SRData.ServiceRequestData.CustomerId,
+                            ServiceLocationId:
+                              SRData.ServiceRequestData.ServiceLocationId,
+                            ContactIds: selectedContacts,
+                            ItemData: tblSRItems.map((items) => ({
+                              ...items,
+                              isCost: false,
+                            })),
+                          });
+                          navigate(`/estimates/add-estimate`);
+                        }}
+                      >
+                        Copy to Estimate
+                      </button>{" "}
                     </>
                   ) : (
                     <></>
                   )}
-
                   <button
                     className="btn btn-danger  light me-2"
                     style={{ marginRight: "1em" }}

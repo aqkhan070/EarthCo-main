@@ -3,7 +3,8 @@ import { Form } from "react-bootstrap";
 import MapCo from "./MapCo";
 import Cookies from "js-cookie";
 import axios from "axios";
-
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 import { CircularProgress } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
 
@@ -13,7 +14,7 @@ const Map = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const [selectedType, setSelectedType] = useState("Inspect and Advise.");
+  const [selectedType, setSelectedType] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSR, setselectedSR] = useState(null);
@@ -22,7 +23,8 @@ const Map = () => {
   const [snackBarText, setSnackBarText] = useState("");
 
   const [mapData, setMapData] = useState([]);
-
+  const [customers, setCustomers] = useState([]);
+  const [originalMapData, setOriginalMapData] = useState([]);
   const getSRMap = async () => {
     try {
       const response = await axios.get(
@@ -33,37 +35,45 @@ const Map = () => {
       );
       console.log("map Data", response.data);
       setMapData(response.data);
+      setCustomers(response.data);
+      setOriginalMapData(response.data);
       setIsLoading(false);
       // window.location.reload();
     } catch (error) {
       setIsLoading(false);
-      console.error("There was angetting map:", error);
+      console.error("There was an error getting map:", error);
     }
   };
 
-  const filteredMapData = mapData
-    .filter((map) => {
-      if (!map) {
-        return false; // Skip null or undefined map objects
-      }
+  const filteredMapData =
+    selectedType === "All"
+      ? mapData
+      : mapData
+          .filter((map) => {
+            if (!map) {
+              return false;
+            }
 
-      const typeMatches =
-        selectedType === "Select Type" || map.Type === selectedType;
-      const queryMatches =
-        (map.ServiceRequestNumber &&
-          map.ServiceRequestNumber.toLowerCase().includes(
-            searchQuery.toLowerCase()
-          )) ||
-        (map.CustomerName &&
-          map.CustomerName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (map.Type &&
-          map.Type.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (map.Address &&
-          map.Address.toLowerCase().includes(searchQuery.toLowerCase()));
+            const typeMatches =
+              selectedType === "Select Type" || map.Type === selectedType;
 
-      return typeMatches && queryMatches;
-    })
-    .sort((a, b) => b.ServiceRequestId - a.ServiceRequestId);
+            const queryMatches =
+              (map.ServiceRequestNumber &&
+                map.ServiceRequestNumber.toLowerCase().includes(
+                  searchQuery.toLowerCase()
+                )) ||
+              (map.CustomerName &&
+                map.CustomerName.toLowerCase().includes(
+                  searchQuery.toLowerCase()
+                )) ||
+              (map.Type &&
+                map.Type.toLowerCase().includes(searchQuery.toLowerCase())) ||
+              (map.Address &&
+                map.Address.toLowerCase().includes(searchQuery.toLowerCase()));
+
+            return typeMatches && queryMatches;
+          })
+          .sort((a, b) => b.ServiceRequestId - a.ServiceRequestId);
 
   const [toolTipData, setToolTipData] = useState({});
 
@@ -105,13 +115,58 @@ const Map = () => {
               <div className="col-md-5">
                 <div>
                   <div>
-                    <label>Search</label>
+                    {/*  <label>Search</label>
                     <input
                       type="text"
                       className="form-control input-default "
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search SR #, Customer Name, Address, Type "
+                    /> */}
+
+                    <label className="form-label">Select Customer</label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customers.filter(
+                        (option, index, self) =>
+                          self.findIndex(
+                            (item) => item.CustomerName === option.CustomerName
+                          ) === index
+                      )}
+                      getOptionLabel={(option) => option.CustomerName}
+                      onChange={(e, value) => {
+                        if (value) {
+                          // Filter originalMapData based on the selected customer
+                          const filteredData = originalMapData.filter(
+                            (item) => item.CustomerName === value.CustomerName
+                          );
+                          setMapData(filteredData); // Update mapData with the filtered data
+                        } else {
+                          // If value is null (text field cleared), reset mapData to original data
+                          setMapData(originalMapData);
+                        }
+                      }}
+                      isOptionEqualToValue={(option, value) =>
+                        option.CustomerName === value.CustomerName
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border-map">
+                            <h6>{option.CustomerName}</h6>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          fullWidth
+                          onClick={() => {}}
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
                     />
                   </div>
                   <div className="mt-2">
@@ -121,7 +176,8 @@ const Map = () => {
                       value={selectedType}
                       onChange={(e) => setSelectedType(e.target.value)}
                     >
-                      <option value="Inspect and Advise.">
+                      <option value="All">All</option>
+                      <option value="Inspect and Advise">
                         Inspect and Advise
                       </option>
                       <option value="Irrigation">Irrigation</option>

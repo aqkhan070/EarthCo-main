@@ -15,13 +15,14 @@ import TextField from "@mui/material/TextField";
 import validator from "validator";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddressInputs from "../Modals/AddressInputs";
-
 import Cookies from "js-cookie";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import Contacts from "./Contacts";
 import ServiceLocations from "./ServiceLocations";
 import { DataContext } from "../../context/AppData";
+import useQuickBook from "../Hooks/useQuickBook";
+import CustomerFiles from "./CustomerFiles";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -78,10 +79,10 @@ const AddCustomer = () => {
   const [sLAddress, setSLAddress] = useState({});
   // service Locations
   const [slForm, setSlForm] = useState([]);
-
+  const { syncQB } = useQuickBook();
   // tabs
   const [value, setValue] = useState(0);
-
+  const [prevFiles, setPrevFiles] = useState([]);
   const getCustomerData = async () => {
     if (idParam === 0) {
       setLoading(false);
@@ -101,6 +102,7 @@ const AddCustomer = () => {
       console.log("Customer zzzzzzzz:", response.data);
       setAllowLogin(response.data.isLoginAllow);
       setCompanyData(response.data.Data);
+      setPrevFiles(response.data.FileData);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
       // setSLAddress((prevData) => ({
@@ -168,7 +170,7 @@ const AddCustomer = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("check1");
+    console.log("check1 ", companyData);
     setSubmitClicked(true);
     if (
       !companyData.CompanyName ||
@@ -271,7 +273,7 @@ const AddCustomer = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
-
+      syncQB(response.data.SyncId);
       setDisableButton(false);
       console.log("sussess add customer response", response.data);
       navigate(`/customers/add-customer?id=${response.data.Id}`);
@@ -756,7 +758,7 @@ const AddCustomer = () => {
                   >
                     <Tab label="Contacts" {...a11yProps(0)} />
                     <Tab label="Service Locations" {...a11yProps(1)} />
-                    {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+                    <Tab label="Files" {...a11yProps(2)} />
                   </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
@@ -776,9 +778,12 @@ const AddCustomer = () => {
                     setSlForm={setSlForm}
                   />
                 </CustomTabPanel>
-                {/* <CustomTabPanel value={value} index={2}>
-        Item Three
-      </CustomTabPanel> */}
+                <CustomTabPanel value={value} index={2}>
+                  <CustomerFiles
+                    getCustomerData={getCustomerData}
+                    prevFiles={prevFiles}
+                  />
+                </CustomTabPanel>
               </Box>
             </>
           )}

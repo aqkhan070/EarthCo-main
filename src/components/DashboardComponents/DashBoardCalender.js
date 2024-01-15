@@ -358,6 +358,9 @@ const DashBoardCalender = () => {
     requestAbortController.current = controller;
   };
 
+  useEffect(() => {
+    console.log("session is ", session);
+  }, [session]);
   const fetchGoogleEvents = async () => {
     try {
       // Calculate the start and end date for the time frame (current day to one month from now)
@@ -377,13 +380,10 @@ const DashBoardCalender = () => {
           },
         }
       );
-
+      console.log("session is ", session);
       console.log("Events:", response.data.items);
       setEventsList(response.data.items);
     } catch (error) {
-      // setOpenSnackBar(true);
-      // setSnackBarColor("error");
-      // setSnackBarText("Error fetching events");
       console.error("Error fetching events:", error);
     }
   };
@@ -586,23 +586,6 @@ const DashBoardCalender = () => {
                   eventsList={eventsList}
                   onDeleteEvent={deleteCalendarEvent}
                 />
-
-                {/*<p>Start of your event</p>
-         <DateTimePicker onChange={setStart} value={start} /> 
-          <p>End of your event</p>
-         <DateTimePicker onChange={setEnd} value={end} />
-          <p>Event name</p>
-          <input type="text" onChange={(e) => setEventName(e.target.value)} />
-          <p>Event description</p>
-          <input
-            type="text"
-            onChange={(e) => setEventDescription(e.target.value)}
-          />
-          <hr />
-          <button onClick={() => createCalendarEvent()}>
-            Create Calendar Event
-          </button>
-          <p></p> */}
               </>
             ) : (
               <>

@@ -22,6 +22,7 @@ import {
   TextField,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const StaffList = () => {
   const token = Cookies.get("token");
@@ -65,6 +66,8 @@ const StaffList = () => {
     </svg>
   );
 
+  const { syncQB } = useQuickBook();
+
   const navigate = useNavigate();
 
   const getStaffList = async () => {
@@ -100,6 +103,8 @@ const StaffList = () => {
       setTimeout(() => {
         setDeleteStaffSuccess(false);
       }, 4000);
+      syncQB(response.data.SyncId);
+
       console.log("staff deleted successfully");
       getStaffList();
     } catch (error) {
@@ -204,23 +209,42 @@ const StaffList = () => {
                         hover
                         key={staff.UserId}
                       >
-                        <TableCell onClick={() => {                             
-                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}>{staff.UserId}</TableCell>
-                        <TableCell onClick={() => {                             
-                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}>{staff.FirstName}</TableCell>
-                        <TableCell onClick={() => {                             
-                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}>{staff.LastName}</TableCell>
-                        <TableCell onClick={() => {                             
-                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}>{staff.Email}</TableCell>
-                        <TableCell onClick={() => {                             
-                              navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
-                            }}>{staff.Role}</TableCell>
+                        <TableCell
+                          onClick={() => {
+                            navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                          }}
+                        >
+                          {staff.UserId}
+                        </TableCell>
+                        <TableCell
+                          onClick={() => {
+                            navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                          }}
+                        >
+                          {staff.FirstName}
+                        </TableCell>
+                        <TableCell
+                          onClick={() => {
+                            navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                          }}
+                        >
+                          {staff.LastName}
+                        </TableCell>
+                        <TableCell
+                          onClick={() => {
+                            navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                          }}
+                        >
+                          {staff.Email}
+                        </TableCell>
+                        <TableCell
+                          onClick={() => {
+                            navigate(`/Staff/Add-Staff?id=${staff.UserId}`);
+                          }}
+                        >
+                          {staff.Role}
+                        </TableCell>
                         <TableCell align="right">
-                         
                           <span
                             // className="btn btn-danger btn-icon-xxs "
                             data-bs-toggle="modal"

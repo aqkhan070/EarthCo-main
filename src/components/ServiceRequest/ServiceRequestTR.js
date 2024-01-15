@@ -181,9 +181,11 @@ const ServiceRequestTR = ({
                       <MenuItem value={false}>Descending</MenuItem>
                     </Select>
                   </FormControl>
-                  {loggedInUser.userRole == "1" && (
+                  {loggedInUser.userRole == "4" ? (
+                    <></>
+                  ) : (
                     <button
-                      className="btn btn-primary "
+                      className="btn btn-primary"
                       onClick={() => {
                         // setShowContent(false);
                         // setServiceRequestId(0);

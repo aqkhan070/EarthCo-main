@@ -312,7 +312,7 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
         data-bs-toggle="modal"
         data-bs-target="#basicModal"
       >
-        + Add
+        <strong>+ Add</strong>
       </span>
     </>
   );

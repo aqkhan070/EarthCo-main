@@ -161,19 +161,24 @@ const InvoicePreview = () => {
               <div id="invoice-preview" className=" get-preview ">
                 <div className="card-body perview-pd">
                   <div className="row mt-2">
-                    {/* <div className="col-md-12 mb-5"
-                style={{
-                  borderBottom: "5px solid #5d9dd5",
-               
-                }}
-              ></div> */}
-                    <div className="col-md-2 col-sm-2">
-                      {" "}
-                      <img className="preview-Logo" src={logo} alt="" />
+                    <div className="col-md-5 col-sm-5">
+                      <h5 className="mb-0">EarthCo Commercial Landscape</h5>{" "}
+                      <h6 className="mb-0" style={{ width: "12em" }}>
+                        1225 E. Wakeham Santa Ana CA 92705 US
+                        lolas@earthcompany.org 714-571-0455
+                      </h6>
                     </div>
-                    <div className="col-md-7 col-sm-7"></div>
-                    <div className="col-md-3 col-sm-3 text-center table-cell-align">
-                      <h2 className="table-cell-align">Invoice</h2>
+                    <div className="col-md-3 col-sm-3 text-center">
+                      {" "}
+                      <h3>Invoice</h3>
+                    </div>
+                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                      <img
+                        className="preview-Logo"
+                        style={{ width: "160px" }}
+                        src={logo}
+                        alt=""
+                      />
                     </div>
                   </div>
 
@@ -182,36 +187,17 @@ const InvoicePreview = () => {
                       <table>
                         <tbody>
                           <tr>
-                            <td className="p-0">
-                              {" "}
-                              <h5 className="mb-0">EarthCo</h5>{" "}
-                              <h6 className="mb-0">
-                                {InvoicePreviewData.Data.CustomerId || ""}{" "}
-                                {InvoicePreviewData.Data.CustomerName || ""}
-                              </h6>{" "}
-                              <h6 className="mb-2">
-                                {InvoicePreviewData.Data.Address}
-                              </h6>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"></td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"> </td>
-                          </tr>
-                          <tr>
                             <td className="me-5 pe-2">
                               <h5 className="mb-0">
                                 <strong>BILL TO</strong>
                               </h5>
                             </td>
 
-                            <td>
+                            {/* <td>
                               <h5 className="mb-0">
                                 <strong>SHIP To</strong>
                               </h5>
-                            </td>
+                            </td> */}
                           </tr>
                           <tr className="py-0" style={{ maxHeight: "3em" }}>
                             <td
@@ -235,7 +221,7 @@ const InvoicePreview = () => {
                               </h6>
                             </td>
 
-                            <td
+                            {/* <td
                               className="py-0"
                               style={{
                                 verticalAlign: "top",
@@ -254,7 +240,7 @@ const InvoicePreview = () => {
                               <h6 className="mb-0">
                                 <>{InvoicePreviewData.Data.ContactAddress}</>
                               </h6>
-                            </td>
+                            </td> */}
                           </tr>
                         </tbody>
                       </table>
@@ -266,32 +252,93 @@ const InvoicePreview = () => {
                           <tr>
                             <th>
                               {" "}
-                              <h6 className="mb-0">Date</h6>{" "}
+                              {/* <h6 className="mb-0">Date</h6>{" "} */}
                             </th>
                             <th>
                               {" "}
-                              <h6 className="text-right mb-0">
+                              {/* <h6 className="text-right mb-0">
                                 {formatDate(
-                                  InvoicePreviewData.Data.CreatedDate, false
+                                  InvoicePreviewData.Data.CreatedDate,
+                                  false
                                 )}
-                              </h6>
+                              </h6> */}
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
                             <td className="table-cell-align me-2">
-                              <h6>invoice #</h6>{" "}
+                              {/* <h6>invoice #</h6>{" "} */}
                             </td>
 
                             <td className="table-cell-align text-right">
-                              <h6>{InvoicePreviewData.Data.InvoiceNumber}</h6>
+                              {/* <h6>{InvoicePreviewData.Data.InvoiceNumber}</h6> */}
                             </td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
+
+                  <table id="empoloyees-tblwrapper" className="table mt-2">
+                    <thead className="table-header">
+                      <tr className="preview-table-head">
+                        <th>
+                          <strong>INVOICE #</strong>
+                        </th>
+                        <th className="text-right">
+                          <strong>DATE</strong>
+                        </th>
+                        <th className="text-right">
+                          <strong>TOTAL DUE</strong>
+                        </th>
+
+                        <th className="text-right">
+                          <strong>DUE DATE</strong>
+                        </th>
+                        <th className="text-right">
+                          <strong>TERMS</strong>
+                        </th>
+                        <th className="text-right">
+                          <strong>Enclosed</strong>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="preview-table-row">
+                        <td>{InvoicePreviewData.Data.InvoiceNumber}</td>
+                        <td className="text-right">
+                          {formatDate(
+                            InvoicePreviewData.Data.CreatedDate,
+                            false
+                          )}
+                        </td>
+                        <td className="text-right"></td>
+                        <td className="text-right">
+                          {formatDate(InvoicePreviewData.Data.DueDate, false)}
+                        </td>
+                        <td className="text-right">
+                          {InvoicePreviewData.Data.Term}
+                        </td>
+                        <td className="text-right">
+                          {InvoicePreviewData.Data.StatusId === 0
+                            ? "Closed"
+                            : "Open"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="row">
+                    <div className="col-md-12">
+                      <h4 className="mb-0">
+                        <strong>Description of work</strong>
+                      </h4>
+                      <h6 className="">
+                        {InvoicePreviewData.Data.CustomerMessage}
+                      </h6>
+                    </div>
+                  </div>
+
                   <table id="empoloyees-tblwrapper" className="table mt-2">
                     <thead className="table-header">
                       <tr className="preview-table-head">
@@ -419,7 +466,9 @@ const InvoicePreview = () => {
                       //   false
                       // );
                       navigate(
-                        `/send-mail?title=${"Invoice"}&mail=${customerMail}`
+                        `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${
+                          InvoicePreviewData.Data.CustomerName
+                        }&number=${InvoicePreviewData.Data.InvoiceNumber}`
                       );
                     }}
                   >

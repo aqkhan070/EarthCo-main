@@ -52,7 +52,7 @@ const ControllerTable = ({
                 <tr>
                   <th>#</th>
                   <th>Controller </th>
-                  <th>Serial Number </th>
+                  <th>Controller Number </th>
                   <th>Meter Info </th>
                   <th>Valve </th>
                   <th>Repairs / Upgrades</th>

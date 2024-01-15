@@ -53850,6 +53850,11 @@ cursor: pointer;
     border-bottom: 1px solid #c5e0c5;
   }
 
+  .customer-dd-border-map{
+    width: 30em;
+    border-bottom: 1px solid #c5e0c5;
+  }
+
   .autocomplete-wrapper .MuiAutocomplete-popper {
     width: 30em; /* Adjust the width as per your requirements */
   }

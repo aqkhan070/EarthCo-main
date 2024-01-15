@@ -26,6 +26,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import { DataContext } from "../../context/AppData";
+import useQuickBook from "../Hooks/useQuickBook";
 
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
@@ -91,13 +92,13 @@ export const AddPO = ({}) => {
       ></path>
     </svg>
   );
+  const { syncQB } = useQuickBook();
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const [customersList, setCustomersList] = useState([]);
-  const [showCustomersList, setShowCustomersList] = useState(true);
+
   const [inputValue, setInputValue] = useState("");
-  const [disableSubmit, setDisableSubmit] = useState(true);
+
   const [sLList, setSLList] = useState([]);
   const [contactList, setContactList] = useState([]);
   const [tags, setTags] = useState([]);
@@ -713,6 +714,7 @@ export const AddPO = ({}) => {
         postData,
         { headers }
       );
+      syncQB(response.data.SyncId);
 
       setEstimateLinkData({});
       setDisableButton(false);

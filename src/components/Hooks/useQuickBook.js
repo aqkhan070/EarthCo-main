@@ -41,18 +41,19 @@ const useQuickBook = () => {
       console.log("error connecting to QB", error);
     }
   };
-  const syncQB = async (handlepopup) => {
+
+  const syncQB = async (id=0 ) => {
     try {
       const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/SyncQB/SyncDataAPI`
+        `https://earthcoapi.yehtohoga.com/api/SyncQB/SyncDataAPI?synclogId=${id}`
       );
 
-      handlepopup(true, "success", res.data);
+     
 
       console.log("synced qb", res.data);
     } catch (error) {
       console.log("error connecting to QB", error);
-      handlepopup(true, "error", "Error Syncing Quick Books");
+     
     }
   };
 

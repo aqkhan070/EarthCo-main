@@ -23,6 +23,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import LoaderButton from "../Reusable/LoaderButton";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import { DataContext } from "../../context/AppData";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
@@ -78,6 +79,7 @@ const AddInvioces = ({}) => {
 
   const navigate = useNavigate();
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
+  const { syncQB } = useQuickBook();
 
   // const [error, seterror] = useState("")
 
@@ -474,6 +476,8 @@ const AddInvioces = ({}) => {
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
       setDisableButton(false);
+      syncQB(response.data.SyncId);
+
 
       setTimeout(() => {
         navigate("/invoices");
@@ -2169,7 +2173,9 @@ const AddInvioces = ({}) => {
                         //   false
                         // );
                         navigate(
-                          `/send-mail?title=${"Invoice"}&mail=${customerMail}`
+                          `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${name}&number=${
+                            formData.InvoiceNumber
+                          }`
                         );
                       }}
                     >

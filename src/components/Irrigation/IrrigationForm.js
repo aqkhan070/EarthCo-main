@@ -15,6 +15,8 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import { Print, Email, Download } from "@mui/icons-material";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
+import formatDate from "../../custom/FormatDate";
+import Contacts from "../CommonComponents/Contacts";
 
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -24,7 +26,9 @@ const IrrigationForm = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    CreatedDate: new Date(),
+  });
 
   const [inputValue, setInputValue] = useState("");
 
@@ -32,6 +36,7 @@ const IrrigationForm = () => {
   const [contactList, setContactList] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedSL, setSelectedSL] = useState(null);
+  const [staffData, setStaffData] = useState([]);
 
   const [submitClicked, setSubmitClicked] = useState(false);
   const { name, setName, fetchName } = useFetchCustomerName();
@@ -47,12 +52,59 @@ const IrrigationForm = () => {
 
   const navigate = useNavigate();
 
+  const fetchStaffList = async () => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`,
+        { headers }
+      );
+      setStaffData(response.data);
+
+      console.log("staff list iss", response.data);
+    } catch (error) {
+      console.log("error getting staff list", error);
+    }
+  };
+
+  const fetctContacts = async (id) => {
+    if (!id) {
+      return;
+    }
+    axios
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
+        { headers }
+      )
+      .then((res) => {
+        console.log("contacts data isss", res.data);
+        setContactList(res.data);
+      })
+      .catch((error) => {
+        setContactList([]);
+        console.log("contacts data fetch error", error);
+      });
+  };
+
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
     setErrorMessage("");
     const simulatedEvent = {
       target: {
         name: "CustomerId",
+        value: newValue ? newValue.UserId : "",
+      },
+    };
+
+    // Assuming handleInputChange is defined somewhere within YourComponent
+    // Call handleInputChange with the simulated event
+    handleInputChange(simulatedEvent);
+  };
+
+  const handleRBAutocompleteChange = (event, newValue) => {
+    // Construct an event-like object with the structure expected by handleInputChange
+    const simulatedEvent = {
+      target: {
+        name: "RegionalManagerId",
         value: newValue ? newValue.UserId : "",
       },
     };
@@ -77,24 +129,6 @@ const IrrigationForm = () => {
       .catch((error) => {
         setSLList([]);
         console.log("service locations fetch error", error);
-      });
-  };
-
-  const fetctContacts = async (id) => {
-    if (!id) {
-      return;
-    }
-    axios
-      .get(
-        `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`
-      )
-      .then((res) => {
-        console.log("contacts data isss", res.data);
-        setContactList(res.data);
-      })
-      .catch((error) => {
-        setContactList([]);
-        console.log("contacts data fetch error", error);
       });
   };
 
@@ -145,7 +179,13 @@ const IrrigationForm = () => {
 
   const handleSubmit = async () => {
     setSubmitClicked(true);
-    if (!formData.CustomerId) {
+    console.log("payload", formData);
+
+    if (
+      !formData.CustomerId ||
+      !formData.RegionalManagerId ||
+      !formData.ContactId
+    ) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("please fill all required Fields");
@@ -214,6 +254,7 @@ const IrrigationForm = () => {
 
   useEffect(() => {
     fetchIrrigation();
+    fetchStaffList();
   }, [idParam]);
   useEffect(() => {
     fetchCustomers();
@@ -290,7 +331,103 @@ const IrrigationForm = () => {
                         />
                       </div>
 
-                      <div className="col-md-3 ">
+                      <div className="col-md-3">
+                        <div className="row">
+                          <div className="col-md-auto">
+                            <label className="form-label">
+                              Contacts<span className="text-danger">*</span>
+                            </label>
+                          </div>
+                          <div className="col-md-3">
+                            {formData.CustomerId ? (
+                              <Contacts
+                                fetctContacts={fetctContacts}
+                                fetchCustomers={fetchCustomers}
+                                customerId={formData.CustomerId}
+                              />
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </div>
+
+                        <Autocomplete
+                          id="inputState299"
+                          size="small"
+                          options={contactList}
+                          getOptionLabel={(option) => option.FirstName || ""}
+                          value={
+                            contactList.find(
+                              (contact) =>
+                                contact.ContactId === formData.ContactId
+                            ) || null
+                          }
+                          onChange={handleContactAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.ContactId === value.ContactId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Contacts"
+                              className="bg-white"
+                              error={submitClicked && !formData.ContactId}
+                            />
+                          )}
+                          aria-label="Contact select"
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <label className="form-label">
+                          Regional Manager{" "}
+                          <span className="text-danger">*</span>
+                        </label>
+                        <Autocomplete
+                          id="staff-autocomplete"
+                          size="small"
+                          options={staffData.filter(
+                            (staff) => staff.Role === "Regional Manager"
+                          )}
+                          getOptionLabel={(option) => option.FirstName || ""}
+                          value={
+                            staffData.find(
+                              (staff) =>
+                                staff.UserId === formData.RegionalManagerId
+                            ) || null
+                          }
+                          onChange={handleRBAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.UserId === value.RegionalManagerId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              error={
+                                submitClicked && !formData.RegionalManagerId
+                              }
+                              placeholder="Choose..."
+                              className="bg-white"
+                            />
+                          )}
+                        />
+                      </div>
+
+                      <div className="col-md-3">
+                        <label className="form-label">Created</label>
+                        <input
+                          type="date"
+                          name="CreatedDate"
+                          value={formatDate(formData.CreatedDate)}
+                          onChange={handleInputChange}
+                          className="form-control"
+                          placeholder="Created"
+                        />
+                      </div>
+
+                      {/* <div className="col-md-3 ">
                         <div className="col-md-12">
                           <label className="form-label">
                             Controller Number
@@ -305,8 +442,35 @@ const IrrigationForm = () => {
                           className="form-control form-control-sm"
                           placeholder="Controller Number"
                         />
-                      </div>
-                      <div className="col-md-3 mt-4">
+                      </div> */}
+                      <div className="col-md-12 text-end mt-4">
+                        {idParam === 0 ? null : (
+                          <>
+                            <button
+                              type="button"
+                              className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                              onClick={() => {
+                                navigate(
+                                  `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
+                                );
+                              }}
+                            >
+                              <Email />
+                            </button>
+
+                            <button
+                              type="button"
+                              className="mt-1 btn btn-sm btn-outline-primary estm-action-btn me-2"
+                              onClick={() => {
+                                navigate(
+                                  `/irrigation/audit-report?id=${idParam}`
+                                );
+                              }}
+                            >
+                              <Print></Print>
+                            </button>
+                          </>
+                        )}
                         <LoaderButton
                           varient="small"
                           loading={disableButton}
@@ -323,37 +487,6 @@ const IrrigationForm = () => {
                         >
                           Cancel
                         </button>
-                      </div>
-                      <div className="col-md-3 text-right mt-3">
-                        <div>
-                          {idParam === 0 ? null : (
-                            <>
-                              <button
-                                type="button"
-                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                                onClick={() => {
-                                  navigate(
-                                    `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
-                                  );
-                                }}
-                              >
-                                <Email />
-                              </button>
-
-                              <button
-                                type="button"
-                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
-                                onClick={() => {
-                                  navigate(
-                                    `/irrigation/audit-report?id=${idParam}`
-                                  );
-                                }}
-                              >
-                                <Print></Print>
-                              </button>
-                            </>
-                          )}
-                        </div>
                       </div>
                     </div>
                   </div>

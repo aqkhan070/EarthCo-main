@@ -158,133 +158,161 @@ const SRPreview = () => {
             <div className={toggleFullscreen ? "" : ""}>
               <div id="SR-preview" className=" get-preview ">
                 <div className="card-body perview-pd">
-                  <div className="row ">
-                    {/* <div className="col-md-12 mb-5"
-                style={{
-                  borderBottom: "5px solid #5d9dd5",
-               
-                }}
-              ></div> */}
-                    <div className="col-md-2 col-sm-2">
-                      {" "}
-                      <img className="preview-Logo" src={logo} alt="" />
-                    </div>
-                    <div className="col-md-6 col-sm-6"></div>
-                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
-                      <h2 className="table-cell-align">SERVICE REQUEST</h2>
-                    </div>
-                  </div>
-
                   <div className="row mt-2">
-                    <div className="col-md-8  col-sm-8">
-                      <table>
-                        <tbody>
-                          <tr>
-                            <td className="p-0">
-                              {" "}
-                              <h5 className="mb-0">EarthCo</h5>{" "}
-                              <h6 className="mb-0">
-                                {sRPreviewData.Data.CustomerId}.{" "}
-                                {sRPreviewData.Data.CustomerName || ""}
-                              </h6>{" "}
-                              <h6 className="mb-2">
-                                {sRPreviewData.Data.Address}
-                              </h6>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"></td>
-                          </tr>
-                          <tr>
-                            <td className="p-0"> </td>
-                          </tr>
-                          <tr>
-                            <td className="me-5 pe-2">
-                              <h5 className="mb-0">
-                                <strong>BILL TO</strong>
-                              </h5>
-                            </td>
-
-                            <td>
-                              <h5 className="mb-0">
-                                <strong>SHIP To</strong>
-                              </h5>
-                            </td>
-                          </tr>
-                          <tr className="py-0" style={{ maxHeight: "3em" }}>
-                            <td
-                              className="py-0"
-                              style={{
-                                verticalAlign: "top",
-                                maxWidth: "19em",
-                                width: "19em",
-                              }}
-                            >
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactCompanyName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactAddress}</>
-                              </h6>
-                            </td>
-
-                            <td
-                              className="py-0"
-                              style={{
-                                verticalAlign: "top",
-                                maxWidth: "19em",
-                                width: "19em",
-                              }}
-                            >
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactCompanyName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactName}</>
-                              </h6>
-                              <h6 className="mb-0">
-                                <>{sRPreviewData.Data.ContactAddress}</>
-                              </h6>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                    <div className="col-md-4 col-sm-4">
+                      <h5 className="mb-0">EarthCo</h5>{" "}
+                      <h6 className="mb-0">
+                        1225 East Wakeham Avenue Santa Ana, California 92705
+                      </h6>
+                      <h6 className="mb-0">
+                        <strong>Phone: </strong> 714.571.0455
+                      </h6>
+                      <h6 className="mb-0">
+                        <strong>Fax: </strong> 714.571.0580
+                      </h6>
                     </div>
-
-                    <div className="col-md-4 col-sm-4 ">
-                      <table className="preview-table">
-                        <thead>
-                          <tr>
-                            <th>
-                              {" "}
-                              <h6 className="mb-0">Date</h6>{" "}
-                            </th>
-                            <th>
-                              {" "}
-                              <h6 className="text-right mb-0">
-                                {formatDate(sRPreviewData.Data.CreatedDate, false)}
-                              </h6>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="table-cell-align me-2">
-                              <h6>Service Request #</h6>{" "}
-                            </td>
-
-                            <td className="table-cell-align text-right">
-                              <h6>{sRPreviewData.Data.ServiceRequestNumber}</h6>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                    <div className="col-md-4 col-sm-4 text-center">
+                      {" "}
+                      <h3>Service Request</h3>
+                    </div>
+                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                      <img
+                        className="preview-Logo"
+                        style={{ width: "160px" }}
+                        src={logo}
+                        alt=""
+                      />
                     </div>
                   </div>
-                  <table id="empoloyees-tblwrapper" className="table mt-2">
+
+                  <div className="row my-2">
+                    <div className="col-md-7 col-sm-7">
+                      <div className="table-responsive">
+                        <table className=" table-striped table table-bordered text-start">
+                          <thead>
+                            <tr
+                              style={{ backgroundColor: "gray" }}
+                              className="preview-table-head LandScape-TablePadding"
+                            >
+                              <th className="landscap-preview-heading">
+                                Requested By:
+                              </th>
+                              <th className="landscap-preview-heading">
+                                Service Location:
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="preview-table-row">
+                              <td style={{ color: "black" }}>
+                                {sRPreviewData.Data.CustomerName}
+                                <br />
+                                {sRPreviewData.Data.ServiceLocationAddress}
+                              </td>
+                              <td
+                                style={{ color: "black" }}
+                                className="left strong"
+                              >
+                                {sRPreviewData.Data.ServiceLocationAddress}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>{" "}
+                    </div>
+
+                    <div
+                      style={{ color: "black" }}
+                      className="col-md-5 col-sm-4 text-end"
+                    >
+                      <div className="row">
+                        <div className="col-md-6">
+                          <strong>Date Created:</strong>
+                        </div>
+                        <div className="col-md-6">
+                          {" "}
+                          <div
+                            style={{ color: "black" }}
+                            className="text-start"
+                          >
+                            <p className="">
+                              {" "}
+                              {formatDate(
+                                sRPreviewData.Data.CreatedDate,
+                                false
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <strong>Target completion:</strong>
+                        </div>
+                        <div className="col-md-6">
+                          {" "}
+                          <div
+                            style={{ color: "black" }}
+                            className="text-start"
+                          >
+                            <p className="">
+                              {" "}
+                              {formatDate(sRPreviewData.Data.DueDate, false)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="table-responsive">
+                    <table className="table-bordered table  LandScape-TablePadding">
+                      <thead></thead>
+                      <tbody>
+                        <tr>
+                          <td className="landscap-preview-heading" colSpan={2}>
+                            <>Service Request Details</>
+                          </td>
+                        </tr>
+                        <tr className="preview-table-row">
+                          <td style={{ width: "18em" }}>
+                            <strong>Service Request Number: </strong>{" "}
+                          </td>
+                          <td> {sRPreviewData.Data.ServiceRequestNumber}</td>
+                        </tr>
+                        <tr className="preview-table-row">
+                          <td style={{ width: "18em" }}>
+                            <strong>Second Request: </strong>{" "}
+                          </td>
+                          <td> NO</td>
+                        </tr>
+                        <tr className="preview-table-row">
+                          <td style={{ width: "18em" }}>
+                            <strong>Date Completed: </strong>{" "}
+                          </td>
+                          <td> {sRPreviewData.Data.CompletedDate}</td>
+                        </tr>
+                        <tr>
+                          <td className="landscap-preview-heading" colSpan={2}>
+                            <>Actions</>
+                          </td>
+                        </tr>
+
+                        <tr className="preview-table-row">
+                          <td style={{ width: "18em" }}>
+                            <strong>Work Requested: </strong>{" "}
+                          </td>
+                          <td> {sRPreviewData.Data.WorkRequest}</td>
+                        </tr>
+                        <tr className="preview-table-row">
+                          <td style={{ width: "18em" }}>
+                            <strong>Action taken </strong>{" "}
+                          </td>
+                          <td> {sRPreviewData.Data.ActionTaken}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* <table id="empoloyees-tblwrapper" className="table mt-2">
                     <thead className="table-header">
                       <tr className="preview-table-head">
                         <th>
@@ -316,9 +344,9 @@ const SRPreview = () => {
                         );
                       })}
                     </tbody>
-                  </table>
+                  </table> */}
 
-                  <div className="row ">
+                  {/* <div className="row ">
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0">
@@ -332,12 +360,12 @@ const SRPreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-8 col-sm-6"></div>
-                    {/* <div className="col-md-2 col-sm-3">
+                    <div className="col-md-2 col-sm-3">
                   <h6 className="mb-0">
                     {" "}
                     <strong>DISCOUNT:</strong>
                   </h6>
-                </div>{" "} */}
+                </div>{" "} 
                     <hr className="mb-1" />
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
@@ -354,7 +382,7 @@ const SRPreview = () => {
                         margin: "0em 0em 3em 0em",
                       }}
                     ></div>
-                  </div>
+                  </div>*/}
                 </div>
               </div>
             </div>
@@ -374,7 +402,7 @@ const SRPreview = () => {
                       navigate(`/service-requests`);
                     }}
                   >
-                   <ArrowBackIcon sx={{ fontSize: 17 }} />
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}
@@ -412,7 +440,9 @@ const SRPreview = () => {
                       //   false
                       // );
                       navigate(
-                        `/send-mail?title=${"Service Request"}&mail=${contactEmail}`
+                        `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${
+                          sRPreviewData.Data.CustomerName
+                        }&number=${sRPreviewData.Data.ServiceRequestNumber}`
                       );
                     }}
                   >

@@ -235,7 +235,9 @@ const DataFun = ({ children }) => {
   const [billData, setBillData] = useState({});
 
   const [PunchDetailData, setPunchDetailData] = useState({});
-  const [PunchListData, setPunchListData] = useState({});
+  const [PunchListData, setPunchListData] = useState({
+    ContactIds: [],
+  });
   const [proposalData, setproposalData] = useState([]);
   const [sRProposalData, setsRProposalData] = useState({});
 
@@ -247,7 +249,10 @@ const DataFun = ({ children }) => {
 
   const [customerAddress, setCustomerAddress] = useState("");
 
-  const [sROBJ, setSROBJ] = useState({})
+  const [sROBJ, setSROBJ] = useState({
+    ContactIds: [],
+    SRitems: [],
+  });
 
   const [selectedImages, setSelectedImages] = useState([]);
 
@@ -256,10 +261,14 @@ const DataFun = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
-        statusId, setStatusId,
-        selectedImages, setSelectedImages,
-        sROBJ, setSROBJ,
-        loggedInUser, setLoggedInUser,
+        statusId,
+        setStatusId,
+        selectedImages,
+        setSelectedImages,
+        sROBJ,
+        setSROBJ,
+        loggedInUser,
+        setLoggedInUser,
         customerAddress,
         setCustomerAddress,
         toggleFullscreen,
@@ -286,7 +295,7 @@ const DataFun = ({ children }) => {
         sRData,
         users,
         setUsers,
-      
+
         contacts,
         setContacts,
         estimates,

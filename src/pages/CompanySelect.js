@@ -151,11 +151,16 @@ const CompanySelect = () => {
                                 sx={{
                                   color: "#303030",
                                   fontSize: 30,
+                                 
                                 }}
                                 primary={company.CompanyName}
                               />
                             </ListItemButton>
-                            <Divider />
+                            <Divider
+                              sx={{
+                                width: "25vw",
+                              }}
+                            />
                           </>
                         ))}
                       </List>

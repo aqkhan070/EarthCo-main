@@ -28,7 +28,6 @@ import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 
-
 const Bills = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
@@ -180,16 +179,8 @@ const Bills = () => {
                 <Table hover>
                   <TableHead className="table-header">
                     <TableRow className=" bill-tbl-alignment">
-                      <TableCell>
-                      
-                          Vendor
-                       
-                      </TableCell>
-                      <TableCell>
-                       
-                          Due Date
-                       
-                      </TableCell>
+                      <TableCell>Vendor</TableCell>
+                      <TableCell>Due Date</TableCell>
                       <TableCell className="text-end">Amount</TableCell>
                       <TableCell>Memo</TableCell>
                       <TableCell>Currency</TableCell>

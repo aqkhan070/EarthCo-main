@@ -194,7 +194,7 @@ const IrrigationControler = ({
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">
-                Serial Number<span className="text-danger">*</span>
+                Controller Number<span className="text-danger">*</span>
               </label>
             </div>
             <TextField
@@ -204,9 +204,10 @@ const IrrigationControler = ({
               onChange={handleChange}
               className="form-control"
               error={submitClicked && !formData.SerialNumber}
-              placeholder="Serial Number"
+              placeholder="Controller Number"
             />
           </div>
+          
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Photo of Controller</label>

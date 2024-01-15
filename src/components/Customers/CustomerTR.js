@@ -20,6 +20,8 @@ import {
 import { Create, Delete, Update } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
+import useQuickBook from "../Hooks/useQuickBook";
+import EventPopups from "../Reusable/EventPopups";
 
 const theme = createTheme({
   palette: {
@@ -61,6 +63,10 @@ const CustomerTR = ({
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
   // Sorting logic here...
   const sortedCustomers = [...customers].sort((a, b) => {
     if (sorting.order === "asc") {
@@ -79,6 +85,7 @@ const CustomerTR = ({
     // Initial fetch of estimates
     fetchCustomers();
   }, []);
+  const { syncQB } = useQuickBook();
 
   useEffect(() => {
     // Fetch estimates when the tablePage changes
@@ -105,6 +112,7 @@ const CustomerTR = ({
           headers,
         }
       );
+      console.log("customer deleted successfuly", response.data);
 
       // Handle the response. For example, you can reload the customers or show a success message
       setDeleteSuccess(true);
@@ -113,6 +121,10 @@ const CustomerTR = ({
       }, 4000);
       fetchCustomers();
       // window.location.reload();
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText(response.data.Message);
+      syncQB(response.data.SyncId);
     } catch (error) {
       console.error("There was an error deleting the customer:", error);
     }
@@ -124,6 +136,12 @@ const CustomerTR = ({
 
   return (
     <ThemeProvider theme={theme}>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       {showContent ? (
         <div className="card">
           {deleteSuccess && (
@@ -176,9 +194,9 @@ const CustomerTR = ({
                   {[
                     // "Select",
                     "Customer Id",
-                    "Customer Name",
-                    "Contact Name",
                     "Contact Company",
+                    "Contact Name",
+                    "Customer Name",
                     "Contact Email",
                     "Actions",
                   ].map((column, index) => (
@@ -229,7 +247,7 @@ const CustomerTR = ({
                           );
                         }}
                       >
-                        {customer.CustomerName}
+                        {customer.CompanyName}
                       </TableCell>
                       <TableCell
                         onClick={() => {
@@ -247,7 +265,7 @@ const CustomerTR = ({
                           );
                         }}
                       >
-                        {customer.CompanyName}
+                        {customer.CustomerName}
                       </TableCell>
                       <TableCell
                         onClick={() => {
@@ -289,7 +307,7 @@ const CustomerTR = ({
                                   data-bs-dismiss="modal"
                                 ></button>
                               </div>
-                              <div className="modal-body">
+                              <div className="modal-body text-center">
                                 <p>
                                   Are you sure you want to delete{" "}
                                   {customer.CompanyName}

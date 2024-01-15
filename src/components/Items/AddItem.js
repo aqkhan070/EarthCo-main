@@ -7,6 +7,7 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const AddItem = ({}) => {
   const { loggedInUser } = useContext(DataContext);
@@ -25,6 +26,7 @@ const AddItem = ({}) => {
   const [snackBarText, setSnackBarText] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const { syncQB } = useQuickBook();
 
   const getItem = async () => {
     if (!idParam) {
@@ -104,6 +106,8 @@ const AddItem = ({}) => {
       setSnackBarColor("success");
       setSnackBarText(res.data.Message);
       setDisableButton(false);
+      syncQB(res.data.SyncId);
+
       setTimeout(() => {
         navigate(`/items`);
       }, 4000);

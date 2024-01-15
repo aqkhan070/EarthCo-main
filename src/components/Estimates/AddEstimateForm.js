@@ -31,6 +31,9 @@ import Contacts from "../CommonComponents/Contacts";
 import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import Checkbox from "@mui/material/Checkbox";
+import Tooltip from "@mui/material/Tooltip";
+import useQuickBook from "../Hooks/useQuickBook";
+
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -66,7 +69,10 @@ const AddEstimateForm = () => {
     selectedImages,
     setSelectedImages,
     loggedInUser,
+    sROBJ,
+    setSROBJ,
   } = useContext(DataContext);
+  const { syncQB } = useQuickBook();
 
   useEffect(() => {
     fetchName(PunchListData.CustomerId);
@@ -76,6 +82,10 @@ const AddEstimateForm = () => {
         ...PunchListData,
         tblEstimateItems: PunchListData.ItemData,
       }));
+    }
+
+    if (PunchListData.ContactIds?.length > 0) {
+      setSelectedContacts(PunchListData.ContactIds);
     }
 
     if (PunchListData.PhotoPath) {
@@ -92,6 +102,8 @@ const AddEstimateForm = () => {
     fetchStaffList();
     fetctContacts(PunchListData.CustomerId);
     console.log("PunchList Data link", PunchListData);
+
+    // }
   }, [PunchListData]);
 
   const inputFile = useRef(null);
@@ -388,6 +400,7 @@ const AddEstimateForm = () => {
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
+      syncQB(response.data.SyncId);
 
       setDisableButton(false);
       setTimeout(() => {
@@ -1648,11 +1661,7 @@ const AddEstimateForm = () => {
                                 name="CostPrice"
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                value={
-                               
-                                  itemInput.PurchasePrice ||
-                                  ""
-                                }
+                                value={itemInput.PurchasePrice || ""}
                                 onChange={(e) =>
                                   setItemInput({
                                     ...itemInput,
@@ -2230,10 +2239,16 @@ const AddEstimateForm = () => {
                                 left: "14px",
                               }}
                             >
-                              <Checkbox
-                                checked={true}
-                                onChange={() => handleImageSelect(file)}
-                              />
+                              <Tooltip
+                                title="Click to select image"
+                                placement="top"
+                                arrow
+                              >
+                                <Checkbox
+                                  checked={true}
+                                  onChange={() => handleImageSelect(file)}
+                                />
+                              </Tooltip>
                             </span>
                           ) : (
                             <span
@@ -2244,10 +2259,16 @@ const AddEstimateForm = () => {
                                 left: "14px",
                               }}
                             >
-                              <Checkbox
-                                checked={false}
-                                onChange={() => handleImageSelect(file)}
-                              />
+                              <Tooltip
+                                title="Click to select image"
+                                placement="top"
+                                arrow
+                              >
+                                <Checkbox
+                                  checked={false}
+                                  onChange={() => handleImageSelect(file)}
+                                />
+                              </Tooltip>
                             </span>
                           )}
                           <span
@@ -2332,52 +2353,60 @@ const AddEstimateForm = () => {
                   <div className="col-md-7 col-sm-7 p-0 ">
                     {idParam ? (
                       <>
-                        <FormControl>
-                          <Select
-                            labelId="estimateLink"
-                            aria-label="Default select example"
-                            variant="outlined"
-                            className="text-left "
-                            value={1}
-                            // color="success"
+                        {loggedInUser.userRole == "1" ? (
+                          <>
+                            <FormControl>
+                              <Select
+                                labelId="estimateLink"
+                                aria-label="Default select example"
+                                variant="outlined"
+                                className="text-left "
+                                value={1}
+                                // color="success"
 
-                            name="Status"
-                            size="small"
-                            placeholder="Select Status"
-                            fullWidth
-                          >
-                            <MenuItem value={1}>Create </MenuItem>
-                            <MenuItem
-                              value={2}
-                              onClick={() => {
-                                LinkToPO();
-                                navigate("/purchase-order/add-po");
-                              }}
-                            >
-                              Purchase Order
-                            </MenuItem>
-                            {formData.BillId ? (
-                              <MenuItem
-                                onClick={() => {
-                                  LinkToPO();
-                                  navigate("/invoices/add-invoices");
-                                }}
-                                value={3}
+                                name="Status"
+                                size="small"
+                                placeholder="Select Status"
+                                fullWidth
                               >
-                                Invoice
-                              </MenuItem>
-                            ) : (
-                              ""
-                            )}
-                          </Select>
-                        </FormControl>
+                                <MenuItem value={1}>Create </MenuItem>
+                                <MenuItem
+                                  value={2}
+                                  onClick={() => {
+                                    LinkToPO();
+                                    navigate("/purchase-order/add-po");
+                                  }}
+                                >
+                                  Purchase Order
+                                </MenuItem>
+                                {formData.BillId ? (
+                                  <MenuItem
+                                    onClick={() => {
+                                      LinkToPO();
+                                      navigate("/invoices/add-invoices");
+                                    }}
+                                    value={3}
+                                  >
+                                    Invoice
+                                  </MenuItem>
+                                ) : (
+                                  ""
+                                )}
+                              </Select>
+                            </FormControl>
+                          </>
+                        ) : (
+                          <></>
+                        )}
 
                         <button
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
                             navigate(
-                              `/send-mail?title=${"Estimate"}&mail=${contactEmail}`
+                              `/send-mail?title=${"Estimate"}&mail=${contactEmail}&customer=${name}&number=${
+                                formData.EstimateNumber
+                              }`
                             );
                           }}
                         >
@@ -2403,7 +2432,9 @@ const AddEstimateForm = () => {
                       className="btn btn-danger light ms-1 me-2"
                       onClick={() => {
                         navigate(`/estimates`);
-                        setPunchListData({});
+                        setPunchListData({
+                          ContactIds: [],
+                        });
                       }}
                     >
                       Cancel

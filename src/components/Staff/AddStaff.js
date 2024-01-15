@@ -19,6 +19,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import { DataContext } from "../../context/AppData";
 import Autocomplete from "@mui/material/Autocomplete";
 import useFetchCompanyList from "../Hooks/useFetchCompanyList";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
@@ -65,6 +66,7 @@ const AddStaff = ({}) => {
 
   const [selectedCompanies, setSelectedCompanies] = useState([]);
   const { fetchCompanies, companies } = useFetchCompanyList();
+  const { syncQB } = useQuickBook();
 
   const [userRoles, setUserRoles] = useState([]);
   const [alert, setAlert] = useState(false);
@@ -112,25 +114,13 @@ const AddStaff = ({}) => {
     fetchCompanies();
   }, []);
 
-  const validateForm = () => {
-    // check if any of the required fields are empty
-    const requiredFieldsNotEmpty =
-      customerInfo.FirstName &&
-      customerInfo.LastName &&
-      customerInfo.Email &&
-      customerInfo.Password &&
-      customerInfo.Phone &&
-      customerInfo.Address &&
-      customerInfo.RoleId &&
-      customerInfo.Password === customerInfo.ConfirmPassword;
-
-    // check if passwords match
-
-    // set the form as valid only if all required fields are not empty and passwords match
-    setFormValid(requiredFieldsNotEmpty);
-  };
-
   const handleCompanyChange = (event, newValue) => {
+    setEmptyFieldsError(false);
+    setEmailError(false);
+    setPhoneError(false);
+    setFirstNameError("");
+    setLastNameError("");
+    setLoadingButton(false);
     setSelectedCompanies(newValue.map((company) => company.CompanyId));
   };
 
@@ -149,7 +139,7 @@ const AddStaff = ({}) => {
       const updatedData = {
         ...prevData,
         [name]: newValue,
-        CompanyId : Number(loggedInUser.CompanyId),
+        CompanyId: Number(loggedInUser.CompanyId),
       };
 
       if (name === "Password" || name === "ConfirmPassword") {
@@ -262,6 +252,8 @@ const AddStaff = ({}) => {
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
       setLoadingButton(false);
+      syncQB(response.data.SyncId);
+
       setTimeout(() => {
         setAddCustomerSuccess("");
         loggedInUser.userRole == "1"
@@ -347,7 +339,6 @@ const AddStaff = ({}) => {
                       type="text"
                       className="form-control"
                       name="FirstName"
-                  
                       variant="outlined"
                       size="small"
                       onChange={handleCustomerInfo}
@@ -372,7 +363,6 @@ const AddStaff = ({}) => {
                       name="LastName"
                       value={customerInfo.LastName}
                       error={submitClicked && !customerInfo.LastName}
-                    
                       placeholder="Last Name"
                     />
                   </div>
@@ -390,7 +380,6 @@ const AddStaff = ({}) => {
                       error={
                         emailError || (submitClicked && !customerInfo.Email)
                       }
-                    
                       placeholder="Email / Username"
                     />
                   </div>
@@ -406,7 +395,6 @@ const AddStaff = ({}) => {
 
                         <Select
                           labelId="role-label"
-                         
                           name="RoleId"
                           value={customerInfo.RoleId}
                           error={submitClicked && !customerInfo.RoleId}
@@ -440,7 +428,6 @@ const AddStaff = ({}) => {
                       size="small"
                       error={phoneError}
                       value={customerInfo.Phone}
-                    
                       placeholder="Phone"
                     />
                   </div>
@@ -459,7 +446,6 @@ const AddStaff = ({}) => {
                       variant="outlined"
                       size="small"
                       value={customerInfo.AltPhone}
-                  
                       placeholder="Alt Phone"
                     />
                   </div>
@@ -541,7 +527,6 @@ const AddStaff = ({}) => {
                           }
                           onChange={handleCustomerInfo}
                           name="Password"
-                        
                           placeholder="Password"
                         />
                       </div>
@@ -556,7 +541,7 @@ const AddStaff = ({}) => {
                           size="small"
                           onChange={handleCustomerInfo}
                           // error={idParam !== 0 && submitClicked && !customerInfo.ConfirmPassword}
-                      
+
                           name="ConfirmPassword"
                           placeholder="Confirm Password"
                         />

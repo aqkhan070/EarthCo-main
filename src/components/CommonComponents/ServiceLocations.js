@@ -168,8 +168,8 @@ const ServiceLocations = ({
         onClick={(e) => {
           e.preventDefault();
         }}
-      >
-        + Add
+      ><strong>
+        + Add</strong>
       </span>
     </>
   );

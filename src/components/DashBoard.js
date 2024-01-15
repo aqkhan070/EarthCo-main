@@ -27,8 +27,7 @@ const DashBoard = () => {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnZGVhcmlhY3drZWR0YmdseHdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDI5NjU1ODUsImV4cCI6MjAxODU0MTU4NX0.6RSteYZdFAiIBVcmDq-7N14xdqLKupGLFqGhplJs1iQ"
   );
 
-  const { estimates, setSingleObj, serviceRequests, setSingleSR } =
-    useContext(DataContext);
+  const { loggedInUser } = useContext(DataContext);
   const { setEstimateRoute, setSRroute } = useContext(RoutingContext);
 
   const icon = (
@@ -70,7 +69,13 @@ const DashBoard = () => {
                   <DashBoardSR dashBoardData={dashBoardData} />
                 </div>
                 <div className="">
-                  <DashboardEstm dashBoardData={dashBoardData} />
+                  {loggedInUser.userRole == 5 ? (
+                    <></>
+                  ) : (
+                    <>
+                      <DashboardEstm dashBoardData={dashBoardData} />
+                    </>
+                  )}
                 </div>
               </div>
 
