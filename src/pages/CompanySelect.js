@@ -88,7 +88,7 @@ const CompanySelect = () => {
       <div className="page-wraper">
         <div className="browse-job login-style3">
           <div
-            className="bg-white row"
+            className=" row"
             style={{
               display: "flex",
               alignItems: "center",
@@ -151,7 +151,6 @@ const CompanySelect = () => {
                                 sx={{
                                   color: "#303030",
                                   fontSize: 30,
-                                 
                                 }}
                                 primary={company.CompanyName}
                               />

@@ -96,7 +96,6 @@ export const AddPO = ({}) => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-
   const [inputValue, setInputValue] = useState("");
 
   const [sLList, setSLList] = useState([]);
@@ -133,6 +132,7 @@ export const AddPO = ({}) => {
     emailAlertColor,
   } = useSendEmail();
 
+  const [isPoClosed, setIsPoClosed] = useState(false);
   const fetchpoData = async () => {
     if (idParam === 0) {
       return;
@@ -148,6 +148,9 @@ export const AddPO = ({}) => {
       console.log("selected purchase order is", res.data);
       setFormData(res.data.Data);
       setInputValue(res.data.Data.CustomerId);
+      if (res.data.Data.BillId) {
+        setIsPoClosed(true);
+      }
       setItemsList(res.data.ItemData);
       setPrevFiles(res.data.FileData);
     } catch (error) {
@@ -1772,6 +1775,7 @@ export const AddPO = ({}) => {
                       <LoaderButton
                         loading={disableButton}
                         handleSubmit={handleSubmit}
+                        disable={isPoClosed}
                       >
                         Save
                       </LoaderButton>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   useSession,
   useSupabaseClient,
@@ -25,8 +25,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SyncIcon from "@mui/icons-material/Sync";
 import Tooltip from "@mui/material/Tooltip";
+import useSaveGoogleToken from "../Hooks/useSaveGoogleToken";
+import { DataContext } from "../../context/AppData";
 
-const DashBoardCalender = () => {
+const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   const requestAbortController = useRef(null);
   const [loading, setLoading] = useState(false);
   const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
@@ -39,9 +41,10 @@ const DashBoardCalender = () => {
 
   const session = useSession();
   const supabase = useSupabaseClient();
+  const { loggedInUser } = useContext(DataContext);
 
   const { isLoading } = useSessionContext();
-
+  const { sendToken, deleteToken } = useSaveGoogleToken();
   function getRandomNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
   }
@@ -92,7 +95,7 @@ const DashBoardCalender = () => {
         updatedEvent,
         {
           headers: {
-            Authorization: "Bearer " + session.provider_token,
+            Authorization: "Bearer " + dashBoardData.ProviderToken,
           },
         }
       );
@@ -357,9 +360,24 @@ const DashBoardCalender = () => {
 
     requestAbortController.current = controller;
   };
-
+  const [counter, setCounter] = useState(0);
   useEffect(() => {
     console.log("session is ", session);
+    console.log("counter is ", counter);
+    if (session && counter <= 2) {
+      setCounter(counter + 1);
+      sendToken(
+        {
+          AccessToken: session.access_token,
+          ProviderToken: session.provider_token,
+          RefreshToken: session.refresh_token,
+          TokenType: session.token_type,
+          UserId: Number(loggedInUser.userId),
+          UserEmail: session.user.email,
+        },
+        getDashboardData
+      );
+    }
   }, [session]);
   const fetchGoogleEvents = async () => {
     try {
@@ -372,7 +390,7 @@ const DashBoardCalender = () => {
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
           headers: {
-            Authorization: "Bearer " + session.provider_token, // Use OAuth token
+            Authorization: "Bearer " + dashBoardData.ProviderToken, // Use OAuth token
           },
           params: {
             timeMin: currentDate.toISOString(),
@@ -383,6 +401,19 @@ const DashBoardCalender = () => {
       console.log("session is ", session);
       console.log("Events:", response.data.items);
       setEventsList(response.data.items);
+      if (session) {
+        sendToken(
+          {
+            AccessToken: session.access_token,
+            ProviderToken: session.provider_token,
+            RefreshToken: session.refresh_token,
+            TokenType: session.token_type,
+            UserId: Number(loggedInUser.userId),
+            UserEmail: session.user.email,
+          },
+          getDashboardData
+        );
+      }
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -391,6 +422,7 @@ const DashBoardCalender = () => {
   useEffect(() => {
     fetchHighlightedDays(initialValue);
     fetchGoogleEvents();
+    console.log("dashboard data is in calender", dashBoardData.ProviderToken);
     // abort request on unmount
     return () => requestAbortController.current?.abort();
   }, []);
@@ -412,24 +444,50 @@ const DashBoardCalender = () => {
   }
 
   const googleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error, user } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         scopes: "https://www.googleapis.com/auth/calendar",
       },
     });
 
-    fetchGoogleEvents();
-
     if (error) {
+      // If there is an error, log the error and don't proceed further
       alert("Error logging in to Google provider with Supabase");
       console.log(error);
+    } else if (user) {
+      // Call fetchGoogleEvents only if the login was successful (i.e., user is not null)
+      fetchGoogleEvents();
+      sendToken(
+        {
+          AccessToken: session.access_token,
+          ProviderToken: session.provider_token,
+          RefreshToken: session.refresh_token,
+          TokenType: session.token_type,
+          UserId: Number(loggedInUser.userId),
+          UserEmail: session.user.email,
+        },
+        getDashboardData
+      );
+      getDashboardData();
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    console.log("signed out");
+    try {
+      await supabase.auth.signOut();
+      console.log("signed out");
+      // Call your success function here
+      deleteToken(Number(loggedInUser.userId), getDashboardData);
+    } catch (error) {
+      console.error("Error signing out:", error);
+      // Handle the error or call an error handling function if needed
+    }
+  };
+
+  // Define your success function to be called when sign-out is successful
+  const yourSuccessFunction = () => {
+    // Your code to execute when sign-out is successful
   };
 
   const createCalendarEvent = async (
@@ -469,7 +527,7 @@ const DashBoardCalender = () => {
         event,
         {
           headers: {
-            Authorization: "Bearer " + session.provider_token, // Access token for Google
+            Authorization: "Bearer " + dashBoardData.ProviderToken, // Access token for Google
           },
         }
       );
@@ -493,7 +551,7 @@ const DashBoardCalender = () => {
         `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
         {
           headers: {
-            Authorization: "Bearer " + session.provider_token,
+            Authorization: "Bearer " + dashBoardData.ProviderToken,
           },
         }
       );
@@ -532,7 +590,7 @@ const DashBoardCalender = () => {
                 </h5>
               </span>
             </div>
-            {session && (
+            {dashBoardData.ProviderToken && (
               <>
                 <Tooltip title="Refresh Calender" placement="top" arrow>
                   <div className="col-sm-2">
@@ -543,7 +601,7 @@ const DashBoardCalender = () => {
                   </div>
                 </Tooltip>
                 <Tooltip
-                  title="Signout from google"
+                  title="Signout from google."
                   placement="top-start"
                   arrow
                 >
@@ -561,14 +619,16 @@ const DashBoardCalender = () => {
         <div className="card-body schedules-cal p-2">
           <div style={{ width: "100%" }}>
             <div className="p-0 " style={{ color: "black" }}>
-              {session && session.user ? session.user.email : ""}
+              {dashBoardData.UserEmail && dashBoardData.UserEmail
+                ? dashBoardData.UserEmail
+                : ""}
             </div>
-            {session ? (
+            {dashBoardData.ProviderToken ? (
               <>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateCalendar
                     style={{ width: "20em" }}
-                    defaultValue={initialValue}
+                    defaultValue={initialValue || null}
                     loading={loading}
                     onMonthChange={handleMonthChange}
                     renderLoading={() => <DayCalendarSkeleton />}

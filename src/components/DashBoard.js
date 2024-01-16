@@ -81,7 +81,7 @@ const DashBoard = () => {
 
               <div className="col-md-3">
                 <SessionContextProvider supabaseClient={supabase}>
-                  <DashBoardCalender />
+                  <DashBoardCalender dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
                 </SessionContextProvider>
               </div>
             </div>
