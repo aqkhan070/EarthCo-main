@@ -427,8 +427,8 @@ const AddWRform = () => {
                       id="staff-autocomplete"
                       size="small"
                       options={customerSearch}
-                      getOptionLabel={(option) => option.CompanyName || ""}
-                      value={name ? { CompanyName: name } : null}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={name ? { FirstName: name } : null}
                       onChange={handleCustomerAutocompleteChange}
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.CustomerId
@@ -436,7 +436,7 @@ const AddWRform = () => {
                       renderOption={(props, option) => (
                         <li {...props}>
                           <div className="customer-dd-border">
-                            <h6> {option.CompanyName}</h6>
+                            <h6> {option.FirstName}</h6>
                             <small># {option.UserId}</small>
                           </div>
                         </li>
@@ -573,6 +573,28 @@ const AddWRform = () => {
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.AssignTo
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}

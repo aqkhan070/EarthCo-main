@@ -1,386 +1,42 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import {
-  useSession,
-  useSupabaseClient,
-  useSessionContext,
-} from "@supabase/auth-helpers-react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Add, Delete, Edit, Create } from "@mui/icons-material";
-import dayjs from "dayjs";
-import Badge from "@mui/material/Badge";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { PickersDay } from "@mui/x-date-pickers/PickersDay";
-import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
-import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
-import TblDateFormat from "../../custom/TblDateFormat";
-import { TextField } from "@mui/material";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import Popover from "@mui/material/Popover";
-import axios from "axios";
-import EventPopups from "../Reusable/EventPopups";
-import EventsList from "./EventsList";
-import DateEventList from "./DateEventList";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import LogoutIcon from "@mui/icons-material/Logout";
-import SyncIcon from "@mui/icons-material/Sync";
-import Tooltip from "@mui/material/Tooltip";
-import useSaveGoogleToken from "../Hooks/useSaveGoogleToken";
-import { DataContext } from "../../context/AppData";
-
-const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
-  const requestAbortController = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [highlightedDays, setHighlightedDays] = useState([1, 2, 15]);
-
-  const [eventsList, setEventsList] = useState([]);
-
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [snackBarColor, setSnackBarColor] = useState("");
-  const [snackBarText, setSnackBarText] = useState("");
-
-  const session = useSession();
-  const supabase = useSupabaseClient();
-  const { loggedInUser } = useContext(DataContext);
-
-  const { isLoading } = useSessionContext();
-  const { sendToken, deleteToken } = useSaveGoogleToken();
-  function getRandomNumber(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-  }
-
-  function fakeFetch(date, { signal }) {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        const daysInMonth = date.daysInMonth();
-        const daysToHighlight = [1, 2, 3].map(() =>
-          getRandomNumber(1, daysInMonth)
-        );
-
-        resolve({ daysToHighlight });
-      }, 500);
-
-      signal.onabort = () => {
-        clearTimeout(timeout);
-        reject(new DOMException("aborted", "AbortError"));
-      };
-    });
-  }
-
-  const editEvent = async (eventId, summary, description, date, start, end) => {
-    const formattedStart = dayjs(date)
-      .hour(dayjs(start).hour())
-      .minute(dayjs(start).minute())
-      .toISOString();
-    const formattedEnd = dayjs(date)
-      .hour(dayjs(end).hour())
-      .minute(dayjs(end).minute())
-      .toISOString();
-
-    const updatedEvent = {
-      summary: summary,
-      description: description,
-      start: {
-        dateTime: formattedStart,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      end: {
-        dateTime: formattedEnd,
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-    };
-    try {
-      const response = await axios.put(
-        `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
-        updatedEvent,
-        {
-          headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken,
-          },
-        }
-      );
-      console.log("Event updated", response.data);
-      setOpenSnackBar(true);
-      setSnackBarColor("success");
-      setSnackBarText("Event updated successfully");
-      fetchGoogleEvents();
-    } catch (error) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Error updating event");
-      console.error("Error updating event:", error);
-    }
-  };
-
-  const initialValue = dayjs();
-
-  function ServerDay(props) {
-    const [selectedDateEvents, setSelectedDateEvents] = useState([]);
-
-    const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [clickedDate, setClickedDate] = useState(null);
-    const [title, settitle] = useState("");
-    const [eventDescription, setEventDescription] = useState("");
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
-    const [showAdd, setShowAdd] = useState(true);
-    const [isEdit, setIsEdit] = useState(false);
-    const [eventId, setEventId] = useState("");
-
-    const isStartDateInEvents = eventsList.some((event) => {
-      const eventStartDate = dayjs(event.start.dateTime).format("YYYY-MM-DD");
-      return day.format("YYYY-MM-DD") === eventStartDate;
-    });
-
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-      const selectedDate = day.format("YYYY-MM-DD");
-      setClickedDate(day.format("YYYY-MM-DD"));
-      logEventsForDate(selectedDate);
-      // Set the event title if a special day is found
-    };
-
-    const handleEventEdit = (event) => {
-      // Extract and format start and end times
-      const eventStartTime = dayjs(event.start.dateTime);
-      const eventEndTime = dayjs(event.end.dateTime);
-      setShowAdd(true);
-      setIsEdit(true);
-      setEventId(event.id);
-      settitle(event.summary);
-      setEventDescription(event.description);
-
-      setStartTime(eventStartTime);
-      setEndTime(eventEndTime);
-
-      console.log("Selected event is", event);
-    };
-
-    return (
-      <>
-        <Badge
-          key={props.day.toString()}
-          overlap="circular"
-          onClick={handleClick}
-          badgeContent={
-            isStartDateInEvents ? <div className="event-dot"></div> : null
-          }
-        >
-          <PickersDay
-            {...other}
-            outsideCurrentMonth={outsideCurrentMonth}
-            day={day}
-          />
-        </Badge>
-      </>
-    );
-  }
-
-  useEffect(() => {
-    console.log("session is ", session);
-    if (session) {
-      sendToken(
-        {
-          AccessToken: session.access_token,
-          ProviderToken: session.provider_token,
-          RefreshToken: session.refresh_token,
-          TokenType: session.token_type,
-          UserId: Number(loggedInUser.userId),
-          UserEmail: session.user.email,
-        },
-        getDashboardData
-      );
-    }
-  }, [session]);
-  const fetchGoogleEvents = async () => {
-    try {
-      // Calculate the start and end date for the time frame (current day to one month from now)
-      const currentDate = new Date();
-      const endDate = new Date();
-      endDate.setMonth(currentDate.getMonth() + 1);
-
-      const response = await axios.get(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-        {
-          headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken, // Use OAuth token
-          },
-          params: {
-            timeMin: currentDate.toISOString(),
-            timeMax: endDate.toISOString(),
-          },
-        }
-      );
-      console.log("session is ", session);
-      console.log("Events:", response.data.items);
-      setEventsList(response.data.items);
-      if (session) {
-        sendToken(
-          {
-            AccessToken: session.access_token,
-            ProviderToken: session.provider_token,
-            RefreshToken: session.refresh_token,
-            TokenType: session.token_type,
-            UserId: Number(loggedInUser.userId),
-            UserEmail: session.user.email,
-          },
-          getDashboardData
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchHighlightedDays(initialValue);
-    fetchGoogleEvents();
-    console.log("dashboard data is in calender", dashBoardData.ProviderToken);
-    // abort request on unmount
-    return () => requestAbortController.current?.abort();
-  }, []);
-
-  if (isLoading) {
-    return <></>;
-  }
-
-  const googleSignIn = async () => {
-    const { error, user } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        scopes: "https://www.googleapis.com/auth/calendar",
-      },
-    });
-
-    if (error) {
-      // If there is an error, log the error and don't proceed further
-      alert("Error logging in to Google provider with Supabase");
-      console.log(error);
-    } else if (user) {
-      // Call fetchGoogleEvents only if the login was successful (i.e., user is not null)
-      fetchGoogleEvents();
-    //   sendToken(
-    //     {
-    //       AccessToken: session.access_token,
-    //       ProviderToken: session.provider_token,
-    //       RefreshToken: session.refresh_token,
-    //       TokenType: session.token_type,
-    //       UserId: Number(loggedInUser.userId),
-    //       UserEmail: session.user.email,
-    //     },
-    //     getDashboardData
-    //   );
-      getDashboardData();
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      console.log("signed out");
-      // Call your success function here
-      deleteToken(Number(loggedInUser.userId), getDashboardData);
-    } catch (error) {
-      console.error("Error signing out:", error);
-      // Handle the error or call an error handling function if needed
-    }
-  };
-
-  return (
-    <>
-      <EventPopups
-        open={openSnackBar}
-        setOpen={setOpenSnackBar}
-        color={snackBarColor}
-        text={snackBarText}
-      />
-      <div className="card">
-        <div className="calendertitleBar">
-          <div className="row">
-            <div className="col-sm-8">
-              <span>
-                <h5
-                  style={{
-                    color: "white",
-                  }}
-                >
-                  Upcomming Events
-                </h5>
-              </span>
-            </div>
-            {dashBoardData.ProviderToken && (
-              <>
-                <Tooltip title="Refresh Calender" placement="top" arrow>
-                  <div className="col-sm-2">
-                    <SyncIcon
-                      style={{ cursor: "pointer", color: "white" }}
-                      onClick={() => fetchGoogleEvents()}
+<Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={name ? { FirstName: name } : null}
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "CustomerId",
+                          "UserId",
+                          event,
+                          newValue
+                        )
+                      }
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.FirstName}</h6>
+                            <small># {option.UserId}</small>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          onClick={() => {
+                            setName("");
+                            fetchCustomers();
+                          }}
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
+                          error={submitClicked && !formData.CustomerId}
+                          className="bg-white"
+                        />
+                      )}
                     />
-                  </div>
-                </Tooltip>
-                <Tooltip
-                  title="Signout from google."
-                  placement="top-start"
-                  arrow
-                >
-                  <div className="col-sm-2">
-                    <LogoutIcon
-                      style={{ cursor: "pointer", color: "white" }}
-                      onClick={() => signOut()}
-                    />
-                  </div>
-                </Tooltip>
-              </>
-            )}
-          </div>
-        </div>
-        <div className="card-body schedules-cal p-2">
-          <div style={{ width: "100%" }}>
-            <div className="p-0 " style={{ color: "black" }}>
-              {dashBoardData.UserEmail && dashBoardData.UserEmail
-                ? dashBoardData.UserEmail
-                : ""}
-            </div>
-            {dashBoardData.ProviderToken ? (
-              <>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateCalendar
-                    style={{ width: "20em" }}
-                    defaultValue={initialValue}
-                    loading={loading}
-                    onMonthChange={handleMonthChange}
-                    renderLoading={() => <DayCalendarSkeleton />}
-                    slots={{
-                      day: ServerDay,
-                    }}
-                    slotProps={{
-                      day: {
-                        highlightedDays,
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
-                <EventsList
-                  eventsList={eventsList}
-                  onDeleteEvent={deleteCalendarEvent}
-                />
-              </>
-            ) : (
-              <>
-                <button
-                  className="btn btn-sm btn-primary mb-2"
-                  onClick={() => googleSignIn()}
-                >
-                  Sign In With Google
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default DashBoardCalender;

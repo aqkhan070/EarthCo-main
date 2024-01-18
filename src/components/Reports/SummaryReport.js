@@ -95,7 +95,7 @@ const SummaryReport = () => {
   const handleCustomerAutocompleteChange = (event, newValue) => {
     // Construct an event-like object with the structure expected by handleInputChange
     if (newValue) {
-      setName(newValue.CompanyName);
+      setName(newValue.FirstName);
     }
     const simulatedEvent = {
       target: {
@@ -201,8 +201,8 @@ const SummaryReport = () => {
                     id="staff-autocomplete"
                     size="small"
                     options={customerSearch}
-                    getOptionLabel={(option) => option.CompanyName || ""}
-                    value={name ? { CompanyName: name } : null}
+                    getOptionLabel={(option) => option.FirstName || ""}
+                    value={name ? { FirstName: name } : null}
                     onChange={handleCustomerAutocompleteChange}
                     isOptionEqualToValue={(option, value) =>
                       option.UserId === value.CustomerId
@@ -210,7 +210,7 @@ const SummaryReport = () => {
                     renderOption={(props, option) => (
                       <li {...props}>
                         <div className="customer-dd-border">
-                          <h6> {option.CompanyName}</h6>
+                          <h6> {option.FirstName}</h6>
                           <small># {option.UserId}</small>
                         </div>
                       </li>

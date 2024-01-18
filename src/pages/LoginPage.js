@@ -105,7 +105,11 @@ const LoginPage = () => {
       if (response.data.status === "success") {
         // if (response.status === 200){
         Cookies.set("userEmail", email, { expires: 7 });
-        Cookies.set("userName", response.data.Data.FirstName, { expires: 7 });
+        Cookies.set(
+          "userName",
+          response.data.Data.FirstName + " " + response.data.Data.LastName,
+          { expires: 7 }
+        );
         Cookies.set("userRole", response.data.Data.RoleId, { expires: 7 });
         Cookies.set("userId", response.data.Data.UserId, { expires: 7 });
         Cookies.set("CompanyName", response.data.CompanyName, { expires: 7 });

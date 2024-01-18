@@ -191,7 +191,7 @@ const SideBar = () => {
       ),
     },
     {
-      label: "Purchase order",
+      label: "Purchase Order",
       path: "/purchase-order",
       icon: (
         <svg
@@ -435,9 +435,8 @@ const SideBar = () => {
         </svg>
       ),
     },
-
     {
-      label: "Purchase order",
+      label: "Purchase Order",
       path: "/purchase-order",
       icon: (
         <svg
@@ -670,9 +669,7 @@ const SideBar = () => {
     if (activeIndex === index) {
       activeClass = "mm-active";
     }
-    if (
-      window.location.pathname.substring(0, 14) === option.path.substring(0, 14)
-    ) {
+    if (window.location.pathname.includes(option.path)) {
       activeClass = "mm-active";
     } else {
       activeClass = "";
@@ -700,9 +697,7 @@ const SideBar = () => {
     if (activeIndex === index) {
       activeClass = "mm-active";
     }
-    if (
-      window.location.pathname.substring(0, 14) === option.path.substring(0, 14)
-    ) {
+    if (window.location.pathname.includes(option.path)) {
       activeClass = "mm-active";
     } else {
       activeClass = "";
@@ -729,9 +724,7 @@ const SideBar = () => {
     if (activeIndex === index) {
       activeClass = "mm-active";
     }
-    if (
-      window.location.pathname.substring(0, 14) === option.path.substring(0, 14)
-    ) {
+    if (window.location.pathname.includes(option.path)) {
       activeClass = "mm-active";
     } else {
       activeClass = "";

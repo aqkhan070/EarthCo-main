@@ -1,6 +1,6 @@
 import React from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
-
+import SendIcon from "@mui/icons-material/SaveOutlined";
 const LoaderButton = ({
   disable,
   varient,
@@ -16,9 +16,7 @@ const LoaderButton = ({
         size="small"
         loading={loading}
         color={color}
-        // loadingIndicator="Saving…"
-        // startIcon={<DeleteIcon />}
-        // loadingPosition="start"
+        startIcon={<SendIcon />}
         onClick={handleSubmit}
         sx={{
           padding: "5px 17px",
@@ -39,10 +37,10 @@ const LoaderButton = ({
         // loadingIndicator="Saving…"
         // startIcon={<DeleteIcon />}
         // loadingPosition="start"
+        startIcon={<SendIcon sx={{ fontSize: 2 }} />}
         onClick={handleSubmit}
         disabled={disable}
         sx={{
-          padding: "0.5rem 1.5rem",
           marginRight: "0.6em",
           color: "#fff",
           textTransform: "capitalize",

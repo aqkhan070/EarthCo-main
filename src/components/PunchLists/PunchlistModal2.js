@@ -118,7 +118,6 @@ const PunchlistModal2 = ({
     handleChange(simulatedEvent);
   };
 
-  
   const [submitClicked, setSubmitClicked] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
 
@@ -130,7 +129,7 @@ const PunchlistModal2 = ({
       [name]: value,
       StatusId: 2,
     }));
-    console.log("handle change",addPunchListData )
+    console.log("handle change", addPunchListData);
   };
 
   const handleSubmit = async (event) => {
@@ -143,7 +142,6 @@ const PunchlistModal2 = ({
       !addPunchListData.ContactId ||
       !addPunchListData.AssignedTo
     ) {
-    
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -178,9 +176,6 @@ const PunchlistModal2 = ({
       // Handle error - show an error message to the user
     }
   };
-
-
-  
 
   useEffect(() => {
     console.log("punch list dataaa", addPunchListData);
@@ -237,8 +232,8 @@ const PunchlistModal2 = ({
                     size="small"
                     // value={selectedCustomer}
                     options={customerSearch}
-                    getOptionLabel={(option) => option.CompanyName || ""}
-                    value={name ? { CompanyName: name } : null}
+                    getOptionLabel={(option) => option.FirstName || ""}
+                    value={name ? { FirstName: name } : null}
                     onChange={handleCustomerAutocompleteChange}
                     isOptionEqualToValue={(option, value) =>
                       option.UserId === value.CustomerId
@@ -246,7 +241,7 @@ const PunchlistModal2 = ({
                     renderOption={(props, option) => (
                       <li {...props}>
                         <div className="customer-dd-border">
-                          <h6> {option.CompanyName}</h6>
+                          <h6> {option.FirstName}</h6>
                           <small># {option.UserId}</small>
                         </div>
                       </li>
@@ -357,6 +352,28 @@ const PunchlistModal2 = ({
                     isOptionEqualToValue={(option, value) =>
                       option.UserId === value.AssignedTo
                     }
+                    renderOption={(props, option) => (
+                      <li {...props}>
+                        <div className="customer-dd-border">
+                          <div className="row">
+                            <div className="col-md-auto">
+                              {" "}
+                              <h6 className="pb-0 mb-0">
+                                {" "}
+                                {option.FirstName}
+                              </h6>
+                            </div>
+                            <div className="col-md-auto">
+                              <small>
+                                {"("}
+                                {option.Role}
+                                {")"}
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    )}
                     renderInput={(params) => (
                       <TextField
                         {...params}

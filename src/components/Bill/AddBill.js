@@ -18,6 +18,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
+import useFetchCatagories from "../Hooks/useFetchCatagories";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -45,7 +46,7 @@ const AddBill = ({}) => {
   });
 
   const { syncQB } = useQuickBook();
-
+  const { fetchCatagories, catagories } = useFetchCatagories();
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
@@ -75,6 +76,7 @@ const AddBill = ({}) => {
       );
       setFormData(res.data.Data);
       setItemsList(res.data.ItemData);
+      setCatagoryList(res.data.AccountData);
       setLoading(false);
 
       setPrevFiles(res.data.FileData);
@@ -87,6 +89,7 @@ const AddBill = ({}) => {
   };
   useEffect(() => {
     getBill();
+    fetchCatagories();
   }, []);
 
   const fetchVendors = async () => {
@@ -95,7 +98,7 @@ const AddBill = ({}) => {
         headers,
       })
       .then((res) => {
-        console.log("tags are ", res.data);
+        console.log("Vendor are ", res.data);
         setVendorList(res.data);
       })
       .catch((error) => {
@@ -282,7 +285,7 @@ const AddBill = ({}) => {
       Description: item.SaleDescription,
       Rate: item.SalePrice,
     });
-    setShowItem(false);
+
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", itemInput);
@@ -332,6 +335,85 @@ const AddBill = ({}) => {
     setTotalAmount(total);
   }, [itemsList]);
 
+  // Catagories
+
+  const [catagoryList, setCatagoryList] = useState([]);
+  const [catagoryInput, setCatagoryInput] = useState({
+    AccountId: 0,
+    Name: "",
+    Description: "",
+    Amount: 0,
+  });
+
+  const [selectedCatagory, setSelectedCatagory] = useState({});
+
+  const [totalCatagoryAmount, setTotalCatagoryAmount] = useState(0);
+
+  const handleAddCatagory = () => {
+    // Check if the selected category is not null
+    console.log("add catagory", catagoryInput);
+    if (selectedCatagory) {
+      // Add the new item to the catagoryList
+      setCatagoryList((prevItems) => [...prevItems, { ...catagoryInput }]);
+      // Reset the input fields
+      setSelectedCatagory({});
+      setCatagoryInput({
+        AccountId: 0,
+        Name: "",
+        Description: "",
+        Amount: 0,
+      });
+    }
+  };
+
+  const handleCatagoryClick = (item) => {
+    console.log("selected catagory", item);
+    setSelectedCatagory(item);
+    if (item) {
+      setCatagoryInput({
+        AccountId: item.AccountId,
+        Name: item.Name,
+        Description: "",
+        Amount: 0,
+      });
+    }
+  };
+
+  const handleDescriptionChange = (index, value) => {
+    setCatagoryList((prevItems) => {
+      const updatedItems = [...prevItems];
+      updatedItems[index].Description = value;
+      return updatedItems;
+    });
+  };
+
+  // Function to handle amount change in upper rows
+  const handleAmountChange = (index, value) => {
+    setCatagoryList((prevItems) => {
+      const updatedItems = [...prevItems];
+      updatedItems[index].Amount = parseFloat(value); // Convert value to a float if needed
+      return updatedItems;
+    });
+  };
+
+  const deleteCatagory = (id) => {
+    const updatedItemsList = catagoryList.filter(
+      (item) => item.AccountId !== id
+    );
+    setCatagoryList(updatedItemsList);
+  };
+
+  const calculateCategoriesAmount = () => {
+    let totalAmount = 0;
+    for (const item of catagoryList) {
+      totalAmount += item.Amount;
+    }
+    return totalAmount;
+  };
+  useEffect(() => {
+    const total = calculateCategoriesAmount();
+    setTotalCatagoryAmount(total);
+  }, [catagoryList]);
   // files
 
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -383,10 +465,10 @@ const AddBill = ({}) => {
       setSnackBarText("Please fill all required fields");
       return;
     }
-    if (itemsList.length <= 0) {
+    if (catagoryList.length <= 0) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText("Please Add Atleast one item");
+      setSnackBarText("Please Add Atleast one  category");
 
       return;
     }
@@ -399,11 +481,13 @@ const AddBill = ({}) => {
       ...formData,
       BillId: idParam,
       tblBillItems: itemsList,
+      tblBillAccounts: catagoryList,
       Currency: "usd",
       CompanyId: Number(loggedInUser.CompanyId),
     };
 
     console.log("BillData:", BillData);
+
     // console.log("data:", data);
 
     postData.append("BillData", JSON.stringify(BillData));
@@ -714,7 +798,146 @@ const AddBill = ({}) => {
                 </div>
               </div>
             </div>
+            <>
+              <div className="itemtitleBar">
+                <h4>Categories</h4>
+              </div>
+              <div className="card-body pt-0">
+                <div className="estDataBox">
+                  <div className="table-responsive active-projects style-1 mt-2">
+                    <table id="empoloyees-tblwrapper" className="table">
+                      <thead>
+                        <tr>
+                          <th className="itemName-width">Catagory</th>
+                          <th>Description</th>
 
+                          <th>Amount</th>
+
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {catagoryList && catagoryList.length > 0 ? (
+                          catagoryList.map((item, index) => (
+                            <tr>
+                              <td className="itemName-width">
+                                {item?.Name || ""}
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  className="form-control form-control-sm"
+                                  value={item.Description}
+                                  onChange={(e) =>
+                                    handleDescriptionChange(
+                                      index,
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Description"
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  className="form-control form-control-sm"
+                                  value={item.Amount}
+                                  onChange={(e) =>
+                                    handleAmountChange(index, e.target.value)
+                                  }
+                                  placeholder="Amount"
+                                />
+                              </td>
+                              <td>
+                                <Button
+                                  onClick={() => deleteCatagory(item.AccountId)}
+                                >
+                                  <Delete color="error" />
+                                </Button>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <></>
+                        )}
+                        <tr>
+                          <td className="itemName-width">
+                            <Autocomplete
+                              options={catagories}
+                              getOptionLabel={(item) => item.Name}
+                              value={selectedCatagory?.Name}
+                              onChange={(event, newValue) => {
+                                handleCatagoryClick(newValue);
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Search for categories..."
+                                  variant="outlined"
+                                  size="small"
+                                  fullWidth
+                                />
+                              )}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddCatagory();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              value={catagoryInput.Description}
+                              className="form-control form-control-sm"
+                              onChange={(e) =>
+                                setCatagoryInput({
+                                  ...catagoryInput,
+                                  Description: e.target.value,
+                                })
+                              }
+                              placeholder="Description"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddCatagory();
+                                }
+                              }}
+                            />
+                          </td>
+
+                          <td>
+                            <input
+                              type="number"
+                              className="form-control form-control-sm"
+                              value={catagoryInput.Amount}
+                              onChange={(e) =>
+                                setCatagoryInput({
+                                  ...catagoryInput,
+                                  Amount: Number(e.target.value),
+                                })
+                              }
+                              placeholder="Amount"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddCatagory();
+                                }
+                              }}
+                            />
+                          </td>
+                          <td></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </>
             <div className="itemtitleBar">
               <h4>Items</h4>
             </div>
@@ -993,28 +1216,27 @@ const AddBill = ({}) => {
                   <tbody>
                     <tr>
                       <td className="left">
-                        <strong>Subtotal</strong>
+                        <strong>Items Subtotal</strong>
                       </td>
                       <td className="right">${totalAmount.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td className="left">
-                        <strong>Discount (20%)</strong>
+                        <strong>Categories Total</strong>
                       </td>
-                      <td className="right">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td className="left">
-                        <strong>VAT (10%)</strong>
+                      <td className="right">
+                        ${totalCatagoryAmount.toFixed(2)}
                       </td>
-                      <td className="right">$0.00</td>
                     </tr>
+
                     <tr>
                       <td className="left">
                         <strong>Total</strong>
                       </td>
                       <td className="right">
-                        <strong>${totalAmount.toFixed(2)}</strong>
+                        <strong>
+                          ${(totalAmount + totalCatagoryAmount).toFixed(2)}
+                        </strong>
                       </td>
                     </tr>
                   </tbody>

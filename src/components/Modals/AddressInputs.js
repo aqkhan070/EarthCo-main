@@ -29,6 +29,7 @@ const AddressInputs = ({
   address,
   name,
   handleChange,
+  setCompanyData,
   addressValue,
   emptyError,
 }) => {
@@ -127,14 +128,65 @@ const AddressInputs = ({
       };
       handleChange(simulatedEvent);
 
-      // Use the Google Maps Geocoding API to get latitude and longitude
+      // Use the Google Maps Geocoding API to get additional details
       const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode({ address: newValue.description }, (results, status) => {
+      geocoder.geocode({ placeId: newValue.place_id }, (results, status) => {
         if (status === "OK" && results[0]) {
-          const location = results[0].geometry.location;
-          const latitude = location.lat();
-          const longitude = location.lng();
-          console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+          const addressComponents = results[0].address_components;
+
+          let city = "";
+          let state = "";
+          let country = "";
+          let streetNumber = "";
+          let streetName = "";
+          let latitude = "";
+          let longitude = "";
+          let countryCode = "";
+          let postalCode = "";
+  
+          for (const component of addressComponents) {
+            if (component.types.includes("locality")) {
+              city = component.long_name;
+            } else if (component.types.includes("administrative_area_level_1")) {
+              state = component.long_name;
+            } else if (component.types.includes("country")) {
+              country = component.long_name;
+              countryCode = component.short_name;
+            } else if (component.types.includes("street_number")) {
+              streetNumber = component.long_name;
+            } else if (component.types.includes("route")) {
+              streetName = component.long_name;
+            } else if (component.types.includes("postal_code")) {
+              postalCode = component.long_name;
+            }
+          }
+  
+          latitude = results[0].geometry.location.lat();
+          longitude = results[0].geometry.location.lng();
+
+          setCompanyData((prevData) => ({
+            ...prevData,
+            tblUserAddresses: [
+              {
+                State: state,
+                City: city,
+                Country: country,
+                CountryCode: countryCode,
+                Street: streetNumber + ", " + streetName,
+                ZipCode: postalCode,
+                Lat: latitude,
+                Long: longitude,
+                Type: "ShipAddr",
+                Description: newValue.description,
+              },
+            ],
+          }));
+
+          console.log(`Street Number: ${streetNumber}`);
+          console.log(`Street Name: ${streetName}`);
+          console.log(`City: ${city}`);
+          console.log(`State: ${state}`);
+          console.log(`Country: ${country}`);
         } else {
           console.log(
             "Geocode was not successful for the following reason: " + status

@@ -9,6 +9,7 @@ import { CircularProgress, TextField } from "@mui/material";
 import { toPng } from "html-to-image";
 import { DataContext } from "../../context/AppData";
 import SyncIcon from "@mui/icons-material/Sync";
+import html2pdf from "html2pdf.js";
 
 const containerStyle = {
   width: "100%",
@@ -30,8 +31,15 @@ function GoogleMapApi() {
   const [markers, setMarkers] = useState([]);
   const [selectedMarker, setSelectedMarker] = useState(null);
 
+  const [zoomLevel, setZoomLevel] = useState(14);
+  const handleZoomChange = (newZoomLevel) => {
+    setZoomLevel(newZoomLevel);
+  };
   useEffect(() => {
     handleCurrentLocation();
+    setTimeout(() => {
+      handleZoomChange(zoomLevel - 1);
+    }, 1000);
   }, []);
 
   const refreshMap = () => {
@@ -103,19 +111,6 @@ function GoogleMapApi() {
     setMap(null);
   };
 
-  const onhandleSaveLocation = () => {
-    toPng(divRef.current, { cacheBust: false })
-      .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = "map_image.png";
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const handleSearch = () => {
     const input = searchInputRef.current;
     if (!input) return;
@@ -136,6 +131,42 @@ function GoogleMapApi() {
         map.panTo(place.geometry.location);
       }
     });
+  };
+
+  const onhandleSaveLocation = () => {
+    toPng(divRef.current, { cacheBust: false })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "map_image.png";
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleSavePdf = () => {
+    toPng(divRef.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const pdfContent = document.createElement("img");
+        pdfContent.src = dataUrl;
+
+        const pdf = html2pdf()
+          .from(pdfContent)
+          .set({
+            margin: 10,
+            filename: "map_image.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "Landscape" },
+          });
+
+        pdf.save();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   if (loadError) {
@@ -197,13 +228,13 @@ function GoogleMapApi() {
           </div>
         </div>
 
-        <div ref={divRef}>
+        <div id="SR-preview" ref={divRef}>
           <GoogleMap
             mapContainerStyle={containerStyle}
             onLoad={onLoad}
             onUnmount={onUnmount}
             onClick={handleMapClick}
-            zoom={1}
+            zoom={zoomLevel}
           >
             {markers.map((marker, index) => (
               <Marker
@@ -232,9 +263,19 @@ function GoogleMapApi() {
             )}
           </GoogleMap>
         </div>
-        <button className="btn btn-primary mt-2" onClick={onhandleSaveLocation}>
-          Save
-        </button>
+        <div className="row ">
+          <div className="col-md-12 text-end">
+            <button
+              className="btn btn-primary mt-2 me-2"
+              onClick={onhandleSaveLocation}
+            >
+              Save
+            </button>
+            <button className="btn btn-primary mt-2" onClick={handleSavePdf}>
+              Save Pdf
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

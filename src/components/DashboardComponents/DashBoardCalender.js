@@ -27,6 +27,7 @@ import SyncIcon from "@mui/icons-material/Sync";
 import Tooltip from "@mui/material/Tooltip";
 import useSaveGoogleToken from "../Hooks/useSaveGoogleToken";
 import { DataContext } from "../../context/AppData";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   const requestAbortController = useRef(null);
@@ -592,18 +593,17 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
             </div>
             {dashBoardData.ProviderToken && (
               <>
-                <Tooltip title="Refresh Calender" placement="top" arrow>
+                <CustomizedTooltips title="Refresh Calender" placement="top">
                   <div className="col-sm-2">
                     <SyncIcon
                       style={{ cursor: "pointer", color: "white" }}
                       onClick={() => fetchGoogleEvents()}
                     />
                   </div>
-                </Tooltip>
-                <Tooltip
+                </CustomizedTooltips>
+                <CustomizedTooltips
                   title="Signout from google."
                   placement="top-start"
-                  arrow
                 >
                   <div className="col-sm-2">
                     <LogoutIcon
@@ -611,7 +611,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
                       onClick={() => signOut()}
                     />
                   </div>
-                </Tooltip>
+                </CustomizedTooltips>
               </>
             )}
           </div>

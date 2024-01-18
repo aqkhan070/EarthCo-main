@@ -139,14 +139,14 @@ const AddEstimateForm = () => {
   const [PrevFiles, setPrevFiles] = useState([]);
   const [btnDisable, setBtnDisable] = useState(false);
 
-  const fetchEstimates = async () => {
-    if (!idParam) {
+  const fetchEstimates = async (id) => {
+    if (!id) {
       setLoading(false);
       return;
     }
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${idParam}`,
+        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimate?id=${id}`,
         { headers }
       );
 
@@ -160,6 +160,7 @@ const AddEstimateForm = () => {
         FileData: response.data.EstimateFileData,
       }));
       fetchName(response.data.EstimateItemData.CustomerId);
+      fetchEmail(response.data.EstimateItemData.ContactId);
       setSelectedContacts(
         response.data.EstimateContactData.map((contact) => contact.ContactId)
       );
@@ -325,13 +326,13 @@ const AddEstimateForm = () => {
 
     if (
       !formData.IssueDate ||
-      !formData.CustomerId ||
-      !formData.ServiceLocationId ||
-      !formData.RequestedBy ||
-      !formData.RegionalManagerId ||
-      !formData.AssignTo ||
-      !formData.EstimateStatusId ||
-      selectedContacts.length <= 0
+      !formData.CustomerId
+      // !formData.ServiceLocationId ||
+      // !formData.RequestedBy ||
+      // !formData.RegionalManagerId ||
+      // !formData.AssignTo ||
+      // !formData.EstimateStatusId ||
+      // selectedContacts.length <= 0
     ) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -403,9 +404,11 @@ const AddEstimateForm = () => {
       syncQB(response.data.SyncId);
 
       setDisableButton(false);
+
+      navigate(`/estimates/add-estimate?id=${response.data.Id}`);
       setTimeout(() => {
-        navigate(`/estimates`);
-      }, 4000);
+        window.location.reload();
+      }, 1500);
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
@@ -427,7 +430,7 @@ const AddEstimateForm = () => {
   };
 
   useEffect(() => {
-    fetchEstimates();
+    fetchEstimates(idParam);
     fetchStaffList();
     fetchTags();
     fetchInvoices();
@@ -734,15 +737,23 @@ const AddEstimateForm = () => {
   const discountChange = (e) => {
     const newValue = parseFloat(e.target.value);
 
-    if (newValue) {
-      if (newValue >= 0 && newValue <= 100) {
-        setTotalDiscount(newValue);
-      } else if (newValue > 100) {
-        setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
-      } else {
-        setTotalDiscount(0);
-      }
+    if (isNaN(newValue)) {
+      setTotalDiscount(0);
+      return;
     }
+    if (newValue == 0) {
+      setTotalDiscount(0);
+    } else {
+      setTotalDiscount(newValue);
+    }
+    // if (newValue) {
+    //   if (newValue >= 0 && newValue <= 100) {
+    //   } else if (newValue > 100) {
+    //     setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
+    //   } else {
+    //     setTotalDiscount(0);
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -768,12 +779,12 @@ const AddEstimateForm = () => {
       0
     );
     const totalamount =
-      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
+      newTotalAmount + shippingCost - (totalDiscount * subtotal) / 100;
 
     let calculatedTotalProfit = 0;
     if (subtotal > 0) {
       calculatedTotalProfit =
-        newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+        newTotalAmount - (totalDiscount * subtotal) / 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
     // if (totalExpense > 0) {
@@ -912,8 +923,8 @@ const AddEstimateForm = () => {
                       id="staff-autocomplete"
                       size="small"
                       options={customerSearch}
-                      getOptionLabel={(option) => option.CompanyName || ""}
-                      value={name ? { CompanyName: name } : null}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={name ? { FirstName: name } : null}
                       onChange={(event, newValue) =>
                         handleAutocompleteChange(
                           "CustomerId",
@@ -928,7 +939,7 @@ const AddEstimateForm = () => {
                       renderOption={(props, option) => (
                         <li {...props}>
                           <div className="customer-dd-border">
-                            <h6> {option.CompanyName}</h6>
+                            <h6> {option.FirstName}</h6>
                             <small># {option.UserId}</small>
                           </div>
                         </li>
@@ -1017,9 +1028,7 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-2 ">
-                    <label className="form-label">
-                      Regional Manager<span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Regional Manager</label>
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
@@ -1043,11 +1052,33 @@ const AddEstimateForm = () => {
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.RegionalManagerId
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
-                          error={submitClicked && !formData.RegionalManagerId}
+                          // error={submitClicked && !formData.RegionalManagerId}
                           placeholder="Choose..."
                           className="bg-white"
                         />
@@ -1055,9 +1086,7 @@ const AddEstimateForm = () => {
                     />
                   </div>{" "}
                   <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      Assigned To<span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Assigned To</label>
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
@@ -1081,11 +1110,33 @@ const AddEstimateForm = () => {
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.AssignTo
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
-                          error={submitClicked && !formData.AssignTo}
+                          // error={submitClicked && !formData.AssignTo}
                           placeholder="Choose..."
                           className="bg-white"
                         />
@@ -1096,10 +1147,7 @@ const AddEstimateForm = () => {
                   <div className="col-md-3  mt-2">
                     <div className="row">
                       <div className="col-md-auto">
-                        <label className="form-label">
-                          Service Locations
-                          <span className="text-danger">*</span>{" "}
-                        </label>
+                        <label className="form-label">Service Locations</label>
                       </div>
                       <div className="col-md-3">
                         {" "}
@@ -1143,7 +1191,7 @@ const AddEstimateForm = () => {
                           {...params}
                           label=""
                           placeholder="Service Locations"
-                          error={submitClicked && !formData.ServiceLocationId}
+                          // error={submitClicked && !formData.ServiceLocationId}
                           className="bg-white"
                         />
                       )}
@@ -1151,14 +1199,12 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-2">
-                    <label className="form-label">
-                      Requested by <span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Requested by</label>
                     <Autocomplete
                       id="staff-autocomplete"
                       size="small"
                       options={staffData.filter(
-                        (staff) => staff.Role === "Regional Manager"
+                        (staff) => staff.Role !== "Admin"
                       )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
@@ -1177,11 +1223,33 @@ const AddEstimateForm = () => {
                       isOptionEqualToValue={(option, value) =>
                         option.UserId === value.RequestedBy
                       }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           label=""
-                          error={submitClicked && !formData.RequestedBy}
+                          // error={submitClicked && !formData.RequestedBy}
                           placeholder="Choose..."
                           className="bg-white"
                         />
@@ -1245,9 +1313,7 @@ const AddEstimateForm = () => {
                   <div className="col-md-3  mt-2">
                     <div className="row">
                       <div className="col-md-auto">
-                        <label className="form-label">
-                          Contact<span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">Contact</label>
                       </div>
                       <div className="col-md-3">
                         {" "}
@@ -1278,7 +1344,7 @@ const AddEstimateForm = () => {
                           label=""
                           placeholder="Select Contacts"
                           className="bg-white"
-                          error={submitClicked && selectedContacts.length <= 0}
+                          // error={submitClicked && selectedContacts.length <= 0}
                         />
                       )}
                       aria-label="Contact select"
@@ -1326,9 +1392,7 @@ const AddEstimateForm = () => {
                     /> */}
                   </div>
                   <div className="col-md-3  mt-2">
-                    <label className="form-label">
-                      Status<span className="text-danger">*</span>
-                    </label>
+                    <label className="form-label">Status</label>
                     <Select
                       aria-label="Default select example"
                       variant="outlined"
@@ -1336,7 +1400,7 @@ const AddEstimateForm = () => {
                       onChange={handleStatusChange}
                       name="Status"
                       size="small"
-                      error={submitClicked && !formData.EstimateStatusId}
+                      // error={submitClicked && !formData.EstimateStatusId}
                       placeholder="Select Status"
                       fullWidth
                     >
@@ -2056,7 +2120,7 @@ const AddEstimateForm = () => {
                           <td className="right text-right">
                             $
                             {totalDiscount && subtotal
-                              ? ((totalDiscount / subtotal) * 100).toFixed(2)
+                              ? ((totalDiscount * subtotal) / 100).toFixed(2)
                               : 0}
                           </td>
                         </tr>

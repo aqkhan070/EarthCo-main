@@ -28,10 +28,10 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
-import DeleteAllModal from "./DeleteAllModal";
 import useGetEstimate from "../Hooks/useGetEstimate";
 import { DataContext } from "../../context/AppData";
-
+import UpdateAllModal from "../Reusable/UpdateAllModal";
+import DeleteAllModal from "../Reusable/DeleteAllModal";
 const theme = createTheme({
   palette: {
     primary: {
@@ -71,12 +71,6 @@ const EstimateTR = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [filterDate, setFilterDate] = useState("This Month");
-
-  const [selectedItem, setSelectedItem] = useState(0);
-  const [showContent, setShowContent] = useState(true);
-  const [submitsuccess, setSubmitsuccess] = useState(false);
-  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const [selectedEstimateIds, setSelectedEstimateIds] = useState([]);
@@ -116,31 +110,6 @@ const EstimateTR = ({
     setOrderBy(actualProperty);
   };
 
-  function filterByDate(dateString, filterType) {
-    const date = new Date(dateString);
-    const now = new Date();
-    let startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    let endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    let startOfPrevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    let endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    let startOfThreeMonthsAgo = new Date(
-      now.getFullYear(),
-      now.getMonth() - 2,
-      1
-    );
-
-    switch (filterType) {
-      case "This Month":
-        return date >= startOfMonth && date <= endOfMonth;
-      case "Previous Month":
-        return date >= startOfPrevMonth && date <= endOfPrevMonth;
-      case "Last three months":
-        return date >= startOfThreeMonthsAgo && date <= endOfMonth;
-      default:
-        return true;
-    }
-  }
-
   // const filteredEstimates = estimates
   const filteredEstimates = filterdEstm;
   // .filter((e) =>
@@ -159,7 +128,6 @@ const EstimateTR = ({
     }
     return 0;
   }
-  console.log("filtered", filteredEstimates);
 
   function getSorting(order, orderBy) {
     return order === "desc"
@@ -191,20 +159,6 @@ const EstimateTR = ({
     deleteEstimate(id);
   };
 
-  const handleCheckboxChange = (e, estimateId) => {
-    const checked = e.target.checked;
-    if (checked) {
-      setSelectedEstimateIds([...selectedEstimateIds, estimateId]);
-    } else {
-      setSelectedEstimateIds(
-        selectedEstimateIds.filter((id) => id !== estimateId)
-      );
-    }
-    console.log("selected ids are", selectedEstimateIds);
-  };
-
-  const [pages, setpages] = useState(1);
-
   const [tablePage, setTablePage] = useState(0);
   const [search, setSearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
@@ -231,21 +185,34 @@ const EstimateTR = ({
     setTablePage(newPage);
   };
 
+  const [selectedEstimates, setSelectedEstimates] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  const handleSelectAll = () => {
-    if (!selectAll) {
-      // Select all EstimateIds
+
+  const handleCheckboxChange = (event, estimateId) => {
+    if (event.target.checked) {
+      // Checkbox is checked, add the estimateId to the selectedEstimates array
+      setSelectedEstimates((prevSelected) => [...prevSelected, estimateId]);
+    } else {
+      // Checkbox is unchecked, remove the estimateId from the selectedEstimates array
+      setSelectedEstimates((prevSelected) =>
+        prevSelected.filter((id) => id !== estimateId)
+      );
+    }
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      // Select all rows
       const allEstimateIds = filteredEstimates.map(
         (estimate) => estimate.EstimateId
       );
-      setSelectedEstimateIds(allEstimateIds);
+      setSelectedEstimates(allEstimateIds);
+      setSelectAll(true);
     } else {
-      // Deselect all EstimateIds
-      setSelectedEstimateIds([]);
+      // Deselect all rows
+      setSelectedEstimates([]);
+      setSelectAll(false);
     }
-
-    // Toggle the selectAll state
-    setSelectAll(!selectAll);
   };
 
   return (
@@ -277,6 +244,23 @@ const EstimateTR = ({
                   <MenuItem value={false}>Descending</MenuItem>
                 </Select>
               </FormControl>
+
+              {selectedEstimates.length <= 0 ? (
+                <></>
+              ) : (
+                <>
+                  <DeleteAllModal
+                    selectedItems={selectedEstimates}
+                    endpoint={"Estimate/DeleteAllSelectedEstimate"}
+                    bindingFunction={getFilteredEstimate}
+                  />
+                  <UpdateAllModal
+                    selectedItems={selectedEstimates}
+                    endpoint={"Estimate/UpdateAllSelectedEstimateStatus"}
+                    bindingFunction={getFilteredEstimate}
+                  />
+                </>
+              )}
               <button
                 className="btn btn-primary "
                 onClick={() => {
@@ -384,30 +368,38 @@ const EstimateTR = ({
                 <Table>
                   <TableHead className="table-header">
                     <TableRow className="material-tbl-alignment">
-                      {/*<TableCell padding="checkbox">
-                           <Checkbox
-                            checked={selectAll}
-                            onChange={handleSelectAll}
-                          /></TableCell> */}
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                        />
+                      </TableCell>
                       <TableCell>#</TableCell>
                       <TableCell>Customer</TableCell>
                       <TableCell className="table-cell-align">
                         Regional Manager
                       </TableCell>
                       <TableCell>Date</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell className="table-cell-align">
+                      <TableCell align="center">Status</TableCell>
+                      <TableCell align="center" className="table-cell-align">
                         Estimate #
                       </TableCell>
                       <TableCell className="table-cell-align">
                         Description Of Work
                       </TableCell>
-                      <TableCell className="table-cell-align">PO #</TableCell>
-                      <TableCell className="table-cell-align">Bill #</TableCell>
-                      <TableCell className="table-cell-align">
+                      <TableCell align="center" className="table-cell-align">
+                        PO #
+                      </TableCell>
+                      <TableCell align="center" className="table-cell-align">
+                        Bill #
+                      </TableCell>
+                      <TableCell align="center" className="table-cell-align">
                         Invoice #
                       </TableCell>
-                      <TableCell className=" text-end table-cell-align">
+                      <TableCell
+                        align="center"
+                        className=" text-end table-cell-align"
+                      >
                         Profit %
                       </TableCell>
                       <TableCell className="text-end">Amount</TableCell>
@@ -430,49 +422,66 @@ const EstimateTR = ({
                         .map((estimate, index) => (
                           <TableRow
                             className="material-tbl-alignment"
-                            onClick={() => {
-                              // setSelectedItem(estimate.EstimateId);
-                              // console.log(",,,,,,,,,,", selectedItem);
-                              // setShowContent(false);
-                              navigate(
-                                `/estimates/add-estimate?id=${estimate.EstimateId}`
-                              );
-                            }}
                             key={estimate.EstimateId}
                             hover
                           >
-                            {/* <TableCell padding="checkbox">
+                            <TableCell padding="checkbox">
                               <Checkbox
-                                checked={
-                                  selectAll ||
-                                  selectedEstimateIds.includes(
-                                    estimate.EstimateId
-                                  )
-                                }
+                                checked={selectedEstimates.includes(
+                                  estimate.EstimateId
+                                )}
                                 onChange={(e) =>
                                   handleCheckboxChange(e, estimate.EstimateId)
                                 }
                               />
-                            </TableCell> */}
-                            <TableCell>{estimate.EstimateId}</TableCell>
-                            <TableCell className="table-cell-align">
-                              {estimate.CustomerCompanyName}
                             </TableCell>
-                            <TableCell className="table-cell-align">
+                            <TableCell
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
+                              {estimate.EstimateId}
+                            </TableCell>
+                            <TableCell
+                              className="table-cell-align"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
+                              {estimate.CustomerName}
+                            </TableCell>
+                            <TableCell
+                              className="table-cell-align"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.RegionalManager}
                             </TableCell>
-                            <TableCell className="table-cell-align">
+                            <TableCell
+                              className="table-cell-align"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {TblDateFormat(estimate.Date)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               <span
-                                onClick={() => {
-                                  navigate(
-                                    `/estimates/estimate-preview?id=${estimate.EstimateId}`
-                                  );
-                                  // setestmPreviewId(estimate.EstimateId);
-                                  console.log(estimate.EstimateId);
-                                }}
                                 style={{
                                   backgroundColor: estimate.StatusColor,
                                 }}
@@ -484,141 +493,80 @@ const EstimateTR = ({
                             <TableCell
                               align="center"
                               className="table-cell-align"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
                             >
                               {estimate.EstimateNumber}
                             </TableCell>
                             {/* <TableCell>{estimate.EstimateAmount}</TableCell> */}
-                            <TableCell>{estimate.DescriptionofWork}</TableCell>
-                            <TableCell align="center">
+                            <TableCell
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
+                              {estimate.DescriptionofWork}
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.PurchaseOrderNumber}
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell
+                              align="center"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.BillNumber}
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell
+                              align="center"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.InvoiceNumber}
                             </TableCell>
-                            <TableCell className="text-end">
+                            <TableCell
+                              className="text-end"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.ProfitPercentage?.toFixed(2)}
                             </TableCell>
-                            <TableCell className="text-end">
+                            <TableCell
+                              className="text-end"
+                              onClick={() => {
+                                navigate(
+                                  `/estimates/add-estimate?id=${estimate.EstimateId}`
+                                );
+                              }}
+                            >
                               {estimate.EstimateAmount?.toFixed(2)}
                             </TableCell>
-                            {/* <TableCell>
-                                <div className="button-container">
-                                  <Button
-                                    // className="btn btn-primary btn-icon-xxs me-2"
-                                    onClick={() => {
-                                      navigate(
-                                        "/estimates/estimate-preview"
-                                      );
-                                      setestmPreviewId(estimate.EstimateId);
-                                      console.log(estimate.EstimateId);
-                                    }}
-                                  >
-                                     <i className="fa-solid fa-eye"></i> 
-
-                                    <Visibility />
-                                  </Button>
-                                  <Button
-                                    // className="btn btn-primary btn-icon-xxs me-2"
-                                    onClick={() => {
-                                      setSelectedItem(estimate.EstimateId);
-                                      console.log(",,,,,,,,,,", selectedItem);
-                                      setShowContent(false);
-                                    }}
-                                  >
-                                  <i className="fas fa-pencil-alt"></i> 
-                                    <Create></Create>
-                                  </Button>
-                                  <Button
-                                    // className="btn btn-danger btn-icon-xxs mr-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target={`#deleteModal${estimate.EstimateId}`}
-                                  >
-                                    <Delete color="error" />
-                                    <i className="fas fa-trash-alt"></i> 
-                                  </Button>
-                                  <div
-                                    className="modal fade"
-                                    id={`deleteModal${estimate.EstimateId}`}
-                                    tabIndex="-1"
-                                    aria-labelledby="deleteModalLabel"
-                                    aria-hidden="true"
-                                  >
-                                    <div
-                                      className="modal-dialog modal-dialog-centered"
-                                      role="document"
-                                    >
-                                      <div className="modal-content">
-                                        <div className="modal-header">
-                                          <h5 className="modal-title">
-                                            Delete Estimate
-                                          </h5>
-                                          <button
-                                            type="button"
-                                            className="btn-close"
-                                            data-bs-dismiss="modal"
-                                          ></button>
-                                        </div>
-                                        <div className="modal-body">
-                                          <p>
-                                            Are you sure you want to delete
-                                            Estimate No{" "}
-                                            {estimate.EstimateNumber}
-                                          </p>
-                                        </div>
-
-                                        <div className="modal-footer">
-                                          <button
-                                            type="button"
-                                            id="closer"
-                                            className="btn btn-danger light"
-                                            data-bs-dismiss="modal"
-                                          >
-                                            Close
-                                          </button>
-                                          <button
-                                            className="btn btn-primary "
-                                            data-bs-dismiss="modal"
-                                            onClick={() => {
-                                              handleDelete(estimate.EstimateId);
-                                              console.log(
-                                                "delete id",
-                                                estimate.EstimateId
-                                              );
-                                            }}
-                                          >
-                                            Yes
-                                          </button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </TableCell> */}
                           </TableRow>
                         ))
                     )}
                   </TableBody>
                 </Table>
               </TableContainer>
-              {/* <div className="row text-end">
-                  <div className="col-md-9"></div>
-                    <div className="col-md-3 text-end">
-                    <button type="button" className="btn btn-sm btn-outline-primary me-1"
-                    onClick={() => {
-                      setpages(pages - 1)
-                                          }}
-                    >&#8656;</button>
-                    <button type="button" className="btn btn-sm btn-outline-primary me-1" disable>{pages}</button>
-                    <button type="button" className="btn btn-sm btn-outline-primary "
-                     onClick={() => {
-                      setpages(pages + 1)
-                      }}
-                    >&#8658;</button>
-                    </div>
-                  </div> */}
               {estmRecords.totalRecords && (
                 <TablePagination
                   rowsPerPageOptions={[10, 25, 50]}

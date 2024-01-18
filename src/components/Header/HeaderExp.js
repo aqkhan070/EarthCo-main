@@ -18,6 +18,7 @@ import Tooltip from "@mui/material/Tooltip";
 import BusinessIcon from "@mui/icons-material/Business";
 import useQuickBook from "../Hooks/useQuickBook";
 import EventPopups from "../Reusable/EventPopups";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 function stringToColor(string) {
   let hash = 0;
@@ -246,7 +247,7 @@ const HeaderExp = () => {
                         alt=""
                       />
                       {loggedInUser.userRole == 1 && (
-                        <Tooltip title="Click Sync with QuickBooks" arrow>
+                        <CustomizedTooltips title="Click Sync with QuickBooks">
                           <DoneIcon
                             onClick={() => {
                               syncQB(0);
@@ -257,7 +258,7 @@ const HeaderExp = () => {
                               cursor: "pointer",
                             }}
                           />
-                        </Tooltip>
+                        </CustomizedTooltips>
                       )}
                     </div>
                   ) : (
@@ -277,7 +278,7 @@ const HeaderExp = () => {
                       marginLeft: "1em",
                     }}
                   >
-                    <Tooltip title="Click to Change Company" arrow>
+                    <CustomizedTooltips title="Click to Change Company">
                       <div className="row">
                         <div className="col-md-12 ms-3">
                           {" "}
@@ -302,15 +303,15 @@ const HeaderExp = () => {
                           </span>
                         </div>
                       </div>
-                    </Tooltip>
+                    </CustomizedTooltips>
                   </div>
                 </div>
                 <ul className="navbar-nav header-right">
                   <li className="nav-item align-items-center header-border">
                     <NavLink to="/" style={{ display: "contents" }}>
-                      <Tooltip title="Logout" arrow>
+                      <CustomizedTooltips title="logout">
                         <PowerSettingsNewIcon sx={{ color: "white" }} />
-                      </Tooltip>
+                      </CustomizedTooltips>
                     </NavLink>
                   </li>
                   <li className="nav-item ps-3">

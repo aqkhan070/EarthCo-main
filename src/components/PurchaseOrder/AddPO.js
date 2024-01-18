@@ -46,9 +46,9 @@ export const AddPO = ({}) => {
     SupplierId: 0,
     BillId: 0,
     InvoiceId: 0,
-    Requestedby: 0,
+    Requestedby: null,
     TermId: null,
-    RegionalManager: 0,
+    RegionalManager: null,
     DueDate: null,
 
     Date: currentDate,
@@ -244,7 +244,7 @@ export const AddPO = ({}) => {
         headers,
       })
       .then((res) => {
-        console.log("tags are ", res.data);
+        console.log("Vendor are ", res.data);
         setVendorList(res.data);
       })
       .catch((error) => {
@@ -651,9 +651,9 @@ export const AddPO = ({}) => {
 
     if (
       !formData.Date ||
-      !formData.SupplierId ||
-      !formData.RegionalManager ||
-      !formData.Requestedby
+      !formData.SupplierId
+      // !formData.RegionalManager ||
+      // !formData.Requestedby
     ) {
       setEmptyFieldsError(true);
       setOpenSnackBar(true);
@@ -999,9 +999,7 @@ export const AddPO = ({}) => {
                       </div>
 
                       <div className=" col-md-4">
-                        <label className="form-label">
-                          Regional Manager<span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">Regional Manager</label>
                         <Autocomplete
                           id="staff-autocomplete"
                           size="small"
@@ -1019,11 +1017,33 @@ export const AddPO = ({}) => {
                           isOptionEqualToValue={(option, value) =>
                             option.UserId === value.RegionalManager
                           }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div className="customer-dd-border">
+                                <div className="row">
+                                  <div className="col-md-auto">
+                                    {" "}
+                                    <h6 className="pb-0 mb-0">
+                                      {" "}
+                                      {option.FirstName}
+                                    </h6>
+                                  </div>
+                                  <div className="col-md-auto">
+                                    <small>
+                                      {"("}
+                                      {option.Role}
+                                      {")"}
+                                    </small>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          )}
                           renderInput={(params) => (
                             <TextField
                               {...params}
                               label=""
-                              error={submitClicked && !formData.RegionalManager}
+                              // error={submitClicked && !formData.RegionalManager}
                               placeholder="Choose..."
                               className="bg-white"
                             />
@@ -1061,9 +1081,7 @@ export const AddPO = ({}) => {
                         />
                       </div>
                       <div className=" col-md-4">
-                        <label className="form-label">
-                          Requested by<span className="text-danger">*</span>
-                        </label>
+                        <label className="form-label">Requested by</label>
                         <Autocomplete
                           id="staff-autocomplete"
                           size="small"
@@ -1080,11 +1098,33 @@ export const AddPO = ({}) => {
                           isOptionEqualToValue={(option, value) =>
                             option.UserId === value.Requestedby
                           }
+                          renderOption={(props, option) => (
+                            <li {...props}>
+                              <div className="customer-dd-border">
+                                <div className="row">
+                                  <div className="col-md-auto">
+                                    {" "}
+                                    <h6 className="pb-0 mb-0">
+                                      {" "}
+                                      {option.FirstName}
+                                    </h6>
+                                  </div>
+                                  <div className="col-md-auto">
+                                    <small>
+                                      {"("}
+                                      {option.Role}
+                                      {")"}
+                                    </small>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          )}
                           renderInput={(params) => (
                             <TextField
                               {...params}
                               label=""
-                              error={submitClicked && !formData.Requestedby}
+                              // error={submitClicked && !formData.Requestedby}
                               placeholder="Choose..."
                               className="bg-white"
                             />

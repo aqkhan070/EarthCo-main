@@ -420,8 +420,6 @@ const AddSRform = () => {
       );
       console.log(response.data.Message);
 
-      setAddCustomerSuccess(response.data.Message);
-
       setOpenSnackBar(true);
       setSnackBarColor("success");
       setSnackBarText(response.data.Message);
@@ -429,9 +427,9 @@ const AddSRform = () => {
       setLoadingButton(false);
 
       setTimeout(() => {
-        setAddCustomerSuccess("");
-        navigate("/service-requests");
-      }, 4000);
+        window.location.reload();
+      }, 1500);
+      navigate(`/service-requests/add-sRform?id=${response.data.Id}`);
 
       console.log("payload izzzzzzz", formData);
       console.log("sussessfully posted service request");
@@ -702,10 +700,8 @@ const AddSRform = () => {
                             id="staff-autocomplete"
                             size="small"
                             options={customerSearch}
-                            getOptionLabel={(option) =>
-                              option.CompanyName || ""
-                            }
-                            value={name ? { CompanyName: name } : null}
+                            getOptionLabel={(option) => option.FirstName || ""}
+                            value={name ? { FirstName: name } : null}
                             onChange={handleCustomerAutocompleteChange}
                             isOptionEqualToValue={(option, value) =>
                               option.UserId === value.CustomerId
@@ -713,7 +709,7 @@ const AddSRform = () => {
                             renderOption={(props, option) => (
                               <li {...props}>
                                 <div className="customer-dd-border">
-                                  <h6> {option.CompanyName}</h6>
+                                  <h6> {option.FirstName}</h6>
                                   <small># {option.UserId}</small>
                                 </div>
                               </li>
@@ -892,7 +888,7 @@ const AddSRform = () => {
                             id="staff-autocomplete"
                             size="small"
                             options={staffData.filter(
-                              (staff) => staff.Role === "Regional Manager"
+                              (staff) => staff.Role !== "Admin"
                             )}
                             getOptionLabel={(option) => option.FirstName || ""}
                             value={
@@ -906,6 +902,28 @@ const AddSRform = () => {
                             isOptionEqualToValue={(option, value) =>
                               option.UserId === value.Assign
                             }
+                            renderOption={(props, option) => (
+                              <li {...props}>
+                                <div className="customer-dd-border">
+                                  <div className="row">
+                                    <div className="col-md-auto">
+                                      {" "}
+                                      <h6 className="pb-0 mb-0">
+                                        {" "}
+                                        {option.FirstName}
+                                      </h6>
+                                    </div>
+                                    <div className="col-md-auto">
+                                      <small>
+                                        {"("}
+                                        {option.Role}
+                                        {")"}
+                                      </small>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                            )}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -1050,8 +1068,8 @@ const AddSRform = () => {
                                   style={{ width: "7em" }}
                                   className="form-control form-control-sm"
                                   value={item.Qty}
-                                  onChange={(e) =>
-                                    handleQuantityChange(item.itemId, e)
+                                  onChange={
+                                    (e) => handleQuantityChange(item.ItemId, e) // Use item.ItemId
                                   }
                                 />
                               </td>
@@ -1061,8 +1079,8 @@ const AddSRform = () => {
                                   style={{ width: "7em" }}
                                   className="form-control form-control-sm"
                                   value={item.Rate}
-                                  onChange={(e) =>
-                                    handleRateChange(item.itemId, e)
+                                  onChange={
+                                    (e) => handleRateChange(item.ItemId, e) // Use item.ItemId
                                   }
                                 />
                               </td>
@@ -1164,11 +1182,7 @@ const AddSRform = () => {
                                   name="Rate"
                                   style={{ width: "7em" }}
                                   className="form-control form-control-sm"
-                                  value={
-                                    selectedItem?.SalePrice ||
-                                    itemInput.Rate ||
-                                    ""
-                                  }
+                                  value={itemInput.Rate}
                                   onChange={(e) =>
                                     setItemInput({
                                       ...itemInput,
@@ -1183,8 +1197,7 @@ const AddSRform = () => {
                                   }}
                                   onKeyPress={(e) => {
                                     if (e.key === "Enter") {
-                                      // Handle item addition when Enter key is pressed
-                                      e.preventDefault(); // Prevent form submission
+                                      e.preventDefault();
                                       handleAddItem();
                                     }
                                   }}

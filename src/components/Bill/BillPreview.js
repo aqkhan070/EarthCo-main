@@ -319,7 +319,7 @@ const BillPreview = () => {
                 </div>
               )}
 
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary   estm-action-btn"
@@ -328,7 +328,7 @@ const BillPreview = () => {
                   <i className="fa fa-print"></i>
                 </button>
               </div>
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary  estm-action-btn"
@@ -340,7 +340,7 @@ const BillPreview = () => {
               {isMail ? (
                 <></>
               ) : (
-                <div className="p-2 bd-highlight">
+                <div className="p-2 pt-0 bd-highlight">
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {

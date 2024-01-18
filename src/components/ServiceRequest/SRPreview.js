@@ -146,6 +146,7 @@ const SRPreview = () => {
         text={emailAlertTxt}
       />
       <div
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
@@ -157,7 +158,10 @@ const SRPreview = () => {
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
               <div id="SR-preview" className=" get-preview ">
-                <div className="card-body perview-pd">
+                <div
+                  className="card-body perview-pd"
+                  style={{ minHeight: "23cm" }}
+                >
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
                       <h5 className="mb-0">EarthCo</h5>{" "}
@@ -384,6 +388,12 @@ const SRPreview = () => {
                     ></div>
                   </div>*/}
                 </div>
+                <div className="card-footer border-0 text-center">
+                  <h6 style={{ fontSize: "12px" }}>
+                    *Note Beginning October 1, Earthco will commence annual skip
+                    mowing of the grass due to the winter season
+                  </h6>
+                </div>
               </div>
             </div>
           </div>
@@ -407,7 +417,7 @@ const SRPreview = () => {
                 </div>
               )}
 
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary   estm-action-btn"
@@ -416,7 +426,7 @@ const SRPreview = () => {
                   <i className="fa fa-print"></i>
                 </button>
               </div>
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary  estm-action-btn"
@@ -428,7 +438,7 @@ const SRPreview = () => {
               {isMail ? (
                 <></>
               ) : (
-                <div className="p-2 bd-highlight">
+                <div className="p-2 pt-0 bd-highlight">
                   {" "}
                   <button
                     className="btn btn-sm btn-outline-primary estm-action-btn"

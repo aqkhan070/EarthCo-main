@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 
 const useDeleteFile = () => {
-  const midPoint = "earthcoapi.yehtohoga.com"
+  const midPoint = "earthcoapi.yehtohoga.com";
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
 
-  const deleteEstmFile = async (id, fetchEstimates) => {
+  const deleteEstmFile = async (id, fetchEstimates ) => {
     try {
       const res = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Estimate/DeleteEstimateFile?FileId=${id}`,
@@ -78,13 +78,11 @@ const useDeleteFile = () => {
     }
   };
 
-  
   const deleteReportFile = async (endPiont, id, getReport) => {
     try {
-      const res = await axios.get(
-        `https://${midPoint}/api/${endPiont}${id}`,
-        { headers }
-      );
+      const res = await axios.get(`https://${midPoint}/api/${endPiont}${id}`, {
+        headers,
+      });
 
       getReport();
 

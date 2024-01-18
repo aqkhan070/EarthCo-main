@@ -10,6 +10,7 @@ import "react-quill/dist/quill.snow.css"; // Import styles for the rich text edi
 import axios from "axios";
 import { DataContext } from "../../context/AppData";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+
 const SendMail = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const title = queryParams.get("title");
@@ -22,13 +23,15 @@ const SendMail = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const { selectedImages, setSelectedImages } = useContext(DataContext);
+  const { selectedImages, setSelectedImages, loggedInUser } =
+    useContext(DataContext);
 
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState([]);
   const [Files, setFiles] = useState([]);
   const [CCInput, setCCInput] = useState("");
   const [CCs, setCCs] = useState([]);
+
   const [editorContent, setEditorContent] = useState(
     `Dear  ${
       customer ? customer : ""
@@ -105,6 +108,8 @@ const SendMail = () => {
       Email: emails.join(","),
       CCEmail: CCs.join(","),
       Subject: subject,
+      ReplyTo: loggedInUser.userEmail,
+      ReplyToName: loggedInUser.userName,
       Body: editorContent,
       FilePaths: filePathsArray,
     };
@@ -170,33 +175,36 @@ const SendMail = () => {
       setEditorContent(``);
     }
     if (title == `Service Request` && isOpen == "Open") {
-      setEditorContent(`Dear ${
+      setEditorContent(`<strong>Dear ${
         customer ? customer : ""
-      } <br>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
-      <br>If you have any additional questions or concerns, please contact us at (Username). You can also reach us by telephone at 714.571.0455.
-      <br>Thank you for choosing Earthco.
-      <br>Sincerely,
-      (Regional Manager Name)`);
+      }</strong>, <br><br>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
+      <br><br>If you have any additional questions or concerns, please contact us at ${
+        loggedInUser.userEmail
+      }. You can also reach us by telephone at 714.571.0455.
+      <br><br>Thank you for choosing Earthco.
+      <br><br>Sincerely,<br>${loggedInUser.userName},`);
     }
     if (title == `Service Request` && isOpen == "Closed") {
-      setEditorContent(`Dear ${
+      setEditorContent(`<strong>Dear ${
         customer ? customer : ""
-      } <br>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
-      <br>If you have any additional questions or concerns, please contact us at (Username). You can also reach us by telephone at 714.571.0455.
-      <br>Thank you for choosing Earthco.
-      <br>Sincerely,
-      <br>(Regional Manager Name)`);
+      },</strong> <br><br>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
+      <br><br>If you have any additional questions or concerns, please contact us at ${
+        loggedInUser.userEmail
+      }. You can also reach us by telephone at 714.571.0455.
+      <br><br>Thank you for choosing Earthco.
+      <br><br>Sincerely,
+      <br>${loggedInUser.userName},`);
     }
     if (title == `Estimate`) {
-      setEditorContent(`Hello
-      <br>Please see the attached proposal.  Please confirm receipt.
-      <br>Contact me if you have any questions.
-      <br>Thank you!
-      <br>Sincerely,
-      <br>(Username)
+      setEditorContent(`Hello ${customer ? customer : ""},
+      <br><br>Please see the attached proposal.  Please confirm receipt.
+      <br><br>Contact me if you have any questions.
+      <br><br>Thank you!
+      
+      <br><br>${loggedInUser.userName}
       <br>EarthCo`);
-      setSubject(`Proposal ${number} for ${customer}
-      `);
+
+      setSubject(`Proposal ${number} for ${customer}`);
     }
 
     return () => {
@@ -214,7 +222,9 @@ const SendMail = () => {
       />
       <div className="card">
         <div className="card-header">
-          <h4>Email {title}</h4>
+          <h4>
+            Email {title} #{number}
+          </h4>
         </div>
         <div className="card-body ">
           <div className="row text-center">

@@ -40180,7 +40180,7 @@ button:focus {
 }
 
 .card-footer {
-    border-color: #E6E6E6;
+    border-color: #b7b4b4;
     background: transparent;
     padding: 1rem 1.25rem 1rem;
 }
@@ -53873,6 +53873,7 @@ cursor: pointer;
     padding: 1%;
     background-color: aliceblue;
     margin-right: 1%;
+    height: fit-content;
   }
 
   .delete-file {

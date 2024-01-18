@@ -152,6 +152,7 @@ const EstimatePreview = () => {
         text={emailAlertTxt}
       />
       <div
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width"
@@ -163,7 +164,10 @@ const EstimatePreview = () => {
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
               <div id="estimate-preview" className=" get-preview ">
-                <div className="card-body perview-pd">
+                <div
+                  style={{ minHeight: "20cm" }}
+                  className="card-body perview-pd"
+                >
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
                       <h5 className="mb-0">EarthCo</h5>{" "}
@@ -188,9 +192,9 @@ const EstimatePreview = () => {
 
                   <div className="row">
                     <div className="col-md-6">
-                      <h4 className="p-0 mb-0">
+                      <h5 className="p-0 pt-4 mb-0 ">
                         <strong>Submitted to</strong>
-                      </h4>
+                      </h5>
                       <h6 className="p-0 ">
                         {previewData.EstimateData.CustomerName} -{" "}
                         {previewData.EstimateData.ContactName}
@@ -203,7 +207,10 @@ const EstimatePreview = () => {
                           <tr>
                             <th>
                               {" "}
-                              <h6 className="mb-0">Date</h6>{" "}
+                              <h6 className="mb-0">
+                                {" "}
+                                <strong>Date</strong>
+                              </h6>{" "}
                             </th>
                             <th>
                               {" "}
@@ -219,7 +226,9 @@ const EstimatePreview = () => {
                         <tbody>
                           <tr>
                             <td className="table-cell-align mb-0 me-2">
-                              <h6 className="mb-0">Estimate #</h6>{" "}
+                              <h6 className="mb-0">
+                                <strong>Estimate #</strong>
+                              </h6>{" "}
                             </td>
 
                             <td className="table-cell-align mb-0 text-right">
@@ -230,7 +239,9 @@ const EstimatePreview = () => {
                           </tr>
                           <tr>
                             <td className="table-cell-align me-2">
-                              <h6 className="mb-0">Submitted by</h6>{" "}
+                              <h6 className="mb-0">
+                                <strong>Submitted by</strong>
+                              </h6>{" "}
                             </td>
 
                             <td className="table-cell-align text-right">
@@ -248,9 +259,9 @@ const EstimatePreview = () => {
                   <div className="row mt-2">
                     <div className="col-md-12 text-center">
                       {" "}
-                      <h4 className="mb-0">
+                      <h3 className="mb-0">
                         <strong>South Peak</strong>
-                      </h4>{" "}
+                      </h3>{" "}
                       <hr className="mt-0" />
                     </div>
                     <div className="col-md-12">
@@ -264,7 +275,7 @@ const EstimatePreview = () => {
                       </h6>
                     </div>
                   </div>
-                  <h5 className="mb-0">
+                  <h5 className="mb-0 mt-3">
                     <strong>Item(s)</strong>
                   </h5>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
@@ -300,43 +311,86 @@ const EstimatePreview = () => {
                       })}
                     </tbody>
                   </table>
+                </div>
 
-                  <div className="row ">
-                    <div className="col-md-8 col-sm-6"></div>
-                    <div className="col-md-2 col-sm-3">
-                      <h6 className="mb-0">
-                        {" "}
-                        <strong>SUBTOTAL:</strong>
-                      </h6>
-                    </div>
-                    <div className="col-md-2 col-sm-3">
-                      <h6 className="mb-0 text-end">
-                        {totalAmount.toFixed(2)}
-                      </h6>
-                    </div>
-                    <div className="col-md-8 col-sm-6"></div>
-                    {/* <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">
-                      {" "}
-                      <strong>DISCOUNT:</strong>
-                    </h6>
-                  </div>{" "} */}
-                    <hr className="mb-1" />
-                    <div className="col-md-8 col-sm-6 text-end"></div>
-                    <div className="col-md-2 col-sm-3 ">
-                      <h6 className="table-cell-align mt-2">
-                        <strong>TOTAL USD</strong>
-                      </h6>
-                    </div>
-                    <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
-                    </div>
+                <div className="row mb-2 text-end px-5">
+                  <div className="col-md-9"></div>
+                  <div className="col-md-3 text-end">
                     <div
                       style={{
-                        borderBottom: "5px solid #012a47",
-                        margin: "0em 0em 3em 0em",
+                        borderBottom: "1px solid #b7b4b4",
+                        marginBottom: "4em",
                       }}
-                    ></div>
+                    >
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          color: "black",
+                          marginRight: "4em",
+                        }}
+                      >
+                        <strong>Total:</strong>
+                      </span>
+                      <span style={{ fontSize: "16px", color: "black" }}>
+                        {totalAmount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="card-footer">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <h6>ACCEPTED BY:</h6>
+                    </div>
+                    <div className="col-md-3">
+                      <h6>Buyer/Agent Signature</h6>
+                    </div>
+                    <div className="col-md-2">
+                      <h6>Print Name</h6>
+                    </div>
+                    <div className="col-md-2">
+                      <h6>Title</h6>
+                    </div>
+                    <div className="col-md-2">
+                      <h6>Date</h6>
+                    </div>
+                    <div className="col-md-12">
+                      <span
+                        style={{
+                          fontSize: "7px",
+                          color: "black",
+                          fontWeight: "600",
+                        }}
+                      >
+                        Payment Terms and Conditions: Please be advised that
+                        payments are due upon receipt of the invoice, with any
+                        payment made beyond thirty ﴾30﴿ days from the billing
+                        date considered overdue and subject to interest at the
+                        maximum legally permissible rate. In the event of legal
+                        action for collection, Earthco is entitled to
+                        reimbursement of all legal fees. Failure to make payment
+                        within a thirty ﴾30﴿‐day period will be deemed a major
+                        breach. This proposal assumes no preexisting conditions
+                        detrimental to labor and materials during installation,
+                        replacement, and repair, specifically for work conducted
+                        by Earthco Commercial Landscape or Earthco Arbor Care,
+                        with a 30‐day lead time for tree work. Earthco Arbor
+                        Care disclaims responsibility for damage to underground
+                        utilities, and work will adhere to ANSI A300 Arbor
+                        Standards. Requests for crown thinning exceeding 25% may
+                        incur additional costs and release Earthco Arbor Care
+                        from liability. The proposal excludes permits, traffic
+                        control, or engineering, with the client responsible for
+                        associated costs. Cancellation of work incurs a 20% fee,
+                        and tree work inspections must be conducted within 30
+                        days of completion; otherwise, the work is deemed final.
+                        The client acknowledges the potential placement of a
+                        mechanics lien on the property as per the California
+                        Civil Code for non‐payment within the specified terms.
+                        The signing party affirms authorization to obligate the
+                        client to these terms.
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -361,7 +415,7 @@ const EstimatePreview = () => {
                   </button>
                 </div>
               )}
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary   estm-action-btn"
@@ -370,7 +424,7 @@ const EstimatePreview = () => {
                   <i className="fa fa-print"></i>
                 </button>
               </div>
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary  estm-action-btn"
@@ -382,7 +436,7 @@ const EstimatePreview = () => {
               {isMail ? (
                 <></>
               ) : (
-                <div className="p-2 bd-highlight">
+                <div className="p-2 pt-0 bd-highlight">
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {

@@ -97,18 +97,13 @@ const AddCustomer = () => {
       );
       setLoading(false);
 
-      // AhsanModel
-      // Handle the response. For example, you can reload the customers or show a success message
       console.log("Customer zzzzzzzz:", response.data);
       setAllowLogin(response.data.isLoginAllow);
       setCompanyData(response.data.Data);
       setPrevFiles(response.data.FileData);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
-      // setSLAddress((prevData) => ({
-      //   ...prevData,
-      //   Address: response.data.Data.Address,
-      // }));
+
       console.log(response.data.ServiceLocationData);
     } catch (error) {
       setLoading(false);
@@ -170,7 +165,17 @@ const AddCustomer = () => {
   };
 
   const handleSubmit = async () => {
-    console.log("check1 ", companyData);
+    setCompanyData((prevData) => ({
+      ...prevData,
+      CompanyId: Number(loggedInUser.CompanyId),
+    }));
+    const updatedData = {
+      ...companyData,
+      CompanyId: Number(loggedInUser.CompanyId),
+    };
+    console.log("check1 ", updatedData);
+    console.log("check1 company id ", Number(loggedInUser.CompanyId));
+
     setSubmitClicked(true);
     if (
       !companyData.CompanyName ||
@@ -185,24 +190,6 @@ const AddCustomer = () => {
       console.log("check2 ");
 
       return; // Return early if any required field is empty
-    }
-
-    if (
-      allowLogin &&
-      (!companyData.username ||
-        !companyData.Password ||
-        !companyData.ConfirmPassword)
-    ) {
-      console.log("check3");
-
-      return; // Return early if login fields are empty
-    }
-    if (allowLogin && companyData.Password !== companyData.ConfirmPassword) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Password and Confirm Password Should Be same");
-      console.log("check4");
-      return; // Return early if passwords do not match
     }
 
     if (!validator.isLength(companyData.CompanyName, { min: 3, max: 30 })) {
@@ -221,15 +208,6 @@ const AddCustomer = () => {
       console.log("First name should be 3 to 30 characters");
       return;
     }
-
-    // Validate last name length
-    // if (!validator.isLength(companyData.LastName, { min: 3, max: 30 })) {
-    //   setOpenSnackBar(true);
-    //   setSnackBarColor("error");
-    //   setSnackBarText("Last name should be between 3 and 30 characters");
-    //   console.log("Last name should be between 3 and 30 characters");
-    //   return;
-    // }
 
     if (!validator.isLength(companyData.ContactName, { min: 3, max: 30 })) {
       setOpenSnackBar(true);
@@ -250,8 +228,6 @@ const AddCustomer = () => {
       companyData.Phone &&
       !validator.isMobilePhone(companyData.Phone, "any", { max: 20 })
     ) {
-      setPhoneError(true);
-
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Phone number is not valid");
@@ -264,7 +240,7 @@ const AddCustomer = () => {
     try {
       const response = await axios.post(
         "https://earthcoapi.yehtohoga.com/api/Customer/AddCustomer",
-        companyData,
+        updatedData,
         {
           headers,
         }
@@ -340,26 +316,6 @@ const AddCustomer = () => {
                 </h4>
               </div>
               <div className="card-body">
-                {/* {formData.CustomerData.CustomerName && (
-                <div className="col-xl-4 mb-3">
-                  <div className="form-check custom-checkbox form-check-inline message-customer">
-                    <input
-                      type="checkbox"
-                      name="isPrimary"
-                      className="form-check-input"
-                      id="customCheckBox"
-                    />
-
-                    <label
-                      className="form-check-label"
-                      htmlFor="customCheckBox"
-                    >
-                      Send text message to {formData.CustomerData.CustomerName}
-                    </label>
-                  </div>
-                </div>
-              )} */}
-
                 <div className="row">
                   <div className="col-9">
                     <div className="row"></div>
@@ -422,25 +378,7 @@ const AddCustomer = () => {
                           placeholder="Contact Company"
                         />
                       </div>
-                      {/* <div className="col-xl-4 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Last Name <span className="text-danger">*</span>
-                        </label>
-                        <TextField
-                          type="text"
-                          className="form-control"
-                          name="LastName"
-                          variant="outlined"
-                          size="small"
-                          value={companyData.LastName}
-                          onChange={handleCompanyChange}
-                          error={submitClicked && !companyData.LastName}
-                          placeholder="Last Name"
-                        />
-                      </div> */}
+
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
@@ -471,103 +409,10 @@ const AddCustomer = () => {
                           address={companyData.Address}
                           name="Address"
                           handleChange={handleCompanyChange}
+                          setCompanyData={setCompanyData}
                           emptyError={submitClicked && !companyData.Address}
                         />
-                        {/* <TextField
-                          type="text"
-                          className="form-control"
-                          name="Address"
-                          variant="outlined"
-                          size="small"
-                          value={companyData.Address}
-                          onChange={handleCompanyChange}
-                          placeholder="Address"
-                        /> */}
-                        {/* <MapCo /> */}
                       </div>
-                      {/* <div className="col-xl-4 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Phone
-                        </label>
-                        <TextField
-                          type="text"
-                          className="form-control"
-                          name="Phone"
-                          variant="outlined"
-                          size="small"
-                          value={companyData.Phone}
-                          error={phoneError}
-                          onChange={handleCompanyChange}
-                          placeholder="Phone"
-                        />
-                      </div>
-                      <div className="col-xl-4 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Alt Phone
-                        </label>
-                        <TextField
-                          type="text"
-                          className="form-control"
-                          name="AltPhone"
-                          variant="outlined"
-                          size="small"
-                          value={companyData.AltPhone}
-                          onChange={handleCompanyChange}
-                          placeholder="Alternate Phone"
-                        />
-                      </div>
-                      <div className="col-xl-4 mb-3">
-                        <label
-                          htmlFor="exampleFormControlInput1"
-                          className="form-label"
-                        >
-                          Customer Fax
-                        </label>
-                        <TextField
-                          type="text"
-                          className="form-control"
-                          name="Fax"
-                          variant="outlined"
-                          size="small"
-                          value={companyData.Fax}
-                          onChange={handleCompanyChange}
-                          placeholder="Customer Fax"
-                        />
-                      </div> */}
-                      {/* <div className="col-xl-4 mb-3">
-                        <FormControl fullWidth variant="outlined">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label"
-                          >
-                            Customer Type
-                          </label>
-                          <Select
-                            labelId="customer-type-label"
-                            id="customer-type-select"
-                            variant="outlined"
-                            name="CustomerTypeId"
-                            value={companyData.CustomerTypeId}
-                            onChange={handleCompanyChange}
-                            size="small"
-                          >
-                            {customerType.map((customer, index) => (
-                              <MenuItem
-                                key={customer.CustomerTypeId}
-                                value={customer.CustomerTypeId}
-                              >
-                                {customer.CustomerType}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </div> */}
 
                       <div className="col-xl-4 mb-3">
                         <label className="form-label">Notes</label>
@@ -581,131 +426,8 @@ const AddCustomer = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="col-3">
-                    <div className="col-xl-12 mb-3 ">
-                      <div className="form-check form-check-inline radio-margin">
-                        <label
-                          className="form-check-label "
-                          htmlFor="inlineRadio1"
-                        >
-                          Allow Login:
-                        </label>
-                        <div className="form-check form-check-inline radio-margin-div">
-                          <input
-                            className="form-check-input ml-2 pl-2"
-                            type="radio"
-                            id="inlineRadio1"
-                            name="isLoginAllow"
-                            value="Customer"
-                            checked={allowLogin === true} // Check the "yes" radio button if allowLogin is true
-                            onChange={() => {
-                              setAllowLogin(true);
-                              // setDisableButton(true);
-                            }}
-                          />
-                          <label
-                            className="form-check-label allow-customer-login"
-                            htmlFor="inlineRadio1"
-                          >
-                            Yes
-                          </label>
-                        </div>
-                        <div className="form-check form-check-inline">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            id="inlineRadio2"
-                            name="isLoginAllow"
-                            value="BillToServiceLocation"
-                            checked={allowLogin === false} // Check the "no" radio button if allowLogin is false
-                            onChange={() => {
-                              setAllowLogin(false);
-                            }}
-                          />
-                          <label
-                            className="form-check-label allow-customer-login"
-                            htmlFor="inlineRadio2"
-                          >
-                            No
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                    {allowLogin && (
-                      <div className="row">
-                        <div className="col-xl-12 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label"
-                          >
-                            Username <span className="text-danger">*</span>
-                          </label>
-                          <TextField
-                            type="text"
-                            className="form-control"
-                            name="username"
-                            variant="outlined"
-                            size="small"
-                            error={submitClicked && !companyData.username}
-                            value={companyData.username}
-                            onChange={handleCompanyChange}
-                            placeholder="User Name"
-                          />
-                        </div>
-                        <div className="col-xl-12 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label"
-                          >
-                            Password <span className="text-danger">*</span>
-                          </label>
-                          <TextField
-                            type="password"
-                            className="form-control"
-                            name="Password"
-                            variant="outlined"
-                            size="small"
-                            error={submitClicked && !companyData.Password}
-                            onChange={handleCompanyChange}
-                            placeholder="Password"
-                          />
-                        </div>
-                        <div className="col-xl-12 mb-3">
-                          <label
-                            htmlFor="exampleFormControlInput1"
-                            className="form-label"
-                          >
-                            Confirm Password{" "}
-                            <span className="text-danger">*</span>
-                          </label>
-                          <TextField
-                            type="password"
-                            className="form-control"
-                            name="ConfirmPassword"
-                            variant="outlined"
-                            size="small"
-                            error={
-                              submitClicked && !companyData.ConfirmPassword
-                            }
-                            onChange={handleCompanyChange}
-                            placeholder="Confirm Password"
-                          />
-                          {!passwordsMatch && (
-                            <div className="text-danger">
-                              Passwords do not match.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div> */}
                 </div>
-                {/* <div className="col-md-6">
-                  <label className="col-sm-4 col-form-label">
-                    Address<span className="text-danger">*</span>
-                  </label>
-                  <AddressInputs />
-                </div> */}
+
                 <div className="row">
                   <div className="col-md-9">
                     <EventPopups
@@ -728,22 +450,11 @@ const AddCustomer = () => {
                     >
                       Save
                     </LoaderButton>
-
-                    {/* <button
-                      className="btn btn-primary m-1"
-                      onClick={handleSubmit}
-                      disabled={disableButton}
-                    >
-                      Submit
-                    </button> */}
                   </div>
                 </div>
               </div>
             </div>
           </form>
-
-          {/* contact modal */}
-          {/* AhsanModel */}
 
           {idParam === 0 ? (
             <></>

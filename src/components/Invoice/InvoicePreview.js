@@ -148,6 +148,7 @@ const InvoicePreview = () => {
         text={emailAlertTxt}
       />
       <div
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
@@ -170,7 +171,7 @@ const InvoicePreview = () => {
                     </div>
                     <div className="col-md-3 col-sm-3 text-center">
                       {" "}
-                      <h3>Invoice</h3>
+                      <h3>INVOICE</h3>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
                       <img
@@ -245,42 +246,9 @@ const InvoicePreview = () => {
                         </tbody>
                       </table>
                     </div>
-
-                    <div className="col-md-4 col-sm-6 ">
-                      <table className="preview-table">
-                        <thead>
-                          <tr>
-                            <th>
-                              {" "}
-                              {/* <h6 className="mb-0">Date</h6>{" "} */}
-                            </th>
-                            <th>
-                              {" "}
-                              {/* <h6 className="text-right mb-0">
-                                {formatDate(
-                                  InvoicePreviewData.Data.CreatedDate,
-                                  false
-                                )}
-                              </h6> */}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="table-cell-align me-2">
-                              {/* <h6>invoice #</h6>{" "} */}
-                            </td>
-
-                            <td className="table-cell-align text-right">
-                              {/* <h6>{InvoicePreviewData.Data.InvoiceNumber}</h6> */}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
                   </div>
 
-                  <table id="empoloyees-tblwrapper" className="table mt-2">
+                  <table id="empoloyees-tblwrapper" className="table mt-4">
                     <thead className="table-header">
                       <tr className="preview-table-head">
                         <th>
@@ -339,7 +307,7 @@ const InvoicePreview = () => {
                     </div>
                   </div>
 
-                  <table id="empoloyees-tblwrapper" className="table mt-2">
+                  <table id="empoloyees-tblwrapper" className="table mt-4">
                     <thead className="table-header">
                       <tr className="preview-table-head">
                         <th>
@@ -393,7 +361,10 @@ const InvoicePreview = () => {
                     <strong>DISCOUNT:</strong>
                   </h6>
                 </div>{" "} */}
-                    <hr className="mb-1" />
+                    <div className="col-md-12 py-0">
+                      <hr className="mb-1" />
+                    </div>
+
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
                       <h6 className="table-cell-align mt-2">
@@ -403,12 +374,13 @@ const InvoicePreview = () => {
                     <div className="col-md-2 col-sm-3 mt-2">
                       <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
                     </div>
-                    <div
-                      style={{
-                        borderBottom: "5px solid #012a47",
-                        margin: "0em 0em 3em 0em",
-                      }}
-                    ></div>
+                    <div className="col-md-12 py-0">
+                      <div
+                        style={{
+                          borderBottom: "5px solid #012a47",
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -434,7 +406,7 @@ const InvoicePreview = () => {
                 </div>
               )}
 
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary   estm-action-btn"
@@ -443,7 +415,7 @@ const InvoicePreview = () => {
                   <i className="fa fa-print"></i>
                 </button>
               </div>
-              <div className="p-2 bd-highlight">
+              <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
                   className="btn btn-sm btn-outline-primary  estm-action-btn"
@@ -455,7 +427,7 @@ const InvoicePreview = () => {
               {isMail ? (
                 <></>
               ) : (
-                <div className="p-2 bd-highlight">
+                <div className="p-2 pt-0 bd-highlight">
                   <button
                     className="btn btn-sm btn-outline-primary  estm-action-btn"
                     onClick={() => {

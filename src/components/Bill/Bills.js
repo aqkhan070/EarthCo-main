@@ -46,7 +46,7 @@ const Bills = () => {
   const {
     billList,
     loading,
-    fetchBills,
+
     billError,
     fetchFilterBills,
     filteredBillsList,
@@ -94,7 +94,6 @@ const Bills = () => {
   };
 
   useEffect(() => {
-    fetchBills();
     setselectedBill(0);
   }, []);
 

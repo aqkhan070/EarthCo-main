@@ -102,11 +102,9 @@ const AddInvioces = ({}) => {
     }
   };
   const selectCustomer = (customer) => {
-    setCustomerAddress(customer.Address);
-
     setFormData({ ...formData, CustomerId: customer.UserId });
 
-    setInputValue(customer.CompanyName); // Add this line to update the input value
+    setInputValue(customer.FirstName); // Add this line to update the input value
     setShowCustomersList(false);
   };
 
@@ -123,6 +121,7 @@ const AddInvioces = ({}) => {
       console.log("selected invoice is", res.data);
       // setFormData(res.data.Data);
       setInputValue(res.data.Data.CustomerId);
+      fetchName(res.data.Data.CustomerId);
       setPrevFiles(res.data.FileData);
       setLoading(false);
       // setItemsList(res.data.ItemData)
@@ -152,8 +151,8 @@ const AddInvioces = ({}) => {
 
     // Assuming handleInputChange is defined somewhere within YourComponent
     // Call handleInputChange with the simulated event
-    console.log("Customer data izz", newValue.Address);
-    setCustomerAddress(newValue.Address);
+
+    setCustomerAddress(newValue?.Address || "");
     handleChange(simulatedEvent);
   };
 
@@ -266,6 +265,7 @@ const AddInvioces = ({}) => {
       CustomerId: estimateLinkData.CustomerId,
       EstimateId: estimateLinkData.EstimateId,
       AssignTo: estimateLinkData.AssignTo,
+      BillId: estimateLinkData.BillId,
       EstimateNumber: estimateLinkData.EstimateNumber,
       tblInvoiceItems: estimateLinkData.tblEstimateItems,
       tblInvoiceFiles: estimateLinkData.FileData,
@@ -477,7 +477,6 @@ const AddInvioces = ({}) => {
       setSnackBarText(response.data.Message);
       setDisableButton(false);
       syncQB(response.data.SyncId);
-
 
       setTimeout(() => {
         navigate("/invoices");
@@ -804,15 +803,23 @@ const AddInvioces = ({}) => {
   const discountChange = (e) => {
     const newValue = parseFloat(e.target.value);
 
-    if (newValue) {
-      if (newValue >= 0 && newValue <= 100) {
-        setTotalDiscount(newValue);
-      } else if (newValue > 100) {
-        setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
-      } else {
-        setTotalDiscount(0);
-      }
+    if (isNaN(newValue)) {
+      setTotalDiscount(0);
+      return;
     }
+    if (newValue == 0) {
+      setTotalDiscount(0);
+    } else {
+      setTotalDiscount(newValue);
+    }
+    // if (newValue) {
+    //   if (newValue >= 0 && newValue <= 100) {
+    //   } else if (newValue > 100) {
+    //     setTotalDiscount(100); // Set it to the maximum value (100) if it exceeds.
+    //   } else {
+    //     setTotalDiscount(0);
+    //   }
+    // }
   };
 
   useEffect(() => {
@@ -838,12 +845,12 @@ const AddInvioces = ({}) => {
       0
     );
     const totalamount =
-      newTotalAmount + shippingCost - (totalDiscount / subtotal) * 100;
+      newTotalAmount + shippingCost - (totalDiscount * subtotal) / 100;
 
     let calculatedTotalProfit = 0;
     if (subtotal > 0) {
       calculatedTotalProfit =
-        newTotalAmount - (totalDiscount / subtotal) * 100 - totalExpense;
+        newTotalAmount - (totalDiscount * subtotal) / 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
     // if (totalExpense > 0) {
@@ -953,290 +960,315 @@ const AddInvioces = ({}) => {
               <h4>Invoice Details</h4>
             </div>
             <div className="">
-              <div className=" card-body row mb-3 ">
-                <div className="col-md-3">
-                  <label className="form-label">
-                    Customer<span className="text-danger">*</span>
-                  </label>
-                  <Autocomplete
-                    id="staff-autocomplete"
-                    size="small"
-                    options={customerSearch}
-                    getOptionLabel={(option) => option.CompanyName || ""}
-                    value={name ? { CompanyName: name } : null}
-                    onChange={handleCustomerAutocompleteChange}
-                    isOptionEqualToValue={(option, value) =>
-                      option.UserId === value.CustomerId
-                    }
-                    renderOption={(props, option) => (
-                      <li {...props}>
-                        <div className="customer-dd-border">
-                          <h6> {option.CompanyName}</h6>
-                          <small># {option.UserId}</small>
-                        </div>
-                      </li>
-                    )}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label=""
-                        onClick={() => {
-                          setName("");
-                        }}
-                        onChange={(e) => {
-                          fetchCustomers(e.target.value);
-                        }}
-                        placeholder="Choose..."
-                        error={submitClicked && !formData.CustomerId}
-                        className="bg-white"
-                      />
-                    )}
-                  />
-                </div>
-                <div className=" col-md-3">
-                  <label className="form-label">Invoice Number </label>
-                  <div className="input-group mb-2">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="InvoiceNumber"
-                      value={formData.InvoiceNumber}
-                      onChange={handleChange}
-                      placeholder="Invoice number"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-3">
-                  <label className="form-label">Assigned To</label>
-                  <Autocomplete
-                    id="staff-autocomplete"
-                    size="small"
-                    options={staffData.filter(
-                      (staff) => staff.Role === "Admin"
-                    )}
-                    getOptionLabel={(option) => option.FirstName || ""}
-                    value={
-                      staffData.find(
-                        (staff) => staff.UserId === formData.AssignTo
-                      ) || null
-                    }
-                    onChange={handleStaffAutocompleteChange}
-                    isOptionEqualToValue={(option, value) =>
-                      option.UserId === value.AssignTo
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label=""
-                        placeholder="Choose..."
-                        className="bg-white"
-                      />
-                    )}
-                  />
-                </div>
-                <div className="col-md-3"></div>
-
-                <div className="col-md-3">
-                  <label className="form-label">
-                    Issue Date<span className="text-danger">*</span>
-                  </label>
-                  <div className="input-group mb-2">
-                    <TextField
-                      type="date"
-                      className="form-control"
-                      name="IssueDate"
+              <div className=" card-body mb-3 ">
+                <div className="row">
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Customer<span className="text-danger">*</span>
+                    </label>
+                    <Autocomplete
+                      id="staff-autocomplete"
                       size="small"
-                      value={formatDate(formData.IssueDate)}
-                      error={submitClicked && !formData.IssueDate}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div className=" col-md-3">
-                  <label className="form-label">Due Date</label>
-                  <div className="input-group mb-2">
-                    <TextField
-                      type="date"
-                      className="form-control"
-                      name="DueDate"
-                      size="small"
-                      value={formatDate(formData.DueDate)}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div className=" col-md-3">
-                  <label className="form-label">
-                    Linked Estimate
-                    {formData.EstimateId ? (
-                      <>
-                        <a
-                          href=""
-                          style={{ color: "blue" }}
-                          className="ms-2"
+                      options={customerSearch}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={name ? { FirstName: name } : null}
+                      onChange={handleCustomerAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.CustomerId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <h6> {option.FirstName}</h6>
+                            <small># {option.UserId}</small>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
                           onClick={() => {
-                            navigate(
-                              `/estimates/add-estimate?id=${formData.EstimateId}`
-                            );
+                            setName("");
                           }}
-                        >
-                          View
-                        </a>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </label>
-
-                  <Autocomplete
-                    id="inputState19"
-                    size="small"
-                    options={estimates}
-                    getOptionLabel={(option) => option.EstimateNumber || ""}
-                    value={
-                      estimates.find(
-                        (customer) =>
-                          customer.EstimateNumber === formData.EstimateNumber
-                      ) || null
-                    }
-                    onChange={handleEstimatesAutocompleteChange}
-                    isOptionEqualToValue={(option, value) =>
-                      option.EstimateId === value.EstimateNumber
-                    }
-                    renderInput={(params) => (
+                          onChange={(e) => {
+                            fetchCustomers(e.target.value);
+                          }}
+                          placeholder="Choose..."
+                          error={submitClicked && !formData.CustomerId}
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className=" col-md-3">
+                    <label className="form-label">Invoice Number </label>
+                    <div className="input-group mb-2">
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="InvoiceNumber"
+                        value={formData.InvoiceNumber}
+                        onChange={handleChange}
+                        placeholder="Invoice number"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Assigned To</label>
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData.filter(
+                        (staff) => staff.Role === "Admin"
+                      )}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.AssignTo
+                        ) || null
+                      }
+                      onChange={handleStaffAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === value.AssignTo
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-md-3"></div>
+                </div>
+                <div className="row">
+                  <div className="col-md-3">
+                    <label className="form-label">
+                      Issue Date<span className="text-danger">*</span>
+                    </label>
+                    <div className="input-group mb-2">
                       <TextField
-                        {...params}
-                        label=""
-                        style={{ width: "20.5em" }}
-                        placeholder="Estimate No"
-                      />
-                    )}
-                    aria-label="Default select example"
-                  />
-                </div>
-                <div className="col-md-3"></div>
-                <div className="col-md-3">
-                  <div className="c-details">
-                    <ul>
-                      <li>
-                        <span>Billing Address</span>
-                        <p>{customerAddress || ""}</p>
-                      </li>
-                      <li>
-                        <span>Shipping Address</span>
-                        <p>{customerAddress || ""}</p>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="row">
-                    <div className=" col-md-6">
-                      <label className="form-label">Terms</label>
-                      <Autocomplete
-                        id="inputState19"
+                        type="date"
+                        className="form-control"
+                        name="IssueDate"
                         size="small"
-                        options={terms}
-                        getOptionLabel={(option) => option.Term || ""}
-                        value={
-                          terms.find(
-                            (customer) => customer.TermId === formData.TermId
-                          ) || null
-                        }
-                        onChange={handleTermsAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.TermId === value.TermId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Terms"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
-                      />
-                    </div>
-                    <div className=" col-md-6">
-                      <label className="form-label">
-                        Related Bills
-                        {formData.BillId ? (
-                          <>
-                            <a
-                              href=""
-                              style={{ color: "blue" }}
-                              className="ms-2"
-                              onClick={() => {
-                                navigate(
-                                  `/Bills/addbill?id=${formData.BillId}`
-                                );
-                              }}
-                            >
-                              View
-                            </a>
-                          </>
-                        ) : (
-                          ""
-                        )}
-                      </label>
-                      <Autocomplete
-                        size="small"
-                        options={billList}
-                        getOptionLabel={(option) => option.BillNumber || ""}
-                        value={
-                          billList.find(
-                            (bill) => bill.BillId === formData.BillId
-                          ) || null
-                        }
-                        onChange={handleBillAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.BillId === value.BillId
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Bill No"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Contact select"
-                      />
-                    </div>
-                    <div className=" col-md-6 mt-2">
-                      <label className="form-label">Tags</label>
-                      <Autocomplete
-                        id="inputState19"
-                        size="small"
-                        multiple
-                        options={tags}
-                        getOptionLabel={(option) => option.Tag || ""}
-                        value={tags.filter((tag) =>
-                          (formData.Tags
-                            ? formData.Tags.split(", ")
-                            : []
-                          ).includes(tag.Tag)
-                        )}
-                        onChange={handleTagAutocompleteChange}
-                        isOptionEqualToValue={(option, value) =>
-                          option.Tag === value.Tag
-                        }
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label=""
-                            placeholder="Tags"
-                            className="bg-white"
-                          />
-                        )}
-                        aria-label="Default select example"
+                        value={formatDate(formData.IssueDate)}
+                        error={submitClicked && !formData.IssueDate}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
-                </div>
+                  <div className=" col-md-3">
+                    <label className="form-label">Due Date</label>
+                    <div className="input-group mb-2">
+                      <TextField
+                        type="date"
+                        className="form-control"
+                        name="DueDate"
+                        size="small"
+                        value={formatDate(formData.DueDate)}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                  <div className=" col-md-3">
+                    <label className="form-label">
+                      Linked Estimate
+                      {formData.EstimateId ? (
+                        <>
+                          <a
+                            href=""
+                            style={{ color: "blue" }}
+                            className="ms-2"
+                            onClick={() => {
+                              navigate(
+                                `/estimates/add-estimate?id=${formData.EstimateId}`
+                              );
+                            }}
+                          >
+                            View
+                          </a>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </label>
 
-                {/* <div className="col-xl-3">
+                    <Autocomplete
+                      id="inputState19"
+                      size="small"
+                      options={estimates}
+                      getOptionLabel={(option) => option.EstimateNumber || ""}
+                      value={
+                        estimates.find(
+                          (customer) =>
+                            customer.EstimateNumber === formData.EstimateNumber
+                        ) || null
+                      }
+                      onChange={handleEstimatesAutocompleteChange}
+                      isOptionEqualToValue={(option, value) =>
+                        option.EstimateId === value.EstimateNumber
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Estimate No"
+                        />
+                      )}
+                      aria-label="Default select example"
+                    />
+                  </div>
+                  <div className="col-md-3"></div>
+                </div>
+                <div className="row">
+                  <div className="col-md-3">
+                    <div className="c-details">
+                      <ul>
+                        <li>
+                          <span>Billing Address</span>
+                          <p>{customerAddress || ""}</p>
+                        </li>
+                        <li>
+                          <span>Shipping Address</span>
+                          <p>{customerAddress || ""}</p>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="row">
+                      <div className=" col-md-6">
+                        <label className="form-label">Terms</label>
+                        <Autocomplete
+                          id="inputState19"
+                          size="small"
+                          options={terms}
+                          getOptionLabel={(option) => option.Term || ""}
+                          value={
+                            terms.find(
+                              (customer) => customer.TermId === formData.TermId
+                            ) || null
+                          }
+                          onChange={handleTermsAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.TermId === value.TermId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Terms"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Default select example"
+                        />
+                      </div>
+                      <div className=" col-md-6">
+                        <label className="form-label">
+                          Related Bills
+                          {formData.BillId ? (
+                            <>
+                              <a
+                                href=""
+                                style={{ color: "blue" }}
+                                className="ms-2"
+                                onClick={() => {
+                                  navigate(
+                                    `/Bills/addbill?id=${formData.BillId}`
+                                  );
+                                }}
+                              >
+                                View
+                              </a>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </label>
+                        <Autocomplete
+                          size="small"
+                          options={billList}
+                          getOptionLabel={(option) => option.BillNumber || ""}
+                          value={
+                            billList.find(
+                              (bill) => bill.BillId === formData.BillId
+                            ) || null
+                          }
+                          onChange={handleBillAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.BillId === value.BillId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Bill No"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Contact select"
+                        />
+                      </div>
+                      <div className=" col-md-6 mt-2">
+                        <label className="form-label">Tags</label>
+                        <Autocomplete
+                          id="inputState19"
+                          size="small"
+                          multiple
+                          options={tags}
+                          getOptionLabel={(option) => option.Tag || ""}
+                          value={tags.filter((tag) =>
+                            (formData.Tags
+                              ? formData.Tags.split(", ")
+                              : []
+                            ).includes(tag.Tag)
+                          )}
+                          onChange={handleTagAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.Tag === value.Tag
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Tags"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Default select example"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <div className="col-xl-3">
                 <label className="form-label">Service location</label>
                 <Autocomplete
                   id="inputState19"
@@ -1293,7 +1325,7 @@ const AddInvioces = ({}) => {
                   aria-label="Contact select"
                 />
               </div> */}
-                {/* <div className="col-xl-3">
+                  {/* <div className="col-xl-3">
                 <div className="c-details">
                   <ul>
                     <li className="d-flex">
@@ -1326,6 +1358,7 @@ const AddInvioces = ({}) => {
                   </ul>
                 </div>
               </div> */}
+                </div>
               </div>
             </div>
 
@@ -1904,7 +1937,7 @@ const AddInvioces = ({}) => {
                         <td className="right text-right">
                           $
                           {totalDiscount && subtotal
-                            ? ((totalDiscount / subtotal) * 100).toFixed(2)
+                            ? ((totalDiscount * subtotal) / 100).toFixed(2)
                             : 0.0}
                         </td>
                       </tr>

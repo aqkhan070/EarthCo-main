@@ -29,7 +29,8 @@ import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 import TblDateFormat from "../../custom/TblDateFormat";
-
+import UpdateAllSR from "../Reusable/UpdateAllSR";
+import DeleteAllModal from "../Reusable/DeleteAllModal";
 const theme = createTheme({
   palette: {
     primary: {
@@ -134,21 +135,39 @@ const ServiceRequestTR = ({
   }, []);
 
   const sortedAndSearchedCustomers = sRFilterList;
-  // handleSearch([...sRFilterList]).sort(
-  //   (a, b) => {
-  //     const { field, order } = sorting;
 
-  //     if (field && order) {
-  //       if (order === "asc") {
-  //         return a[field] > b[field] ? 1 : -1;
-  //       }
-  //       if (order === "desc") {
-  //         return a[field] < b[field] ? 1 : -1;
-  //       }
-  //     }
-  //     return 0;
-  //   }
-  // );
+  const [selectedServiceRequests, setSelectedServiceRequests] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleCheckboxChange = (event, serviceRequestId) => {
+    if (event.target.checked) {
+      // Checkbox is checked, add the serviceRequestId to the selectedServiceRequests array
+      setSelectedServiceRequests((prevSelected) => [
+        ...prevSelected,
+        serviceRequestId,
+      ]);
+    } else {
+      // Checkbox is unchecked, remove the serviceRequestId from the selectedServiceRequests array
+      setSelectedServiceRequests((prevSelected) =>
+        prevSelected.filter((id) => id !== serviceRequestId)
+      );
+    }
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      // Select all rows
+      const allServiceRequestIds = sortedAndSearchedCustomers.map(
+        (customer) => customer.ServiceRequestId
+      );
+      setSelectedServiceRequests(allServiceRequestIds);
+      setSelectAll(true);
+    } else {
+      // Deselect all rows
+      setSelectedServiceRequests([]);
+      setSelectAll(false);
+    }
+  };
 
   return (
     <>
@@ -184,16 +203,36 @@ const ServiceRequestTR = ({
                   {loggedInUser.userRole == "4" ? (
                     <></>
                   ) : (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        // setShowContent(false);
-                        // setServiceRequestId(0);
-                        navigate(`/service-requests/add-sRform`);
-                      }}
-                    >
-                      + Add Service Request
-                    </button>
+                    <>
+                      {selectedServiceRequests.length <= 0 ? (
+                        <></>
+                      ) : (
+                        <>
+                          <DeleteAllModal
+                            selectedItems={selectedServiceRequests}
+                            endpoint={
+                              "ServiceRequest/DeleteAllSelectedServiceRequest"
+                            }
+                            bindingFunction={fetchFilterServiceRequest}
+                          />
+                          <UpdateAllSR
+                            selectedItems={selectedServiceRequests}
+                            endpoint={
+                              "ServiceRequest/UpdateAllSelectedServiceRequestStatus"
+                            }
+                            bindingFunction={fetchFilterServiceRequest}
+                          />
+                        </>
+                      )}
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => {
+                          navigate(`/service-requests/add-sRform`);
+                        }}
+                      >
+                        + Add Service Request
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -201,8 +240,13 @@ const ServiceRequestTR = ({
                 <Table>
                   <TableHead className="table-header">
                     <TableRow className="material-tbl-alignment">
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                        />
+                      </TableCell>
                       {[
-                        // "Select",
                         "Service Request #",
                         "Customer Name",
                         "Assigned to",
@@ -231,32 +275,57 @@ const ServiceRequestTR = ({
                       .map((customer, rowIndex) => (
                         <TableRow
                           className="material-tbl-alignment"
-                          onClick={() => {
-                            // setServiceRequestId(customer.ServiceRequestId);
-                            // setShowContent(false);
-                            // console.log("////////", serviceRequestId);
-                            navigate(
-                              `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
-                            );
-                          }}
                           key={rowIndex}
                           hover
                         >
-                          {/* <TableCell>
-                          <Checkbox />
-                        </TableCell> */}
-                          <TableCell>{customer.ServiceRequestNumber}</TableCell>
-                          <TableCell>{customer.CustomerName}</TableCell>
-                          <TableCell>{customer.Assign}</TableCell>
-                          <TableCell>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedServiceRequests.includes(
+                                customer.ServiceRequestId
+                              )}
+                              onChange={(e) =>
+                                handleCheckboxChange(
+                                  e,
+                                  customer.ServiceRequestId
+                                )
+                              }
+                            />
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
+                            {customer.ServiceRequestNumber}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
+                            {customer.CustomerName}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
+                            {customer.Assign}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
                             <span
-                              onClick={() => {
-                                navigate(
-                                  `/service-requests/service-request-preview?id=${customer.ServiceRequestId}`
-                                );
-                                // setestmPreviewId(estimate.EstimateId);
-                                setSRData(customer);
-                              }}
                               style={{
                                 backgroundColor: customer.StatusColor,
                               }}
@@ -265,11 +334,33 @@ const ServiceRequestTR = ({
                               {customer.Status}
                             </span>
                           </TableCell>
-                          <TableCell>{customer.WorkRequest}</TableCell>
-                          <TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
+                            {customer.WorkRequest}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
                             {TblDateFormat(customer.CreatedDate)}
                           </TableCell>
-                          <TableCell>{customer.Type}</TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(
+                                `/service-requests/add-sRform?id=${customer.ServiceRequestId}`
+                              );
+                            }}
+                          >
+                            {customer.Type}
+                          </TableCell>
                           {/* <TableCell>
                               <Button
                                 // className="btn btn-primary btn-icon-xxs me-2"
