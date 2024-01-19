@@ -26,6 +26,7 @@ import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 
 import Contacts from "../CommonComponents/Contacts";
+import BackButton from "../Reusable/BackButton";
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -1607,7 +1608,7 @@ const AddSRform = () => {
                   ) : (
                     <></>
                   )}
-                  <button
+                  <BackButton
                     className="btn btn-danger  light me-2"
                     style={{ marginRight: "1em" }}
                     onClick={() => {
@@ -1615,8 +1616,8 @@ const AddSRform = () => {
                       navigate("/service-requests");
                     }}
                   >
-                    Cancel
-                  </button>
+                    back
+                  </BackButton>
                   <LoaderButton
                     loading={loadingButton}
                     handleSubmit={submitHandler}

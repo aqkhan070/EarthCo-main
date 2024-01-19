@@ -32,6 +32,8 @@ import useGetEstimate from "../Hooks/useGetEstimate";
 import { DataContext } from "../../context/AppData";
 import UpdateAllModal from "../Reusable/UpdateAllModal";
 import DeleteAllModal from "../Reusable/DeleteAllModal";
+import AddButton from "../Reusable/AddButton";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -199,6 +201,7 @@ const EstimateTR = ({
       );
     }
   };
+  const isRowSelected = (estimateId) => selectedEstimates.includes(estimateId);
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
@@ -248,29 +251,37 @@ const EstimateTR = ({
               {selectedEstimates.length <= 0 ? (
                 <></>
               ) : (
-                <>
-                  <DeleteAllModal
-                    selectedItems={selectedEstimates}
-                    endpoint={"Estimate/DeleteAllSelectedEstimate"}
-                    bindingFunction={getFilteredEstimate}
-                  />
-                  <UpdateAllModal
-                    selectedItems={selectedEstimates}
-                    endpoint={"Estimate/UpdateAllSelectedEstimateStatus"}
-                    bindingFunction={getFilteredEstimate}
-                  />
-                </>
+                <FormControl className="  me-2" variant="outlined">
+                  <Select
+                    labelId="customer-type-label"
+                    variant="outlined"
+                    size="small"
+                    value={1}
+                  >
+                    <MenuItem value={1}>Group Actions</MenuItem>
+
+                    <UpdateAllModal
+                      selectedItems={selectedEstimates}
+                      endpoint={"Estimate/UpdateAllSelectedEstimateStatus"}
+                      bindingFunction={getFilteredEstimate}
+                    />
+                    <br />
+
+                    <DeleteAllModal
+                      selectedItems={selectedEstimates}
+                      endpoint={"Estimate/DeleteAllSelectedEstimate"}
+                      bindingFunction={getFilteredEstimate}
+                    />
+                  </Select>
+                </FormControl>
               )}
-              <button
-                className="btn btn-primary "
+              <AddButton
                 onClick={() => {
-                  // setSelectedItem(0);
-                  // setShowContent(false);
                   navigate("/estimates/add-estimate");
                 }}
               >
-                + Add Estimates
-              </button>
+                Add Estimates
+              </AddButton>
             </div>
           </div>
 
@@ -421,7 +432,11 @@ const EstimateTR = ({
                         )
                         .map((estimate, index) => (
                           <TableRow
-                            className="material-tbl-alignment"
+                            className={`material-tbl-alignment ${
+                              isRowSelected(estimate.EstimateId)
+                                ? "selected-row"
+                                : ""
+                            }`}
                             key={estimate.EstimateId}
                             hover
                           >

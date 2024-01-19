@@ -8,30 +8,18 @@ export default function CustomizedTooltips({ children, title, placement }) {
   const HtmlTooltip = styled(({ className, ...props }) => (
     <Tooltip
       {...props}
+      arrow
       classes={{ popper: className }}
       placement={placement}
-      arrow
     />
   ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.common.black,
+    },
     [`& .${tooltipClasses.tooltip}`]: {
-      backgroundColor: "#ffff",
-      color: "rgba(0, 0, 0, 0.87)",
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: "1px solid #dadde9",
+      backgroundColor: theme.palette.common.black,
     },
   }));
-  return (
-    <HtmlTooltip
-      title={
-        <>
-          <h5 className="mb-0 pb-0">
-            <strong>{title}</strong>
-          </h5>
-        </>
-      }
-    >
-      {children}
-    </HtmlTooltip>
-  );
+
+  return <HtmlTooltip title={title}>{children}</HtmlTooltip>;
 }

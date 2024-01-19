@@ -23,6 +23,7 @@ import TblDateFormat from "../../../../custom/TblDateFormat";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../../../context/AppData";
 import StatusCards from "../../../Landscape/StatusCards";
+import AddButton from "../../../Reusable/AddButton";
 
 const RisingCaneTable = () => {
   const icon = (
@@ -142,14 +143,13 @@ const RisingCaneTable = () => {
           <div className="row mx-2 mt-2 mb-2">
             <div className="col-md-12 text-end">
               {loggedInUser.userRole == "1" && (
-                <button
-                  className="btn btn-primary"
+                <AddButton
                   onClick={() => {
                     navigate(`/weekly-reports/add-rising-canes`);
                   }}
                 >
                   Add report
-                </button>
+                </AddButton>
               )}
             </div>
           </div>

@@ -10,6 +10,8 @@ import { toPng } from "html-to-image";
 import { DataContext } from "../../context/AppData";
 import SyncIcon from "@mui/icons-material/Sync";
 import html2pdf from "html2pdf.js";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SendIcon from "@mui/icons-material/FileDownloadOutlined";
 
 const containerStyle = {
   width: "100%",
@@ -133,20 +135,26 @@ function GoogleMapApi() {
     });
   };
 
+  const [imgSaveLoading, setImgSaveLoading] = useState(false);
+
   const onhandleSaveLocation = () => {
+    setImgSaveLoading(true);
     toPng(divRef.current, { cacheBust: false })
       .then((dataUrl) => {
         const link = document.createElement("a");
         link.download = "map_image.png";
         link.href = dataUrl;
         link.click();
+        setImgSaveLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setImgSaveLoading(false);
       });
   };
-
+  const [pdfSaveLoading, setPdfSaveLoading] = useState(false);
   const handleSavePdf = () => {
+    setPdfSaveLoading(true);
     toPng(divRef.current, { cacheBust: true })
       .then((dataUrl) => {
         const pdfContent = document.createElement("img");
@@ -163,8 +171,11 @@ function GoogleMapApi() {
           });
 
         pdf.save();
+        setPdfSaveLoading(false);
       })
       .catch((err) => {
+        setPdfSaveLoading(false);
+
         console.log(err);
       });
   };
@@ -264,16 +275,39 @@ function GoogleMapApi() {
           </GoogleMap>
         </div>
         <div className="row ">
-          <div className="col-md-12 text-end">
-            <button
-              className="btn btn-primary mt-2 me-2"
+          <div className="col-md-12 text-end mt-2">
+            <LoadingButton
+              variant="contained"
+              loading={imgSaveLoading}
+              startIcon={<SendIcon sx={{ fontSize: 2 }} />}
               onClick={onhandleSaveLocation}
+              disableElevation
+              sx={{
+                marginRight: "0.6em",
+
+                color: "#fff",
+
+                textTransform: "capitalize",
+              }}
             >
-              Save
-            </button>
-            <button className="btn btn-primary mt-2" onClick={handleSavePdf}>
-              Save Pdf
-            </button>
+              PNG
+            </LoadingButton>
+            <LoadingButton
+              variant="contained"
+              loading={pdfSaveLoading}
+              startIcon={<SendIcon sx={{ fontSize: 2 }} />}
+              onClick={handleSavePdf}
+              disableElevation
+              sx={{
+                marginRight: "0.6em",
+
+                color: "#fff",
+
+                textTransform: "capitalize",
+              }}
+            >
+              PDF
+            </LoadingButton>
           </div>
         </div>
       </div>

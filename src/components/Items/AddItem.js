@@ -8,6 +8,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
+import BackButton from "../Reusable/BackButton";
 
 const AddItem = ({}) => {
   const { loggedInUser } = useContext(DataContext);
@@ -373,15 +374,14 @@ const AddItem = ({}) => {
                     Save
                   </LoaderButton>
 
-                  <button
-                    className="btn btn-danger light ms-1"
+                  <BackButton
                     onClick={() => {
                       setFormData({});
                       navigate(`/items`);
                     }}
                   >
                     Cancel
-                  </button>
+                  </BackButton>
                 </div>
               </div>
             </div>

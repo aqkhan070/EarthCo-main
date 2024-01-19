@@ -29,6 +29,7 @@ import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchPunchListPhotos from "../Hooks/useFetchPunchListPhotos";
 import TitleBar from "../TitleBar";
 import EventPopups from "../Reusable/EventPopups";
+import AddButton from "../Reusable/AddButton";
 
 const PunchListPhotoOnly = () => {
   const icon = (
@@ -142,14 +143,13 @@ const PunchListPhotoOnly = () => {
                   <MenuItem value={false}>Descending</MenuItem>
                 </Select>
               </FormControl>
-              <button
-                className="btn btn-primary "
+              <AddButton
                 onClick={() => {
                   navigate(`/punchList-photos-only/add`);
                 }}
               >
                 + Add
-              </button>
+              </AddButton>
             </div>
           </div>
           {isLoading ? (

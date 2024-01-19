@@ -18,6 +18,7 @@ const LoaderButton = ({
         color={color}
         startIcon={<SendIcon />}
         onClick={handleSubmit}
+        disableElevation
         sx={{
           padding: "5px 17px",
           marginRight: "0.6em",
@@ -40,9 +41,12 @@ const LoaderButton = ({
         startIcon={<SendIcon sx={{ fontSize: 2 }} />}
         onClick={handleSubmit}
         disabled={disable}
+        disableElevation
         sx={{
           marginRight: "0.6em",
+
           color: "#fff",
+          border: "0.5px solid #77993D",
           textTransform: "capitalize",
         }}
       >

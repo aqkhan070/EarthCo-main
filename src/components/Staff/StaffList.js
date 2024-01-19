@@ -23,6 +23,7 @@ import {
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import useQuickBook from "../Hooks/useQuickBook";
+import AddButton from "../Reusable/AddButton";
 
 const StaffList = () => {
   const token = Cookies.get("token");
@@ -166,18 +167,13 @@ const StaffList = () => {
             <div className="card-header border-0">
               <div className="col-md-12">
                 <div className="text-right mt-2  ">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className="me-2"
+                  <AddButton
                     onClick={() => {
-                      // setSelectedStaff(0);
-                      // settoggleAddStaff(false);
                       navigate(`/staff/add-staff`);
                     }}
                   >
-                    + Add Staff
-                  </Button>
+                    Add Staff
+                  </AddButton>
                 </div>
               </div>
             </div>

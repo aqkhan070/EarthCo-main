@@ -17,6 +17,7 @@ import AuditControllerTable from "./AuditControllerTable";
 import Contacts from "../CommonComponents/Contacts";
 import { Print, Email, Download } from "@mui/icons-material";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import BackButton from "../Reusable/BackButton";
 
 const AddIrrigationAudit = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -517,27 +518,21 @@ const AddIrrigationAudit = () => {
                               </button>
                             </>
                           )}
-
-                          <LoaderButton
-                            varient="small"
-                            loading={disableButton}
-                            handleSubmit={handleSubmit}
-                          >
-                            Save
-                          </LoaderButton>
-
-                         
-
-                          <button
+                          <BackButton
                             onClick={() => {
                               // setShowContent(true);
                               // setSelectedIrr(0);
                               navigate(`/irrigation-audit`);
                             }}
-                            className="btn btn-danger btn-sm light ms-1"
                           >
-                            Cancel
-                          </button>
+                            Back
+                          </BackButton>{" "}
+                          <LoaderButton
+                            loading={disableButton}
+                            handleSubmit={handleSubmit}
+                          >
+                            Save
+                          </LoaderButton>
                         </div>
                       </div>
                     </div>

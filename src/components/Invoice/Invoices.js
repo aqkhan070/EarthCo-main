@@ -26,6 +26,7 @@ import { DataContext } from "../../context/AppData";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
+import AddButton from "../Reusable/AddButton";
 
 const Invoices = () => {
   const token = Cookies.get("token");
@@ -189,14 +190,13 @@ const Invoices = () => {
                               <MenuItem value={false}>Descending</MenuItem>
                             </Select>
                           </FormControl>
-                          <button
-                            className="btn btn-primary "
+                          <AddButton
                             onClick={() => {
                               navigate(`/invoices/add-invoices`);
                             }}
                           >
-                            + Add New Invoice
-                          </button>
+                            Add New Invoice
+                          </AddButton>
                         </div>
                       </div>
 

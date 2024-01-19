@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import TblDateFormat from "../../../custom/TblDateFormat";
 import { DataContext } from "../../../context/AppData";
 import StatusCards from "../../Landscape/StatusCards";
+import AddButton from "../../Reusable/AddButton";
 
 const WeeklyReportlist = () => {
   const icon = (
@@ -151,14 +152,13 @@ const WeeklyReportlist = () => {
                 <div></div>
                 <div className=" me-2">
                   {loggedInUser.userRole == "1" && (
-                    <button
-                      className="btn btn-primary "
+                    <AddButton
                       onClick={() => {
                         navigate("/weekly-reports/add-weekly-report");
                       }}
                     >
-                      + Add Weekly Report
-                    </button>
+                      Add Weekly Report
+                    </AddButton>
                   )}
                 </div>
               </div>

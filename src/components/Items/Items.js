@@ -24,6 +24,7 @@ import {
 import { Delete, Create } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
+import AddButton from "../Reusable/AddButton";
 
 const Items = () => {
   const headers = {
@@ -174,12 +175,9 @@ const Items = () => {
                         <MenuItem value={false}>Descending</MenuItem>
                       </Select>
                     </FormControl>
-                    <button
-                      className="btn btn-primary  "
-                      onClick={() => navigate(`/items/add-item`)}
-                    >
-                      + Add New
-                    </button>
+                    <AddButton onClick={() => navigate(`/items/add-item`)}>
+                      Add New
+                    </AddButton>
                   </div>
                 </div>
 

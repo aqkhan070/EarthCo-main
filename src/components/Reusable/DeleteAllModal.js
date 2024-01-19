@@ -1,11 +1,20 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import EventPopups from "../Reusable/EventPopups";
 import useBulkActions from "../Hooks/useBulkActions";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 
 const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
   const { bulkActions } = useBulkActions();
 
@@ -14,65 +23,16 @@ const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
     setSnackBarColor(color);
     setSnackBarText(text);
     if (closeModal) {
-      document.getElementById("deleteModalCloser").click();
+      setOpenModal(false);
       bindingFunction();
     }
   };
+
   return (
     <>
-      <div
-        className="modal fade"
-        id={`deleteModal2`}
-        tabIndex="-1"
-        aria-labelledby="deleteModal2"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered" role="document">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title"> Delete All</h5>
-
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-            <div className="modal-body text-center">
-              <p>Are you sure you want to delete All selected items? </p>
-            </div>
-
-            <div className="modal-footer">
-              <button
-                type="button"
-                id="deleteModalCloser"
-                className="btn btn-danger light "
-                data-bs-dismiss="modal"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  bulkActions(
-                    endpoint,
-                    {
-                      id: selectedItems,
-                    },
-                    handleSnackbar
-                  );
-                }}
-                className="btn btn-primary "
-              >
-                Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
       <button
-        data-bs-toggle="modal"
-        data-bs-target={`#deleteModal2`}
-        className="btn btn-danger me-2"
+        className="btn btn-danger mx-1 mt-2"
+        onClick={() => setOpenModal(true)}
       >
         <EventPopups
           open={openSnackBar}
@@ -82,6 +42,44 @@ const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
         />
         Delete Selected
       </button>
+
+      <Dialog
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-description"
+      >
+        <DialogTitle id="delete-modal-title">Delete All</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-modal-description">
+            Are you sure you want to delete all selected items?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => setOpenModal(false)}
+            color="primary"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              bulkActions(
+                endpoint,
+                {
+                  id: selectedItems,
+                },
+                handleSnackbar
+              );
+            }}
+            color="error"
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

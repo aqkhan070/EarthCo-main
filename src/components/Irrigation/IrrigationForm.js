@@ -17,6 +17,7 @@ import { Print, Email, Download } from "@mui/icons-material";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import formatDate from "../../custom/FormatDate";
 import Contacts from "../CommonComponents/Contacts";
+import BackButton from "../Reusable/BackButton";
 
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -493,22 +494,19 @@ const IrrigationForm = () => {
                             </button>
                           </>
                         )}
+                        <BackButton
+                          onClick={() => {
+                            navigate(`/irrigation`);
+                          }}
+                        >
+                          Back
+                        </BackButton>{" "}
                         <LoaderButton
-                          varient="small"
                           loading={disableButton}
                           handleSubmit={handleSubmit}
                         >
                           Save
                         </LoaderButton>
-
-                        <button
-                          onClick={() => {
-                            navigate(`/irrigation`);
-                          }}
-                          className="btn btn-danger btn-sm light ms-1"
-                        >
-                          Cancel
-                        </button>
                       </div>
                     </div>
                   </div>

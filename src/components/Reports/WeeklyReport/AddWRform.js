@@ -26,7 +26,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../../Reusable/LoaderButton";
 import useDeleteFile from "../../Hooks/useDeleteFile";
 import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
-
+import BackButton from "../../Reusable/BackButton";
 const AddWRform = () => {
   const icon = (
     <svg
@@ -113,7 +113,9 @@ const AddWRform = () => {
   };
 
   const fetctContacts = async (id) => {
-    if(!id){return}
+    if (!id) {
+      return;
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -962,20 +964,19 @@ const AddWRform = () => {
                 )}
               </div>
               <div className="col-md-3 ps-0">
+                <BackButton
+                  onClick={() => {
+                    navigate("/weekly-reports");
+                  }}
+                >
+                  Back
+                </BackButton>{" "}
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}
                 >
                   Save and Preview
                 </LoaderButton>
-                <button
-                  className="btn btn-danger light me-2"
-                  onClick={() => {
-                    navigate("/weekly-reports");
-                  }}
-                >
-                  Cancel
-                </button>
               </div>
             </div>
           </>

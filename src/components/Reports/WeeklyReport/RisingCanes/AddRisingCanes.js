@@ -24,6 +24,7 @@ import { DataContext } from "../../../../context/AppData";
 import CircularProgress from "@mui/material/CircularProgress";
 import useDeleteFile from "../../../Hooks/useDeleteFile";
 import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
+import BackButton from "../../../Reusable/BackButton";
 
 const AddRisingCanes = () => {
   const icon = (
@@ -159,7 +160,9 @@ const AddRisingCanes = () => {
   };
 
   const fetctContacts = async (id) => {
-    if(!id){return}
+    if (!id) {
+      return;
+    }
     axios
       .get(
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerContact?id=${id}`,
@@ -625,10 +628,7 @@ const AddRisingCanes = () => {
                           <div className="row">
                             <div className="col-md-auto">
                               {" "}
-                              <h6 className="pb-0 mb-0">
-                                {" "}
-                                {option.FirstName}
-                              </h6>
+                              <h6 className="pb-0 mb-0"> {option.FirstName}</h6>
                             </div>
                             <div className="col-md-auto">
                               <small>
@@ -1220,20 +1220,19 @@ const AddRisingCanes = () => {
                 </div>
 
                 <div className="col-md-3 ps-0 mt-2 ">
+                  <BackButton
+                    onClick={() => {
+                      navigate(`/weekly-reports/rising-canes`);
+                    }}
+                  >
+                    Back
+                  </BackButton>
                   <LoaderButton
                     loading={disableButton}
                     handleSubmit={handleSubmit}
                   >
                     Save and Preview
                   </LoaderButton>
-                  <button
-                    className="btn btn-danger light me-2"
-                    onClick={() => {
-                      navigate(`/weekly-reports/rising-canes`);
-                    }}
-                  >
-                    Cancel
-                  </button>
                 </div>
               </div>
             </div>

@@ -19,6 +19,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import useFetchCatagories from "../Hooks/useFetchCatagories";
+import BackButton from "../Reusable/BackButton";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -47,6 +49,8 @@ const AddBill = ({}) => {
 
   const { syncQB } = useQuickBook();
   const { fetchCatagories, catagories } = useFetchCatagories();
+  const { fetchSupplierName, supplierName, setSupplierName } =
+    useFetchCustomerName();
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
@@ -75,6 +79,7 @@ const AddBill = ({}) => {
         { headers }
       );
       setFormData(res.data.Data);
+      fetchSupplierName(res.data.Data.SupplierId);
       setItemsList(res.data.ItemData);
       setCatagoryList(res.data.AccountData);
       setLoading(false);
@@ -90,13 +95,20 @@ const AddBill = ({}) => {
   useEffect(() => {
     getBill();
     fetchCatagories();
+    fetchVendors();
+    fetchTags();
+    fetchTerms();
+    fetchPo();
   }, []);
 
-  const fetchVendors = async () => {
+  const fetchVendors = async (searchText = "") => {
     axios
-      .get(`https://earthcoapi.yehtohoga.com/api/Supplier/GetSupplierList`, {
-        headers,
-      })
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Supplier/GetSearchSupplierList?Search=${searchText}`,
+        {
+          headers,
+        }
+      )
       .then((res) => {
         console.log("Vendor are ", res.data);
         setVendorList(res.data);
@@ -110,10 +122,11 @@ const AddBill = ({}) => {
     const simulatedEvent = {
       target: {
         name: "SupplierId",
-        value: newValue ? newValue.SupplierId : "",
+        value: newValue ? newValue?.UserId : "",
       },
     };
     if (newValue) {
+      fetchSupplierName(newValue.UserId);
       setSupplierAddress(newValue.Address);
       handleChange(simulatedEvent);
     } else {
@@ -217,11 +230,8 @@ const AddBill = ({}) => {
   };
 
   useEffect(() => {
-    fetchVendors();
-    fetchTags();
-    fetchTerms();
-    fetchPo();
-  }, []);
+    fetchSupplierName(formData.SupplierId);
+  }, [formData.SupplierId]);
 
   // items
   const [itemsList, setItemsList] = useState([]);
@@ -458,6 +468,7 @@ const AddBill = ({}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+    console.log("formData", formData);
 
     if (!formData.SupplierId || !formData.BillDate) {
       setOpenSnackBar(true);
@@ -599,23 +610,25 @@ const AddBill = ({}) => {
                             id="inputState19"
                             size="small"
                             options={vendorList}
-                            getOptionLabel={(option) =>
-                              option.SupplierName || ""
-                            }
+                            getOptionLabel={(option) => option.FirstName || ""}
                             value={
-                              vendorList.find(
-                                (customer) =>
-                                  customer.SupplierId === formData.SupplierId
-                              ) || null
+                              supplierName ? { FirstName: supplierName } : ""
                             }
                             onChange={handleVendorAutocompleteChange}
                             isOptionEqualToValue={(option, value) =>
-                              option.SupplierId === value.SupplierId
+                              option.UserId === value.SupplierId
                             }
                             renderInput={(params) => (
                               <TextField
                                 {...params}
                                 label=""
+                                onClick={() => {
+                                  setSupplierName("");
+                                 
+                                }}
+                                onChange={(e) => {
+                                  fetchVendors(e.target.value);
+                                }}
                                 error={submitClicked && !formData.SupplierId}
                                 placeholder="Vendors"
                                 className="bg-white"
@@ -1411,14 +1424,13 @@ const AddBill = ({}) => {
                     <></>
                   )}
 
-                  <button
-                    className="btn btn-danger light me-2"
+                  <BackButton
                     onClick={() => {
                       navigate(`/bills`);
                     }}
                   >
-                    Cancel
-                  </button>
+                    Back
+                  </BackButton>
                   <LoaderButton
                     loading={disableButton}
                     handleSubmit={handleSubmit}

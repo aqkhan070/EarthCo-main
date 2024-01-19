@@ -27,6 +27,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
+import AddButton from "../Reusable/AddButton";
 
 const Bills = () => {
   const headers = {
@@ -162,15 +163,14 @@ const Bills = () => {
                       <MenuItem value={false}>Descending</MenuItem>
                     </Select>
                   </FormControl>
-                  <button
-                    className="btn btn-primary "
+                  <AddButton
                     onClick={() => {
                       // setshowContent(false);
                       navigate(`/bills/add-bill`);
                     }}
                   >
-                    + Add New Bill
-                  </button>
+                    Add New Bill
+                  </AddButton>
                 </div>
               </div>
 

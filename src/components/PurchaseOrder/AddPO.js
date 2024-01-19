@@ -27,6 +27,8 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
+import BackButton from "../Reusable/BackButton";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
@@ -124,6 +126,8 @@ export const AddPO = ({}) => {
   const { deletePOFile } = useDeleteFile();
 
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
+  const { fetchSupplierName, supplierName, setSupplierName } =
+    useFetchCustomerName();
   const {
     sendEmail,
     showEmailAlert,
@@ -147,6 +151,7 @@ export const AddPO = ({}) => {
 
       console.log("selected purchase order is", res.data);
       setFormData(res.data.Data);
+      fetchSupplierName(res.data.Data.SupplierId);
       setInputValue(res.data.Data.CustomerId);
       if (res.data.Data.BillId) {
         setIsPoClosed(true);
@@ -238,11 +243,14 @@ export const AddPO = ({}) => {
         console.log("contacts data fetch error", error);
       });
   };
-  const fetchVendors = async () => {
+  const fetchVendors = async (searchText = "") => {
     axios
-      .get(`https://earthcoapi.yehtohoga.com/api/Supplier/GetSupplierList`, {
-        headers,
-      })
+      .get(
+        `https://earthcoapi.yehtohoga.com/api/Supplier/GetSearchSupplierList?Search=${searchText}`,
+        {
+          headers,
+        }
+      )
       .then((res) => {
         console.log("Vendor are ", res.data);
         setVendorList(res.data);
@@ -317,10 +325,11 @@ export const AddPO = ({}) => {
     const simulatedEvent = {
       target: {
         name: "SupplierId",
-        value: newValue ? newValue.SupplierId : "",
+        value: newValue ? newValue.UserId : "",
       },
     };
     if (newValue) {
+      fetchSupplierName(newValue.UserId);
       setSupplierAddress(newValue.Address);
       handleInputChange(simulatedEvent);
     } else {
@@ -453,6 +462,9 @@ export const AddPO = ({}) => {
     fetctContacts(formData.CustomerId);
     console.log("main payload isss", formData);
   }, [formData]);
+  useEffect(() => {
+    fetchSupplierName(formData.SupplierId);
+  }, [formData.SupplierId]);
 
   useEffect(() => {
     fetchStaffList();
@@ -648,6 +660,7 @@ export const AddPO = ({}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitClicked(true);
+    console.log("formData", formData);
 
     if (
       !formData.Date ||
@@ -882,21 +895,24 @@ export const AddPO = ({}) => {
                           size="small"
                           className="mb-2"
                           options={vendorList}
-                          getOptionLabel={(option) => option.SupplierName || ""}
+                          getOptionLabel={(option) => option.FirstName || ""}
                           value={
-                            vendorList.find(
-                              (customer) =>
-                                customer.SupplierId === formData.SupplierId
-                            ) || null
+                            supplierName ? { FirstName: supplierName } : ""
                           }
                           onChange={handleVendorAutocompleteChange}
                           isOptionEqualToValue={(option, value) =>
-                            option.SupplierId === value.SupplierId
+                            option.UserId === value.SupplierId
                           }
                           renderInput={(params) => (
                             <TextField
                               {...params}
                               label=""
+                              onClick={() => {
+                                setSupplierName("");
+                              }}
+                              onChange={(e) => {
+                                fetchVendors(e.target.value);
+                              }}
                               error={submitClicked && !formData.SupplierId}
                               placeholder="Vendors"
                               className="bg-white"
@@ -1800,8 +1816,7 @@ export const AddPO = ({}) => {
                         <></>
                       )}
 
-                      <button
-                        className="btn btn-danger light me-2"
+                      <BackButton
                         onClick={() => {
                           setFormData(initialFormData);
 
@@ -1810,8 +1825,8 @@ export const AddPO = ({}) => {
                           setEstimateLinkData({});
                         }}
                       >
-                        Cancel
-                      </button>
+                        Back
+                      </BackButton>
                       <LoaderButton
                         loading={disableButton}
                         handleSubmit={handleSubmit}

@@ -23,6 +23,7 @@ import ServiceLocations from "./ServiceLocations";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import CustomerFiles from "./CustomerFiles";
+import BackButton from "../Reusable/BackButton";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -438,11 +439,18 @@ const AddCustomer = () => {
                     />
                   </div>
                   <div className="col-md-3 text-end">
-                    <NavLink to="/customers">
+                    <BackButton
+                      onClick={() => {
+                        navigate(`/customers`);
+                      }}
+                    >
+                      Back
+                    </BackButton>
+                    {/* <NavLink to="/customers">
                       <button className="btn btn-danger light  m-1 ">
                         Cancel
                       </button>
-                    </NavLink>
+                    </NavLink> */}
 
                     <LoaderButton
                       loading={disableButton}

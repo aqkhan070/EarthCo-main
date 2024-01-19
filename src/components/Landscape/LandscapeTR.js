@@ -23,6 +23,7 @@ import { Delete, Create } from "@mui/icons-material";
 import axios from "axios";
 import TblDateFormat from "../../custom/TblDateFormat";
 import { DataContext } from "../../context/AppData";
+import AddButton from "../Reusable/AddButton";
 
 const LandscapeTR = ({ setRecords, statusId }) => {
   const headers = {
@@ -81,16 +82,15 @@ const LandscapeTR = ({ setRecords, statusId }) => {
         <div>
           <div className="row ">
             <div className="col-md-12">
-              <div className="custom-button-container">
+              <div className="custom-button-container mb-2">
                 {loggedInUser.userRole == "1" && (
-                  <button
-                    className="btn btn-primary mb-2"
+                  <AddButton
                     onClick={() => {
                       navigate("/landscape/add-landscape");
                     }}
                   >
-                    + Add
-                  </button>
+                    Add
+                  </AddButton>
                 )}
               </div>
             </div>

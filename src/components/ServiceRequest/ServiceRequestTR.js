@@ -31,6 +31,8 @@ import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
 import TblDateFormat from "../../custom/TblDateFormat";
 import UpdateAllSR from "../Reusable/UpdateAllSR";
 import DeleteAllModal from "../Reusable/DeleteAllModal";
+import AddButton from "../Reusable/AddButton";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -168,6 +170,7 @@ const ServiceRequestTR = ({
       setSelectAll(false);
     }
   };
+  const isRowSelected = (sr) => selectedServiceRequests.includes(sr);
 
   return (
     <>
@@ -207,31 +210,41 @@ const ServiceRequestTR = ({
                       {selectedServiceRequests.length <= 0 ? (
                         <></>
                       ) : (
-                        <>
-                          <DeleteAllModal
-                            selectedItems={selectedServiceRequests}
-                            endpoint={
-                              "ServiceRequest/DeleteAllSelectedServiceRequest"
-                            }
-                            bindingFunction={fetchFilterServiceRequest}
-                          />
-                          <UpdateAllSR
-                            selectedItems={selectedServiceRequests}
-                            endpoint={
-                              "ServiceRequest/UpdateAllSelectedServiceRequestStatus"
-                            }
-                            bindingFunction={fetchFilterServiceRequest}
-                          />
-                        </>
+                        <FormControl className="  me-2" variant="outlined">
+                          <Select
+                            labelId="customer-type-label"
+                            variant="outlined"
+                            size="small"
+                            value={1}
+                          >
+                            <MenuItem value={1}>Group Actions</MenuItem>
+
+                            <UpdateAllSR
+                              selectedItems={selectedServiceRequests}
+                              endpoint={
+                                "ServiceRequest/UpdateAllSelectedServiceRequestStatus"
+                              }
+                              bindingFunction={fetchFilterServiceRequest}
+                            />
+                            <br />
+
+                            <DeleteAllModal
+                              selectedItems={selectedServiceRequests}
+                              endpoint={
+                                "ServiceRequest/DeleteAllSelectedServiceRequest"
+                              }
+                              bindingFunction={fetchFilterServiceRequest}
+                            />
+                          </Select>
+                        </FormControl>
                       )}
-                      <button
-                        className="btn btn-primary"
+                      <AddButton
                         onClick={() => {
                           navigate(`/service-requests/add-sRform`);
                         }}
                       >
-                        + Add Service Request
-                      </button>
+                        Add Service Request
+                      </AddButton>
                     </>
                   )}
                 </div>
@@ -274,7 +287,11 @@ const ServiceRequestTR = ({
                       )
                       .map((customer, rowIndex) => (
                         <TableRow
-                          className="material-tbl-alignment"
+                          className={`material-tbl-alignment ${
+                            isRowSelected(customer.ServiceRequestId)
+                              ? "selected-row"
+                              : ""
+                          }`}
                           key={rowIndex}
                           hover
                         >
@@ -361,103 +378,6 @@ const ServiceRequestTR = ({
                           >
                             {customer.Type}
                           </TableCell>
-                          {/* <TableCell>
-                              <Button
-                                // className="btn btn-primary btn-icon-xxs me-2"
-                                onClick={() => {
-                                  navigate(
-                                    "/service-requests/service-request-preview"
-                                  );
-                                  // setestmPreviewId(estimate.EstimateId);
-                                  setSRData(customer);
-                                }}
-                              >
-                               <i className="fa-solid fa-eye"></i> 
-
-                                <Visibility />
-                              </Button>
-                              <Button
-                                // className="btn btn-primary btn-icon-xxs me-2"
-                                onClick={() => {
-                                  setServiceRequestId(
-                                    customer.ServiceRequestId
-                                  );
-                                  setShowContent(false);
-                                  console.log("////////", serviceRequestId);
-                                  // console.log("////////",customer.ServiceRequestId);
-                                }}
-                              >
-                                <Create />
-                               <i className="fas fa-pencil-alt"></i> 
-                              </Button>
-
-                              <Button
-                                // className="btn btn-danger btn-icon-xxs mr-2"
-                                data-bs-toggle="modal"
-                                data-bs-target={`#deleteModal${customer.ServiceRequestId}`}
-                              >
-                                <Delete color="error" />
-                              <i className="fas fa-trash-alt"></i> 
-                              </Button>
-                              <div
-                                className="modal fade"
-                                id={`deleteModal${customer.ServiceRequestId}`}
-                                tabIndex="-1"
-                                aria-labelledby="deleteModalLabel"
-                                aria-hidden="true"
-                              >
-                                <div
-                                  className="modal-dialog modal-dialog-centered"
-                                  role="document"
-                                >
-                                  <div className="modal-content">
-                                    <div className="modal-header">
-                                      <h5 className="modal-title">
-                                        Delete Service Request
-                                      </h5>
-                                      <button
-                                        type="button"
-                                        className="btn-close"
-                                        data-bs-dismiss="modal"
-                                      ></button>
-                                    </div>
-                                    <div className="modal-body">
-                                      <p>
-                                        {" "}
-                                        Are you sure you want to delete Service
-                                        Request No{" "}
-                                        {customer.ServiceRequestNumber}
-                                      </p>
-                                    </div>
-                                    <div className="modal-footer">
-                                      <button
-                                        type="button"
-                                        id="closer"
-                                        className="btn btn-danger light "
-                                        data-bs-dismiss="modal"
-                                      >
-                                        Close
-                                      </button>
-                                      <button
-                                        className="btn btn-primary "
-                                        data-bs-dismiss="modal"
-                                        onClick={() => {
-                                          handleDelete(
-                                            customer.ServiceRequestId
-                                          );
-                                          console.log(
-                                            "delete id",
-                                            customer.ServiceRequestId
-                                          );
-                                        }}
-                                      >
-                                        Yes
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </TableCell> */}
                         </TableRow>
                       ))}
                   </TableBody>

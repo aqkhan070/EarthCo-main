@@ -53833,6 +53833,9 @@ cursor: pointer;
     padding: 0px !important;
     min-width: 0px !important;
   }
+  .css-1d6wzja-MuiButton-startIcon{
+    margin-right: 1px !important;
+  }
   .SRmap{
     width: 40em;
     height: 30em;
@@ -53848,6 +53851,14 @@ cursor: pointer;
   .customer-dd-border{
     width: 20em;
     border-bottom: 1px solid #c5e0c5;
+  }
+  .dashboard-header{
+  
+    border-radius: 10px 10px 0 0px;
+  }
+
+  .selected-row {
+    background-color: #e0e0e0;
   }
 
   .customer-dd-border-map{

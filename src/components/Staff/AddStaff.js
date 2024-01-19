@@ -20,6 +20,7 @@ import { DataContext } from "../../context/AppData";
 import Autocomplete from "@mui/material/Autocomplete";
 import useFetchCompanyList from "../Hooks/useFetchCompanyList";
 import useQuickBook from "../Hooks/useQuickBook";
+import BackButton from "../Reusable/BackButton";
 
 const AddStaff = ({}) => {
   const token = Cookies.get("token");
@@ -554,16 +555,15 @@ const AddStaff = ({}) => {
                       </div>
 
                       <div className=" mt-4 col-md-6 text-end">
-                        <button
-                          className="btn btn-danger light ms-1"
+                        <BackButton
                           onClick={() => {
                             loggedInUser.userRole == "1"
                               ? navigate(`/staff`)
                               : navigate(`/dashboard`);
                           }}
                         >
-                          Cancel
-                        </button>{" "}
+                          back
+                        </BackButton>{" "}
                         {/* <button className="btn btn-primary me-1" onClick={addStaff}>
                       Submit
                     </button> */}

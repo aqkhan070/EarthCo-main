@@ -13,7 +13,7 @@ import DoneIcon from "@mui/icons-material/Sync";
 import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import BusinessIcon from "@mui/icons-material/Business";
 import useQuickBook from "../Hooks/useQuickBook";
@@ -93,7 +93,7 @@ const HeaderExp = () => {
 
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
-  const { syncQB } = useQuickBook();
+  const { syncQB, loading } = useQuickBook();
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -247,18 +247,34 @@ const HeaderExp = () => {
                         alt=""
                       />
                       {loggedInUser.userRole == 1 && (
-                        <CustomizedTooltips title="Click Sync with QuickBooks">
-                          <DoneIcon
-                            onClick={() => {
-                              syncQB(0);
-                            }}
-                            sx={{
-                              fontSize: 20,
-                              color: "#2C9F1C",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </CustomizedTooltips>
+                        <>
+                          {loading ? (
+                            <>
+                              {" "}
+                              <CircularProgress
+                                sx={{
+                                  color: "#2C9F1C",
+                                }}
+                                size={20}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <CustomizedTooltips title="Click Sync with QuickBooks">
+                                <DoneIcon
+                                  onClick={() => {
+                                    syncQB(0);
+                                  }}
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#2C9F1C",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </CustomizedTooltips>
+                            </>
+                          )}
+                        </>
                       )}
                     </div>
                   ) : (

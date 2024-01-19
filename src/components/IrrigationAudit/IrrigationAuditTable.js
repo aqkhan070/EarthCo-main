@@ -24,6 +24,7 @@ import { Button } from "@mui/material";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 import TitleBar from "../TitleBar";
+import AddButton from "../Reusable/AddButton";
 
 const IrrigationAuditTable = () => {
   const token = Cookies.get("token");
@@ -218,15 +219,15 @@ const IrrigationAuditTable = () => {
                           <MenuItem value={false}>Descending</MenuItem>
                         </Select>
                       </FormControl>
-                      <button
-                        className="btn btn-primary "
+                      <AddButton
+                       
                         onClick={() => {
                           navigate(`/irrigation-audit/add`);
                           // setShowContent(false);
                         }}
                       >
-                        + Add New
-                      </button>
+                       Add New
+                      </AddButton>
                     </div>
                   </div>
                   <div className="card-body pt-0">

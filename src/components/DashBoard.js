@@ -66,14 +66,14 @@ const DashBoard = () => {
             <div className="row">
               <div className="col-md-9">
                 <div className="">
-                  <DashBoardSR dashBoardData={dashBoardData} />
+                  <DashBoardSR dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
                 </div>
                 <div className="">
                   {loggedInUser.userRole == 5 ? (
                     <></>
                   ) : (
                     <>
-                      <DashboardEstm dashBoardData={dashBoardData} />
+                      <DashboardEstm dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
                     </>
                   )}
                 </div>

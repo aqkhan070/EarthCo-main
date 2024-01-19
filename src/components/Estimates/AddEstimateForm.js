@@ -33,6 +33,7 @@ import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
 import useQuickBook from "../Hooks/useQuickBook";
+import BackButton from "../Reusable/BackButton";
 
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
@@ -2477,7 +2478,7 @@ const AddEstimateForm = () => {
                           <Email />
                         </button>
 
-                        <button
+                        <BackButton
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
@@ -2487,13 +2488,12 @@ const AddEstimateForm = () => {
                           }}
                         >
                           <Print></Print>
-                        </button>
+                        </BackButton>
                       </>
                     ) : (
                       <></>
                     )}{" "}
-                    <button
-                      className="btn btn-danger light ms-1 me-2"
+                    <BackButton
                       onClick={() => {
                         navigate(`/estimates`);
                         setPunchListData({
@@ -2501,8 +2501,8 @@ const AddEstimateForm = () => {
                         });
                       }}
                     >
-                      Cancel
-                    </button>
+                      back
+                    </BackButton>
                     {idParam ? (
                       <LoaderButton
                         loading={disableButton}

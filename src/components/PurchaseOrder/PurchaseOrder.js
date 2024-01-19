@@ -29,6 +29,7 @@ import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import TitleBar from "../TitleBar";
 import TblDateFormat from "../../custom/TblDateFormat";
+import AddButton from "../Reusable/AddButton";
 
 const PurchaseOrder = () => {
   const token = Cookies.get("token");
@@ -238,15 +239,14 @@ const PurchaseOrder = () => {
                           <MenuItem value={false}>Descending</MenuItem>
                         </Select>
                       </FormControl>
-                      <button
-                        className="btn btn-primary "
+                      <AddButton
                         onClick={() => {
                           navigate("/purchase-order/add-po");
                           // setShowContent(false);
                         }}
                       >
-                        + Add New Purchase Order
-                      </button>
+                        Add Purchase Order
+                      </AddButton>
                     </div>
                   </div>
 

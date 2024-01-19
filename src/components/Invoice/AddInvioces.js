@@ -24,6 +24,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
+import BackButton from "../Reusable/BackButton";
 
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
@@ -2227,14 +2228,13 @@ const AddInvioces = ({}) => {
                 ) : (
                   <></>
                 )}
-                <button
-                  className="btn btn-danger light me-2"
+                <BackButton
                   onClick={() => {
                     navigate("/invoices");
                   }}
                 >
-                  Cancel
-                </button>{" "}
+                  Back
+                </BackButton>{" "}
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

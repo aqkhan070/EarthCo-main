@@ -22,6 +22,7 @@ import Alert from "@mui/material/Alert";
 import axios from "axios";
 import useQuickBook from "../Hooks/useQuickBook";
 import EventPopups from "../Reusable/EventPopups";
+import AddButton from "../Reusable/AddButton";
 
 const theme = createTheme({
   palette: {
@@ -172,8 +173,7 @@ const CustomerTR = ({
                   <MenuItem value={false}>Descending</MenuItem>
                 </Select>
               </FormControl>
-              <button
-                className="btn btn-primary "
+              <AddButton
                 onClick={() => {
                   navigate(`/customers/add-customer`);
                   setSelectedItem(0);
@@ -181,8 +181,8 @@ const CustomerTR = ({
                   // setShowContent(false);
                 }}
               >
-                + Add Customer
-              </button>
+                Add Customer
+              </AddButton>
             </div>
           </div>
 

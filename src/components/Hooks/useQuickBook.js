@@ -8,6 +8,7 @@ const useQuickBook = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
+  const [loading, setLoading] = useState(false);
 
   const connectToQB = async () => {
     try {
@@ -42,18 +43,19 @@ const useQuickBook = () => {
     }
   };
 
-  const syncQB = async (id=0 ) => {
+  const syncQB = async (id = 0) => {
+    setLoading(true);
     try {
       const res = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/SyncQB/SyncDataAPI?synclogId=${id}`
       );
 
-     
+      setLoading(false);
 
       console.log("synced qb", res.data);
     } catch (error) {
+      setLoading(false);
       console.log("error connecting to QB", error);
-     
     }
   };
 
@@ -61,6 +63,7 @@ const useQuickBook = () => {
     connectToQB,
     genetareQBToken,
     syncQB,
+    loading,
   };
 };
 

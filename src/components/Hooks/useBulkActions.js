@@ -25,7 +25,7 @@ const useBulkActions = () => {
       console.log("bulk delete res", res.data);
     } catch (error) {
       console.log("api call error", error);
-      alert(true, "error", "error Deleting estimates", false);
+      alert(true, "error", error.response.data, false);
     }
   };
   return { bulkActions };

@@ -10,6 +10,7 @@ import axios from "axios";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import TitleBar from "../TitleBar";
+import BackButton from "../Reusable/BackButton";
 
 const AddPLPhotoOnly = () => {
   const icon = (
@@ -681,14 +682,13 @@ const AddPLPhotoOnly = () => {
 
             <div className="row">
               <div className="col-md-12 text-end">
-                <button
-                  className="btn btn-danger light me-2"
+                <BackButton
                   onClick={() => {
                     navigate(`/punchList-photos-only`);
                   }}
                 >
-                  Cancel
-                </button>
+                  Back
+                </BackButton>
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

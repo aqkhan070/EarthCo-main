@@ -20,6 +20,7 @@ import { DataContext } from "../../context/AppData";
 import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../Reusable/LoaderButton";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import BackButton from "../Reusable/BackButton";
 
 const LandscapeForm = () => {
   const token = Cookies.get("token");
@@ -1136,21 +1137,19 @@ const LandscapeForm = () => {
                 )}
               </div>
               <div className="col-md-3 ps-0">
+                <BackButton
+                  onClick={() => {
+                    navigate("/landscape");
+                  }}
+                >
+                  Back
+                </BackButton>
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}
                 >
                   Save & Perview
                 </LoaderButton>
-
-                <button
-                  className="btn btn-danger light ms-1"
-                  onClick={() => {
-                    navigate("/landscape");
-                  }}
-                >
-                  Cancel
-                </button>
               </div>
             </div>
           </>
