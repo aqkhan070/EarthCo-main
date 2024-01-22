@@ -14,6 +14,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
@@ -32,6 +33,7 @@ const InvoicePreview = () => {
 
   const [InvoicePreviewData, setInvoicePreviewData] = useState({});
   const [printClicked, setPrintClicked] = useState(false);
+  const { name, setName, fetchName } = useFetchCustomerName();
 
   const [showbuttons, setShowButtons] = useState(true);
   const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
@@ -107,6 +109,7 @@ const InvoicePreview = () => {
 
       console.log(" list is///////", response.data.Data);
       fetchCustomerEmail(response.data.Data.CustomerId);
+      fetchName(response.data.Data.CustomerId);
     } catch (error) {
       console.error("API Call Error:", error);
     }
@@ -148,7 +151,7 @@ const InvoicePreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Arial" }}
+        style={{ fontFamily: "Times New Roman" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
@@ -164,14 +167,17 @@ const InvoicePreview = () => {
                   <div className="row mt-2">
                     <div className="col-md-5 col-sm-5">
                       <h5 className="mb-0">EarthCo Commercial Landscape</h5>{" "}
-                      <h6 className="mb-0" style={{ width: "12em" }}>
-                        1225 E. Wakeham Santa Ana CA 92705 US
-                        lolas@earthcompany.org 714-571-0455
+                      <h6 className="mb-0" style={{ width: "13em" }}>
+                        1225 E. Wakeham Avenue <br /> Santa Ana CA 92705 US{" "}
+                        <br /> lolas@earthcompany.org <br />
+                        www.earthcompany.org
                       </h6>
                     </div>
                     <div className="col-md-3 col-sm-3 text-center">
                       {" "}
-                      <h3>INVOICE</h3>
+                      <h3>
+                        <strong>INVOICE</strong>
+                      </h3>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
                       <img
@@ -192,6 +198,10 @@ const InvoicePreview = () => {
                               <h5 className="mb-0">
                                 <strong>BILL TO</strong>
                               </h5>
+                              <h6 className="p-0 m-0">
+                                {name} <br />
+                                {InvoicePreviewData.Data.CustomerName}
+                              </h6>
                             </td>
 
                             {/* <td>
@@ -249,7 +259,7 @@ const InvoicePreview = () => {
                   </div>
 
                   <table id="empoloyees-tblwrapper" className="table mt-4">
-                    <thead className="table-header">
+                    <thead className="preview-table-header">
                       <tr className="preview-table-head">
                         <th>
                           <strong>INVOICE #</strong>
@@ -308,18 +318,14 @@ const InvoicePreview = () => {
                   </div>
 
                   <table id="empoloyees-tblwrapper" className="table mt-4">
-                    <thead className="table-header">
+                    <thead className="preview-table-header">
                       <tr className="preview-table-head">
+                        <th className="text-start">
+                          <strong>QTY</strong>
+                        </th>{" "}
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
-                        <th className="text-right">
-                          <strong>QTY</strong>
-                        </th>
-                        <th className="text-right">
-                          <strong>RATE</strong>
-                        </th>
-
                         <th className="text-right">
                           <strong>AMOUNT</strong>
                         </th>
@@ -329,9 +335,8 @@ const InvoicePreview = () => {
                       {InvoicePreviewData.ItemData.map((item, index) => {
                         return (
                           <tr className="preview-table-row" key={index}>
+                            <td className="text-start">{item.Qty}</td>
                             <td>{item.Description}</td>
-                            <td className="text-right">{item.Qty}</td>
-                            <td className="text-right">{item.Rate}</td>
                             <td className="text-right">
                               {(item.Qty * item.Rate).toFixed(2)}
                             </td>

@@ -543,6 +543,38 @@ const AddEstimateForm = () => {
     console.log("new items are", formData);
   };
 
+  const handleDescriptionChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Description = event.target.value;
+
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblEstimateItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Description = event.target.value;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblEstimateItems: updatedItems,
+      }));
+    }
+  };
+
   const handleQuantityChange = (itemId, event, add) => {
     if (add === 0) {
       const updatedItems = formData.tblEstimateItems.map((item) => {
@@ -949,6 +981,9 @@ const AddEstimateForm = () => {
                         <TextField
                           {...params}
                           label=""
+                          onBlur={() => {
+                            fetchName(formData.CustomerId);
+                          }}
                           onClick={() => {
                             setName("");
                             fetchCustomers();
@@ -1550,7 +1585,16 @@ const AddEstimateForm = () => {
                             .map((item, index) => (
                               <tr colSpan={2} key={item.ItemId}>
                                 <td className="itemName-width">{item.Name}</td>
-                                <td>{item.Description}</td>
+                                <td>
+                                  <input
+                                    style={{ width: "17em" }}
+                                    className="form-control form-control-sm"
+                                    value={item.Description}
+                                    onChange={(e) =>
+                                      handleDescriptionChange(item.ItemId, e, 0)
+                                    }
+                                  />
+                                </td>
                                 <td>
                                   <input
                                     type="number"
@@ -1657,7 +1701,26 @@ const AddEstimateForm = () => {
                             </>
                           </td>
                           <td>
-                            <p>{selectedItem?.SaleDescription || " "}</p>
+                            <input
+                              name="Qty"
+                              value={itemInput?.Description}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Description: e.target.value,
+                                })
+                              }
+                              style={{ width: "17em" }}
+                              className="form-control form-control-sm"
+                              placeholder="SaleDescription"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
                           </td>
                           <td>
                             <input
@@ -2478,7 +2541,7 @@ const AddEstimateForm = () => {
                           <Email />
                         </button>
 
-                        <BackButton
+                        <button
                           type="button"
                           className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
                           onClick={() => {
@@ -2488,7 +2551,7 @@ const AddEstimateForm = () => {
                           }}
                         >
                           <Print></Print>
-                        </BackButton>
+                        </button>
                       </>
                     ) : (
                       <></>

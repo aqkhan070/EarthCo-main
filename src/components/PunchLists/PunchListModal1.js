@@ -175,6 +175,19 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
     return total;
   };
 
+  const handleDescriptionChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Description: event.target.value,
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+
   const handleQuantityChange = (itemId, event) => {
     const updatedItemsList = itemsList.map((item) => {
       if (item.ItemId === itemId) {
@@ -526,7 +539,16 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                         itemsList.map((item, index) => (
                           <tr colSpan={2} key={item.ItemId}>
                             <td className="itemName-width">{item.Name}</td>
-                            <td>{item.Description}</td>
+                            <td>
+                              <input
+                                style={{ width: "17em" }}
+                                className="form-control form-control-sm"
+                                value={item.Description}
+                                onChange={(e) =>
+                                  handleDescriptionChange(item.ItemId, e)
+                                }
+                              />
+                            </td>
                             <td>
                               <input
                                 type="number"
@@ -622,7 +644,28 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                           </>
                         </td>
                         <td>
-                          <p>{selectedItem?.SaleDescription || " "}</p>
+                          <p>
+                            <input
+                              name="Description"
+                              value={itemInput.Description}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Description: e.target.value,
+                                })
+                              }
+                              style={{ width: "17em" }}
+                              className="form-control form-control-sm"
+                              placeholder="Description"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
+                          </p>
                         </td>
                         <td>
                           <input

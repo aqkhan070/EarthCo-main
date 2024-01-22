@@ -401,6 +401,7 @@ const AddInvioces = ({}) => {
     setSubmitClicked(true);
 
     let InvoiceData = {}; // Declare InvoiceData in the outer scope
+    console.log("mainpayload", formData)
 
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
@@ -599,6 +600,38 @@ const AddInvioces = ({}) => {
       Rate: null,
     });
     console.log("new items are", formData);
+  };
+
+  const handleDescriptionChange = (itemId, event, add) => {
+    if (add === 0) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == false) {
+          const updatedItem = { ...item };
+          updatedItem.Description = event.target.value;
+
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
+    if (add === 1) {
+      const updatedItems = formData.tblInvoiceItems.map((item) => {
+        if (item.ItemId === itemId && item.isCost == true) {
+          const updatedItem = { ...item };
+          updatedItem.Description = event.target.value;
+          return updatedItem;
+        }
+        return item;
+      });
+      setFormData((prevData) => ({
+        ...prevData,
+        tblInvoiceItems: updatedItems,
+      }));
+    }
   };
 
   const handleQuantityChange = (itemId, event, add) => {
@@ -989,6 +1022,9 @@ const AddInvioces = ({}) => {
                         <TextField
                           {...params}
                           label=""
+                          onBlur={() => {
+                            fetchName(formData.CustomerId);
+                          }}
                           onClick={() => {
                             setName("");
                           }}
@@ -1391,7 +1427,16 @@ const AddInvioces = ({}) => {
                           .map((item, index) => (
                             <tr colSpan={2} key={item.ItemId}>
                               <td className="itemName-width">{item.Name}</td>
-                              <td>{item.Description}</td>
+                              <td>
+                                <input
+                                  style={{ width: "17em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.Description}
+                                  onChange={(e) =>
+                                    handleDescriptionChange(item.ItemId, e, 0)
+                                  }
+                                />
+                              </td>
                               <td>
                                 <input
                                   type="number"
@@ -1498,7 +1543,26 @@ const AddInvioces = ({}) => {
                           </>
                         </td>
                         <td>
-                          <p>{selectedItem?.SaleDescription || " "}</p>
+                          <input
+                            name="Qty"
+                            value={itemInput.Description}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Description: e.target.value,
+                              })
+                            }
+                            style={{ width: "17em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Description"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
                         </td>
                         <td>
                           <input

@@ -141,7 +141,10 @@ const PunchlistPreview = () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-      <div className="container-fluid">
+      <div
+        style={{ fontFamily: "Times New Roman" }}
+        className="container-fluid"
+      >
         {toggleFullscreen ? (
           <div className="row me-3">
             <div className="col-md-11 text-end">
@@ -156,7 +159,7 @@ const PunchlistPreview = () => {
                     navigate(`/punchlist`);
                   }}
                 >
-                <ArrowBackIcon sx={{ fontSize: 17 }} />
+                  <ArrowBackIcon sx={{ fontSize: 17 }} />
                 </button>
               )}
               <button
@@ -326,12 +329,17 @@ const PunchlistPreview = () => {
                               </strong>
                             </td>
                             <td className="tdbreak">
-                              {item.DetailData.PhotoPath? <>
-                              <img
-                                style={{ width: "200px" }}
-                                src={`https://earthcoapi.yehtohoga.com/${item.DetailData.PhotoPath}`}
-                                alt=""
-                              /></>: <></>}
+                              {item.DetailData.PhotoPath ? (
+                                <>
+                                  <img
+                                    style={{ width: "200px" }}
+                                    src={`https://earthcoapi.yehtohoga.com/${item.DetailData.PhotoPath}`}
+                                    alt=""
+                                  />
+                                </>
+                              ) : (
+                                <></>
+                              )}
                             </td>
                             <td className="tdbreak">
                               <strong>{item.DetailData.Address}</strong>

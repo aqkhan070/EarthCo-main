@@ -14,6 +14,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const SRPreview = () => {
   const token = Cookies.get("token");
@@ -28,6 +29,8 @@ const SRPreview = () => {
 
   const { sRData, toggleFullscreen, setToggleFullscreen } =
     useContext(DataContext);
+  const { name, setName, fetchName } = useFetchCustomerName();
+
   const {
     sendEmail,
     showEmailAlert,
@@ -103,6 +106,7 @@ const SRPreview = () => {
       );
       setSRPreviewData(response.data);
       fetchEmail(response.data.Data.ContactId);
+      fetchName(response.data.Data.CustomerId);
 
       console.log("response.data.Data", response.data);
 
@@ -146,7 +150,7 @@ const SRPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Arial" }}
+        style={{ fontFamily: "Times New Roman" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
@@ -166,18 +170,19 @@ const SRPreview = () => {
                     <div className="col-md-4 col-sm-4">
                       <h5 className="mb-0">EarthCo</h5>{" "}
                       <h6 className="mb-0">
-                        1225 East Wakeham Avenue Santa Ana, California 92705
+                        1225 East Wakeham Avenue <br /> Santa Ana,
+                       California 92705
                       </h6>
                       <h6 className="mb-0">
                         <strong>Phone: </strong> 714.571.0455
                       </h6>
-                      <h6 className="mb-0">
-                        <strong>Fax: </strong> 714.571.0580
-                      </h6>
+                      <h6 className="mb-0">www.earthcompany.org</h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
                       {" "}
-                      <h3>Service Request</h3>
+                      <h3>
+                        <strong>Service Request </strong>
+                      </h3>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
                       <img
@@ -198,23 +203,29 @@ const SRPreview = () => {
                               style={{ backgroundColor: "gray" }}
                               className="preview-table-head LandScape-TablePadding"
                             >
-                              <th className="landscap-preview-heading">
+                              <th
+                                style={{ width: "13vw" }}
+                                className="landscap-preview-heading"
+                              >
                                 Requested By:
                               </th>
-                              <th className="landscap-preview-heading">
+                              <th
+                                style={{ width: "13vw" }}
+                                className="landscap-preview-heading"
+                              >
                                 Service Location:
                               </th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr className="preview-table-row">
-                              <td style={{ color: "black" }}>
-                                {sRPreviewData.Data.CustomerName}
+                              <td style={{ color: "black", width: "13vw" }}>
+                                {name}
                                 <br />
-                                {sRPreviewData.Data.ServiceLocationAddress}
+                                {sRPreviewData.Data.ContactCompanyName}
                               </td>
                               <td
-                                style={{ color: "black" }}
+                                style={{ color: "black", width: "13vw" }}
                                 className="left strong"
                               >
                                 {sRPreviewData.Data.ServiceLocationAddress}

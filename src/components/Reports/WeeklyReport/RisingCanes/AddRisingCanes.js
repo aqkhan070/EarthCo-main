@@ -458,6 +458,9 @@ const AddRisingCanes = () => {
                       <TextField
                         {...params}
                         label=""
+                        onBlur={() => {
+                          fetchName(formData.CustomerId);
+                        }}
                         onClick={() => {
                           setName("");
                         }}

@@ -1,6 +1,7 @@
 import React from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/SaveOutlined";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 const LoaderButton = ({
   disable,
   varient,
@@ -23,6 +24,30 @@ const LoaderButton = ({
           padding: "5px 17px",
           marginRight: "0.6em",
           color: "#fff",
+          textTransform: "capitalize",
+        }}
+      >
+        {children}
+      </LoadingButton>
+    );
+  } else if (children.includes("copy")) {
+    return (
+      <LoadingButton
+        variant="contained"
+        loading={loading}
+        color={color}
+        // loadingIndicator="Saving…"
+        // startIcon={<DeleteIcon />}
+        // loadingPosition="start"
+        startIcon={<ContentCopyIcon sx={{ fontSize: 2 }} />}
+        onClick={handleSubmit}
+        disabled={disable}
+        disableElevation
+        sx={{
+          marginRight: "0.6em",
+
+          color: "#fff",
+          border: "0.5px solid #000",
           textTransform: "capitalize",
         }}
       >

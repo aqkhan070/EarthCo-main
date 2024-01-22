@@ -133,7 +133,10 @@ const Audit = () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-      <div className="container-fluid ">
+      <div
+        style={{ fontFamily: "Times New Roman" }}
+        className="container-fluid "
+      >
         {toggleFullscreen ? (
           <div className="print-page-width">
             <div style={{ width: "28.7cm" }}>

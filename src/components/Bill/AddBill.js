@@ -298,7 +298,7 @@ const AddBill = ({}) => {
 
     setSearchResults([]); // Clear the search results
 
-    console.log("selected item is", itemInput);
+    console.log("selected item is", item);
   };
 
   const deleteItem = (id) => {
@@ -311,6 +311,19 @@ const AddBill = ({}) => {
       return acc + item.Rate * item.Qty;
     }, 0);
     return total;
+  };
+
+  const handleItemDescriptionChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Description: event.target.value,
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
   };
 
   const handleQuantityChange = (itemId, event) => {
@@ -622,9 +635,11 @@ const AddBill = ({}) => {
                               <TextField
                                 {...params}
                                 label=""
+                                onBlur={() => {
+                                  fetchSupplierName(formData.SupplierId);
+                                }}
                                 onClick={() => {
                                   setSupplierName("");
-                                 
                                 }}
                                 onChange={(e) => {
                                   fetchVendors(e.target.value);
@@ -974,7 +989,16 @@ const AddBill = ({}) => {
                         itemsList.map((item, index) => (
                           <tr colSpan={2} key={item.ItemId}>
                             <td className="itemName-width">{item.Name}</td>
-                            <td>{item.Description}</td>
+                            <td>
+                              <input
+                                style={{ width: "17em" }}
+                                className="form-control form-control-sm"
+                                value={item.Description}
+                                onChange={(e) =>
+                                  handleItemDescriptionChange(item.ItemId, e)
+                                }
+                              />
+                            </td>
                             <td>
                               <input
                                 type="number"
@@ -1070,7 +1094,26 @@ const AddBill = ({}) => {
                           </>
                         </td>
                         <td>
-                          <p>{selectedItem?.SaleDescription || " "}</p>
+                          <input
+                            name="Description"
+                            value={itemInput?.Description}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Description: e.target.value,
+                              })
+                            }
+                            style={{ width: "17em" }}
+                            className="form-control form-control-sm"
+                            placeholder="Description"
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
+                          />
                         </td>
                         <td>
                           <input

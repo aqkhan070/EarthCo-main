@@ -222,6 +222,9 @@ const SummaryReport = () => {
                         onClick={() => {
                           setName("");
                         }}
+                        onBlur={() => {
+                          fetchName(formData.CustomerId);
+                        }}
                         onChange={(e) => {
                           fetchCustomers(e.target.value);
                         }}

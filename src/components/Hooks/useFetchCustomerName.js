@@ -19,7 +19,7 @@ const useFetchCustomerName = () => {
         `https://earthcoapi.yehtohoga.com/api/Customer/GetCustomerNameById?id=${id}`,
         { headers }
       );
-      setSupplierName(response.data);
+      setName(response.data);
     } catch (error) {
       console.error("API Call Error:", error);
     }

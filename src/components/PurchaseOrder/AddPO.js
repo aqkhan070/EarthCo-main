@@ -541,6 +541,19 @@ export const AddPO = ({}) => {
     });
   };
 
+  const handleDescriptionChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item) => {
+      if (item.ItemId === itemId) {
+        return {
+          ...item,
+          Description: event.target.value,
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+
   const handleQuantityChange = (itemId, event) => {
     const updatedItemsList = itemsList.map((item) => {
       if (item.ItemId === itemId) {
@@ -907,6 +920,9 @@ export const AddPO = ({}) => {
                             <TextField
                               {...params}
                               label=""
+                              onBlur={() => {
+                                fetchSupplierName(formData.SupplierId);
+                              }}
                               onClick={() => {
                                 setSupplierName("");
                               }}
@@ -1334,7 +1350,18 @@ export const AddPO = ({}) => {
                           itemsList.map((item, index) => (
                             <tr colSpan={2} key={item.ItemId}>
                               <td className="itemName-width">{item.Name}</td>
-                              <td>{item.Description}</td>
+                              <td>
+                                <input
+                                  name="Description"
+                                  value={item.Description}
+                                  onChange={(e) =>
+                                    handleDescriptionChange(item.ItemId, e)
+                                  }
+                                  style={{ width: "17em" }}
+                                  className="form-control form-control-sm"
+                                  placeholder="Description"
+                                />
+                              </td>
                               <td>
                                 <input
                                   type="number"
@@ -1435,12 +1462,31 @@ export const AddPO = ({}) => {
                             </>
                           </td>
                           <td>
-                            <p>{selectedItem?.SaleDescription || " "}</p>
+                            <input
+                              name="Description"
+                              value={itemInput.Description}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Description: e.target.value,
+                                })
+                              }
+                              style={{ width: "17em" }}
+                              className="form-control form-control-sm"
+                              placeholder="Description"
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
+                                }
+                              }}
+                            />
                           </td>
                           <td>
                             <input
                               type="number"
-                              name="Qty"
+                              name="Description"
                               value={itemInput.Qty}
                               onChange={(e) =>
                                 setItemInput({
@@ -1450,7 +1496,7 @@ export const AddPO = ({}) => {
                               }
                               style={{ width: "7em" }}
                               className="form-control form-control-sm"
-                              placeholder="Quantity"
+                              placeholder="Description"
                               onKeyPress={(e) => {
                                 if (e.key === "Enter") {
                                   // Handle item addition when Enter key is pressed

@@ -40180,7 +40180,7 @@ button:focus {
 }
 
 .card-footer {
-    border-color: #b7b4b4;
+    border-color: #787575;
     background: transparent;
     padding: 1rem 1.25rem 1rem;
 }
@@ -53836,6 +53836,9 @@ cursor: pointer;
   .css-1d6wzja-MuiButton-startIcon{
     margin-right: 1px !important;
   }
+  .css-6xugel{
+    margin-right: 1px !important;
+  }
   .SRmap{
     width: 40em;
     height: 30em;
@@ -54076,6 +54079,9 @@ height: 30px !important;
     padding: 8px 8px !important;
     font-size: 0.900rem;
     white-space: nowrap;
+}
+.preview-table-header {
+background-color: #CCCCCC;
 }
 
 .bill-tbl-alignment{

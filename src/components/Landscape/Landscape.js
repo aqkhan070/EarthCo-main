@@ -145,7 +145,10 @@ const Landscape = () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-      <div className="container-fluid ">
+      <div
+        style={{ fontFamily: "Times New Roman" }}
+        className="container-fluid "
+      >
         {toggleFullscreen && !isGeneralReport ? (
           <div className="row me-4">
             <div className="col-md-10 text-end">
@@ -160,7 +163,7 @@ const Landscape = () => {
                     navigate(`/landscape`);
                   }}
                 >
-                 <ArrowBackIcon sx={{ fontSize: 17 }} />
+                  <ArrowBackIcon sx={{ fontSize: 17 }} />
                 </button>
               )}
               <button

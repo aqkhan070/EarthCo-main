@@ -120,7 +120,10 @@ const RisingCanesPreview = () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-      <div className="container-fluid print-page-width">
+      <div
+        style={{ fontFamily: "Times New Roman" }}
+        className="container-fluid print-page-width"
+      >
         <div className="row PageA4 mt-2">
           <div className="card">
             <div

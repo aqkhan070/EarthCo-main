@@ -150,25 +150,37 @@ const POPreview = () => {
         }
       >
         {" "}
-        <div className="row PageA4 mt-2">
+        <div
+          style={{ fontFamily: "Times New Roman" }}
+          className="row PageA4 mt-2"
+        >
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
               <div id="PO-preview" className=" get-preview ">
                 <div className="card-body perview-pd">
                   <div className="row mt-2">
-                    {/* <div className="col-md-12 mb-5"
-                  style={{
-                    borderBottom: "5px solid #5d9dd5",
-                 
-                  }}
-                ></div> */}
-                    <div className="col-md-2 col-sm-2">
-                      {" "}
-                      <img className="preview-Logo" src={logo} alt="" />
+                    <div className="col-md-4 col-sm-4">
+                      <h5 className="mb-0">EarthCo</h5>{" "}
+                      <h6 className="mb-0">
+                        1225 East Wakeham Avenue <br />
+                        Santa Ana, California <br /> 92705 O 714.571.0455 F
+                        714.571.0580 CL# C27 823185 / D49 1025053
+                      </h6>{" "}
                     </div>
-                    <div className="col-md-6 col-sm-6"></div>
+                    <div className="col-md-4 col-sm-4 text-center">
+                      {" "}
+                      <h3>
+                        {" "}
+                        <strong>Purcahse Order</strong>
+                      </h3>
+                    </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
-                      <h2 className="table-cell-align">Purchase Order</h2>
+                      <img
+                        className="preview-Logo"
+                        style={{ width: "160px" }}
+                        src={logo}
+                        alt=""
+                      />
                     </div>
                   </div>
 
@@ -179,8 +191,7 @@ const POPreview = () => {
                           <tr>
                             <td className="p-0">
                               {" "}
-                              <h5 className="mb-0">EarthCo</h5>{" "}
-                              <h6 className="mb-0">
+                              <h6 className="mb-0 mt-3">
                                 {PoPreviewData.Data.SupplierId}.{" "}
                                 {PoPreviewData.Data.SupplierName || ""}
                               </h6>{" "}
@@ -204,7 +215,10 @@ const POPreview = () => {
                             <th>
                               {" "}
                               <h6 className="text-right mb-0">
-                                {formatDate(PoPreviewData.Data.CreatedDate, false)}
+                                {formatDate(
+                                  PoPreviewData.Data.CreatedDate,
+                                  false
+                                )}
                               </h6>
                             </th>
                           </tr>
@@ -224,7 +238,7 @@ const POPreview = () => {
                     </div>
                   </div>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
-                    <thead className="table-header">
+                    <thead className="preview-table-header">
                       <tr className="preview-table-head">
                         <th>
                           <strong>DESCRIPTION</strong>
@@ -256,7 +270,6 @@ const POPreview = () => {
                       })}
                     </tbody>
                   </table>
-
                   <div className="row ">
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
@@ -313,7 +326,7 @@ const POPreview = () => {
                       navigate(`/purchase-order`);
                     }}
                   >
-                   <ArrowBackIcon sx={{ fontSize: 17 }} />
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
                   </button>
                 </div>
               )}

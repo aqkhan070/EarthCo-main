@@ -254,6 +254,9 @@ const PunchlistModal2 = ({
                         onClick={() => {
                           setName("");
                         }}
+                        onBlur={() => {
+                          fetchName(addPunchListData.CustomerId);
+                        }}
                         onChange={(e) => {
                           fetchCustomers(e.target.value);
                         }}
@@ -359,10 +362,7 @@ const PunchlistModal2 = ({
                           <div className="row">
                             <div className="col-md-auto">
                               {" "}
-                              <h6 className="pb-0 mb-0">
-                                {" "}
-                                {option.FirstName}
-                              </h6>
+                              <h6 className="pb-0 mb-0"> {option.FirstName}</h6>
                             </div>
                             <div className="col-md-auto">
                               <small>

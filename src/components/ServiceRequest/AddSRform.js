@@ -604,6 +604,20 @@ const AddSRform = () => {
     console.log("selected item is", itemInput);
   };
 
+  const handleDescriptionChange = (itemId, event) => {
+    const updatedItems = tblSRItems.map((item) => {
+      if (item.ItemId === itemId) {
+        const updatedItem = { ...item };
+        updatedItem.Description = event.target.value;
+
+        return updatedItem;
+      }
+      return item;
+    });
+
+    setTblSRItems(updatedItems);
+  };
+
   const handleQuantityChange = (itemId, event) => {
     const updatedItems = tblSRItems.map((item) => {
       if (item.ItemId === itemId) {
@@ -719,6 +733,11 @@ const AddSRform = () => {
                               <TextField
                                 {...params}
                                 label=""
+                                onBlur={() => {
+                                  fetchName(
+                                    SRData.ServiceRequestData.CustomerId
+                                  );
+                                }}
                                 onClick={() => {
                                   setName("");
                                 }}
@@ -1062,7 +1081,17 @@ const AddSRform = () => {
                           {tblSRItems?.map((item, index) => (
                             <tr colSpan={2} key={item.ItemId}>
                               <td className="itemName-width">{item.Name}</td>
-                              <td>{item.Description}</td>
+                              <td>
+                                <input
+                                  style={{ width: "17em" }}
+                                  className="form-control form-control-sm"
+                                  value={item.Description}
+                                  onChange={
+                                    (e) =>
+                                      handleDescriptionChange(item.ItemId, e) // Use item.ItemId
+                                  }
+                                />
+                              </td>
                               <td>
                                 <input
                                   type="number"
@@ -1151,7 +1180,26 @@ const AddSRform = () => {
                               </>
                             </td>
                             <td>
-                              <p>{selectedItem?.SaleDescription || " "}</p>
+                              <input
+                                name="Qty"
+                                value={itemInput.Description}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Description: e.target.value,
+                                  })
+                                }
+                                style={{ width: "17em" }}
+                                className="form-control form-control-sm"
+                                placeholder="Description"
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                              />
                             </td>
                             <td>
                               <input

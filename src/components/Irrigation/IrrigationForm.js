@@ -318,6 +318,9 @@ const IrrigationForm = () => {
                             <TextField
                               {...params}
                               label=""
+                              onBlur={() => {
+                                fetchName(formData.CustomerId);
+                              }}
                               onClick={() => {
                                 setName("");
                               }}
