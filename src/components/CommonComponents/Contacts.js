@@ -1,31 +1,11 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
-import AdressModal from "../Modals/AdressModal";
-import { Form } from "react-bootstrap";
-import { Create, Delete, Update } from "@mui/icons-material";
-import Alert from "@mui/material/Alert";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { Button } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import validator from "validator";
-import CircularProgress from "@mui/material/CircularProgress";
 import AddressInputs from "../Modals/AddressInputs";
-import { useFormik } from "formik";
-import { ServiceValidation, ValidationCustomer } from "./ValidationCustomer";
-
 import Cookies from "js-cookie";
-
 import EventPopups from "../Reusable/EventPopups";
-import LoaderButton from "../Reusable/LoaderButton";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
   const token = Cookies.get("token");
@@ -257,6 +237,7 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
                       name="Address"
                       handleChange={handleChange}
                       addressValue={formData.Address}
+                      setCompanyData={setFormData}
                     />
                   </div>
                 </div>
@@ -312,7 +293,9 @@ const Contacts = ({ customerId, fetchCustomers, fetctContacts }) => {
         data-bs-toggle="modal"
         data-bs-target="#basicModal"
       >
-        <strong>+ Add</strong>
+        <CustomizedTooltips title="Click add new contact" placement="top">
+          <strong>+ Add</strong>
+        </CustomizedTooltips>
       </span>
     </>
   );

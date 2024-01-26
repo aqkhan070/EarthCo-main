@@ -282,6 +282,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                       name="Address"
                       handleChange={handleChange}
                       addressValue={formData.Address}
+                      setCompanyData={setFormData}
                     />
                   </div>
                 </div>
@@ -366,7 +367,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
                           <th>Last Name</th>
                           <th>Email</th>
                           <th>Phone</th>
-                          <th style={{ maxWidth: "20px" }}>Address</th>
+                          <th>Address</th>
 
                           <th className="actions-head ">Actions</th>
                         </tr>

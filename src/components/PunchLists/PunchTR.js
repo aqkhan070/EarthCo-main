@@ -264,7 +264,7 @@ const PunchTR = ({
                         )}
                       </IconButton>
                     </TableCell>
-                    <TableCell>{item.Data.CustomerCompanyName}</TableCell>
+                    <TableCell>{item.Data.CustomerName}</TableCell>
                     <TableCell>{item.Data.Title}</TableCell>
                     <TableCell>{item.Data.AssignToName}</TableCell>
                     <TableCell>

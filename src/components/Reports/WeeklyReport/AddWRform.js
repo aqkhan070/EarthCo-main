@@ -17,16 +17,16 @@ import Cookies from "js-cookie";
 import { Delete, Create } from "@mui/icons-material";
 import TitleBar from "../../TitleBar";
 import { DataContext } from "../../../context/AppData";
-
 import EventPopups from "../../Reusable/EventPopups";
 import Contacts from "../../CommonComponents/Contacts";
 import ServiceLocations from "../../CommonComponents/ServiceLocations";
-
 import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../../Reusable/LoaderButton";
 import useDeleteFile from "../../Hooks/useDeleteFile";
 import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
 import BackButton from "../../Reusable/BackButton";
+import FileUploadButton from "../../Reusable/FileUploadButton";
+
 const AddWRform = () => {
   const icon = (
     <svg
@@ -756,8 +756,11 @@ const AddWRform = () => {
               </div>
               <div className="card-body">
                 <div className="row mt-2">
-                  <div className="col-md-4 col-lg-4">
-                    <div className="basic-form">
+                  <div className="col-md-2 col-lg-2">
+                    <FileUploadButton onClick={trackFile}>
+                      Upload File
+                    </FileUploadButton>
+                    {/* <div className="basic-form">
                       <label className="form-label">Attachments</label>
                       <div className="dz-default dlab-message upload-img mb-3">
                         <form action="#" className="dropzone">
@@ -806,7 +809,7 @@ const AddWRform = () => {
                           </div>
                         </form>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {Files.map((file, index) => (

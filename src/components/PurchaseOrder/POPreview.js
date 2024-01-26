@@ -13,6 +13,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import formatAmount from "../../custom/FormatAmount";
 
 const POPreview = () => {
   const token = Cookies.get("token");
@@ -160,12 +161,12 @@ const POPreview = () => {
                 <div className="card-body perview-pd">
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
-                      <h5 className="mb-0">EarthCo</h5>{" "}
-                      <h6 className="mb-0">
+                      {/* <h5 className="mb-0 mt-3">EarthCo</h5>{" "} */}
+                      {/* <h6 className="mb-0">
                         1225 East Wakeham Avenue <br />
                         Santa Ana, California <br /> 92705 O 714.571.0455 F
                         714.571.0580 CL# C27 823185 / D49 1025053
-                      </h6>{" "}
+                      </h6>{" "} */}
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
                       {" "}
@@ -204,17 +205,20 @@ const POPreview = () => {
                       </table>
                     </div>
 
-                    <div className="col-md-4 col-sm-6 ">
+                    <div className="col-md-4 col-sm-6 pt-2 ">
                       <table className="preview-table">
                         <thead>
-                          <tr>
-                            <th>
+                          <tr className=" ">
+                            <th className="text-end">
                               {" "}
-                              <h6 className="mb-0">Date</h6>{" "}
+                              <h6 className="mb-0">
+                                <strong>Date: </strong>
+                              </h6>{" "}
                             </th>
                             <th>
                               {" "}
-                              <h6 className="text-right mb-0">
+                              <h6 className="text-start mb-0">
+                                &nbsp;
                                 {formatDate(
                                   PoPreviewData.Data.CreatedDate,
                                   false
@@ -225,12 +229,16 @@ const POPreview = () => {
                         </thead>
                         <tbody>
                           <tr>
-                            <td className="table-cell-align me-2">
-                              <h6>Purchase Order #</h6>{" "}
+                            <td className="table-cell-align me-2 text-end">
+                              <h6>
+                                <strong>Purchase Order #: </strong>
+                              </h6>{" "}
                             </td>
 
-                            <td className="table-cell-align text-right">
-                              <h6>{PoPreviewData.Data.PurchaseOrderNumber}</h6>
+                            <td className="table-cell-align text-start">
+                              <h6>
+                                &nbsp;{PoPreviewData.Data.PurchaseOrderNumber}
+                              </h6>
                             </td>
                           </tr>
                         </tbody>
@@ -239,7 +247,10 @@ const POPreview = () => {
                   </div>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
                     <thead className="preview-table-header">
-                      <tr className="preview-table-head">
+                      <tr className="preview-table-head preview-table-header">
+                        <th>
+                          <strong>Item Code</strong>
+                        </th>{" "}
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
@@ -249,7 +260,6 @@ const POPreview = () => {
                         <th className="text-right">
                           <strong>RATE</strong>
                         </th>
-
                         <th className="text-right">
                           <strong>AMOUNT</strong>
                         </th>
@@ -259,6 +269,7 @@ const POPreview = () => {
                       {PoPreviewData.ItemData.map((item, index) => {
                         return (
                           <tr className="preview-table-row" key={index}>
+                            <td>{item.ItemId}</td>
                             <td>{item.Description}</td>
                             <td className="text-right">{item.Qty}</td>
                             <td className="text-right">{item.Rate}</td>
@@ -280,17 +291,20 @@ const POPreview = () => {
                     </div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0 text-end">
-                        {totalAmount.toFixed(2)}
+                        ${formatAmount(totalAmount)}
                       </h6>
                     </div>
                     <div className="col-md-8 col-sm-6"></div>
                     {/* <div className="col-md-2 col-sm-3">
-                    <h6 className="mb-0">
-                      {" "}
-                      <strong>DISCOUNT:</strong>
-                    </h6>
-                  </div>{" "} */}
-                    <hr className="mb-1" />
+                  <h6 className="mb-0">
+                    {" "}
+                    <strong>DISCOUNT:</strong>
+                  </h6>
+                </div>{" "} */}
+                    <div className="col-md-12 py-0">
+                      <hr className="mb-1" />
+                    </div>
+
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
                       <h6 className="table-cell-align mt-2">
@@ -298,14 +312,15 @@ const POPreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
+                      <h6 className=" text-end">${formatAmount(totalAmount)}</h6>
                     </div>
-                    <div
-                      style={{
-                        borderBottom: "5px solid #012a47",
-                        margin: "0em 0em 3em 0em",
-                      }}
-                    ></div>
+                    <div className="col-md-12 py-0">
+                      <div
+                        style={{
+                          borderBottom: "5px solid #012a47",
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>

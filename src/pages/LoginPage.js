@@ -72,7 +72,7 @@ const LoginPage = () => {
       // navigate(`/Dashboard`);
     }
     if (accessToken) {
-      navigate(`/Dashboard${hash}`);
+      navigate(`/dashboard${hash}`);
       localStorage.setItem("access_token", accessToken);
     }
     // console.log("Full URL:", hash);
@@ -127,8 +127,13 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.log("Error logging in:", error);
-      setError(error.response.data);
-      handlePopup(true, "error", error.response.data);
+      if (error.message == "Network Error") {
+        handlePopup(true, "error", "Login failed (Network Error)");
+      } else if (error.response.status === 500) {
+        handlePopup(true, "error", "Login failed (Server Side Error)");
+      } else {
+        handlePopup(true, "error", error.response.data);
+      }
       setBtndisable(false);
     }
   };

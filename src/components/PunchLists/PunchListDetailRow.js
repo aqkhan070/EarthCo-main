@@ -115,6 +115,7 @@ const PunchListDetailRow = ({
       setSnackBarColor("success");
       setSnackBarText("Punch List Status Changed successfuly");
       fetchFilterdPunchList();
+      setSelectedItems([]);
       console.log("delete pl details response", response.data);
     } catch (error) {
       console.log("There was an error deleting the punch list detail:", error);

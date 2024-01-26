@@ -15,6 +15,7 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import formatAmount from "../../custom/FormatAmount";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
@@ -194,13 +195,23 @@ const InvoicePreview = () => {
                       <table>
                         <tbody>
                           <tr>
-                            <td className="me-5 pe-2">
+                            <td className="">
                               <h5 className="mb-0">
                                 <strong>BILL TO</strong>
                               </h5>
                               <h6 className="p-0 m-0">
                                 {name} <br />
-                                {InvoicePreviewData.Data.CustomerName}
+                                {InvoicePreviewData.Data.CustomerAddress?.split(
+                                  ", "
+                                )
+                                  .slice(0, 2)
+                                  .join(", ")}
+                                <br />
+                                {InvoicePreviewData.Data.CustomerAddress?.split(
+                                  ", "
+                                )
+                                  .slice(2)
+                                  .join(", ")}
                               </h6>
                             </td>
 
@@ -260,7 +271,7 @@ const InvoicePreview = () => {
 
                   <table id="empoloyees-tblwrapper" className="table mt-4">
                     <thead className="preview-table-header">
-                      <tr className="preview-table-head">
+                      <tr className="preview-table-head preview-table-header">
                         <th>
                           <strong>INVOICE #</strong>
                         </th>
@@ -319,7 +330,7 @@ const InvoicePreview = () => {
 
                   <table id="empoloyees-tblwrapper" className="table mt-4">
                     <thead className="preview-table-header">
-                      <tr className="preview-table-head">
+                      <tr className="preview-table-head preview-table-header">
                         <th className="text-start">
                           <strong>QTY</strong>
                         </th>{" "}
@@ -356,7 +367,7 @@ const InvoicePreview = () => {
                     </div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0 text-end">
-                        {totalAmount.toFixed(2)}
+                        ${formatAmount(totalAmount)}
                       </h6>
                     </div>
                     <div className="col-md-8 col-sm-6"></div>
@@ -377,7 +388,7 @@ const InvoicePreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
+                      <h6 className=" text-end">${formatAmount(totalAmount)}</h6>
                     </div>
                     <div className="col-md-12 py-0">
                       <div

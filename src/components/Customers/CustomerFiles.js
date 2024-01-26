@@ -4,6 +4,7 @@ import { Delete } from "@mui/icons-material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import useDeleteFile from "../Hooks/useDeleteFile";
+import FileUploadButton from "../Reusable/FileUploadButton";
 
 const CustomerFiles = ({ getCustomerData, prevFiles }) => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -90,7 +91,7 @@ const CustomerFiles = ({ getCustomerData, prevFiles }) => {
           <div className="card border-0">
             <div className="card-body  p-0">
               <div className="row mx-2 mt-3">
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <div className="dz-default dlab-message upload-img mb-3">
                     <form action="#" className="dropzone">
                       <svg
@@ -134,6 +135,11 @@ const CustomerFiles = ({ getCustomerData, prevFiles }) => {
                       </div>
                     </form>
                   </div>
+                </div> */}
+                <div className="col-md-2">
+                  <FileUploadButton onClick={trackFile}>
+                    Upload Files
+                  </FileUploadButton>
                 </div>
                 {Files.map((file, index) => (
                   <div

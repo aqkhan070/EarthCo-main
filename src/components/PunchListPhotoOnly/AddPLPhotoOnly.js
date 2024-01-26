@@ -11,7 +11,7 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import TitleBar from "../TitleBar";
 import BackButton from "../Reusable/BackButton";
-
+import FileUploadButton from "../Reusable/FileUploadButton";
 const AddPLPhotoOnly = () => {
   const icon = (
     <svg
@@ -329,7 +329,10 @@ const AddPLPhotoOnly = () => {
               <div className="col-md-6">
                 <div className="row mt-3 ">
                   <div className="col-md-12 col-lg-12">
-                    <div className="basic-form">
+                    <FileUploadButton onClick={trackFile}>
+                      Add Photos(up to 10)
+                    </FileUploadButton>
+                    {/* <div className="basic-form">
                       <h4>Photos(up to 10)</h4>
                       <div className="dz-default dlab-message upload-img mb-3">
                         <form action="#" className="dropzone">
@@ -378,7 +381,7 @@ const AddPLPhotoOnly = () => {
                           </div>
                         </form>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {Files.map((file, index) => (
@@ -440,7 +443,10 @@ const AddPLPhotoOnly = () => {
                 {showAdditional ? (
                   <div className="row mt-3 ">
                     <div className="col-md-12">
-                      <div className="basic-form">
+                      <FileUploadButton onClick={trackAdditionalFile}>
+                        Add Additional Photos(up to 10)
+                      </FileUploadButton>
+                      {/* <div className="basic-form">
                         <h4>Additional Photos(up to 10)</h4>
                         <div className="dz-default dlab-message upload-img mb-3">
                           <form action="#" className="dropzone">
@@ -489,7 +495,7 @@ const AddPLPhotoOnly = () => {
                             </div>
                           </form>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     {additionalFiles.map((file, index) => (

@@ -49,10 +49,12 @@ const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
         aria-labelledby="delete-modal-title"
         aria-describedby="delete-modal-description"
       >
-        <DialogTitle id="delete-modal-title">Delete All</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="delete-modal-description">
-            Are you sure you want to delete all selected items?
+        <DialogTitle sx={{ backgroundColor: "#77993d ", color: "white" }}>
+          Delete All
+        </DialogTitle>
+        <DialogContent sx={{ margin: "2em 5em 0em 5em" }}>
+          <DialogContentText>
+            <h6>Are you sure you want to delete all selected items?</h6>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

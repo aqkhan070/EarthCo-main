@@ -45,17 +45,27 @@ const DashboardEstm = ({ dashBoardData, getDashboardData }) => {
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       // Select all rows
-      const allEstimateIds = dashBoardData.EstimateData.map(
-        (estimate) => estimate.EstimateId
-      );
-      setSelectedEstimates(allEstimateIds);
-      setSelectAll(true);
+      if (
+        dashBoardData &&
+        dashBoardData.EstimateData &&
+        Array.isArray(dashBoardData.EstimateData)
+      ) {
+        const allEstimateIds = dashBoardData.EstimateData.map(
+          (estimate) => estimate.EstimateId
+        );
+        setSelectedEstimates(allEstimateIds);
+        setSelectAll(true);
+      } else {
+        // Handle the case where dashBoardData or EstimateData is not an array
+        console.error("dashBoardData.EstimateData is not an array");
+      }
     } else {
       // Deselect all rows
       setSelectedEstimates([]);
       setSelectAll(false);
     }
   };
+  
   const isRowSelected = (estimateId) => selectedEstimates.includes(estimateId);
   return (
     <div className="card">

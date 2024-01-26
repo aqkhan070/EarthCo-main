@@ -176,7 +176,7 @@ const Irrigationlist = () => {
                           // setShowContent(false);
                         }}
                       >
-                        Add New
+                        Add Irrigation
                       </AddButton>
                     </div>
                   </div>

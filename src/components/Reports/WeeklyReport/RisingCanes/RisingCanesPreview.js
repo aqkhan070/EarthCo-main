@@ -155,7 +155,7 @@ const RisingCanesPreview = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.CompanyName}</h5>
+                    <h5>{weeklyPreviewData.CustomerName}</h5>
                   </div>
                   <div>
                     <h5>

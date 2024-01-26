@@ -176,7 +176,7 @@ const Items = () => {
                       </Select>
                     </FormControl>
                     <AddButton onClick={() => navigate(`/items/add-item`)}>
-                      Add New
+                      Add Item
                     </AddButton>
                   </div>
                 </div>

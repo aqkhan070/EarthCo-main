@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import DashBoard from "../components/DashBoard";
 import HeaderExp from "../components/Header/HeaderExp";
@@ -82,6 +82,12 @@ const DashboardPage = () => {
   const token = Cookies.get("token");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
 
   const isEstimatePreviewRoute =
     window.location.pathname.includes("estimate-preview");
@@ -300,7 +306,7 @@ const DashboardPage = () => {
           </div>
         </>
       ) : (
-        <div>
+        <div className="text-center mt-5">
           <h1>Access is denied</h1>
         </div>
       )}

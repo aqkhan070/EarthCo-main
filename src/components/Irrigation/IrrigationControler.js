@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
-import { TextField } from "@mui/material";
+import { TextField, Button } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 
@@ -207,7 +207,7 @@ const IrrigationControler = ({
               placeholder="Controller Number"
             />
           </div>
-          
+
           <div className="col-sm-5 col-md-4 mb-3 ">
             <div className="col-md-12">
               <label className="form-label">Photo of Controller</label>
@@ -255,7 +255,7 @@ const IrrigationControler = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-6 YNbtn1 ${
+                className={`btn  col-md-6 YNbtn1 ${
                   formData.TypeofWater == "Portable" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -269,7 +269,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-6 YNbtn1 ${
+                className={`btn col-md-6 YNbtn1 ${
                   formData.TypeofWater == "Reclaimed" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -318,7 +318,7 @@ const IrrigationControler = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light  col-md-6 YNbtn2 ${
+                className={`btn   col-md-6 YNbtn2 ${
                   formData.isSatelliteBased && "btn-primary"
                 }`}
                 onClick={() => {
@@ -332,7 +332,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light  col-md-6 YNbtn2 ${
+                className={`btn   col-md-6 YNbtn2 ${
                   !formData.isSatelliteBased && "btn-primary"
                 }`}
                 onClick={() => {
@@ -378,7 +378,7 @@ const IrrigationControler = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-4 YNbtn1 ${
+                className={`btn  col-md-4 YNbtn1 ${
                   formData.TypeofValves == "Plastic" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -392,7 +392,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-4  YNbtn1 ${
+                className={`btn  col-md-4  YNbtn1 ${
                   formData.TypeofValves == "Brass" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -406,7 +406,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-4 YNbtn1 ${
+                className={`btn  col-md-4 YNbtn1 ${
                   formData.TypeofValves == "Mixed" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -452,7 +452,7 @@ const IrrigationControler = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-2 YNbtn1 ${
+                className={`btn  col-md-2 YNbtn1 ${
                   formData.MeterSize == "1/2" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -466,7 +466,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-2 YNbtn1 ${
+                className={`btn  col-md-2 YNbtn1 ${
                   formData.MeterSize == "3/4" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -480,7 +480,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-2 YNbtn1 ${
+                className={`btn  col-md-2 YNbtn1 ${
                   formData.MeterSize == "1" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -494,7 +494,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-2 YNbtn1 ${
+                className={`btn  col-md-2 YNbtn1 ${
                   formData.MeterSize == "11/2" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -508,7 +508,7 @@ const IrrigationControler = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-2 YNbtn1 ${
+                className={`btn  col-md-2 YNbtn1 ${
                   formData.MeterSize == "2" && "btn-primary"
                 }`}
                 onClick={() => {
@@ -587,23 +587,29 @@ const IrrigationControler = ({
             )} */}
           </div>
           <div className=" col-md-4 mb-3 text-right">
+            <Button
+              variant="outlined"
+              sx={{
+                color: "black",
+                border: "1px solid black",
+                marginRight: "0.5em",
+
+                textTransform: "capitalize",
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "white",
+                  border: "1px solid black",
+                  outlineColor: "black",
+                },
+              }}
+              onClick={toggleShowForm}
+              color="primary"
+            >
+              Clear
+            </Button>
             <LoaderButton loading={disableButton} handleSubmit={handleSubmit}>
               Add
             </LoaderButton>{" "}
-            <button
-              onClick={toggleShowForm}
-              type="button"
-              className="btn btn-danger light me-1"
-            >
-              Clear
-            </button>
-            {/* <button
-              type="button"
-              className="btn btn-primary me-1"
-              onClick={handleSubmit}
-            >
-              Add
-            </button> */}
           </div>
         </div>
       </div>

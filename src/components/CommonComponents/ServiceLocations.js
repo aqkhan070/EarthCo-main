@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useState, } from "react";
 import axios from "axios";
-import validator from "validator";
-import { TextField } from "@mui/material";
 import Cookies from "js-cookie";
 import EventPopups from "../Reusable/EventPopups";
 import SLAddress from "./CustomerAddress/SLAddress";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 const ServiceLocations = ({
   customerId,
@@ -168,8 +167,13 @@ const ServiceLocations = ({
         onClick={(e) => {
           e.preventDefault();
         }}
-      ><strong>
-        + Add</strong>
+      >
+        <CustomizedTooltips
+          title="Click add new service location"
+          placement="top"
+        >
+          <strong>+ Add</strong>
+        </CustomizedTooltips>
       </span>
     </>
   );

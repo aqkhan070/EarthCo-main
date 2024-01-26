@@ -18,18 +18,21 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const DashBoard = () => {
   const { dashBoardData, getDashboardData, loading } = useFetchDashBoardData();
-  useEffect(() => {
-    getDashboardData();
-  }, []);
 
   const supabase = createClient(
     "https://hgdeariacwkedtbglxwg.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnZGVhcmlhY3drZWR0YmdseHdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDI5NjU1ODUsImV4cCI6MjAxODU0MTU4NX0.6RSteYZdFAiIBVcmDq-7N14xdqLKupGLFqGhplJs1iQ"
   );
 
-  const { loggedInUser } = useContext(DataContext);
+  const { loggedInUser, dashBoardRefresh, setDashBoardRefresh } =
+    useContext(DataContext);
   const { setEstimateRoute, setSRroute } = useContext(RoutingContext);
-
+  useEffect(() => {
+    if (dashBoardRefresh) {
+      // window.location.reload();
+    }
+    getDashboardData();
+  }, []);
   const icon = (
     <svg
       width="20"
@@ -66,14 +69,20 @@ const DashBoard = () => {
             <div className="row">
               <div className="col-md-9">
                 <div className="">
-                  <DashBoardSR dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
+                  <DashBoardSR
+                    dashBoardData={dashBoardData}
+                    getDashboardData={getDashboardData}
+                  />
                 </div>
                 <div className="">
                   {loggedInUser.userRole == 5 ? (
                     <></>
                   ) : (
                     <>
-                      <DashboardEstm dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
+                      <DashboardEstm
+                        dashBoardData={dashBoardData}
+                        getDashboardData={getDashboardData}
+                      />
                     </>
                   )}
                 </div>
@@ -81,7 +90,10 @@ const DashBoard = () => {
 
               <div className="col-md-3">
                 <SessionContextProvider supabaseClient={supabase}>
-                  <DashBoardCalender dashBoardData={dashBoardData} getDashboardData={getDashboardData} />
+                  <DashBoardCalender
+                    dashBoardData={dashBoardData}
+                    getDashboardData={getDashboardData}
+                  />
                 </SessionContextProvider>
               </div>
             </div>

@@ -46,9 +46,6 @@ const LandscapeForm = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
-
-  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
-
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
@@ -1066,7 +1063,7 @@ const LandscapeForm = () => {
                       <h4>Extra Information</h4>
                     </div>
                     <div className="basic-form">
-                      <form className="card-body">
+                      <div className="card-body">
                         <div className="col-md-12">
                           <div className="row">
                             <div
@@ -1080,23 +1077,21 @@ const LandscapeForm = () => {
                             </div>
                             <div className="col-md-7">
                               <div className="basic-form">
-                                <form>
-                                  <div className="mb-3">
-                                    <textarea
-                                      className="form-txtarea form-control"
-                                      rows="2"
-                                      name="Notes"
-                                      onChange={handleInputChange}
-                                      value={formData.Notes}
-                                      id="comment"
-                                    ></textarea>
-                                  </div>
-                                </form>
+                                <div className="mb-3">
+                                  <textarea
+                                    className="form-txtarea form-control"
+                                    rows="2"
+                                    name="Notes"
+                                    onChange={handleInputChange}
+                                    value={formData.Notes}
+                                    id="comment"
+                                  ></textarea>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </form>
+                      </div>
                     </div>
                   </div>
                 </div>

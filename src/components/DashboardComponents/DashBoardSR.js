@@ -52,17 +52,23 @@ const DashBoardSR = ({ dashBoardData, getDashboardData }) => {
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       // Select all rows
-      const allServiceRequestIds = dashBoardData.ServiceRequestData.map(
-        (customer) => customer.ServiceRequestId
-      );
-      setSelectedServiceRequests(allServiceRequestIds);
-      setSelectAll(true);
+      if (dashBoardData && dashBoardData.ServiceRequestData && Array.isArray(dashBoardData.ServiceRequestData)) {
+        const allServiceRequestIds = dashBoardData.ServiceRequestData.map(
+          (customer) => customer.ServiceRequestId
+        );
+        setSelectedServiceRequests(allServiceRequestIds);
+        setSelectAll(true);
+      } else {
+        // Handle the case where dashBoardData or ServiceRequestData is not an array
+        console.error("dashBoardData.ServiceRequestData is not an array");
+      }
     } else {
       // Deselect all rows
       setSelectedServiceRequests([]);
       setSelectAll(false);
     }
   };
+  
   const isRowSelected = (sr) => selectedServiceRequests.includes(sr);
   return (
     <div className="card">

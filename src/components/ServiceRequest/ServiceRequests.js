@@ -16,6 +16,8 @@ const ServiceRequests = () => {
     isLoading,
     fetchServiceRequest,
     totalRecords,
+    fetchFilterServiceRequest,
+    sRFilterList,
     serviceRequest,
     sRfetchError,
   } = useFetchServiceRequests();
@@ -47,11 +49,10 @@ const ServiceRequests = () => {
   }, [serviceRequest]);
 
   useEffect(() => {
-    
-    fetchServiceRequest();
+  
     return () => {
-      setStatusId(0)
-    }
+      setStatusId(0);
+    };
   }, []);
 
   return (
@@ -81,8 +82,11 @@ const ServiceRequests = () => {
                 headers={headers}
                 serviceRequest={serviceRequest}
                 setShowCards={setShowCards}
-                fetchServiceRequest={fetchServiceRequest}
+   
                 statusId={statusId}
+                fetchFilterServiceRequest={fetchFilterServiceRequest}
+                sRFilterList={sRFilterList}
+                totalRecords={totalRecords}
               />
             </div>
           )}

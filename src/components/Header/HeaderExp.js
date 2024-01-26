@@ -10,6 +10,7 @@ import { StyleContext } from "../../context/StyleData";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import DoneIcon from "@mui/icons-material/Sync";
+import Tick from "@mui/icons-material/CheckCircleOutline";
 import useFetchDashBoardData from "../Hooks/useFetchDashBoardData";
 import Avatar from "@mui/material/Avatar";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
@@ -48,7 +49,7 @@ function stringAvatar(name) {
         sx: {
           bgcolor: stringToColor(name),
         },
-        children: name[0],
+        children: name.slice(0, 2), // Display the first two characters of the name
       };
     } else {
       // Handle the case where name is undefined or empty
@@ -61,11 +62,22 @@ function stringAvatar(name) {
     }
   }
 
+  // Split the name into words
+  const words = name.split(" ");
+  let initials = "";
+
+  // Extract the first character of each word
+  for (const word of words) {
+    if (word.length > 0) {
+      initials += word[0]; // Include the first character
+    }
+  }
+
   return {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+    children: initials,
   };
 }
 
@@ -93,7 +105,7 @@ const HeaderExp = () => {
 
   const { dashBoardData, getDashboardData } = useFetchDashBoardData();
 
-  const { syncQB, loading } = useQuickBook();
+  const { syncQB, loading, showTick } = useQuickBook();
 
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
@@ -147,6 +159,14 @@ const HeaderExp = () => {
         setMainControl("mobileH");
       }
     }
+  };
+
+  const clearAllCookies = () => {
+    const allCookies = Cookies.get(); // Get all cookies
+    for (const cookie in allCookies) {
+      Cookies.remove(cookie); // Remove each cookie
+    }
+    navigate("/");
   };
 
   const collapseSideBar = () => {
@@ -260,18 +280,33 @@ const HeaderExp = () => {
                             </>
                           ) : (
                             <>
-                              <CustomizedTooltips title="Click Sync with QuickBooks">
-                                <DoneIcon
-                                  onClick={() => {
-                                    syncQB(0);
-                                  }}
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#2C9F1C",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </CustomizedTooltips>
+                              {showTick ? (
+                                <>
+                                  {" "}
+                                  <Tick
+                                    sx={{
+                                      fontSize: 25,
+                                      color: "#2C9F1C",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <CustomizedTooltips title="Click Sync with QuickBooks">
+                                    <DoneIcon
+                                      onClick={() => {
+                                        syncQB(0);
+                                      }}
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#2C9F1C",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </CustomizedTooltips>
+                                </>
+                              )}
                             </>
                           )}
                         </>
@@ -324,11 +359,12 @@ const HeaderExp = () => {
                 </div>
                 <ul className="navbar-nav header-right">
                   <li className="nav-item align-items-center header-border">
-                    <NavLink to="/" style={{ display: "contents" }}>
-                      <CustomizedTooltips title="logout">
-                        <PowerSettingsNewIcon sx={{ color: "white" }} />
-                      </CustomizedTooltips>
-                    </NavLink>
+                    <CustomizedTooltips title="logout">
+                      <PowerSettingsNewIcon
+                        sx={{ color: "white", cursor: "pointer" }}
+                        onClick={clearAllCookies}
+                      />
+                    </CustomizedTooltips>
                   </li>
                   <li className="nav-item ps-3">
                     <div className="dropdown header-profile2">
@@ -379,13 +415,10 @@ const HeaderExp = () => {
                             </div>
                           </div>
                           <div className="card-body px-0 py-0">
-                            <ul></ul>
-                          </div>
-                          <div className="card-footer px-0 py-2">
                             <ul>
                               <li
                                 style={{ cursor: "pointer" }}
-                                className="dropdown-item ai-icon "
+                                className="dropdown-item ai-icon mt-2 "
                                 onClick={() => {
                                   navigate(
                                     `/staff/add-staff?id=${loggedInUser.userId}`
@@ -418,7 +451,7 @@ const HeaderExp = () => {
                                     strokeLinejoin="round"
                                   />
                                 </svg>
-                                <span className="ms-2">Settings </span>
+                                <span className="ms-2 ">Settings </span>
                               </li>
                             </ul>
 
@@ -445,10 +478,7 @@ const HeaderExp = () => {
                                   </svg>
                                   <span
                                     className="ms-2"
-                                    onClick={() => {
-                                      // Cookies.set("token", "");
-                                      // navigate(`/`);
-                                    }}
+                                    onClick={clearAllCookies}
                                   >
                                     Logout{" "}
                                   </span>

@@ -54083,6 +54083,9 @@ height: 30px !important;
 .preview-table-header {
 background-color: #CCCCCC;
 }
+.preview-table-header th strong{
+    background-color: #CCCCCC;
+    }
 
 .bill-tbl-alignment{
 }

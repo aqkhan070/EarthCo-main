@@ -148,7 +148,7 @@ const RisingCaneTable = () => {
                     navigate(`/weekly-reports/add-rising-canes`);
                   }}
                 >
-                  Add report
+                  Add Weekly report - RC
                 </AddButton>
               )}
             </div>
@@ -198,7 +198,7 @@ const RisingCaneTable = () => {
                               );
                             }}
                           >
-                            {report.CompanyName}
+                            {report.CustomerName}
                           </TableCell>
                           <TableCell
                             onClick={() => {

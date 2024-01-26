@@ -24,9 +24,10 @@ import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
-
 import Contacts from "../CommonComponents/Contacts";
 import BackButton from "../Reusable/BackButton";
+import FileUploadButton from "../Reusable/FileUploadButton";
+
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -564,6 +565,9 @@ const AddSRform = () => {
 
   const handleAddItem = () => {
     const newItem = { ...itemInput };
+    if (!newItem.ItemId) {
+      return;
+    }
     const newAmount = newItem.Qty * newItem.Rate;
     newItem.Amount = newAmount;
 
@@ -1367,9 +1371,9 @@ const AddSRform = () => {
                     </div>
 
                     <div className="row card-body">
-                      <div className="col-xl-4 col-lg-4">
-                        <label className="form-label">Attachments</label>
-                        {/* <h4 className="card-title mt-2">Attachments</h4> */}
+                      <div className="col-xl-2 col-md-2">
+                        {/* <label className="form-label">Attachments</label>
+                       <h4 className="card-title mt-2">Attachments</h4>
                         <div className="dz-default dlab-message upload-img mb-3">
                           <form action="#" className="dropzone">
                             <svg
@@ -1416,7 +1420,10 @@ const AddSRform = () => {
                               />
                             </div>
                           </form>
-                        </div>
+                        </div> */}
+                        <FileUploadButton onClick={trackFile}>
+                          Upload File
+                        </FileUploadButton>
                       </div>
 
                       {PrevFiles.map((file, index) => (
@@ -1641,6 +1648,7 @@ const AddSRform = () => {
                             CustomerId: SRData.ServiceRequestData.CustomerId,
                             ServiceLocationId:
                               SRData.ServiceRequestData.ServiceLocationId,
+                            FilesData: PrevFiles,
                             ContactIds: selectedContacts,
                             ItemData: tblSRItems.map((items) => ({
                               ...items,

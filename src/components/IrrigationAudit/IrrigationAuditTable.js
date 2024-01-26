@@ -220,13 +220,12 @@ const IrrigationAuditTable = () => {
                         </Select>
                       </FormControl>
                       <AddButton
-                       
                         onClick={() => {
                           navigate(`/irrigation-audit/add`);
                           // setShowContent(false);
                         }}
                       >
-                       Add New
+                        Add Controller Audit
                       </AddButton>
                     </div>
                   </div>

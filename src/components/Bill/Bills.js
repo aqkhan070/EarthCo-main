@@ -28,22 +28,10 @@ import { DataContext } from "../../context/AppData";
 import formatDate from "../../custom/FormatDate";
 import TblDateFormat from "../../custom/TblDateFormat";
 import AddButton from "../Reusable/AddButton";
-
+import formatAmount from "../../custom/FormatAmount";
 const Bills = () => {
-  const headers = {
-    Authorization: `Bearer ${Cookies.get("token")}`,
-  };
-  const [showContent, setshowContent] = useState(true);
-  const [selectedBill, setselectedBill] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("DueDate");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState("");
-
   const {
     billList,
     loading,
@@ -54,8 +42,6 @@ const Bills = () => {
     totalRecords,
   } = useFetchBills();
 
-  const { setBillData } = useContext(DataContext);
-
   const navigate = useNavigate();
 
   const [tablePage, setTablePage] = useState(0);
@@ -63,68 +49,15 @@ const Bills = () => {
   const [isAscending, setIsAscending] = useState(false);
 
   useEffect(() => {
-    // Initial fetch of estimates
     fetchFilterBills();
   }, []);
 
   useEffect(() => {
-    // Fetch estimates when the tablePage changes
     fetchFilterBills(searchBill, tablePage + 1, rowsPerPage, isAscending);
   }, [searchBill, tablePage, rowsPerPage, isAscending]);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
-  };
-
-  const deleteBill = async (id) => {
-    try {
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Bill/DeleteBill?id=${id}`,
-        { headers }
-      );
-      setDeleteSuccess(true);
-      setTimeout(() => {
-        setDeleteSuccess(false);
-      }, 4000);
-      fetchFilterBills();
-
-      console.log(res.data);
-    } catch (error) {
-      console.log("api call error", error);
-    }
-  };
-
-  useEffect(() => {
-    setselectedBill(0);
-  }, []);
-
-  const handleSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const filteredBills = filteredBillsList.filter((bill) =>
-    bill.SupplierName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const sortedBills = filteredBills.sort((a, b) => {
-    const aValue = a[orderBy];
-    const bValue = b[orderBy];
-    if (order === "asc") {
-      return aValue.localeCompare(bValue);
-    } else {
-      return bValue.localeCompare(aValue);
-    }
-  });
-
-  // const handleChangePage = (event, newPage) => {
-  //   setPage(newPage);
-  // };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
   return (
@@ -169,7 +102,7 @@ const Bills = () => {
                       navigate(`/bills/add-bill`);
                     }}
                   >
-                    Add New Bill
+                    Add Bill
                   </AddButton>
                 </div>
               </div>
@@ -195,7 +128,7 @@ const Bills = () => {
                         </TableCell>
                       </TableRow>
                     ) : null}
-                    {sortedBills
+                    {filteredBillsList
                       .slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
@@ -204,8 +137,6 @@ const Bills = () => {
                         <TableRow
                           className="bill-tbl-alignment"
                           onClick={() => {
-                            // setshowContent(false);
-                            // setselectedBill(bill.BillId);
                             navigate(`/bills/add-bill?id=${bill.BillId}`);
                           }}
                           hover
@@ -214,91 +145,21 @@ const Bills = () => {
                           <TableCell>{bill.SupplierName}</TableCell>
                           <TableCell>{TblDateFormat(bill.DueDate)}</TableCell>
                           <TableCell className="text-end ">
-                            {bill.Amount}
+                            ${formatAmount(bill.Amount)}
                           </TableCell>
                           <TableCell>{bill.Memo}</TableCell>
                           <TableCell>{bill.Currency}</TableCell>
                           <TableCell>{bill.Tags}</TableCell>
                           <TableCell align="center">
                             <Button
-                              // className="btn btn-primary btn-icon-xxs me-2"
                               onClick={() => {
                                 navigate(
                                   `/bills/bill-preview?id=${bill.BillId}`
                                 );
-                                // setBillData(bill);
-                                // console.log(estimate.EstimateId);
                               }}
                             >
-                              {/* <i className="fa-solid fa-eye"></i> */}
-
                               <Visibility />
                             </Button>
-                            {/* <Button
-                                      // className="btn btn-primary btn-icon-xxs me-2"
-                                      onClick={() => {
-                                        setshowContent(false);
-                                        setselectedBill(bill.BillId);
-                                      }}
-                                    >
-                                       <i className="fas fa-pencil-alt"></i>
-                                      <Create></Create>
-                                    </Button> */}
-                            {/*  <Button
-                                      data-bs-toggle="modal"
-                                      // className="btn btn-danger btn-icon-xxs mr-2"
-                                      data-bs-target={`#deleteModal${bill.BillId}`}
-                                    >
-                                     <i className="fas fa-trash-alt"></i>
-                                      <Delete color="error"></Delete>
-                                    </Button> */}
-
-                            <div
-                              className="modal fade"
-                              id={`deleteModal${bill.BillId}`}
-                              tabIndex="-1"
-                              aria-labelledby="deleteModalLabel"
-                              aria-hidden="true"
-                            >
-                              <div
-                                className="modal-dialog modal-dialog-centered"
-                                role="document"
-                              >
-                                <div className="modal-content">
-                                  <div className="modal-header">
-                                    <h5 className="modal-title">Delete Bill</h5>
-                                    <button
-                                      type="button"
-                                      className="btn-close"
-                                      data-bs-dismiss="modal"
-                                    ></button>
-                                  </div>
-                                  <div className="modal-body">
-                                    <p>
-                                      Are you sure you want to delete{" "}
-                                      {bill.BillId}
-                                    </p>
-                                  </div>
-                                  <div className="modal-footer">
-                                    <button
-                                      type="button"
-                                      id="closer"
-                                      className="btn btn-danger light me-"
-                                      data-bs-dismiss="modal"
-                                    >
-                                      Close
-                                    </button>
-                                    <button
-                                      className="btn btn-primary"
-                                      data-bs-dismiss="modal"
-                                      onClick={() => deleteBill(bill.BillId)}
-                                    >
-                                      Yes
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

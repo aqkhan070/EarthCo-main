@@ -33,7 +33,7 @@ import { DataContext } from "../../context/AppData";
 import UpdateAllModal from "../Reusable/UpdateAllModal";
 import DeleteAllModal from "../Reusable/DeleteAllModal";
 import AddButton from "../Reusable/AddButton";
-
+import formatAmount from "../../custom/FormatAmount";
 const theme = createTheme({
   palette: {
     primary: {
@@ -56,86 +56,22 @@ const theme = createTheme({
 
 const EstimateTR = ({
   headers,
-  estimates,
+  estmRecords,
+  tableError,
+  filterdEstm,
+  getFilteredEstimate,
   statusId,
-  setShowStatusCards,
-  getEstimate,
-  setestmPreviewId,
 }) => {
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
-  const { estmRecords, tableError, filterdEstm, getFilteredEstimate } =
-    useGetEstimate();
+  const {} = useGetEstimate();
   const { PunchListData, setPunchListData } = useContext(DataContext);
 
-  const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("EstimateId");
-  const [filtering, setFiltering] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
-
-  const [selectedEstimateIds, setSelectedEstimateIds] = useState([]);
-
   const navigate = useNavigate();
 
-  const handleSort = (property) => {
-    let actualProperty;
-    switch (property) {
-      case "#":
-        actualProperty = "EstimateId";
-        break;
-      case "Customer Name":
-        actualProperty = "CustomerName";
-        break;
-      case "Estimate Number":
-        actualProperty = "EstimateNumber";
-        break;
-      case "Estimate Amount":
-        actualProperty = "EstimateAmount";
-        break;
-      case "Description Of Work":
-        actualProperty = "DescriptionofWork";
-        break;
-      case "Date Created":
-        actualProperty = "DateCreated";
-        break;
-      case "Status":
-        actualProperty = "ContactStatusEmail";
-        break;
-      default:
-        actualProperty = property;
-    }
-
-    const isAsc = orderBy === actualProperty && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(actualProperty);
-  };
-
-  // const filteredEstimates = estimates
   const filteredEstimates = filterdEstm;
-  // .filter((e) =>
-  //   e.CustomerName.toLowerCase().includes(filtering.toLowerCase())
-  // )
-  // .filter((e) => filterByDate(e.Date, filterDate))
-  // .sort(getSorting(order, orderBy));
-
-  // ... Pagination, Sorting logic ...
-  function desc(a, b, orderBy) {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  }
-
-  function getSorting(order, orderBy) {
-    return order === "desc"
-      ? (a, b) => desc(a, b, orderBy)
-      : (a, b) => -desc(a, b, orderBy);
-  }
 
   const deleteEstimate = async (id) => {
     try {
@@ -147,9 +83,7 @@ const EstimateTR = ({
       );
       console.log(response.data);
 
-      setDeleteSuccess(true);
       setTimeout(() => {
-        setDeleteSuccess(false);
         getFilteredEstimate();
       }, 4000);
     } catch (error) {
@@ -203,20 +137,26 @@ const EstimateTR = ({
   };
   const isRowSelected = (estimateId) => selectedEstimates.includes(estimateId);
 
-  const handleSelectAll = (event) => {
-    if (event.target.checked) {
-      // Select all rows
+ const handleSelectAll = (event) => {
+  if (event.target.checked) {
+    // Select all rows
+    if (Array.isArray(filteredEstimates)) {
       const allEstimateIds = filteredEstimates.map(
         (estimate) => estimate.EstimateId
       );
       setSelectedEstimates(allEstimateIds);
       setSelectAll(true);
     } else {
-      // Deselect all rows
-      setSelectedEstimates([]);
-      setSelectAll(false);
+      // Handle the case where filteredEstimates is not an array
+      console.error("filteredEstimates is not an array");
     }
-  };
+  } else {
+    // Deselect all rows
+    setSelectedEstimates([]);
+    setSelectAll(false);
+  }
+};
+
 
   return (
     <>
@@ -574,7 +514,7 @@ const EstimateTR = ({
                                 );
                               }}
                             >
-                              {estimate.EstimateAmount?.toFixed(2)}
+                              {formatAmount(estimate.EstimateAmount)}
                             </TableCell>
                           </TableRow>
                         ))

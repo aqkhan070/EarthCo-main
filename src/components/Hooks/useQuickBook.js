@@ -9,6 +9,7 @@ const useQuickBook = () => {
     Authorization: `Bearer ${token}`,
   };
   const [loading, setLoading] = useState(false);
+  const [showTick, setShowTick] = useState(false)
 
   const connectToQB = async () => {
     try {
@@ -51,6 +52,11 @@ const useQuickBook = () => {
       );
 
       setLoading(false);
+      setShowTick(true)
+      setTimeout(() => {
+      setShowTick(false)
+        
+      }, 1500);
 
       console.log("synced qb", res.data);
     } catch (error) {
@@ -64,6 +70,7 @@ const useQuickBook = () => {
     genetareQBToken,
     syncQB,
     loading,
+    showTick
   };
 };
 

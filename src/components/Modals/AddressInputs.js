@@ -143,11 +143,13 @@ const AddressInputs = ({
           let longitude = "";
           let countryCode = "";
           let postalCode = "";
-  
+
           for (const component of addressComponents) {
             if (component.types.includes("locality")) {
               city = component.long_name;
-            } else if (component.types.includes("administrative_area_level_1")) {
+            } else if (
+              component.types.includes("administrative_area_level_1")
+            ) {
               state = component.long_name;
             } else if (component.types.includes("country")) {
               country = component.long_name;
@@ -160,7 +162,7 @@ const AddressInputs = ({
               postalCode = component.long_name;
             }
           }
-  
+
           latitude = results[0].geometry.location.lat();
           longitude = results[0].geometry.location.lng();
 

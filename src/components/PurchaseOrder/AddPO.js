@@ -29,7 +29,8 @@ import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
-
+import FileUploadButton from "../Reusable/FileUploadButton";
+import formatAmount from "../../custom/FormatAmount";
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -484,6 +485,9 @@ export const AddPO = ({}) => {
     if (estimateLinkData.tblEstimateItems) {
       setItemsList(estimateLinkData.tblEstimateItems);
     }
+    if (estimateLinkData.FileData) {
+      setEstimateFiles(estimateLinkData.FileData);
+    }
 
     setFormData((prevData) => ({
       ...prevData,
@@ -525,7 +529,9 @@ export const AddPO = ({}) => {
 
   const handleAddItem = () => {
     // Adding the new item to the itemsList
-
+    if (!itemInput.ItemId) {
+      return;
+    }
     setItemsList((prevItems) => [
       ...prevItems,
       { ...itemInput }, // Ensure each item has a unique 'id'
@@ -627,6 +633,7 @@ export const AddPO = ({}) => {
 
   // file
   const [PrevFiles, setPrevFiles] = useState([]);
+  const [estimateFiles, setEstimateFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [lastfile, setLastfile] = useState({});
 
@@ -661,6 +668,17 @@ export const AddPO = ({}) => {
     // Update the selectedFiles state with the new array
     setSelectedFiles(updatedFiles);
     console.log("Deleted file at index:", indexToDelete);
+  };
+
+  const handleDeleteEstmFile = (indexToDelete) => {
+    // Make a copy of the current estimateFiles array
+    const updatedFiles = [...estimateFiles];
+
+    // Remove the file at the specified index
+    updatedFiles.splice(indexToDelete, 1);
+
+    // Update the state with the new array without the deleted file
+    setEstimateFiles(updatedFiles);
   };
 
   // submit handler
@@ -706,6 +724,7 @@ export const AddPO = ({}) => {
       Amount: totalAmount,
       PurchaseOrderId: idParam,
       tblPurchaseOrderItems: itemsList,
+      tblPurchaseOrderFiles: estimateFiles,
       CompanyId: Number(loggedInUser.CompanyId),
 
       // CreatedBy: 2,
@@ -958,11 +977,21 @@ export const AddPO = ({}) => {
                           <ul>
                             <li>
                               <span>Vendor Address</span>
-                              <p>{supplierAddress || ""}</p>
+                              <p>
+                                {" "}
+                                {supplierAddress ||
+                                  formData.SupplierAddress ||
+                                  ""}
+                              </p>
                             </li>
                             <li>
                               <span>Sipping </span>
-                              <p>{supplierAddress || ""}</p>
+                              <p>
+                                {" "}
+                                {supplierAddress ||
+                                  formData.SupplierAddress ||
+                                  ""}
+                              </p>
                             </li>
                           </ul>
                         </div>
@@ -1596,9 +1625,12 @@ export const AddPO = ({}) => {
                         </div>
                       </div>
                       <div className="col-xl-12 col-lg-12">
-                        <div className="basic-form">
+                        <FileUploadButton onClick={handleFileChange}>
+                          Upload File
+                        </FileUploadButton>
+                        {/* <div className="basic-form">
                           <label className="form-label">Attachments</label>
-                          {/* <h4 className="card-title">Attachments</h4> */}
+                          <h4 className="card-title">Attachments</h4>
                           <div className="dz-default dlab-message upload-img mb-3">
                             <form action="#" className="dropzone">
                               <svg
@@ -1646,7 +1678,7 @@ export const AddPO = ({}) => {
                               </div>
                             </form>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -1679,7 +1711,7 @@ export const AddPO = ({}) => {
                               <strong>Total</strong>
                             </td>
                             <td className="text-right">
-                              <strong>${totalAmount.toFixed(2)}</strong>
+                              <strong>${formatAmount(totalAmount)}</strong>
                             </td>
                           </tr>
                         </tbody>
@@ -1742,6 +1774,67 @@ export const AddPO = ({}) => {
                           }}
                         >
                           <span>
+                            <Delete color="error" />
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+
+                    {estimateFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="col-md-2 col-md-2 mt-3 image-container"
+                        style={{
+                          width: "150px", // Set the desired width
+                          height: "120px", // Set the desired height
+                          margin: "1em",
+                          position: "relative",
+                        }}
+                      >
+                        <a
+                          href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                            alt={file.FileName}
+                            style={{
+                              width: "150px",
+                              height: "120px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </a>
+                        <p
+                          className="file-name-overlay"
+                          style={{
+                            position: "absolute",
+                            bottom: "0",
+                            left: "13px",
+                            right: "0",
+                            backgroundColor: "rgba(0, 0, 0, 0.3)",
+                            textAlign: "center",
+                            overflow: "hidden",
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            padding: "5px",
+                          }}
+                        >
+                          {file.FileName}
+                        </p>
+                        <span
+                          className="file-delete-button"
+                          style={{
+                            left: "140px",
+                          }}
+                        >
+                          <span
+                            onClick={() => {
+                              handleDeleteEstmFile(index);
+                            }}
+                          >
                             <Delete color="error" />
                           </span>
                         </span>

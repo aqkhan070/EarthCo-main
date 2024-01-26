@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import logo from "../../assets/images/logo/earthco_logo.png";
@@ -15,7 +15,7 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
-
+import { useReactToPrint } from "react-to-print";
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -44,17 +44,22 @@ const SRPreview = () => {
 
   const { contactEmail, fetchEmail } = useFetchContactEmail();
 
-  const handlePrint = () => {
-    // setToggleFullscreen(false);
-    setShowButtons(false);
-    setTimeout(() => {
-      window.print();
-    }, 1000);
-    setTimeout(() => {
-      //setToggleFullscreen(true);
-      setShowButtons(true);
-    }, 3000);
-  };
+  // const handlePrint = () => {
+  //   // setToggleFullscreen(false);
+  //   setShowButtons(false);
+  //   setTimeout(() => {
+  //     window.print();
+  //   }, 1000);
+  //   setTimeout(() => {
+  //     //setToggleFullscreen(true);
+  //     setShowButtons(true);
+  //   }, 3000);
+  // };
+
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   const handleDownload = () => {
     const input = document.getElementById("SR-preview");
@@ -161,7 +166,7 @@ const SRPreview = () => {
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
-              <div id="SR-preview" className=" get-preview ">
+              <div ref={componentRef} id="SR-preview" className=" get-preview ">
                 <div
                   className="card-body perview-pd"
                   style={{ minHeight: "23cm" }}
@@ -170,8 +175,8 @@ const SRPreview = () => {
                     <div className="col-md-4 col-sm-4">
                       <h5 className="mb-0">EarthCo</h5>{" "}
                       <h6 className="mb-0">
-                        1225 East Wakeham Avenue <br /> Santa Ana,
-                       California 92705
+                        1225 East Wakeham Avenue <br /> Santa Ana, California
+                        92705
                       </h6>
                       <h6 className="mb-0">
                         <strong>Phone: </strong> 714.571.0455
@@ -197,21 +202,21 @@ const SRPreview = () => {
                   <div className="row my-2">
                     <div className="col-md-7 col-sm-7">
                       <div className="table-responsive">
-                        <table className=" table-striped table table-bordered text-start">
+                        <table className="table-striped table table-bordered text-start">
                           <thead>
                             <tr
                               style={{ backgroundColor: "gray" }}
                               className="preview-table-head LandScape-TablePadding"
                             >
                               <th
-                                style={{ width: "13vw" }}
                                 className="landscap-preview-heading"
+                                style={{ width: "50%" }}
                               >
                                 Requested By:
                               </th>
                               <th
-                                style={{ width: "13vw" }}
                                 className="landscap-preview-heading"
+                                style={{ width: "50%" }}
                               >
                                 Service Location:
                               </th>
@@ -219,13 +224,13 @@ const SRPreview = () => {
                           </thead>
                           <tbody>
                             <tr className="preview-table-row">
-                              <td style={{ color: "black", width: "13vw" }}>
+                              <td style={{ color: "black", width: "50%" }}>
                                 {name}
                                 <br />
                                 {sRPreviewData.Data.ContactCompanyName}
                               </td>
                               <td
-                                style={{ color: "black", width: "13vw" }}
+                                style={{ color: "black", width: "50%" }}
                                 className="left strong"
                               >
                                 {sRPreviewData.Data.ServiceLocationAddress}
@@ -238,20 +243,17 @@ const SRPreview = () => {
 
                     <div
                       style={{ color: "black" }}
-                      className="col-md-5 col-sm-4 text-end"
+                      className="col-md-5 col-sm-5 "
                     >
                       <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6 p-0 text-end">
                           <strong>Date Created:</strong>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6 p-0 text-start">
                           {" "}
-                          <div
-                            style={{ color: "black" }}
-                            className="text-start"
-                          >
-                            <p className="">
-                              {" "}
+                          <div style={{ color: "black" }}>
+                            <p>
+                              &nbsp;
                               {formatDate(
                                 sRPreviewData.Data.CreatedDate,
                                 false
@@ -259,17 +261,14 @@ const SRPreview = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6 text-end p-0">
                           <strong>Target completion:</strong>
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-6 col-sm-6 p-0 text-start">
                           {" "}
-                          <div
-                            style={{ color: "black" }}
-                            className="text-start"
-                          >
+                          <div style={{ color: "black" }} className="">
                             <p className="">
-                              {" "}
+                              &nbsp;
                               {formatDate(sRPreviewData.Data.DueDate, false)}
                             </p>
                           </div>

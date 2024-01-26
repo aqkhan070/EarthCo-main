@@ -210,7 +210,7 @@ const WeeklyReportlist = () => {
                                 <TableCell>
                                   {staff.RegionalManagerName}
                                 </TableCell>
-                                <TableCell>{staff.CompanyName}</TableCell>
+                                <TableCell>{staff.CustomerName}</TableCell>
                                 <TableCell>
                                   <span
                                     style={{

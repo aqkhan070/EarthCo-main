@@ -34,7 +34,8 @@ import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
 import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
-
+import FileUploadButton from "../Reusable/FileUploadButton";
+import formatAmount from "../../custom/FormatAmount";
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -97,6 +98,14 @@ const AddEstimateForm = () => {
           { FilePath: PunchListData.PhotoPath },
           { FilePath: PunchListData.AfterPhotoPath },
         ],
+      }));
+    }
+
+    if (PunchListData.FilesData) {
+      setFormData((prevState) => ({
+        ...prevState,
+        ...PunchListData,
+        tblEstimateFiles: PunchListData.FilesData,
       }));
     }
 
@@ -485,7 +494,7 @@ const AddEstimateForm = () => {
 
   const deleteItem = (itemId, isCost) => {
     const updatedArr = formData.tblEstimateItems.filter(
-      (item) => item.ItemId !== itemId || item.isCost !== isCost
+      (item) => item.ItemId !== itemId
     );
     setFormData((prevData) => ({
       ...prevData,
@@ -523,7 +532,9 @@ const AddEstimateForm = () => {
       ...itemInput,
       Amount: newAmount,
     };
-
+    if (!newItem.ItemId) {
+      return;
+    }
     setFormData((prevData) => ({
       ...prevData,
       tblEstimateItems: [...prevData.tblEstimateItems, newItem],
@@ -774,7 +785,7 @@ const AddEstimateForm = () => {
       setTotalDiscount(0);
       return;
     }
-    if (newValue == 0) {
+    if (newValue === 0) {
       setTotalDiscount(0);
     } else {
       setTotalDiscount(newValue);
@@ -812,12 +823,12 @@ const AddEstimateForm = () => {
       0
     );
     const totalamount =
-      newTotalAmount + shippingCost - (totalDiscount * subtotal) / 100;
+      newTotalAmount + shippingCost - (totalDiscount * newTotalAmount) / 100;
 
     let calculatedTotalProfit = 0;
-    if (subtotal > 0) {
+    if (newTotalAmount > 0) {
       calculatedTotalProfit =
-        newTotalAmount - (totalDiscount * subtotal) / 100 - totalExpense;
+        newTotalAmount - (totalDiscount * newTotalAmount) / 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
     // if (totalExpense > 0) {
@@ -832,6 +843,8 @@ const AddEstimateForm = () => {
     setTotalACAmount(newACTotalAmount);
     if (totalamount) {
       setTotalItemAmount(totalamount);
+    } else {
+      setTotalItemAmount(0);
     }
 
     setTotalProfit(calculatedTotalProfit);
@@ -1445,6 +1458,8 @@ const AddEstimateForm = () => {
                       <MenuItem value={3}>Converted</MenuItem>
                       <MenuItem value={4}>Pending</MenuItem>
                       <MenuItem value={5}>Rejected</MenuItem>
+                      <MenuItem value={6}>Needs PO</MenuItem>
+                      <MenuItem value={7}>Ready to Invoice</MenuItem>
                     </Select>
                   </div>
                   <div className="col-md-3 mt-2 ">
@@ -1583,7 +1598,7 @@ const AddEstimateForm = () => {
                           formData.tblEstimateItems
                             .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                             .map((item, index) => (
-                              <tr colSpan={2} key={item.ItemId}>
+                              <tr colSpan={2} key={index}>
                                 <td className="itemName-width">{item.Name}</td>
                                 <td>
                                   <input
@@ -2061,7 +2076,10 @@ const AddEstimateForm = () => {
                         </div>
                       </div>
                       <div className="col-md-12 col-lg-12">
-                        <div className="basic-form">
+                        <FileUploadButton onClick={trackFile}>
+                          Upload File
+                        </FileUploadButton>
+                        {/* <div className="basic-form">
                           <label className="form-label">Attachments</label>
 
                           <div className="dz-default dlab-message upload-img mb-3">
@@ -2111,7 +2129,7 @@ const AddEstimateForm = () => {
                               </div>
                             </form>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
 
                       {/*<div className="col-md-12 col-lg-12">
@@ -2215,7 +2233,7 @@ const AddEstimateForm = () => {
                             <strong>Total</strong>
                           </td>
                           <td className="right text-right">
-                            <strong>${totalItemAmount?.toFixed(2)}</strong>
+                            <strong>${formatAmount(totalItemAmount)}</strong>
                           </td>
                         </tr>
                         {/* <tr>
@@ -2233,13 +2251,13 @@ const AddEstimateForm = () => {
                         <tr>
                           <td className="left">Total Expenses</td>
                           <td className="right text-right">
-                            ${totalExpense.toFixed(2)}
+                            ${formatAmount(totalExpense)}
                           </td>
                         </tr>
                         <tr>
                           <td className="left">Total Profit</td>
                           <td className="right text-right">
-                            ${totalProfit?.toFixed(2) || 0}
+                            ${formatAmount(totalProfit)}
                           </td>
                         </tr>
                         <tr>
@@ -2507,19 +2525,16 @@ const AddEstimateForm = () => {
                                 >
                                   Purchase Order
                                 </MenuItem>
-                                {formData.BillId ? (
-                                  <MenuItem
-                                    onClick={() => {
-                                      LinkToPO();
-                                      navigate("/invoices/add-invoices");
-                                    }}
-                                    value={3}
-                                  >
-                                    Invoice
-                                  </MenuItem>
-                                ) : (
-                                  ""
-                                )}
+
+                                <MenuItem
+                                  onClick={() => {
+                                    LinkToPO();
+                                    navigate("/invoices/add-invoices");
+                                  }}
+                                  value={3}
+                                >
+                                  Invoice
+                                </MenuItem>
                               </Select>
                             </FormControl>
                           </>

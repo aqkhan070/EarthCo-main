@@ -52,10 +52,12 @@ const UpdateAllSR = ({ selectedItems, endpoint, bindingFunction }) => {
         aria-labelledby="update-modal-title"
         aria-describedby="update-modal-description"
       >
-        <DialogTitle id="update-modal-title">Update All</DialogTitle>
-        <DialogContent sx={{ width: "100em" }}>
+        <DialogTitle sx={{ backgroundColor: "#77993d ", color: "white" }}>
+          Update Selected
+        </DialogTitle>
+        <DialogContent sx={{ margin: "2em 5em 0em 5em" }}>
           <div className="row">
-            <div className="col-md-1 mt-2 text-end">
+            <div className="col-md-2 mt-2 text-end">
               <h5>Status</h5>
             </div>
             <div className="col-md-6 text-start">
@@ -77,11 +79,15 @@ const UpdateAllSR = ({ selectedItems, endpoint, bindingFunction }) => {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button variant="outlined" onClick={() => setOpenModal(false)} color="primary">
+          <Button
+            variant="outlined"
+            onClick={() => setOpenModal(false)}
+            color="primary"
+          >
             Cancel
           </Button>
           <Button
-          variant="contained"
+            variant="contained"
             onClick={() => {
               bulkActions(
                 endpoint,
@@ -92,9 +98,9 @@ const UpdateAllSR = ({ selectedItems, endpoint, bindingFunction }) => {
                 handleSnackbar
               );
             }}
-            color="error"
+            color="warning"
           >
-            Yes
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import AddInvioces from "./AddInvioces";
+
 import InvoiceTitleBar from "./InvoiceTitleBar";
-import InvoiceCards from "./InvoiceCards";
-import axios from "axios";
-import Cookies from "js-cookie";
+
 import {
   Table,
   TableHead,
@@ -22,20 +20,14 @@ import { Delete, Create, Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
-import { DataContext } from "../../context/AppData";
+
 import { useNavigate } from "react-router-dom";
-import formatDate from "../../custom/FormatDate";
+
 import TblDateFormat from "../../custom/TblDateFormat";
 import AddButton from "../Reusable/AddButton";
-
+import formatAmount from "../../custom/FormatAmount";
 const Invoices = () => {
-  const token = Cookies.get("token");
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-
   const navigate = useNavigate();
-  const { setInvoiceData } = useContext(DataContext);
   const {
     invoiceList,
     loading,
@@ -45,28 +37,13 @@ const Invoices = () => {
     filteredInvoiceList,
     totalRecords,
   } = useFetchInvoices();
-  const [showContent, setShowContent] = useState(true);
 
-  const [selectedInvoice, setSelectedInvoice] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [orderBy, setOrderBy] = useState("");
-  const [order, setOrder] = useState("asc");
-  const [searchText, setSearchText] = useState("");
-
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [deleteRes, setDeleteRes] = useState("");
-  const [submitRes, setSubmitRes] = useState("");
 
   useEffect(() => {
     fetchInvoices();
   }, []);
-
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
 
   const [tablePage, setTablePage] = useState(0);
   const [statusId, setStatusId] = useState(0);
@@ -74,12 +51,10 @@ const Invoices = () => {
   const [isAscending, setIsAscending] = useState(false);
 
   useEffect(() => {
-    // Initial fetch of estimates
     fetchFilterInvoice();
   }, []);
 
   useEffect(() => {
-    // Fetch estimates when the tablePage changes
     fetchFilterInvoice(
       search,
       tablePage + 1,
@@ -93,346 +68,152 @@ const Invoices = () => {
     setTablePage(newPage);
   };
 
-  // const handleChangePage = (event, newPage) => {
-  //   setPage(newPage);
-  // };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const filteredInvoices = filteredInvoiceList;
-
-  const sortedInvoices = filteredInvoices.sort((a, b) => {
-    if (order === "asc") {
-      return a[orderBy] < b[orderBy] ? -1 : 1;
-    } else {
-      return a[orderBy] > b[orderBy] ? -1 : 1;
-    }
-  });
-
-  const emptyRows =
-    rowsPerPage -
-    Math.min(rowsPerPage, sortedInvoices.length - page * rowsPerPage);
-
-  const deleteInvoice = async (id) => {
-    try {
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Invoice/DeleteInvoice?id=${id}`,
-        { headers }
-      );
-      console.log(res.data);
-      fetchFilterInvoice();
-      setDeleteRes(res.data);
-      setDeleteSuccess(true);
-      setTimeout(() => {
-        setDeleteSuccess(false);
-      }, 4000);
-    } catch (error) {
-      console.log("delete api error", error);
-    }
-  };
-
   return (
     <>
-      {showContent ? (
-        <>
-          <InvoiceTitleBar />
-          <div className="container-fluid">
-            <div className="row">
-              {/* <InvoiceCards /> */}
-              <div className="col-xl-12" id="bootstrap-table2">
-                <div className="card">
-                  {deleteSuccess && (
-                    <Alert className="mb-3" severity="success">
-                      {deleteRes ? deleteRes : "Successfuly Deleted Invoice"}
-                    </Alert>
-                  )}
-                  {submitRes && (
-                    <Alert className="mb-3" severity="success">
-                      {submitRes
-                        ? submitRes
-                        : "Successfuly Added/Updated Invoice"}
-                    </Alert>
-                  )}
-
-                  {loading ? (
-                    <div className="center-loader">
-                      <CircularProgress />
+      <InvoiceTitleBar />
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-xl-12" id="bootstrap-table2">
+            <div className="card">
+              {loading ? (
+                <div className="center-loader">
+                  <CircularProgress />
+                </div>
+              ) : (
+                <>
+                  <div className="card-header flex-wrap d-flex justify-content-between  border-0">
+                    <div>
+                      <TextField
+                        label="Search Invoices"
+                        variant="standard"
+                        size="small"
+                        style={{ width: "15em" }}
+                        fullWidth
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
                     </div>
-                  ) : (
-                    <>
-                      <div className="card-header flex-wrap d-flex justify-content-between  border-0">
-                        <div>
-                          <TextField
-                            label="Search Invoices"
-                            variant="standard"
-                            size="small"
-                            style={{ width: "15em" }}
-                            fullWidth
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                          />
-                        </div>
-                        <div className=" pe-2">
-                          <FormControl className=" me-3" variant="outlined">
-                            <Select
-                              labelId="customer-type-label"
-                              variant="outlined"
-                              value={isAscending}
-                              onChange={() => {
-                                setIsAscending(!isAscending);
+                    <div className=" pe-2">
+                      <FormControl className=" me-3" variant="outlined">
+                        <Select
+                          labelId="customer-type-label"
+                          variant="outlined"
+                          value={isAscending}
+                          onChange={() => {
+                            setIsAscending(!isAscending);
+                          }}
+                          size="small"
+                        >
+                          <MenuItem value={true}>Ascending</MenuItem>
+                          <MenuItem value={false}>Descending</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <AddButton
+                        onClick={() => {
+                          navigate(`/invoices/add-invoices`);
+                        }}
+                      >
+                        Add Invoice
+                      </AddButton>
+                    </div>
+                  </div>
+
+                  <div className="card-body pt-0">
+                    <Table>
+                      <TableHead className="table-header">
+                        <TableRow className="bill-tbl-alignment">
+                          <TableCell>Invoice</TableCell>
+                          <TableCell>Issue Date</TableCell>
+                          <TableCell>Customer</TableCell>
+
+                          <TableCell>Estimate #</TableCell>
+                          <TableCell>Bill #</TableCell>
+                          <TableCell>Profit %</TableCell>
+                          <TableCell className="text-end">Balance</TableCell>
+                          <TableCell className="text-end">Total</TableCell>
+                          <TableCell>Status</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          {error ? (
+                            <TableCell className="text-center" colSpan={9}>
+                              <div className="text-center">No Record Found</div>
+                            </TableCell>
+                          ) : null}
+                        </TableRow>
+
+                        {filteredInvoiceList
+                          .slice(
+                            page * rowsPerPage,
+                            page * rowsPerPage + rowsPerPage
+                          )
+                          .map((invoice, index) => (
+                            <TableRow
+                              className="bill-tbl-alignment"
+                              onClick={() => {
+                                // setSelectedInvoice(invoice.InvoiceId);
+                                // setShowContent(false);
+                                navigate(
+                                  `/invoices/add-invoices?id=${invoice.InvoiceId}`
+                                );
                               }}
-                              size="small"
+                              hover
+                              key={index}
                             >
-                              <MenuItem value={true}>Ascending</MenuItem>
-                              <MenuItem value={false}>Descending</MenuItem>
-                            </Select>
-                          </FormControl>
-                          <AddButton
-                            onClick={() => {
-                              navigate(`/invoices/add-invoices`);
-                            }}
-                          >
-                            Add New Invoice
-                          </AddButton>
-                        </div>
-                      </div>
-
-                      <div className="card-body pt-0">
-                        <Table>
-                          <TableHead className="table-header">
-                            <TableRow className="bill-tbl-alignment">
-                              {/* <TableCell style={{ width: "50px" }}>
-                                    <div className="form-check custom-checkbox checkbox-success check-lg me-3">
-                                      <input
-                                        type="checkbox"
-                                        className="form-check-input"
-                                        id="checkAll"
-                                        required=""
-                                      />
-                                      <label
-                                        className="form-check-label"
-                                        htmlFor="checkAll"
-                                      ></label>
-                                    </div>
-                                  </TableCell> */}
-                              <TableCell>Invoice</TableCell>
-                              <TableCell>Issue Date</TableCell>
-                              <TableCell>Customer</TableCell>
-                              {/* <TableCell>Service #</TableCell> */}
-                              {/* <TableCell>PO #</TableCell> */}
-                              <TableCell>Estimate #</TableCell>
-                              <TableCell>Bill #</TableCell>
-                              <TableCell>Profit %</TableCell>
-                              <TableCell className="text-end">
-                                Balance
+                              <TableCell>{invoice.InvoiceNumber}</TableCell>
+                              <TableCell>
+                                {TblDateFormat(invoice.IssueDate)}
                               </TableCell>
-                              <TableCell className="text-end">Total</TableCell>
-                              <TableCell>Status</TableCell>
-                              {/* <TableCell>Actions</TableCell> */}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            <TableRow>
-                              {error ? (
-                                <TableCell className="text-center" colSpan={9}>
-                                  <div className="text-center">
-                                    No Record Found
-                                  </div>
-                                </TableCell>
-                              ) : null}
-                            </TableRow>
+                              <TableCell>{invoice.CustomerName}</TableCell>
 
-                            {sortedInvoices
-                              .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
-                              )
-                              .map((invoice, index) => (
-                                <TableRow
-                                  className="bill-tbl-alignment"
+                              <TableCell>{invoice.EstimateNumber}</TableCell>
+                              <TableCell>{invoice.BillNumber}</TableCell>
+                              <TableCell>
+                                {invoice.ProfitPercentage?.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-end">
+                                ${formatAmount(invoice.BalanceAmount)}
+                              </TableCell>
+                              <TableCell className="text-end">
+                                ${formatAmount(invoice.TotalAmount)}
+                              </TableCell>
+                              <TableCell>
+                                <span
                                   onClick={() => {
-                                    // setSelectedInvoice(invoice.InvoiceId);
-                                    // setShowContent(false);
+                                    // setInvoiceData(invoice);
                                     navigate(
-                                      `/invoices/add-invoices?id=${invoice.InvoiceId}`
+                                      `/invoices/invoice-preview?id=${invoice.InvoiceId}`
                                     );
                                   }}
-                                  hover
-                                  key={index}
+                                  className="  span-hover-pointer badge badge-pill badge-success "
                                 >
-                                  {/* <TableCell>
-                                        <div className="form-check custom-checkbox checkbox-success check-lg me-3">
-                                          <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            required=""
-                                          />
-                                          <label className="form-check-label"></label>
-                                        </div>
-                                      </TableCell> */}
-                                  <TableCell>{invoice.InvoiceNumber}</TableCell>
-                                  <TableCell>
-                                    {TblDateFormat(invoice.IssueDate)}
-                                  </TableCell>
-                                  <TableCell>{invoice.CustomerName}</TableCell>
-                                  {/* <TableCell></TableCell> */}
-                                  {/* <TableCell></TableCell> */}
-                                  <TableCell>
-                                    {invoice.EstimateNumber}
-                                  </TableCell>
-                                  <TableCell>{invoice.BillNumber}</TableCell>
-                                  <TableCell>
-                                    {invoice.ProfitPercentage?.toFixed(2)}
-                                  </TableCell>
-                                  <TableCell className="text-end">
-                                    {invoice.BalanceAmount?.toFixed(2)}
-                                  </TableCell>
-                                  <TableCell className="text-end">
-                                    {invoice.TotalAmount?.toFixed(2)}
-                                  </TableCell>
-                                  <TableCell>
-                                    <span
-                                      onClick={() => {
-                                        // setInvoiceData(invoice);
-                                        navigate(
-                                          `/invoices/invoice-preview?id=${invoice.InvoiceId}`
-                                        );
-                                      }}
-                                      className="  span-hover-pointer badge badge-pill badge-success "
-                                    >
-                                      Open
-                                    </span>
-                                  </TableCell>
-                                  {/* <TableCell>
-                                      <Button
-                            // className="btn btn-primary btn-icon-xxs me-2"
-                            onClick={() => {
-                              setInvoiceData(invoice)
-                              navigate(
-                                "/Invoices/invoice-preview"
-                              );
-                            }}
-                          >
-                            <i className="fa-solid fa-eye"></i> 
-
-                            <Visibility />
-                          </Button>
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedInvoice(
-                                              invoice.InvoiceId
-                                            );
-                                            setShowContent(false);
-                                          }}
-                                        >
-                                          <Create color="success" />
-                                        </Button>
-                                        <Button
-                                          data-bs-toggle="modal"
-                                          data-bs-target={`#deleteModal${invoice.InvoiceId}`}
-                                        >
-                                          <Delete color="error" />
-                                        </Button>
-                                        <div
-                                          className="modal fade"
-                                          id={`deleteModal${invoice.InvoiceId}`}
-                                          tabIndex="-1"
-                                          aria-labelledby="deleteModalLabel"
-                                          aria-hidden="true"
-                                        >
-                                          <div
-                                            className="modal-dialog modal-dialog-centered"
-                                            role="document"
-                                          >
-                                            <div className="modal-content">
-                                              <div className="modal-header">
-                                                <h5 className="modal-title">
-                                                 Delete Invoice
-                                                </h5>
-                                                <button
-                                                  type="button"
-                                                  className="btn-close"
-                                                  data-bs-dismiss="modal"
-                                                ></button>
-                                              </div>
-                                              <div className="modal-body">
-                                                <p className="text-left">
-                                                Are you sure you want to
-                                                  delete {invoice.InvoiceNumber}
-                                                </p>
-                                                </div>
-                                                <div className="modal-footer">
-                                                  <button
-                                                    type="button"
-                                                    id="closer"
-                                                    className="btn btn-danger light me-2"
-                                                    data-bs-dismiss="modal"
-                                                  >
-                                                    Close
-                                                  </button>
-                                                  <button
-                                                    className="btn btn-primary "
-                                                    data-bs-dismiss="modal"
-                                                    onClick={() => {
-                                                      deleteInvoice(
-                                                        invoice.InvoiceId
-                                                      );
-                                                      console.log(
-                                                        "delete id",
-                                                        invoice.InvoiceId
-                                                      );
-                                                    }}
-                                                  >
-                                                    Yes
-                                                  </button>
-                                                </div>
-                                              
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </TableCell> */}
-                                </TableRow>
-                              ))}
-                            {emptyRows > 0 && (
-                              <TableRow>
-                                <TableCell colSpan={9} />
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
-                        <TablePagination
-                          rowsPerPageOptions={[10, 25, 50]}
-                          component="div"
-                          count={totalRecords}
-                          rowsPerPage={rowsPerPage}
-                          page={tablePage} // Use tablePage for the table rows
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={(event) => {
-                            setRowsPerPage(parseInt(event.target.value, 10));
-                            setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+                                  Open
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="div"
+                      count={totalRecords}
+                      rowsPerPage={rowsPerPage}
+                      page={tablePage} // Use tablePage for the table rows
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={(event) => {
+                        setRowsPerPage(parseInt(event.target.value, 10));
+                        setTablePage(0); // Reset the tablePage to 0 when rowsPerPage changes
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
-        </>
-      ) : (
-        <AddInvioces
-          setSelectedInvoice={setSelectedInvoice}
-          setShowContent={setShowContent}
-          selectedInvoice={selectedInvoice}
-          fetchInvoices={fetchInvoices}
-          setSubmitRes={setSubmitRes}
-          fetchFilterInvoice={fetchFilterInvoice}
-        />
-      )}
+        </div>
+      </div>
     </>
   );
 };

@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EventPopups from "../components/Reusable/EventPopups";
 import LoadingButton from "@mui/lab/LoadingButton";
-
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -27,7 +26,7 @@ const CompanySelect = () => {
   };
   const { fetchCompanies, companies, loading, setloading } =
     useFetchCompanyList();
-  const { loggedInUser, setLoggedInUser } = useContext(DataContext);
+  const { loggedInUser, setLoggedInUser,dashBoardRefresh, setDashBoardRefresh } = useContext(DataContext);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -60,7 +59,7 @@ const CompanySelect = () => {
       setSnackBarColor("success");
       setSnackBarText(response.data.message);
 
-      navigate(`/Dashboard`);
+      navigate(`/dashboard`);
       setloading(false);
     } catch (error) {
       console.log("api call error", error);
@@ -74,6 +73,7 @@ const CompanySelect = () => {
 
   useEffect(() => {
     fetchCompanies();
+    setDashBoardRefresh(true)
     console.log("loggedInUser is", loggedInUser);
   }, []);
 

@@ -12,6 +12,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../../Hooks/useSendEmail";
 import EventPopups from "../../Reusable/EventPopups";
 import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
+import useFetchCustomerName from "../../Hooks/useFetchCustomerName";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const WeeklyReport = () => {
   const token = Cookies.get("token");
@@ -20,7 +21,7 @@ const WeeklyReport = () => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-
+  const { name, setName, fetchName } = useFetchCustomerName();
   const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
   const {
     sendEmail,
@@ -46,6 +47,7 @@ const WeeklyReport = () => {
       );
       setWeeklyPreviewData(res.data.Data);
       fetchEmail(res.data.Data.ContactId);
+      fetchName(res.data.Data.CustomerId);
       setFiles(res.data.FileData);
       console.log("reponse weekly is", res.data);
     } catch (error) {
@@ -145,7 +147,7 @@ const WeeklyReport = () => {
                     </h5>{" "}
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.CompanyName}</h5>
+                    <h5>{name}</h5>
                   </div>
                 </div>
                 <div

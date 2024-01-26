@@ -25,6 +25,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useDeleteFile from "../../../Hooks/useDeleteFile";
 import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
 import BackButton from "../../../Reusable/BackButton";
+import FileUploadButton from "../../../Reusable/FileUploadButton";
 
 const AddRisingCanes = () => {
   const icon = (
@@ -1018,8 +1019,11 @@ const AddRisingCanes = () => {
               </div>
 
               <div className="row mt-2 mx-2">
-                <div className="col-md-4 col-lg-4">
-                  <div className="basic-form">
+                <div className="col-md-2 col-lg-2">
+                  <FileUploadButton onClick={trackFile}>
+                    Site Photos
+                  </FileUploadButton>
+                  {/* <div className="basic-form">
                     <label className="form-label">Site Photos</label>
                     <div className="dz-default dlab-message upload-img mb-3">
                       <form action="#" className="dropzone">
@@ -1064,7 +1068,7 @@ const AddRisingCanes = () => {
                         </div>
                       </form>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {Files.map((file, index) => (

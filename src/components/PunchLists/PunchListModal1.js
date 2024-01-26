@@ -125,6 +125,9 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
 
   const handleAddItem = () => {
     // Adding the new item to the itemsList
+    if (!itemInput.ItemId) {
+      return;
+    }
     setItemsList((prevItems) => [
       ...prevItems,
       { ...itemInput }, // Ensure each item has a unique 'id'
@@ -450,15 +453,8 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                       name="Address"
                       handleChange={handleChange}
                       addressValue={formData.Address}
+                      setCompanyData={setFormData}
                     />
-                    {/* <input
-                      name="Address"
-                      type="text"
-                      value={formData.Address || ""}
-                      onChange={handleChange}
-                      className="form-control"
-                      placeholder=""
-                    /> */}
                   </div>
                 </div>
                 <div className="row">

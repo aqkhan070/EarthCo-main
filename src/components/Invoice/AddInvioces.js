@@ -25,7 +25,8 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
-
+import FileUploadButton from "../Reusable/FileUploadButton";
+import formatAmount from "../../custom/FormatAmount";
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -149,6 +150,8 @@ const AddInvioces = ({}) => {
         value: newValue ? newValue.UserId : "",
       },
     };
+
+    console.log("selectescustomer", newValue);
 
     // Assuming handleInputChange is defined somewhere within YourComponent
     // Call handleInputChange with the simulated event
@@ -401,7 +404,7 @@ const AddInvioces = ({}) => {
     setSubmitClicked(true);
 
     let InvoiceData = {}; // Declare InvoiceData in the outer scope
-    console.log("mainpayload", formData)
+    console.log("mainpayload", formData);
 
     if (!formData.CustomerId || !formData.IssueDate) {
       setEmptyFieldsError(true);
@@ -539,9 +542,9 @@ const AddInvioces = ({}) => {
       });
   }, [searchText]);
 
-  const deleteItem = (itemId, isCost) => {
+  const deleteItem = (itemId) => {
     const updatedArr = formData.tblInvoiceItems.filter(
-      (item) => item.ItemId !== itemId || item.isCost !== isCost
+      (item) => item.ItemId !== itemId
     );
     setFormData((prevData) => ({
       ...prevData,
@@ -577,6 +580,9 @@ const AddInvioces = ({}) => {
   };
 
   const handleAddItem = () => {
+    if (!itemInput.ItemId) {
+      return;
+    }
     const newAmount = itemInput.Qty * itemInput.Rate;
     const newItem = {
       ...itemInput,
@@ -841,7 +847,7 @@ const AddInvioces = ({}) => {
       setTotalDiscount(0);
       return;
     }
-    if (newValue == 0) {
+    if (newValue === 0) {
       setTotalDiscount(0);
     } else {
       setTotalDiscount(newValue);
@@ -879,12 +885,12 @@ const AddInvioces = ({}) => {
       0
     );
     const totalamount =
-      newTotalAmount + shippingCost - (totalDiscount * subtotal) / 100;
+      newTotalAmount + shippingCost - (totalDiscount * newTotalAmount) / 100;
 
     let calculatedTotalProfit = 0;
     if (subtotal > 0) {
       calculatedTotalProfit =
-        newTotalAmount - (totalDiscount * subtotal) / 100 - totalExpense;
+        newTotalAmount - (totalDiscount * newTotalAmount) / 100 - totalExpense;
     }
     let calculatedProfitPercentage = 0;
     // if (totalExpense > 0) {
@@ -899,6 +905,8 @@ const AddInvioces = ({}) => {
     setTotalACAmount(newACTotalAmount);
     if (totalamount) {
       setTotalItemAmount(totalamount);
+    } else {
+      setTotalItemAmount(0);
     }
 
     setTotalProfit(calculatedTotalProfit);
@@ -1189,11 +1197,15 @@ const AddInvioces = ({}) => {
                       <ul>
                         <li>
                           <span>Billing Address</span>
-                          <p>{customerAddress || ""}</p>
+                          <p>
+                            {customerAddress || formData.CustomerAddress || ""}
+                          </p>
                         </li>
                         <li>
                           <span>Shipping Address</span>
-                          <p>{customerAddress || ""}</p>
+                          <p>
+                            {customerAddress || formData.CustomerAddress || ""}
+                          </p>
                         </li>
                       </ul>
                     </div>
@@ -1898,9 +1910,12 @@ const AddInvioces = ({}) => {
                       </div>
                     </div>
                     <div className="col-xl-12 col-lg-12">
-                      <div className="basic-form">
+                      <FileUploadButton onClick={handleFileChange}>
+                        Upload File
+                      </FileUploadButton>
+                      {/* <div className="basic-form">
                         <label className="form-label">Attachments</label>
-                        {/* <h4 className="card-title">Attachments</h4> */}
+                       <h4 className="card-title">Attachments</h4> 
                         <div className="dz-default dlab-message upload-img mb-3">
                           <form action="#" className="dropzone">
                             <svg
@@ -1948,7 +1963,7 @@ const AddInvioces = ({}) => {
                             </div>
                           </form>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -2003,7 +2018,7 @@ const AddInvioces = ({}) => {
                           $
                           {totalDiscount && subtotal
                             ? ((totalDiscount * subtotal) / 100).toFixed(2)
-                            : 0.0}
+                            : "0.00"}
                         </td>
                       </tr>
                       {/*  <tr>
@@ -2033,7 +2048,7 @@ const AddInvioces = ({}) => {
                           <strong>Total</strong>
                         </td>
                         <td className="right text-right">
-                          <strong>${totalItemAmount?.toFixed(2)}</strong>
+                          <strong>${formatAmount(totalItemAmount)}</strong>
                         </td>
                       </tr>
                       {/* <tr>
@@ -2051,13 +2066,13 @@ const AddInvioces = ({}) => {
                       <tr>
                         <td className="left">Total Expenses</td>
                         <td className="right text-right">
-                          ${totalExpense ? totalExpense.toFixed(2) : 0.0}
+                          ${formatAmount(totalExpense)}
                         </td>
                       </tr>
                       <tr>
                         <td className="left">Total Profit</td>
                         <td className="right text-right">
-                          ${totalProfit?.toFixed(2) || 0}
+                          ${formatAmount(totalProfit)}
                         </td>
                       </tr>
                       <tr>

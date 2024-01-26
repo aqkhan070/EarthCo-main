@@ -272,7 +272,7 @@ const AddStaff = ({}) => {
     } catch (error) {
       setLoadingButton(false);
       setOpenSnackBar(true);
-      setSnackBarColor("success");
+      setSnackBarColor("error");
       setSnackBarText(error.response.data);
 
       console.log("staff API call error", error);
@@ -457,6 +457,7 @@ const AddStaff = ({}) => {
                       address={customerInfo.Address}
                       handleChange={handleCustomerInfo}
                       name="Address"
+                      setCompanyData ={setCustomerInfo}
                     />
 
                     {/*<TextField

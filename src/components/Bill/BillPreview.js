@@ -13,7 +13,7 @@ import html2pdf from "html2pdf.js";
 import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
+import formatAmount from "../../custom/FormatAmount";
 const BillPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -208,7 +208,10 @@ const BillPreview = () => {
                           <tr>
                             <th>
                               {" "}
-                              <h6 className="mb-0">Date</h6>{" "}
+                              <h6 className="mb-0">
+                                {" "}
+                                <strong>Date</strong>
+                              </h6>{" "}
                             </th>
                             <th>
                               {" "}
@@ -224,7 +227,9 @@ const BillPreview = () => {
                         <tbody>
                           <tr>
                             <td className="table-cell-align me-2">
-                              <h6>Bill #</h6>{" "}
+                              <h6>
+                                <strong>Bill #</strong>
+                              </h6>{" "}
                             </td>
 
                             <td className="table-cell-align text-right">
@@ -236,8 +241,8 @@ const BillPreview = () => {
                     </div>
                   </div>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
-                    <thead className="preview-table-header">
-                      <tr className="preview-table-head">
+                    <thead className="">
+                      <tr className="preview-table-head preview-table-header">
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
@@ -279,7 +284,7 @@ const BillPreview = () => {
                     </div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0 text-end">
-                        {totalAmount.toFixed(2)}
+                        ${formatAmount(totalAmount)}
                       </h6>
                     </div>
                     <div className="col-md-8 col-sm-6"></div>
@@ -289,7 +294,10 @@ const BillPreview = () => {
                     <strong>DISCOUNT:</strong>
                   </h6>
                 </div>{" "} */}
-                    <hr className="mb-1" />
+                    <div className="col-md-12 py-0">
+                      <hr className="mb-1" />
+                    </div>
+
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
                       <h6 className="table-cell-align mt-2">
@@ -297,14 +305,15 @@ const BillPreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">{totalAmount.toFixed(2)}</h6>
+                      <h6 className=" text-end">${formatAmount(totalAmount)}</h6>
                     </div>
-                    <div
-                      style={{
-                        borderBottom: "5px solid #012a47",
-                        margin: "0em 0em 3em 0em",
-                      }}
-                    ></div>
+                    <div className="col-md-12 py-0">
+                      <div
+                        style={{
+                          borderBottom: "5px solid #012a47",
+                        }}
+                      ></div>
+                    </div>
                   </div>
                 </div>
               </div>

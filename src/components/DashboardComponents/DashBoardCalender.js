@@ -365,7 +365,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   useEffect(() => {
     console.log("session is ", session);
     console.log("counter is ", counter);
-    if (session && counter <= 2) {
+    if (session && counter <= 1) {
       setCounter(counter + 1);
       sendToken(
         {
@@ -376,7 +376,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
           UserId: Number(loggedInUser.userId),
           UserEmail: session.user.email,
         },
-        getDashboardData
+        getDashboardData()
       );
     }
   }, [session]);

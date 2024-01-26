@@ -89,7 +89,7 @@ const LandscapeTR = ({ setRecords, statusId }) => {
                       navigate("/landscape/add-landscape");
                     }}
                   >
-                    Add
+                    Add Monthly Landscape
                   </AddButton>
                 )}
               </div>
@@ -134,7 +134,7 @@ const LandscapeTR = ({ setRecords, statusId }) => {
                     }}
                   >
                     <TableCell>{report.MonthlyLandsacpeId}</TableCell>
-                    <TableCell>{report.CompanyName}</TableCell>
+                    <TableCell>{report.CustomerName}</TableCell>
 
                     <TableCell>{report.RequestByName}</TableCell>
 

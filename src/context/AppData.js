@@ -258,9 +258,13 @@ const DataFun = ({ children }) => {
 
   const [statusId, setStatusId] = useState(0);
 
+  const [dashBoardRefresh, setDashBoardRefresh] = useState(false);
+
   return (
     <DataContext.Provider
       value={{
+        dashBoardRefresh,
+        setDashBoardRefresh,
         statusId,
         setStatusId,
         selectedImages,

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Alert from "@mui/material/Alert";
-import { TextField } from "@mui/material";
+import { TextField, Button } from "@mui/material";
 import EventPopups from "../Reusable/EventPopups";
 import LoaderButton from "../Reusable/LoaderButton";
 import { Delete, Create } from "@mui/icons-material";
-
+import FileUploadButton from "../Reusable/FileUploadButton";
 const AuditController = ({
   setAddSucces,
   idParam,
@@ -234,7 +234,7 @@ const AuditController = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-4 YNbtn1 ${
+                className={`btn  col-md-4 YNbtn1 ${
                   formData.BrokenValve == true && "btn-primary"
                 }`}
                 onClick={() => {
@@ -248,7 +248,7 @@ const AuditController = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-4  YNbtn1 ${
+                className={`btn  col-md-4  YNbtn1 ${
                   formData.BrokenValve == false && "btn-primary"
                 }`}
                 onClick={() => {
@@ -293,7 +293,7 @@ const AuditController = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-4 YNbtn1 ${
+                className={`btn  col-md-4 YNbtn1 ${
                   formData.BrokenLaterals == true && "btn-primary"
                 }`}
                 onClick={() => {
@@ -307,7 +307,7 @@ const AuditController = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-4  YNbtn1 ${
+                className={`btn  col-md-4  YNbtn1 ${
                   formData.BrokenLaterals == false && "btn-primary"
                 }`}
                 onClick={() => {
@@ -356,7 +356,7 @@ const AuditController = ({
             <div className="col-md-12 yesNoBtns">
               <button
                 type="button"
-                className={`btn light col-md-4 YNbtn1 ${
+                className={`btn  col-md-4 YNbtn1 ${
                   formData.BrokenHeads == true && "btn-primary"
                 }`}
                 onClick={() => {
@@ -370,7 +370,7 @@ const AuditController = ({
               </button>
               <button
                 type="button"
-                className={`btn light col-md-4  YNbtn1 ${
+                className={`btn  col-md-4  YNbtn1 ${
                   formData.BrokenHeads == false && "btn-primary"
                 }`}
                 onClick={() => {
@@ -405,7 +405,10 @@ const AuditController = ({
               {showAdditional ? (
                 <div className="row mt-3 ">
                   <div className="col-md-12">
-                    <div className="basic-form">
+                    <FileUploadButton onClick={trackAdditionalFile}>
+                      Upload More Photos
+                    </FileUploadButton>
+                    {/* <div className="basic-form">
                       <h4>Additional Photos(up to 10)</h4>
                       <div className="dz-default dlab-message upload-img mb-3">
                         <form action="#" className="dropzone">
@@ -454,7 +457,7 @@ const AuditController = ({
                           </div>
                         </form>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ) : (
@@ -524,16 +527,29 @@ const AuditController = ({
               )} */}
           </div>
           <div className=" col-md-4 mb-3 text-right">
+            <Button
+              variant="outlined"
+              sx={{
+                color: "black",
+                border: "1px solid black",
+                marginRight: "0.5em",
+
+                textTransform: "capitalize",
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "white",
+                  border: "1px solid black",
+                  outlineColor: "black",
+                },
+              }}
+              onClick={toggleShowForm}
+              color="primary"
+            >
+              Clear
+            </Button>
             <LoaderButton loading={disableButton} handleSubmit={handleSubmit}>
               Add
             </LoaderButton>{" "}
-            <button
-              onClick={toggleShowForm}
-              type="button"
-              className="btn btn-danger light me-1"
-            >
-              Clear
-            </button>
             {/* <button
                 type="button"
                 className="btn btn-primary me-1"

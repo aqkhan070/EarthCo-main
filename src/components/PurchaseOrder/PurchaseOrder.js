@@ -30,6 +30,7 @@ import formatDate from "../../custom/FormatDate";
 import TitleBar from "../TitleBar";
 import TblDateFormat from "../../custom/TblDateFormat";
 import AddButton from "../Reusable/AddButton";
+import formatAmount from "../../custom/FormatAmount";
 
 const PurchaseOrder = () => {
   const token = Cookies.get("token");
@@ -312,7 +313,7 @@ const PurchaseOrder = () => {
                               <TableCell>{po.BillNumber}</TableCell>
                               <TableCell>{po.InvoiceNumber}</TableCell>
                               <TableCell className="text-end">
-                                {po.Amount}
+                                {formatAmount(po.Amount)}
                               </TableCell>
                               {/* <TableCell>
                                     <div className="button-container">

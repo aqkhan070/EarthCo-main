@@ -10,6 +10,8 @@ import "react-quill/dist/quill.snow.css"; // Import styles for the rich text edi
 import axios from "axios";
 import { DataContext } from "../../context/AppData";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import BackButton from "../Reusable/BackButton";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 const SendMail = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -409,21 +411,33 @@ const SendMail = () => {
                 ))}
               </div>
               <div className="col-md-5 text-end mt-3">
-                <AttachFileIcon
-                  sx={{
-                    fontSize: 23,
-                    color: "black",
-                    marginRight: "0.5em",
-                    cursor: "pointer",
-                  }}
+                <CustomizedTooltips
+                  title="Click To Attach Files"
+                  placement="top"
+                >
+                  <AttachFileIcon
+                    sx={{
+                      fontSize: 23,
+                      color: "black",
+                      marginRight: "0.5em",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      const fileInput = document.createElement("input");
+                      fileInput.type = "file";
+                      fileInput.multiple = true;
+                      fileInput.click(); // Trigger the file input click event
+                      fileInput.addEventListener("change", trackFile);
+                    }}
+                  />
+                </CustomizedTooltips>
+                <BackButton
                   onClick={() => {
-                    const fileInput = document.createElement("input");
-                    fileInput.type = "file";
-                    fileInput.multiple = true;
-                    fileInput.click(); // Trigger the file input click event
-                    fileInput.addEventListener("change", trackFile);
+                    window.history.back();
                   }}
-                />
+                >
+                  Back
+                </BackButton>
                 <LoaderButton
                   disable={btnDisable}
                   loading={disableButton}

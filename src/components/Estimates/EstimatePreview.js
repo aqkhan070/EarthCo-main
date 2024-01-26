@@ -16,6 +16,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import formatAmount from "../../custom/FormatAmount";
 
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -195,17 +196,28 @@ const EstimatePreview = () => {
                   </div>
 
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-6 col-sm-6">
                       <h5 className="p-0 pt-4 mb-0 ">
                         <strong>Submitted to</strong>
                       </h5>
-                      <h6 className="p-0 ">
-                        {previewData.EstimateData.CustomerName} -{" "}
+                      <h6 className="p-0 " style={{ maxWidth: " 18em" }}>
                         {previewData.EstimateData.ContactName}
+                        <br />
+                        {previewData.EstimateData.ContactAddress?.split(", ")
+                          .slice(0, 2)
+                          .join(", ")}
+                        <br />
+                        {previewData.EstimateData.ContactAddress?.split(", ")
+                          .slice(2)
+                          .join(", ")}
+                        <br />
+                        {/* {previewData.EstimateData.ContactEmail} <br />
+                        {previewData.EstimateData.ContactPhone}*/}
                       </h6>
                     </div>
-                    <div className="col-md-2"></div>
-                    <div className="col-md-4">
+
+                    <div className="col-md-2 col-sm-2"></div>
+                    <div className="col-md-4 col-sm-4">
                       <table className="preview-table">
                         <thead>
                           <tr>
@@ -261,14 +273,14 @@ const EstimatePreview = () => {
                   </div>
 
                   <div className="row mt-2">
-                    <div className="col-md-12 text-center">
+                    <div className="col-md-12 col-sm-12 text-center">
                       {" "}
                       <h3 className="mb-0">
                         <strong>South Peak</strong>
                       </h3>{" "}
                       <hr className="mt-0" />
                     </div>
-                    <div className="col-md-12">
+                    <div className="col-md-12 col-sm-12">
                       {" "}
                       <h4 className="mb-0">
                         <strong>Description of work</strong>
@@ -283,8 +295,8 @@ const EstimatePreview = () => {
                     <strong>Item(s)</strong>
                   </h5>
                   <table id="empoloyees-tblwrapper" className="table mt-2">
-                    <thead className="preview-table-header">
-                      <tr className="preview-table-head">
+                    <thead className="">
+                      <tr className="preview-table-head preview-table-header">
                         <th className="text-start">
                           <strong>QTY</strong>
                         </th>{" "}
@@ -316,52 +328,58 @@ const EstimatePreview = () => {
                   </table>
                 </div>
 
-                <div className="row mb-2 text-end px-5">
-                  <div className="col-md-9"></div>
-                  <div
-                    style={{ whiteSpace: "nowrap" }}
-                    className="col-md-3 text-end"
-                  >
+                <div className="card-footer border-0">
+                  {" "}
+                  <div className="row text-end px-5">
+                    <div className="col-md-9 col-sm-8"></div>
                     <div
-                      style={{
-                        borderBottom: "1px solid #b7b4b4",
-                        marginBottom: "4em",
-                        width: "fit-content",
-                      }}
+                      style={{ whiteSpace: "nowrap" }}
+                      className="col-md-3 col-sm-4 text-end"
                     >
-                      <span
+                      <div
                         style={{
-                          fontSize: "16px",
-                          color: "black",
-                          marginRight: "4em",
+                          borderBottom: "1px solid #b7b4b4",
+
+                          width: "fit-content",
                         }}
                       >
-                        <strong>Total:</strong>
-                      </span>
-                      <span style={{ fontSize: "16px", color: "black" }}>
-                        {totalAmount.toFixed(2)}
-                      </span>
+                        <span
+                          style={{
+                            fontSize: "16px",
+                            color: "black",
+                            marginRight: "4em",
+                          }}
+                        >
+                          <strong>Total:</strong>
+                        </span>
+                        <span style={{ fontSize: "16px", color: "black" }}>
+                          {formatAmount(totalAmount)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="card-footer">
-                  <div className="row">
-                    <div className="col-md-3">
+                  <div
+                    className="row mt-5"
+                    style={{
+                      borderTop: "1px solid #b7b4b4",
+                    }}
+                  >
+                    <div className="col-md-3 col-sm-3">
                       <h6>ACCEPTED BY:</h6>
                     </div>
-                    <div className="col-md-3">
+                    <div className="col-md-3 col-sm-3">
                       <h6>Buyer/Agent Signature</h6>
                     </div>
-                    <div className="col-md-2">
+                    <div className="col-md-2 col-sm-2">
                       <h6>Print Name</h6>
                     </div>
-                    <div className="col-md-2">
+                    <div className="col-md-2 col-sm-2">
                       <h6>Title</h6>
                     </div>
-                    <div className="col-md-2">
+                    <div className="col-md-2 col-sm-2">
                       <h6>Date</h6>
                     </div>
-                    <div className="col-md-12">
+                    <div className="col-md-12 col-sm-12">
                       <span
                         style={{
                           fontSize: "7px",

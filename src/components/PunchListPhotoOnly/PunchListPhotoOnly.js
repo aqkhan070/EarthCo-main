@@ -148,7 +148,7 @@ const PunchListPhotoOnly = () => {
                   navigate(`/punchList-photos-only/add`);
                 }}
               >
-                Add
+                Add PunchList
               </AddButton>
             </div>
           </div>
