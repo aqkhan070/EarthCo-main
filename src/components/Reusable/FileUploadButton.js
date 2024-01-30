@@ -19,10 +19,20 @@ const FileUploadButton = ({ onClick, children }) => {
   return (
     <Button
       component="label"
-      variant="contained"
+      variant="outlined"
       startIcon={<CloudUploadIcon sx={{ fontSize: 2 }} />}
       sx={{
+        color: "#171717",
+        border: "1px solid black",
+        marginRight: "0.5em",
+       
         textTransform: "capitalize",
+        "&:hover": {
+          backgroundColor: "#171717",
+          color: "white",
+          border: "1px solid black",
+          outlineColor: "black",
+        },
       }}
     >
       &nbsp;{children}

@@ -13,6 +13,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+
 const SummaryReportPreview = () => {
   const {
     sRProposalData,
@@ -40,6 +42,7 @@ const SummaryReportPreview = () => {
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
     const {customerMail, fetchCustomerEmail} = useFetchCustomerEmail();
+    const { name, setName, fetchName} = useFetchCustomerName()
 
   const isGeneralReport = window.location.pathname.includes("general-report");
 
@@ -52,49 +55,49 @@ const SummaryReportPreview = () => {
       setToggleFullscreen(true);
     }, 3000);
   };
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("summeryReport-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "Summary Report.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the width and height of the PDF based on the A4 landscape format
+    const pdfWidth = 297; // A4 width in mm
+    const pdfHeight = 210; // A4 height in mm
+  
+    // Create a new jsPDF instance with landscape orientation
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [pdfWidth, pdfHeight],
+      orientation: "landscape",
     });
-
-    // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight() / 1.8;
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("Summery Report.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, pdfWidth, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("Summary Report.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
+  
 
   useEffect(() => {
     fetchReport(customerParam, yearParam, MonthParam, "Service Request");
     fetchCustomerEmail(customerParam);
     console.log("sr propoal dala", sRProposalData);
   }, []);
+  useEffect(() => {
+    if (reportData[0]?.CustomerId) {
+       fetchName(reportData[0].CustomerId || 0)
+    }
+  
+  }, [reportData]);
+
 
   if (reportError) {
     return (
@@ -175,7 +178,7 @@ const SummaryReportPreview = () => {
             <></>
           )}
 
-          <div className="print-page-width">
+          <div  style={{ fontFamily: "Times New Roman" }} className="print-page-width">
             <div className="PageLandscape mt-2">
               <div className="card">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
@@ -185,28 +188,25 @@ const SummaryReportPreview = () => {
                   className="card-body perview-pd get-preview"
                 >
                   <div className="row mb-5">
-                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3">
-                      <div style={{ color: "black" }}>EarthCo</div>
-                      <div style={{ color: "black" }}>
-                        {" "}
-                        {reportData[0].CustomerId} {reportData[0].CompanyName}
-                      </div>
+                    <div className="mt-2 col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                      <div style={{ color: "black" }}>EarthCo <br />1225 E Wakeham <br />Santa Ana , Ca 92705</div>
+                     
+                     
+
+                      <div style={{ color: "black" }} className="mt-4">Submitted To: </div>
+                      <div style={{ color: "black" }}> {name} {reportData[0].CompanyName}</div>
                       <div style={{ color: "black" }}>
                         {reportData[0].Address}
                       </div>
-
-                      <div style={{ color: "black" }}>Submitted To: </div>
-                      <div style={{ color: "black" }}>{reportData[0].AssignToName}</div>
-                     
                     </div>
-                    <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-6 px-0 text-center">
+                    <div className="mt-3 col-xl-7 col-lg-7 col-md-7 col-sm-6 px-0 text-center">
                       <h3 className="table-cell-align">
                         {" "}
                         <strong>Service Request Summary Report</strong>{" "}
                       </h3>
                       <h3>Grandview Crest</h3>
                     </div>
-                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 ">
+                    <div className="mt-2 col-xl-2 col-lg-2 col-md-2 col-sm-3 ">
                       <div className="brand-logo mb-2 inovice-logo">
                         <img
                           className="preview-Logo"

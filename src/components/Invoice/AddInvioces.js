@@ -27,6 +27,9 @@ import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
+import PrintButton from "../Reusable/PrintButton";
+import ActivityLog from "../Reusable/ActivityLog"
+
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -271,6 +274,7 @@ const AddInvioces = ({}) => {
       AssignTo: estimateLinkData.AssignTo,
       BillId: estimateLinkData.BillId,
       EstimateNumber: estimateLinkData.EstimateNumber,
+      CustomerMessage : estimateLinkData.EstimateNotes,
       tblInvoiceItems: estimateLinkData.tblEstimateItems,
       tblInvoiceFiles: estimateLinkData.FileData,
     }));
@@ -544,7 +548,7 @@ const AddInvioces = ({}) => {
 
   const deleteItem = (itemId) => {
     const updatedArr = formData.tblInvoiceItems.filter(
-      (item) => item.ItemId !== itemId
+      (item, index) => index !== itemId
     );
     setFormData((prevData) => ({
       ...prevData,
@@ -610,8 +614,8 @@ const AddInvioces = ({}) => {
 
   const handleDescriptionChange = (itemId, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Description = event.target.value;
 
@@ -625,8 +629,8 @@ const AddInvioces = ({}) => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Description = event.target.value;
           return updatedItem;
@@ -642,8 +646,8 @@ const AddInvioces = ({}) => {
 
   const handleQuantityChange = (itemId, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Qty = parseInt(event.target.value, 10);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -657,8 +661,8 @@ const AddInvioces = ({}) => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Qty = parseInt(event.target.value, 10);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -675,8 +679,8 @@ const AddInvioces = ({}) => {
 
   const handleRateChange = (itemId, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Rate = parseFloat(event.target.value);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -690,8 +694,8 @@ const AddInvioces = ({}) => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Rate = parseFloat(event.target.value);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -708,8 +712,8 @@ const AddInvioces = ({}) => {
 
   const handleCostChange = (itemId, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.PurchasePrice = parseFloat(event.target.value);
           // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -723,8 +727,8 @@ const AddInvioces = ({}) => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblInvoiceItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+        if (index === itemId && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.PurchasePrice = parseFloat(event.target.value);
           // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -1437,15 +1441,17 @@ const AddInvioces = ({}) => {
                         formData.tblInvoiceItems
                           .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                           .map((item, index) => (
-                            <tr colSpan={2} key={item.ItemId}>
+                            <tr colSpan={2} key={index}>
                               <td className="itemName-width">{item.Name}</td>
                               <td>
-                                <input
-                                  style={{ width: "17em" }}
+                                <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                                   className="form-control form-control-sm"
                                   value={item.Description}
                                   onChange={(e) =>
-                                    handleDescriptionChange(item.ItemId, e, 0)
+                                    handleDescriptionChange(index, e, 0)
                                   }
                                 />
                               </td>
@@ -1456,7 +1462,7 @@ const AddInvioces = ({}) => {
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={(e) =>
-                                    handleQuantityChange(item.ItemId, e, 0)
+                                    handleQuantityChange(index, e, 0)
                                   }
                                 />
                               </td>
@@ -1467,7 +1473,7 @@ const AddInvioces = ({}) => {
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={(e) =>
-                                    handleRateChange(item.ItemId, e, 0)
+                                    handleRateChange(index, e, 0)
                                   }
                                 />
                               </td>
@@ -1481,7 +1487,7 @@ const AddInvioces = ({}) => {
                                   className="form-control form-control-sm"
                                   value={item.PurchasePrice}
                                   onChange={(e) =>
-                                    handleCostChange(item.ItemId, e, 0)
+                                    handleCostChange(index, e, 0)
                                   }
                                 />
                               </td>
@@ -1489,7 +1495,7 @@ const AddInvioces = ({}) => {
                                 <div className="badgeBox">
                                   <Button
                                     onClick={() => {
-                                      deleteItem(item.ItemId, item.isCost);
+                                      deleteItem(index, item.isCost);
                                     }}
                                   >
                                     <Delete color="error" />
@@ -1555,8 +1561,10 @@ const AddInvioces = ({}) => {
                           </>
                         </td>
                         <td>
-                          <input
-                            name="Qty"
+                          <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                             value={itemInput.Description}
                             onChange={(e) =>
                               setItemInput({
@@ -1564,7 +1572,7 @@ const AddInvioces = ({}) => {
                                 Description: e.target.value,
                               })
                             }
-                            style={{ width: "17em" }}
+                          
                             className="form-control form-control-sm"
                             placeholder="Description"
                             onKeyPress={(e) => {
@@ -1998,22 +2006,23 @@ const AddInvioces = ({}) => {
                           <td className="right text-right">$0.00</td>
                         </tr> */}
                       <tr>
-                        <td className="left custom-table-row">
-                          <label className="form-label">Discount(%)</label>
-                          <div
-                            style={{ width: "10em" }}
-                            className="input-group"
-                          >
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="Discount"
-                              value={totalDiscount}
-                              onChange={discountChange}
-                              placeholder="Discount"
-                            />
-                          </div>
-                        </td>
+                      <td className="left custom-table-row">
+                        
+                        <div
+                          style={{ width: "12em" }}
+                          className="input-group"
+                        ><strong className="mt-2">Discount</strong>
+                          <input
+                            type="text"
+                            style={{ width: "5em", marginLeft : "1em", borderRadius : "8px" }}
+                            className="form-control form-control-sm"
+                            name="Discount"
+                            value={totalDiscount}
+                            onChange={discountChange}
+                            placeholder="Discount"
+                          /><strong className="mt-2" > &nbsp;&nbsp;%</strong>
+                        </div>
+                      </td>
                         <td className="right text-right">
                           $
                           {totalDiscount && subtotal
@@ -2275,16 +2284,11 @@ const AddInvioces = ({}) => {
               <div className="col-md-6 text-right">
                 {idParam ? (
                   <>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary estm-action-btn"
+                    <ActivityLog />
+                    <PrintButton
+                      varient="mail"
                       onClick={() => {
-                        // sendEmail(
-                        //   `/invoices/invoice-preview?id=${idParam}`,
-                        //   formData.CustomerId,
-                        //   0,
-                        //   false
-                        // );
+                      
                         navigate(
                           `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${name}&number=${
                             formData.InvoiceNumber
@@ -2292,17 +2296,16 @@ const AddInvioces = ({}) => {
                         );
                       }}
                     >
-                      <Email />
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                   
+                    </PrintButton>
+                    <PrintButton
+                       varient="print"
                       onClick={() => {
                         navigate(`/invoices/invoice-preview?id=${idParam}`);
                       }}
                     >
-                      <Print></Print>
-                    </button>
+                     
+                    </PrintButton>
                   </>
                 ) : (
                   <></>

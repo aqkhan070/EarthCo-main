@@ -92,46 +92,33 @@ const PunchlistPreview = () => {
 
   const handleDownload = async () => {
     const input = document.getElementById("PL-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "PunchList.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the height of the PDF based on the content
+    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  
+    // Create a new jsPDF instance
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
     });
-
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 1;
-    // const width = pdf.internal.pageSize.getWidth();
-    // const height = pdf.internal.pageSize.getHeight() / 2.2;
-
-    // try {
-    //   const canvas = await html2canvas(input);
-
-    //   // Create an Image object and wait for it to load
-    //   const img = new Image();
-    //   img.src = canvas.toDataURL("image/png");
-    //   console.log("image data is", img.src);
-
-    //   await new Promise((resolve) => {
-    //     img.onload = resolve;
-    //   });
-
-    //   // Add the image to the PDF
-    //   pdf.addImage(img, "PNG", 0, 0, width, height);
-
-    //   // Save the PDF
-    //   pdf.save("irrigation.pdf");
-    // } catch (error) {
-    //   console.error("Error generating PDF:", error);
-    // }
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("PunchList.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
+  
 
   return (
     <>
@@ -237,7 +224,7 @@ const PunchlistPreview = () => {
                         <strong>Customer Name</strong>{" "}
                       </div>
                       <div>
-                        <p>{pLData.CustomerCompanyName}</p>
+                        <p>{pLData.CustomerName}</p>
                       </div>
                       <div>
                         {" "}

@@ -18,7 +18,7 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import formatAmount from "../../custom/FormatAmount";
 
 const InvoicePreview = () => {
-  const { InvoiceData, toggleFullscreen, setToggleFullscreen } =
+  const { InvoiceData, toggleFullscreen, setToggleFullscreen, loggedInUser } =
     useContext(DataContext);
   const {
     sendEmail,
@@ -56,43 +56,35 @@ const InvoicePreview = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("invoice-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "invoice.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the height of the PDF based on the content
+    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  
+    // Create a new jsPDF instance
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
     });
-
-    // // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight();
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("invoice.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("Invoice.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
+  
 
   const fetchInvoice = async () => {
     if (idParam === 0) {
@@ -164,10 +156,10 @@ const InvoicePreview = () => {
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
               <div id="invoice-preview" className=" get-preview ">
-                <div className="card-body perview-pd">
+                <div  style={{ minHeight: "23cm" }} className="card-body perview-pd">
                   <div className="row mt-2">
                     <div className="col-md-5 col-sm-5">
-                      <h5 className="mb-0">EarthCo Commercial Landscape</h5>{" "}
+                      <h5 className="mb-0">{loggedInUser.CompanyName}</h5>{" "}
                       <h6 className="mb-0" style={{ width: "13em" }}>
                         1225 E. Wakeham Avenue <br /> Santa Ana CA 92705 US{" "}
                         <br /> lolas@earthcompany.org <br />
@@ -398,6 +390,10 @@ const InvoicePreview = () => {
                       ></div>
                     </div>
                   </div>
+                </div>
+                <div className="card-footer border-0 text-center">
+                  <h6 style={{ fontSize: "12px" }}>
+                For invoice questions please contact Yisel Ferreyra at Yiself@earthcompany.org</h6>
                 </div>
               </div>
             </div>

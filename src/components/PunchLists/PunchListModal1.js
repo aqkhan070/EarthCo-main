@@ -167,7 +167,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   };
 
   const deleteItem = (id) => {
-    const updatedItemsList = itemsList.filter((item) => item.ItemId !== id);
+    const updatedItemsList = itemsList.filter((item, index) => index !== id);
     setItemsList(updatedItemsList);
   };
 
@@ -179,8 +179,8 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   };
 
   const handleDescriptionChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Description: event.target.value,
@@ -192,8 +192,8 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   };
 
   const handleQuantityChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Qty: Number(event.target.value),
@@ -205,8 +205,8 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
   };
 
   const handleRateChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Rate: Number(event.target.value),
@@ -533,15 +533,15 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                     <tbody>
                       {itemsList && itemsList.length > 0 ? (
                         itemsList.map((item, index) => (
-                          <tr colSpan={2} key={item.ItemId}>
+                          <tr colSpan={2} key={index}>
                             <td className="itemName-width">{item.Name}</td>
                             <td>
-                              <input
+                              <textarea
                                 style={{ width: "17em" }}
                                 className="form-control form-control-sm"
                                 value={item.Description}
                                 onChange={(e) =>
-                                  handleDescriptionChange(item.ItemId, e)
+                                  handleDescriptionChange(index, e)
                                 }
                               />
                             </td>
@@ -552,7 +552,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                 className="form-control form-control-sm"
                                 value={item.Qty}
                                 onChange={(e) =>
-                                  handleQuantityChange(item.ItemId, e)
+                                  handleQuantityChange(index, e)
                                 }
                               />
                             </td>
@@ -563,7 +563,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
                                 onChange={(e) =>
-                                  handleRateChange(item.ItemId, e)
+                                  handleRateChange(index, e)
                                 }
                               />
                             </td>
@@ -573,7 +573,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                               <div className="badgeBox">
                                 <Button
                                   onClick={() => {
-                                    deleteItem(item.ItemId);
+                                    deleteItem(index);
                                   }}
                                 >
                                   <Delete color="error" />
@@ -641,7 +641,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                         </td>
                         <td>
                           <p>
-                            <input
+                            <textarea
                               name="Description"
                               value={itemInput.Description}
                               onChange={(e) =>

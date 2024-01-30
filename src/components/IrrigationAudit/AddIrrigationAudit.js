@@ -18,7 +18,7 @@ import Contacts from "../CommonComponents/Contacts";
 import { Print, Email, Download } from "@mui/icons-material";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import BackButton from "../Reusable/BackButton";
-
+import PrintButton from "../Reusable/PrintButton"
 const AddIrrigationAudit = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
@@ -496,29 +496,27 @@ const AddIrrigationAudit = () => {
                         <div>
                           {idParam === 0 ? null : (
                             <>
-                              <button
-                                type="button"
-                                className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                              <PrintButton
+                                 varient="mail"
                                 onClick={() => {
                                   navigate(
                                     `/send-mail?title=${"Irrigation Audit"}&mail=${contactEmail}`
                                   );
                                 }}
                               >
-                                <Email />
-                              </button>
+                             
+                              </PrintButton>
 
-                              <button
-                                type="button"
-                                className="mt-1 me-2 btn btn-sm btn-outline-primary estm-action-btn"
+                              <PrintButton
+                          varient="print"
                                 onClick={() => {
                                   navigate(
                                     `/irrigation-audit/preview?id=${idParam}`
                                   );
                                 }}
                               >
-                                <Print></Print>
-                              </button>
+                               
+                              </PrintButton>
                             </>
                           )}
                           <BackButton

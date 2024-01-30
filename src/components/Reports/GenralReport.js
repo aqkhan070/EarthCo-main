@@ -10,7 +10,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 const GenralReport = () => {
   const {
     sRProposalData,
@@ -49,42 +50,34 @@ const GenralReport = () => {
   };
 
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("General-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "General.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the width and height of the PDF based on the A4 landscape format
+    const pdfWidth = 297; // A4 width in mm
+    const pdfHeight = 210; // A4 height in mm
+  
+    // Create a new jsPDF instance with landscape orientation
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [pdfWidth, pdfHeight],
+      orientation: "landscape",
     });
-
-    // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight() / 1.8;
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("Summery Report.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, pdfWidth, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("General.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
 
   useEffect(() => {

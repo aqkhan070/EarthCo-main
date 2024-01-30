@@ -31,6 +31,8 @@ import BackButton from "../Reusable/BackButton";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
+import PrintButton from "../Reusable/PrintButton";
+
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -548,8 +550,8 @@ export const AddPO = ({}) => {
   };
 
   const handleDescriptionChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Description: event.target.value,
@@ -561,8 +563,8 @@ export const AddPO = ({}) => {
   };
 
   const handleQuantityChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Qty: Number(event.target.value),
@@ -574,8 +576,8 @@ export const AddPO = ({}) => {
   };
 
   const handleRateChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item ,index) => {
+      if (index === itemId) {
         return {
           ...item,
           Rate: Number(event.target.value),
@@ -611,7 +613,7 @@ export const AddPO = ({}) => {
   };
 
   const deleteItem = (id) => {
-    const updatedItemsList = itemsList.filter((item) => item.ItemId !== id);
+    const updatedItemsList = itemsList.filter((item, index) => index !== id);
     setItemsList(updatedItemsList);
   };
 
@@ -1377,16 +1379,18 @@ export const AddPO = ({}) => {
                       <tbody>
                         {itemsList && itemsList.length > 0 ? (
                           itemsList.map((item, index) => (
-                            <tr colSpan={2} key={item.ItemId}>
+                            <tr colSpan={2} key={index}>
                               <td className="itemName-width">{item.Name}</td>
                               <td>
-                                <input
-                                  name="Description"
+                                <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                                   value={item.Description}
                                   onChange={(e) =>
-                                    handleDescriptionChange(item.ItemId, e)
+                                    handleDescriptionChange(index, e)
                                   }
-                                  style={{ width: "17em" }}
+                                 
                                   className="form-control form-control-sm"
                                   placeholder="Description"
                                 />
@@ -1397,7 +1401,7 @@ export const AddPO = ({}) => {
                                   name="Qty"
                                   value={item.Qty}
                                   onChange={(e) =>
-                                    handleQuantityChange(item.ItemId, e)
+                                    handleQuantityChange(index, e)
                                   }
                                   style={{ width: "7em" }}
                                   className="form-control form-control-sm"
@@ -1411,7 +1415,7 @@ export const AddPO = ({}) => {
                                     name="Rate"
                                     value={item.Rate}
                                     onChange={(e) =>
-                                      handleRateChange(item.ItemId, e)
+                                      handleRateChange(index, e)
                                     }
                                     style={{ width: "7em" }}
                                     className="form-control form-control-sm"
@@ -1425,7 +1429,7 @@ export const AddPO = ({}) => {
                                 <div className="badgeBox">
                                   <Button
                                     onClick={() => {
-                                      deleteItem(item.ItemId);
+                                      deleteItem(index);
                                     }}
                                   >
                                     <Delete color="error" />
@@ -1491,8 +1495,10 @@ export const AddPO = ({}) => {
                             </>
                           </td>
                           <td>
-                            <input
-                              name="Description"
+                            <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                               value={itemInput.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -1500,7 +1506,7 @@ export const AddPO = ({}) => {
                                   Description: e.target.value,
                                 })
                               }
-                              style={{ width: "17em" }}
+                            
                               className="form-control form-control-sm"
                               placeholder="Description"
                               onKeyPress={(e) => {
@@ -1515,7 +1521,7 @@ export const AddPO = ({}) => {
                           <td>
                             <input
                               type="number"
-                              name="Description"
+                              name="Qty"
                               value={itemInput.Qty}
                               onChange={(e) =>
                                 setItemInput({
@@ -1525,7 +1531,7 @@ export const AddPO = ({}) => {
                               }
                               style={{ width: "7em" }}
                               className="form-control form-control-sm"
-                              placeholder="Description"
+                              placeholder="Qty"
                               onKeyPress={(e) => {
                                 if (e.key === "Enter") {
                                   // Handle item addition when Enter key is pressed
@@ -1923,33 +1929,28 @@ export const AddPO = ({}) => {
                     <div className="mx-2">
                       {idParam ? (
                         <>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-primary estm-action-btn"
+                          <PrintButton
+                        
+                        varient="mail"
                             onClick={() => {
                               navigate(`/send-mail?title=${"Purchase Order"}`);
 
-                              // sendEmail(
-                              //   `/purchase-order/purchase-order-preview?id=${idParam}`,
-                              //   formData.SupplierId,
-                              //   0,
-                              //   true
-                              // );
+                            
                             }}
                           >
                             <Email />
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                          </PrintButton>
+                          <PrintButton
+                             varient="print"
+                          
                             onClick={() => {
                               navigate(
                                 `/purchase-order/purchase-order-preview?id=${idParam}`
                               );
                             }}
                           >
-                            <Print></Print>
-                          </button>
+                           
+                          </PrintButton>
                         </>
                       ) : (
                         <></>

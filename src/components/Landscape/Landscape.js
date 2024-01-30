@@ -14,6 +14,7 @@ import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -50,6 +51,7 @@ const Landscape = () => {
     emailAlertColor,
   } = useSendEmail();
   const { contactEmail, fetchEmail } = useFetchContactEmail();
+  const { name, setName, fetchName} = useFetchCustomerName()
 
   const getLandscape = async () => {
     try {
@@ -59,6 +61,7 @@ const Landscape = () => {
       );
       setLandscapeData(res.data);
       fetchEmail(res.data.ContactId);
+      fetchName(res.data.CustomerId)
       console.log("reponse landscape is", res.data);
     } catch (error) {
       console.log("api call error", error);
@@ -73,44 +76,35 @@ const Landscape = () => {
       setToggleFullscreen(true);
     }, 3000);
   };
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("landscape-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "Landscape.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the height of the PDF based on the content
+    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  
+    // Create a new jsPDF instance
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
     });
-
-    // // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight();
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("landscape.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("Landscape.pdf.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
-
+  
   const getLandscapebyCustomerId = async () => {
     if (!idParam) {
       return;
@@ -132,9 +126,7 @@ const Landscape = () => {
     // getLandscapebyCustomerId();
     console.log("landscap data", sRProposalData);
   }, [sRProposalData]);
-  useEffect(() => {
-    console.log("yesr is", yearParam);
-  });
+ 
 
   return (
     <>
@@ -218,25 +210,26 @@ const Landscape = () => {
                 }
               >
                 <div className="row mb-2">
-                  <div className="col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
+                  <div className="mt-3 col-xl-3 col-lg-3 col-md-3 col-sm-3 text-start">
                     <div style={{ color: "black" }}>
                       {" "}
-                      <strong>Earthco</strong>{" "}
+                      <>EarthCo <br />1225 E Wakeham <br />Santa Ana , Ca 92705</>{" "}
                     </div>
-                    <div style={{ color: "black" }}>
-                      {landscapeData.CompanyName}
+                    <div className="mt-4" style={{ color: "black" }}>
+                      Submitted To: <br />
+                      {name}
                     </div>
                     <div style={{ color: "black" }}>
                       {landscapeData.Address}
                     </div>
 
                     <div style={{ color: "black" }}>
-                      <strong>Phone:</strong> {landscapeData.Phone}{" "}
+                      <>Phone:</> {landscapeData.Phone}{" "}
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-5 mt-5 ">
                     {" "}
-                    <h2 className="text-center">Landscape Report</h2>
+                    <h2 className="text-center"><strong> Landscape Report</strong></h2>
                   </div>
 
                   <div className=" col-xl-2 col-lg-2 col-md-2 col-sm-4 text-end ">
@@ -253,7 +246,7 @@ const Landscape = () => {
 
                 <div className="row my-2">
                   <div className="col-md-7 col-sm-7">
-                    <div className="table-responsive">
+                    {/* <div className="table-responsive">
                       <table className=" table-striped table table-bordered text-start">
                         <thead>
                           <tr
@@ -283,7 +276,7 @@ const Landscape = () => {
                           </tr>
                         </tbody>
                       </table>
-                    </div>{" "}
+                    </div> */}
                   </div>
 
                   <div
@@ -303,7 +296,7 @@ const Landscape = () => {
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table className="table-bordered table  LandScape-TablePadding">
+                  <table className="table-bordered table  LandScape-TablePadding table-50-percent-tds"  >
                     <thead></thead>
                     <tbody>
                       <tr>
@@ -322,8 +315,8 @@ const Landscape = () => {
                             : "No"}
                         </td>
                       </tr>
-                      <tr className="preview-table-row">
-                        <td>
+                      <tr  className="preview-table-row">
+                        <td >
                           <strong>
                             Completed litter pickup of grounds areas:{" "}
                           </strong>{" "}

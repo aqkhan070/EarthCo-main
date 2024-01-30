@@ -83,6 +83,7 @@ const RisingCaneTable = () => {
         `https://earthcoapi.yehtohoga.com/api/WeeklyReport/GetWeeklyReportRCList`,
         { headers }
       );
+      res.data.sort((a, b) => b.WeeklyReportRCId - a.WeeklyReportRCId);
       setWeeklyReportData(res.data);
       setLoading(false);
       setRecords({
@@ -198,7 +199,7 @@ const RisingCaneTable = () => {
                               );
                             }}
                           >
-                            {report.CustomerName}
+                          {report.CustomerName}
                           </TableCell>
                           <TableCell
                             onClick={() => {

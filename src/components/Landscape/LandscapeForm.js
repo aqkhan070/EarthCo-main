@@ -21,7 +21,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import LoaderButton from "../Reusable/LoaderButton";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import BackButton from "../Reusable/BackButton";
-
+import PrintButton from "../Reusable/PrintButton"
 const LandscapeForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -1099,42 +1099,34 @@ const LandscapeForm = () => {
             </div>
 
             <div className="row text-end">
-              <div className="col-md-9 pe-0">
-                {idParam ? (
+            
+              <div className="col-md-12 ps-0">
+              {idParam ? (
                   <>
-                    <button
-                      type="button"
-                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                    <PrintButton
+                        varient="mail"
                       onClick={() => {
                         navigate(
                           `/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`
                         );
-                        // sendEmail(
-                        //   `/estimates/estimate-preview?id=${idParam}`,
-                        //   formData.CustomerId,
-                        //   formData.ContactId,
-                        //   false
-                        // );
+                       
                       }}
                     >
-                      <Email />
-                    </button>
+                  
+                    </PrintButton>
 
-                    <button
-                      type="button"
-                      className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                    <PrintButton
+                        varient="print"
                       onClick={() => {
                         navigate(`/landscape/landscape-report?id=${idParam}`);
                       }}
                     >
-                      <Print></Print>
-                    </button>
+                     
+                    </PrintButton>
                   </>
                 ) : (
                   <></>
                 )}
-              </div>
-              <div className="col-md-3 ps-0">
                 <BackButton
                   onClick={() => {
                     navigate("/landscape");

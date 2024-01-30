@@ -36,6 +36,8 @@ import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
+import ActivityLog from "../Reusable/ActivityLog"
+import PrintButton from "../Reusable/PrintButton";
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -83,6 +85,13 @@ const AddEstimateForm = () => {
         ...prevState,
         ...PunchListData,
         tblEstimateItems: PunchListData.ItemData,
+      }));
+    }
+    if (PunchListData.EstimateNotes) {
+      setFormData((prevState) => ({
+        ...prevState,
+        EstimateNotes: PunchListData.EstimateNotes
+       
       }));
     }
 
@@ -492,9 +501,9 @@ const AddEstimateForm = () => {
       });
   }, [searchText]);
 
-  const deleteItem = (itemId, isCost) => {
+  const deleteItem = (i, isCost) => {
     const updatedArr = formData.tblEstimateItems.filter(
-      (item) => item.ItemId !== itemId
+      (item, index) => index !== i
     );
     setFormData((prevData) => ({
       ...prevData,
@@ -554,10 +563,10 @@ const AddEstimateForm = () => {
     console.log("new items are", formData);
   };
 
-  const handleDescriptionChange = (itemId, event, add) => {
+  const handleDescriptionChange = (i, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblEstimateItems.map((item ,index) => {
+        if (index === i && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Description = event.target.value;
 
@@ -571,8 +580,8 @@ const AddEstimateForm = () => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Description = event.target.value;
           return updatedItem;
@@ -586,10 +595,10 @@ const AddEstimateForm = () => {
     }
   };
 
-  const handleQuantityChange = (itemId, event, add) => {
+  const handleQuantityChange = (i, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Qty = parseInt(event.target.value, 10);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -603,8 +612,8 @@ const AddEstimateForm = () => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Qty = parseInt(event.target.value, 10);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -619,10 +628,10 @@ const AddEstimateForm = () => {
     }
   };
 
-  const handleRateChange = (itemId, event, add) => {
+  const handleRateChange = (i, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Rate = parseFloat(event.target.value);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -636,8 +645,8 @@ const AddEstimateForm = () => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.Rate = parseFloat(event.target.value);
           updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -652,10 +661,10 @@ const AddEstimateForm = () => {
     }
   };
 
-  const handleCostChange = (itemId, event, add) => {
+  const handleCostChange = (i, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == false) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.PurchasePrice = parseFloat(event.target.value);
           // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -669,8 +678,8 @@ const AddEstimateForm = () => {
       }));
     }
     if (add === 1) {
-      const updatedItems = formData.tblEstimateItems.map((item) => {
-        if (item.ItemId === itemId && item.isCost == true) {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
+        if (index === i && item.isCost == true) {
           const updatedItem = { ...item };
           updatedItem.PurchasePrice = parseFloat(event.target.value);
           // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -1134,7 +1143,7 @@ const AddEstimateForm = () => {
                       )}
                     />
                   </div>{" "}
-                  <div className="col-md-3 mt-2">
+                  {/* <div className="col-md-3 mt-2">
                     <label className="form-label">Assigned To</label>
                     <Autocomplete
                       id="staff-autocomplete"
@@ -1190,6 +1199,62 @@ const AddEstimateForm = () => {
                           className="bg-white"
                         />
                       )}
+                    />
+                  </div> */}
+                  <div className="col-md-3  mt-2 ">
+                    <label className="form-label">
+                      Linked To Purchase Order
+                      {formData.PurchaseOrderId ? (
+                        <>
+                          <a
+                            href=""
+                            style={{ color: "blue" }}
+                            className="ms-2"
+                            onClick={() => {
+                              navigate(
+                                `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
+                              );
+                            }}
+                          >
+                            View
+                          </a>
+                        </>
+                      ) : (
+                        ""
+                      )}
+                    </label>
+                    <Autocomplete
+                      size="small"
+                      options={PoList}
+                      getOptionLabel={(option) =>
+                        option.PurchaseOrderNumber || ""
+                      }
+                      value={
+                        PoList.find(
+                          (po) =>
+                            po.PurchaseOrderId === formData.PurchaseOrderId
+                        ) || null
+                      }
+                      onChange={(event, newValue) =>
+                        handleAutocompleteChange(
+                          "PurchaseOrderId",
+                          "PurchaseOrderId",
+                          event,
+                          newValue
+                        )
+                      }
+                      isOptionEqualToValue={(option, value) =>
+                        option.PurchaseOrderId === value.PurchaseOrderId
+                      }
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Purchase order No"
+                          className="bg-white"
+                        />
+                      )}
+                      aria-label="Contact select"
                     />
                   </div>
                   <div className="col-md-3 mt-2"></div>
@@ -1514,62 +1579,7 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-2"></div>
-                  <div className="col-md-3  mt-2 ">
-                    <label className="form-label">
-                      Linked To Purchase Order
-                      {formData.PurchaseOrderId ? (
-                        <>
-                          <a
-                            href=""
-                            style={{ color: "blue" }}
-                            className="ms-2"
-                            onClick={() => {
-                              navigate(
-                                `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
-                              );
-                            }}
-                          >
-                            View
-                          </a>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                    </label>
-                    <Autocomplete
-                      size="small"
-                      options={PoList}
-                      getOptionLabel={(option) =>
-                        option.PurchaseOrderNumber || ""
-                      }
-                      value={
-                        PoList.find(
-                          (po) =>
-                            po.PurchaseOrderId === formData.PurchaseOrderId
-                        ) || null
-                      }
-                      onChange={(event, newValue) =>
-                        handleAutocompleteChange(
-                          "PurchaseOrderId",
-                          "PurchaseOrderId",
-                          event,
-                          newValue
-                        )
-                      }
-                      isOptionEqualToValue={(option, value) =>
-                        option.PurchaseOrderId === value.PurchaseOrderId
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label=""
-                          placeholder="Purchase order No"
-                          className="bg-white"
-                        />
-                      )}
-                      aria-label="Contact select"
-                    />
-                  </div>
+                  
                 </div>
               </div>
 
@@ -1601,12 +1611,14 @@ const AddEstimateForm = () => {
                               <tr colSpan={2} key={index}>
                                 <td className="itemName-width">{item.Name}</td>
                                 <td>
-                                  <input
-                                    style={{ width: "17em" }}
+                                  <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                                     className="form-control form-control-sm"
                                     value={item.Description}
                                     onChange={(e) =>
-                                      handleDescriptionChange(item.ItemId, e, 0)
+                                      handleDescriptionChange(index, e, 0)
                                     }
                                   />
                                 </td>
@@ -1617,7 +1629,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Qty}
                                     onChange={(e) =>
-                                      handleQuantityChange(item.ItemId, e, 0)
+                                      handleQuantityChange(index, e, 0)
                                     }
                                   />
                                 </td>
@@ -1628,7 +1640,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.Rate}
                                     onChange={(e) =>
-                                      handleRateChange(item.ItemId, e, 0)
+                                      handleRateChange(index, e, 0)
                                     }
                                   />
                                 </td>
@@ -1642,7 +1654,7 @@ const AddEstimateForm = () => {
                                     className="form-control form-control-sm"
                                     value={item.PurchasePrice}
                                     onChange={(e) =>
-                                      handleCostChange(item.ItemId, e, 0)
+                                      handleCostChange(index, e, 0)
                                     }
                                   />
                                 </td>
@@ -1650,7 +1662,7 @@ const AddEstimateForm = () => {
                                   <div className="badgeBox">
                                     <Button
                                       onClick={() => {
-                                        deleteItem(item.ItemId, item.isCost);
+                                        deleteItem(index, item.isCost);
                                       }}
                                     >
                                       <Delete color="error" />
@@ -1716,8 +1728,10 @@ const AddEstimateForm = () => {
                             </>
                           </td>
                           <td>
-                            <input
-                              name="Qty"
+                            <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                               value={itemInput?.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -1725,7 +1739,7 @@ const AddEstimateForm = () => {
                                   Description: e.target.value,
                                 })
                               }
-                              style={{ width: "17em" }}
+                            
                               className="form-control form-control-sm"
                               placeholder="SaleDescription"
                               onKeyPress={(e) => {
@@ -2184,19 +2198,20 @@ const AddEstimateForm = () => {
                         </tr> */}
                         <tr>
                           <td className="left custom-table-row">
-                            <label className="form-label">Discount(%)</label>
+                        
                             <div
-                              style={{ width: "10em" }}
+                              style={{ width: "12em" }}
                               className="input-group"
-                            >
+                            ><strong className="mt-2">Discount</strong>
                               <input
                                 type="text"
+                                style={{ width: "5em", marginLeft : "1em", borderRadius : "8px" }}
                                 className="form-control form-control-sm"
                                 name="Discount"
                                 value={totalDiscount}
                                 onChange={discountChange}
                                 placeholder="Discount"
-                              />
+                              /><strong className="mt-2" > &nbsp;&nbsp;%</strong>
                             </div>
                           </td>
                           <td className="right text-right">
@@ -2271,9 +2286,9 @@ const AddEstimateForm = () => {
                     </table>
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-xl-12 col-lg-12">
-                    <div className="card-body row">
+                <div className="row text-start">
+                  <div className="col-xl-12 col-lg-12 text-start">
+                    <div className="card-body ps-0 row text-start">
                       {formData.tblEstimateFiles?.map((file, index) => (
                         <div
                           key={index}
@@ -2281,7 +2296,7 @@ const AddEstimateForm = () => {
                           style={{
                             width: "150px", // Set the desired width
                             height: "120px", // Set the desired height
-                            margin: "1em",
+                           
                             position: "relative",
                           }}
                         >
@@ -2335,7 +2350,7 @@ const AddEstimateForm = () => {
                           style={{
                             width: "150px",
                             height: "120px",
-                            margin: "1em",
+                          
                             position: "relative",
                           }}
                         >
@@ -2444,11 +2459,12 @@ const AddEstimateForm = () => {
                           style={{
                             width: "150px", // Set the desired width
                             height: "120px", // Set the desired height
-                            margin: "1em",
+                           
                             position: "relative",
                           }}
                         >
                           <img
+                          
                             src={URL.createObjectURL(file)}
                             alt={file.name}
                             style={{
@@ -2499,14 +2515,15 @@ const AddEstimateForm = () => {
                   <div className="col-md-7 col-sm-7 p-0 ">
                     {idParam ? (
                       <>
+                     
                         {loggedInUser.userRole == "1" ? (
                           <>
-                            <FormControl>
+                            <FormControl className="me-2">
                               <Select
                                 labelId="estimateLink"
                                 aria-label="Default select example"
                                 variant="outlined"
-                                className="text-left "
+                                className="text-left"
                                 value={1}
                                 // color="success"
 
@@ -2542,9 +2559,8 @@ const AddEstimateForm = () => {
                           <></>
                         )}
 
-                        <button
-                          type="button"
-                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                        <PrintButton
+                         varient="mail"
                           onClick={() => {
                             navigate(
                               `/send-mail?title=${"Estimate"}&mail=${contactEmail}&customer=${name}&number=${
@@ -2553,20 +2569,19 @@ const AddEstimateForm = () => {
                             );
                           }}
                         >
-                          <Email />
-                        </button>
+                      
+                        </PrintButton>
 
-                        <button
-                          type="button"
-                          className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                        <PrintButton
+                         varient="print"
                           onClick={() => {
                             navigate(
                               `/estimates/estimate-preview?id=${idParam}`
                             );
                           }}
                         >
-                          <Print></Print>
-                        </button>
+                         
+                        </PrintButton>
                       </>
                     ) : (
                       <></>
@@ -2582,6 +2597,8 @@ const AddEstimateForm = () => {
                       back
                     </BackButton>
                     {idParam ? (
+                      <>
+                      
                       <LoaderButton
                         loading={disableButton}
                         disable={btnDisable}
@@ -2591,7 +2608,7 @@ const AddEstimateForm = () => {
                         color={"customColor"}
                       >
                         Save as copy
-                      </LoaderButton>
+                      </LoaderButton></>
                     ) : (
                       <></>
                     )}
@@ -2607,9 +2624,11 @@ const AddEstimateForm = () => {
                   </div>
                 </div>
               </div>
+
             </>
           )}
         </>
+       
       </div>
     </>
   );

@@ -6,13 +6,13 @@ const BackButton = ({ onClick, children }) => {
     <Button
       variant="outlined"
       sx={{
-        color: "black",
-        border: "1px solid black",
+        color: "#171717",
+        border: "1px solid #171717",
         marginRight: "0.5em",
        
         textTransform: "capitalize",
         "&:hover": {
-          backgroundColor: "black",
+          backgroundColor: "#171717",
           color: "white",
           border: "1px solid black",
           outlineColor: "black",

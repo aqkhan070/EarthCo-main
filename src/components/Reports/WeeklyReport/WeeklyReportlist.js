@@ -82,6 +82,7 @@ const WeeklyReportlist = () => {
         `https://earthcoapi.yehtohoga.com/api/WeeklyReport/GetWeeklyReportList`,
         { headers }
       );
+      res.data.sort((a, b) => b.WeeklyReportId - a.WeeklyReportId);
       setWeeklyReportData(res.data);
       setLoading(false);
 

@@ -76,6 +76,7 @@ const PunchListDetailRow = ({
       ContactId: item.Data.ContactId,
       PunchlistId: item.Data.PunchlistId,
       CustomerId: item.Data.CustomerId,
+
       // PhotoPath: item.DetailDataList.DetailData.PhotoPath,
       // AfterPhotoPath: item.DetailDataList.DetailData.AfterPhotoPath,
       ItemData: updatedSelectedItems,
@@ -257,6 +258,7 @@ const PunchListDetailRow = ({
                               console.log("estimate", item);
                               setPunchListData((prevData) => ({
                                 ...prevData,
+                                EstimateNotes: detail.DetailData.Notes,
                                 PhotoPath: detail.DetailData.PhotoPath,
                                 AfterPhotoPath:
                                   detail.DetailData.AfterPhotoPath,

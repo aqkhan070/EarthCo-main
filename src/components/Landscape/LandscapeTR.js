@@ -46,7 +46,7 @@ const LandscapeTR = ({ setRecords, statusId }) => {
         `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpeList`,
         { headers }
       );
-
+      response.data.sort((a, b) => b.MonthlyLandsacpeId - a.MonthlyLandsacpeId);
       setReports(response.data);
 
       setRecords({

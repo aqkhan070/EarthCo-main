@@ -26,6 +26,7 @@ import useDeleteFile from "../../../Hooks/useDeleteFile";
 import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
 import BackButton from "../../../Reusable/BackButton";
 import FileUploadButton from "../../../Reusable/FileUploadButton";
+import PrintButton from "../../../Reusable/PrintButton";
 
 const AddRisingCanes = () => {
   const icon = (
@@ -1188,45 +1189,37 @@ const AddRisingCanes = () => {
                 })}
               </div>
               <div className="row m-2 text-end">
-                <div className="col-md-9 mt-2 pe-0">
-                  {idParam ? (
+                
+
+                <div className="col-md-12 ps-0 mt-2 ">
+                {idParam ? (
                     <>
-                      <button
-                        type="button"
-                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      <PrintButton
+                       varient="mail"
                         onClick={() => {
                           navigate(
                             `/send-mail?title=${"Weekly Report - Rising Canes"}&mail=${contactEmail}`
                           );
-                          // sendEmail(
-                          //   `/estimates/estimate-preview?id=${idParam}`,
-                          //   formData.CustomerId,
-                          //   formData.ContactId,
-                          //   false
-                          // );
+                       
                         }}
                       >
                         <Email />
-                      </button>
+                      </PrintButton>
 
-                      <button
-                        type="button"
-                        className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                      <PrintButton
+                         varient="print"
                         onClick={() => {
                           navigate(
                             `/weekly-reports/rising-canes-preview?id=${idParam}`
                           );
                         }}
                       >
-                        <Print></Print>
-                      </button>
+                     
+                      </PrintButton>
                     </>
                   ) : (
                     <></>
                   )}
-                </div>
-
-                <div className="col-md-3 ps-0 mt-2 ">
                   <BackButton
                     onClick={() => {
                       navigate(`/weekly-reports/rising-canes`);

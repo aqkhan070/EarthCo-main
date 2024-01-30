@@ -14,6 +14,8 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import useFetchProposalReports from "../Hooks/useFetchProposalReports";
 import { useNavigate } from "react-router";
 import { DataContext } from "../../context/AppData";
+import AddButton from "../Reusable/AddButton";
+import PreviewButtons from "../Reusable/PreviewButtons";
 
 const SummaryReport = () => {
   const icon = (
@@ -191,8 +193,8 @@ const SummaryReport = () => {
       <div className="container-fluid mt-3">
         <div className="card">
           <div className="card-header">
-            <div className="card-body">
-              <div className="row">
+            <div className="card-body ">
+              <div className="row ">
                 <div className="col-md-3">
                   <label className="form-label">
                     Customers <span className="text-danger">*</span>
@@ -235,7 +237,7 @@ const SummaryReport = () => {
                     )}
                   />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <label className="form-label">
                     Year<span className="text-danger">*</span>
                   </label>
@@ -255,7 +257,7 @@ const SummaryReport = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <label className="form-label">
                     Month<span className="text-danger">*</span>
                   </label>
@@ -275,53 +277,54 @@ const SummaryReport = () => {
                     </Select>
                   </FormControl>
                 </div>
-                <div className="col-md-3 mt-4 pt-1">
-                  <button
-                    className="btn btn-primary btn-sm ms-2"
+                <div className="col-md-3 mt-3 pt-1">
+                  <AddButton
+                    varient="outlined"
+                    icon = "print"
                     onClick={() => {
                       getGeneralReportData();
                     }}
                   >
                     Generate Report
-                  </button>
+                  </AddButton>
                 </div>
-                <div className="row mt-2">
+                <div className="row mt-3">
                   <div className="col-md-12">
                     {" "}
                     {loggedInUser.userRole == "1" && (
-                      <button
+                      <AddButton
                         onClick={() => {
                           navigate("/landscape/add-landscape");
                         }}
-                        className="btn btn-info btn-sm me-2"
+                    
                       >
                         Add LandScape
-                      </button>
+                      </AddButton>
                     )}
-                    <button
+                    <PreviewButtons
                       onClick={() => {
                         getLandscapeReportData();
                       }}
-                      className="btn btn-secondary btn-sm me-2"
+                     
                     >
                       LandScape
-                    </button>
-                    <button
+                    </PreviewButtons>
+                    <PreviewButtons
                       onClick={() => {
                         getProposalReportData();
                       }}
-                      className="btn btn-secondary btn-sm me-2"
+                     
                     >
                       Proposal Summary
-                    </button>
-                    <button
+                    </PreviewButtons>
+                    <PreviewButtons
                       onClick={() => {
                         getReportData();
                       }}
-                      className="btn btn-secondary btn-sm me-2"
+                     
                     >
                       Service Request
-                    </button>
+                    </PreviewButtons>
                   </div>
                 </div>
               </div>

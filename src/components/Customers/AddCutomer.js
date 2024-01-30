@@ -184,7 +184,7 @@ const AddCustomer = () => {
       !companyData.ContactName ||
       !companyData.Email ||
       !companyData.Address
-    ) {
+    ) { 
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -193,7 +193,7 @@ const AddCustomer = () => {
       return; // Return early if any required field is empty
     }
 
-    if (!validator.isLength(companyData.CompanyName, { min: 3, max: 30 })) {
+    if (!validator.isLength(companyData.CompanyName, { min: 3, max: 100 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Company name should be 3 to 30 characters");
@@ -202,7 +202,7 @@ const AddCustomer = () => {
     }
 
     // Validate first name length
-    if (!validator.isLength(companyData.FirstName, { min: 3, max: 30 })) {
+    if (!validator.isLength(companyData.FirstName, { min: 3, max: 100 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Customer name should be between 3 and 30 characters");
@@ -210,7 +210,7 @@ const AddCustomer = () => {
       return;
     }
 
-    if (!validator.isLength(companyData.ContactName, { min: 3, max: 30 })) {
+    if (!validator.isLength(companyData.ContactName, { min: 3, max: 100 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Contact Name should be between 3 and 30 characters");
@@ -218,13 +218,13 @@ const AddCustomer = () => {
       return;
     }
 
-    if (!validator.isEmail(companyData.Email)) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Email must contain the @ symbol");
-      console.log("Email must contain the @ symbol");
-      return;
-    }
+    // if (!validator.isEmail(companyData.Email)) {
+    //   setOpenSnackBar(true);
+    //   setSnackBarColor("error");
+    //   setSnackBarText("Email must contain the @ symbol");
+    //   console.log("Email must contain the @ symbol");
+    //   return;
+    // }
     if (
       companyData.Phone &&
       !validator.isMobilePhone(companyData.Phone, "any", { max: 20 })

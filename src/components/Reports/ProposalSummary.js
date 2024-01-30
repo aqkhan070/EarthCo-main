@@ -13,6 +13,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const ProposalSummary = () => {
   const {
@@ -35,7 +36,7 @@ const ProposalSummary = () => {
   const { loading, reportError, reportData, fetchReport } =
     useFetchProposalReports();
   const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
-
+  const { name, setName, fetchName} = useFetchCustomerName()
   const {
     sendEmail,
     showEmailAlert,
@@ -52,6 +53,13 @@ const ProposalSummary = () => {
     console.log("sr propoal dala", reportData);
   }, []);
 
+  useEffect(() => {
+    if (reportData[0]?.CustomerId) {
+       fetchName(reportData[0].CustomerId || 0)
+    }
+  
+  }, [reportData]);
+
   const handlePrint = () => {
     setToggleFullscreen(false);
     setTimeout(() => {
@@ -61,44 +69,36 @@ const ProposalSummary = () => {
       setToggleFullscreen(true);
     }, 3000);
   };
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("PS-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "Proposal Summary.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "landscape" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the width and height of the PDF based on the A4 landscape format
+    const pdfWidth = 297; // A4 width in mm
+    const pdfHeight = 210; // A4 height in mm
+  
+    // Create a new jsPDF instance with landscape orientation
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: [pdfWidth, pdfHeight],
+      orientation: "landscape",
     });
-
-    // // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight() / 2.2;
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("ProposalSummary.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, pdfWidth, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("Proposal Summary.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
-
+  
   if (reportError) {
     return (
       <div className="text-center">
@@ -177,7 +177,7 @@ const ProposalSummary = () => {
             <></>
           )}
 
-          <div className="print-page-width">
+          <div  style={{ fontFamily: "Times New Roman" }} className="print-page-width">
             <div className="PageLandscape mt-2">
               <div className="card">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
@@ -187,17 +187,17 @@ const ProposalSummary = () => {
                   className="card-body perview-pd get-preview"
                 >
                   <div className="row mb-5">
-                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 ">
-                      <div style={{ color: "black" }}>EarthCo</div>
+                    <div className="mt-2 col-xl-3 col-lg-3 col-md-3 col-sm-3 ">
+                      <div style={{ color: "black" }}>EarthCo <br />1225 E Wakeham <br />Santa Ana , Ca 92705</div>
                       <div style={{ color: "black" }}>
-                        {reportData[0].CustomerId} {reportData[0].CompanyName}
+                        
                       </div>
                       <div style={{ color: "black" }}>
                         {reportData[0].Address}
                       </div>
-                      <div style={{ color: "black" }}>Submitted To: </div>
+                      <div className="mt-4" style={{ color: "black" }}>Submitted To: </div>
                       <div style={{ color: "black" }}>
-                        {reportData[0].RegionalManagerName}
+                      {name}
                       </div>
                     </div>
                     <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-6 text-center">
@@ -207,7 +207,7 @@ const ProposalSummary = () => {
                       </h3>
                       <h3>Grandview Crest</h3>
                     </div>
-                    <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="mt-2 col-xl-2 col-lg-2 col-md-2 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                       <div className="brand-logo mb-2 inovice-logo">
                         <img
                           className="preview-Logo"
@@ -222,18 +222,18 @@ const ProposalSummary = () => {
                   <div className="table-responsive">
                     <table className="text-center table table-bordered ">
                       <thead>
-                        <tr className="preview-table-head">
-                          <th>SUBMITTED:</th>
-                          <th>PROPOSAL #:</th>
-                          <th style={{ maxWidth: "20em" }}>DESCRIPTION:</th>
-                          <th>AMOUNT:</th>
-                          <th>STATUS: </th>
+                        <tr className="preview-table-head text-start">
+                          <th>SUBMITTED</th>
+                          <th>PROPOSAL #</th>
+                          <th style={{ maxWidth: "20em" }}>DESCRIPTION</th>
+                          <th className="text-end">AMOUNT</th>
+                          <th>STATUS</th>
                         </tr>
                       </thead>
                       <tbody>
                         {reportData.map((report, index) => {
                           return (
-                            <tr className="preview-table-row" key={index}>
+                            <tr className="preview-table-row text-start" key={index}>
                               <td>{formatDate(report.CreatedDate, false)}</td>
                               <td className="left strong">
                                 {report.EstimateNumber}
@@ -241,7 +241,7 @@ const ProposalSummary = () => {
                               <td style={{ maxWidth: "20em" }}>
                                 {report.EstimateNotes}
                               </td>
-                              <td>
+                              <td className="text-end">
                                 $
                                 {report.TotalAmount.toFixed(2).replace(
                                   /\B(?=(\d{3})+(?!\d))/g,

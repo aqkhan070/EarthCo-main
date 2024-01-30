@@ -61,44 +61,28 @@ const SRPreview = () => {
     content: () => componentRef.current,
   });
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("SR-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "Service request.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  
+    input.style.fontFamily = "Times New Roman";
+  
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
     });
-
-    // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight();
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("Service request.pdf");
-    // });
+  
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+  
+    pdf.save("Service request.pdf");
+  
+    input.style.fontFamily = "";
   };
-
+  
   const fetchSR = async () => {
     if (idParam === 0) {
       return;

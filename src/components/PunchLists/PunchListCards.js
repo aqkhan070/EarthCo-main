@@ -1,5 +1,6 @@
 import React from "react";
-
+import OpenWithIcon from '@mui/icons-material/PendingActions';
+import TaskIcon from '@mui/icons-material/Task';
 const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
   return (
     <div className="row">
@@ -57,25 +58,7 @@ const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
           >
             <div className="media ai-icon">
               <span className="me-3 bgl-warning text-warning">
-                <svg
-                  id="icon-orders"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="feather feather-file-text"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+              <OpenWithIcon fontSize="large" />
               </span>
               <div className="media-body">
                 <p className="mb-1">Open (Pending)</p>
@@ -98,26 +81,8 @@ const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
             }}
           >
             <div className="media ai-icon">
-              <span className="me-3 bgl-danger text-danger">
-                <svg
-                  id="icon-orders"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="30"
-                  height="30"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="feather feather-file-text"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+              <span className="me-3 bgl-primary text-primary">
+              <TaskIcon fontSize="large" />
               </span>
               <div className="media-body">
                 <p className="mb-1">Closed</p>
@@ -140,7 +105,7 @@ const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
             }}
           >
             <div className="media ai-icon">
-              <span className="me-3 bgl-success text-success">
+              <span className="me-3 bgl-secondary text-secondary">
                 <svg
                   id="icon-database-widget"
                   xmlns="http://www.w3.org/2000/svg"

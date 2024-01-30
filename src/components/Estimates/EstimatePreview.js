@@ -23,7 +23,7 @@ const EstimatePreview = () => {
   const idParam = Number(queryParams.get("id"));
   const isMail = queryParams.get("isMail");
 
-  const { name, setName, fetchName } = useFetchCustomerName();
+  const { name, setName, fetchName, staffName, fetchStaffName } = useFetchCustomerName();
   const {
     sendEmail,
     showEmailAlert,
@@ -60,43 +60,35 @@ const EstimatePreview = () => {
     }, 3000);
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const input = document.getElementById("estimate-preview");
-
-    html2pdf(input, {
-      margin: 10,
-      filename: "Estimate.pdf",
-      image: { type: "jpeg", quality: 1.0 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+  
+    // Explicitly set the font for the PDF generation
+    input.style.fontFamily = "Times New Roman";
+  
+    // Use html2canvas to capture the content as an image with higher DPI
+    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  
+    // Calculate the height of the PDF based on the content
+    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  
+    // Create a new jsPDF instance
+    const pdf = new jsPDF({
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait",
     });
-
-    // // Create a jsPDF instance with custom font and font size
-    // const pdf = new jsPDF({
-    //   orientation: "p",
-    //   unit: "mm",
-    //   format: "a4",
-    // });
-
-    // const scale = 2; // Adjust the scale factor as needed
-
-    // // Calculate the new width and height based on the scale
-    // const scaledWidth = pdf.internal.pageSize.getWidth() * scale;
-    // const scaledHeight = pdf.internal.pageSize.getHeight() * scale;
-
-    // pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
-    // pdf.setFont("Roboto");
-    // pdf.setFontSize(3); // Adjust the font size as needed
-
-    // html2canvas(input).then((canvas) => {
-    //   const imgData = canvas.toDataURL("image/png");
-    //   const width = pdf.internal.pageSize.getWidth();
-    //   const height = pdf.internal.pageSize.getHeight();
-
-    //   pdf.addImage(imgData, "PNG", 0, 0, width, height);
-    //   pdf.save("estimate.pdf");
-    // });
+  
+    // Add the captured image to the PDF
+    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+  
+    // Save the PDF
+    pdf.save("Estimate.pdf");
+  
+    // Reset the font to its default value
+    input.style.fontFamily = "";
   };
+  
 
   const fetchEstimates = async () => {
     if (idParam === 0) {
@@ -123,6 +115,7 @@ const EstimatePreview = () => {
   useEffect(() => {
     if (previewData && previewData.EstimateData) {
       fetchName(previewData.EstimateData.CustomerId);
+      fetchStaffName(previewData.EstimateData.RegionalManagerId)
     }
   }, [previewData]);
   useEffect(() => {
@@ -174,8 +167,8 @@ const EstimatePreview = () => {
                       <h5 className="mb-0">EarthCo</h5>{" "}
                       <h6 className="mb-0">
                         1225 East Wakeham Avenue
-                        <br /> Santa Ana, California <br /> 92705 O 714.571.0455
-                        F 714.571.0580 CL# C27 823185 / D49 1025053
+                        <br /> Santa Ana, California 92705 <br /> O 714.571.0455
+                        F 714.571.0580 <br /> CL# C27 823185 / D49 1025053
                       </h6>{" "}
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
@@ -263,7 +256,7 @@ const EstimatePreview = () => {
                             <td className="table-cell-align text-right">
                               <h6 className="mb-0">
                                 {" "}
-                                {previewData.EstimateData.AssignToName}
+                                {staffName}
                               </h6>
                             </td>
                           </tr>

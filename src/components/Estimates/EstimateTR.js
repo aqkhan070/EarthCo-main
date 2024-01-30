@@ -34,6 +34,10 @@ import UpdateAllModal from "../Reusable/UpdateAllModal";
 import DeleteAllModal from "../Reusable/DeleteAllModal";
 import AddButton from "../Reusable/AddButton";
 import formatAmount from "../../custom/FormatAmount";
+import { CSVLink } from "react-csv";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import TableFilterPopover from "../Reusable/TableFilterPopover";
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -137,33 +141,58 @@ const EstimateTR = ({
   };
   const isRowSelected = (estimateId) => selectedEstimates.includes(estimateId);
 
- const handleSelectAll = (event) => {
-  if (event.target.checked) {
-    // Select all rows
-    if (Array.isArray(filteredEstimates)) {
-      const allEstimateIds = filteredEstimates.map(
-        (estimate) => estimate.EstimateId
-      );
-      setSelectedEstimates(allEstimateIds);
-      setSelectAll(true);
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      // Select all rows
+      if (Array.isArray(filteredEstimates)) {
+        const allEstimateIds = filteredEstimates.map(
+          (estimate) => estimate.EstimateId
+        );
+        setSelectedEstimates(allEstimateIds);
+        setSelectAll(true);
+      } else {
+        // Handle the case where filteredEstimates is not an array
+        console.error("filteredEstimates is not an array");
+      }
     } else {
-      // Handle the case where filteredEstimates is not an array
-      console.error("filteredEstimates is not an array");
+      // Deselect all rows
+      setSelectedEstimates([]);
+      setSelectAll(false);
     }
-  } else {
-    // Deselect all rows
-    setSelectedEstimates([]);
-    setSelectAll(false);
-  }
-};
+  };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedCell, setSelectedCell] = useState("");
+  const [poFilter, setPoFilter] = useState("")
+  const [invoiceFilter, setInvoiceFilter] = useState("")
+  const [billFilter, setBillFilter] = useState("")
+
+  const handleCellClick = (cellValue) => (event) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedCell(cellValue);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
 
 
   return (
     <>
       <ThemeProvider theme={theme}>
+        <TableFilterPopover
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+
+          selectedCell={selectedCell}
+          setPoFilter={setPoFilter}
+          setInvoiceFilter={setInvoiceFilter}
+          setBillFilter={setBillFilter}
+        />
         <div className="card">
           <div className="card-header flex-wrap d-flex justify-content-between  border-0">
             <div>
+           
               <TextField
                 label="Search Estimate"
                 variant="standard"
@@ -171,8 +200,17 @@ const EstimateTR = ({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-            </div>
-            <div className=" me-2">
+            </div> <div className=" me-2">
+            <CSVLink
+            className="btn btn-sm btn-outline-primary me-2"
+              data={filteredEstimates}
+              filename={"Estimates.csv"}
+              target="_blank"
+              separator={","}
+            >
+              Download CSV
+            </CSVLink>
+           
               <FormControl className="  me-2" variant="outlined">
                 <Select
                   labelId="customer-type-label"
@@ -338,14 +376,30 @@ const EstimateTR = ({
                       <TableCell className="table-cell-align">
                         Description Of Work
                       </TableCell>
-                      <TableCell align="center" className="table-cell-align">
-                        PO #
+                      <TableCell
+                        align="center"
+                        className="table-cell-align"
+                        style={{cursor: "pointer"}}
+                        onClick={handleCellClick("PO")}
+                      >
+                        PO #  <FilterAltIcon sx={{color : "#424242"}}  />
                       </TableCell>
-                      <TableCell align="center" className="table-cell-align">
-                        Bill #
+                      <TableCell
+                        align="center"
+                        style={{cursor: "pointer"}}
+                        className="table-cell-align"
+
+                        onClick={handleCellClick("Bill")}
+                      >
+                        Bill #  <FilterAltIcon sx={{color : "#424242"}}  />
                       </TableCell>
-                      <TableCell align="center" className="table-cell-align">
-                        Invoice #
+                      <TableCell
+                        align="center"
+                        style={{cursor: "pointer"}}
+                        className="table-cell-align"
+                        onClick={handleCellClick("Invoice")}
+                      >
+                        Invoice #  <FilterAltIcon sx={{color : "#424242"}} />
                       </TableCell>
                       <TableCell
                         align="center"

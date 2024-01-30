@@ -9,6 +9,7 @@ const useFetchCustomerName = () => {
   };
   const [name, setName] = useState("");
   const [supplierName, setSupplierName] = useState("");
+  const [staffName, setStaffName] = useState("")
 
   const fetchName = async (id) => {
     if (!id) {
@@ -41,6 +42,22 @@ const useFetchCustomerName = () => {
     }
   };
 
+  const fetchStaffName = async (id) => {
+    if (!id) {
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffNameById?id=${id}`,
+        { headers }
+      );
+      setStaffName(response.data);
+      console.log("Supplier name", response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
+  };
+
   return {
     name,
     fetchName,
@@ -48,6 +65,9 @@ const useFetchCustomerName = () => {
     fetchSupplierName,
     supplierName,
     setSupplierName,
+    fetchStaffName,
+    staffName,
+
   };
 };
 

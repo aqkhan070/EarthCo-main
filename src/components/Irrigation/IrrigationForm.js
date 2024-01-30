@@ -18,6 +18,7 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import formatDate from "../../custom/FormatDate";
 import Contacts from "../CommonComponents/Contacts";
 import BackButton from "../Reusable/BackButton";
+import PrintButton from "../Reusable/PrintButton";
 
 const IrrigationForm = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -472,29 +473,27 @@ const IrrigationForm = () => {
                       <div className="col-md-12 text-end mt-4">
                         {idParam === 0 ? null : (
                           <>
-                            <button
-                              type="button"
-                              className="mt-1 btn btn-sm btn-outline-primary estm-action-btn"
+                            <PrintButton
+                                varient="mail"
                               onClick={() => {
                                 navigate(
                                   `/send-mail?title=${"Irrigation"}&mail=${customerMail}`
                                 );
                               }}
                             >
-                              <Email />
-                            </button>
+                             
+                            </PrintButton>
 
-                            <button
-                              type="button"
-                              className="mt-1 btn btn-sm btn-outline-primary estm-action-btn me-2"
+                            <PrintButton
+                               varient="print"
                               onClick={() => {
                                 navigate(
                                   `/irrigation/audit-report?id=${idParam}`
                                 );
                               }}
                             >
-                              <Print></Print>
-                            </button>
+                            
+                            </PrintButton>
                           </>
                         )}
                         <BackButton

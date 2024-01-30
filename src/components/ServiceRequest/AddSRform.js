@@ -27,6 +27,7 @@ import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import Contacts from "../CommonComponents/Contacts";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
+import PrintButton from "../Reusable/PrintButton";
 
 const AddSRform = () => {
   const token = Cookies.get("token");
@@ -524,9 +525,9 @@ const AddSRform = () => {
   useEffect(() => {
     fetchSR();
     fetchCustomers();
-    // return () => {
-    //   setPunchListData({});
-    // };
+    return () => {
+      setSRMapData([]);
+    };
   }, []);
 
   useEffect(() => {
@@ -609,8 +610,8 @@ const AddSRform = () => {
   };
 
   const handleDescriptionChange = (itemId, event) => {
-    const updatedItems = tblSRItems.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItems = tblSRItems.map((item, index) => {
+      if (index === itemId) {
         const updatedItem = { ...item };
         updatedItem.Description = event.target.value;
 
@@ -623,8 +624,8 @@ const AddSRform = () => {
   };
 
   const handleQuantityChange = (itemId, event) => {
-    const updatedItems = tblSRItems.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItems = tblSRItems.map((item, index) => {
+      if (index === itemId) {
         const updatedItem = { ...item };
         updatedItem.Qty = parseInt(event.target.value, 10);
         updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -637,8 +638,8 @@ const AddSRform = () => {
   };
 
   const handleRateChange = (itemId, event) => {
-    const updatedItems = tblSRItems.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItems = tblSRItems.map((item, index) => {
+      if (index === itemId) {
         const updatedItem = { ...item };
         updatedItem.Rate = parseFloat(event.target.value);
         updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
@@ -1083,16 +1084,17 @@ const AddSRform = () => {
                         </thead>
                         <tbody>
                           {tblSRItems?.map((item, index) => (
-                            <tr colSpan={2} key={item.ItemId}>
+                            <tr colSpan={2} key={index} style={{height  :"fit-content"}}>
                               <td className="itemName-width">{item.Name}</td>
                               <td>
-                                <input
-                                  style={{ width: "17em" }}
+                                <textarea
+                               
+                               style={{ width: "17em" , height: "fit-content"}}
                                   className="form-control form-control-sm"
                                   value={item.Description}
                                   onChange={
                                     (e) =>
-                                      handleDescriptionChange(item.ItemId, e) // Use item.ItemId
+                                      handleDescriptionChange(index, e) // Use item.ItemId
                                   }
                                 />
                               </td>
@@ -1103,7 +1105,7 @@ const AddSRform = () => {
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={
-                                    (e) => handleQuantityChange(item.ItemId, e) // Use item.ItemId
+                                    (e) => handleQuantityChange(index, e) // Use item.ItemId
                                   }
                                 />
                               </td>
@@ -1114,7 +1116,7 @@ const AddSRform = () => {
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={
-                                    (e) => handleRateChange(item.ItemId, e) // Use item.ItemId
+                                    (e) => handleRateChange(index, e) // Use item.ItemId
                                   }
                                 />
                               </td>
@@ -1184,8 +1186,10 @@ const AddSRform = () => {
                               </>
                             </td>
                             <td>
-                              <input
-                                name="Qty"
+                              <textarea
+                                size="small"
+                              
+                                  style={{ width: "17em" , height: "fit-content"}}
                                 value={itemInput.Description}
                                 onChange={(e) =>
                                   setItemInput({
@@ -1193,7 +1197,7 @@ const AddSRform = () => {
                                     Description: e.target.value,
                                   })
                                 }
-                                style={{ width: "17em" }}
+                             
                                 className="form-control form-control-sm"
                                 placeholder="Description"
                                 onKeyPress={(e) => {
@@ -1288,9 +1292,7 @@ const AddSRform = () => {
                     <div className="card-body row">
                       <div className="col-md-12 mx-1 mt-2">
                         <div className="row">
-                          {SRData.ServiceRequestData.SRTypeId === 3 ? (
-                            <></>
-                          ) : (
+                         
                             <div className="col-md-4 mb-1">
                               {" "}
                               {/* Adjust the column size as needed */}
@@ -1311,7 +1313,7 @@ const AddSRform = () => {
                                 fullWidth
                               />
                             </div>
-                          )}
+                         
 
                           <div className="col-md-4 mb-1">
                             {" "}
@@ -1604,9 +1606,9 @@ const AddSRform = () => {
                           </MenuItem>
                         </Select>
                       </FormControl> */}
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary ms-1"
+                      <PrintButton
+                    
+                    varient="mail"
                         onClick={() => {
                           navigate(
                             `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
@@ -1617,19 +1619,13 @@ const AddSRform = () => {
                                 : "Closed"
                             }`
                           );
-                          // sendEmail(
-                          //   `/service-requests/service-request-preview?id=${idParam}`,
-                          //   SRData.ServiceRequestData.CustomerId,
-                          //   SRData.ServiceRequestData.ContactId,
-                          //   false
-                          // );
+                       
                         }}
                       >
-                        <Email></Email>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary mx-2"
+                       
+                      </PrintButton>
+                      <PrintButton
+                       varient="print"
                         onClick={() => {
                           navigate(
                             `/service-requests/service-request-preview?id=${idParam}`
@@ -1638,8 +1634,8 @@ const AddSRform = () => {
                           setSRData(customer);
                         }}
                       >
-                        <Print></Print>
-                      </button>
+                       
+                      </PrintButton>
                       <button
                         className="btn btn-dark me-2"
                         style={{ marginRight: "1em" }}
@@ -1648,6 +1644,7 @@ const AddSRform = () => {
                             CustomerId: SRData.ServiceRequestData.CustomerId,
                             ServiceLocationId:
                               SRData.ServiceRequestData.ServiceLocationId,
+                              EstimateNotes :  SRData.ServiceRequestData.WorkRequest,
                             FilesData: PrevFiles,
                             ContactIds: selectedContacts,
                             ItemData: tblSRItems.map((items) => ({

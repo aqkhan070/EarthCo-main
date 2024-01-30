@@ -42,7 +42,7 @@ const SendMail = () => {
     }. We understand the importance of creating a beautiful and sustainable environment for your commercial space, and we are committed to delivering exceptional landscaping services that meet your unique needs.<br>Our dedicated team of experts is here to ensure that your landscaping dreams come to life, making your property not only aesthetically pleasing but also environmentally responsible.<br>Should you have any questions or require further assistance, please do not hesitate to contact our friendly customer support team. <br>Best Reguards <br>EarthCo Comercial Landscape`
   );
   const [subject, setSubject] = useState(
-    `${customer} ${title} #${number} is ${isOpen}`
+    `${customer} ${title} #${number} is ${"" + isOpen}`
   );
 
   const [disableButton, setDisableButton] = useState(false);
@@ -176,37 +176,69 @@ const SendMail = () => {
     if (!number) {
       setEditorContent(``);
     }
+
+    if (title == `Invoice`) {
+      setEditorContent(`<p>
+      
+      
+        <strong>Dear  ${customer ? customer : ""}</strong>,<br />
+      
+      Please find your invoice attached.
+      <br />
+        If there are any questions with this invoice(s) please feel free to contact
+        me. If not please remit payment at your earliest convenience.
+      <br />
+      We appreciate your immediate attention to this matter.
+      *Please send payments to 1225 E. Wakeham, Santa Ana, CA 92705
+      *Please send service requests to service@earthcompany.org
+      
+        <br />
+      
+       Regards, <br />
+       Yisel Ferreyra, <br />
+       Accounts Receivable <br />
+       ${loggedInUser.CompanyName} <br />
+       O 714.571.0455 F <br />
+       714.571.0580 <br />
+    </p>`);
+
+      setSubject(`Invoice #${number} for ${customer}`);
+    }
+
     if (title == `Service Request` && isOpen == "Open") {
-      setEditorContent(`<strong>Dear ${
+      setEditorContent(`<p>
+      <strong>Dear ${
         customer ? customer : ""
-      }</strong>, <br><br>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
-      <br><br>If you have any additional questions or concerns, please contact us at ${
+      }</strong>, <br/><br/>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
+      <br/><br/>If you have any additional questions or concerns, please contact us at ${
         loggedInUser.userEmail
       }. You can also reach us by telephone at 714.571.0455.
-      <br><br>Thank you for choosing Earthco.
-      <br><br>Sincerely,<br>${loggedInUser.userName},`);
+      <br/><br/>Thank you for choosing Earthco.
+      <br/><br/>Sincerely,<br/>${loggedInUser.userName},</p>`);
     }
     if (title == `Service Request` && isOpen == "Closed") {
-      setEditorContent(`<strong>Dear ${
-        customer ? customer : ""
-      },</strong> <br><br>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
-      <br><br>If you have any additional questions or concerns, please contact us at ${
-        loggedInUser.userEmail
-      }. You can also reach us by telephone at 714.571.0455.
-      <br><br>Thank you for choosing Earthco.
-      <br><br>Sincerely,
-      <br>${loggedInUser.userName},`);
+      setEditorContent(`   <p>
+      <strong>Dear ${
+         customer ? customer : ""
+       },</strong> <br/><br/>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
+       <br/><br/>If you have any additional questions or concerns, please contact us at ${
+         loggedInUser.userEmail
+       }. You can also reach us by telephone at 714.571.0455.
+       <br/><br/>Thank you for choosing Earthco.
+       <br/><br/>Sincerely,
+       <br/>${loggedInUser.userName},</p>`);
     }
     if (title == `Estimate`) {
-      setEditorContent(`Hello ${customer ? customer : ""},
-      <br><br>Please see the attached proposal.  Please confirm receipt.
-      <br><br>Contact me if you have any questions.
-      <br><br>Thank you!
-      
-      <br><br>${loggedInUser.userName}
-      <br>EarthCo`);
-
-      setSubject(`Proposal ${number} for ${customer}`);
+      setEditorContent(`<p>Hello ${customer ? customer : ""},
+        <br/><br/>Please see the attached proposal.  Please confirm receipt.
+        <br/><br/>Contact me if you have any questions.
+        <br/><br/>Thank you!<br/><br/> 
+        
+        <br/>${loggedInUser.userName}
+        <br/>EarthCo`);
+  
+        setSubject(`Proposal ${number} for ${customer}
+        `);
     }
 
     return () => {
@@ -327,6 +359,26 @@ const SendMail = () => {
               <div className="col-md-2 text-start"></div>
               <div className="col-md-2 text-start"></div>
               <div className="col-md-3 text-start mt-2">
+              <CustomizedTooltips
+                  title="Click To Attach Files"
+                  placement="top"
+                >
+                  <AttachFileIcon
+                    sx={{
+                      fontSize: 23,
+                      color: "black",
+                      marginRight: "0.5em",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      const fileInput = document.createElement("input");
+                      fileInput.type = "file";
+                      fileInput.multiple = true;
+                      fileInput.click(); // Trigger the file input click event
+                      fileInput.addEventListener("change", trackFile);
+                    }}
+                  />
+                </CustomizedTooltips>
                 {selectedImages.map((file, index) => (
                   <div className="card" style={{ height: "fit-content" }}>
                     <div
@@ -411,26 +463,7 @@ const SendMail = () => {
                 ))}
               </div>
               <div className="col-md-5 text-end mt-3">
-                <CustomizedTooltips
-                  title="Click To Attach Files"
-                  placement="top"
-                >
-                  <AttachFileIcon
-                    sx={{
-                      fontSize: 23,
-                      color: "black",
-                      marginRight: "0.5em",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      const fileInput = document.createElement("input");
-                      fileInput.type = "file";
-                      fileInput.multiple = true;
-                      fileInput.click(); // Trigger the file input click event
-                      fileInput.addEventListener("change", trackFile);
-                    }}
-                  />
-                </CustomizedTooltips>
+               
                 <BackButton
                   onClick={() => {
                     window.history.back();

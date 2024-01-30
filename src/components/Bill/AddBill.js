@@ -23,6 +23,7 @@ import BackButton from "../Reusable/BackButton";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
+import PrintButton from "../Reusable/PrintButton";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -307,7 +308,7 @@ const AddBill = ({}) => {
   };
 
   const deleteItem = (id) => {
-    const updatedItemsList = itemsList.filter((item) => item.ItemId !== id);
+    const updatedItemsList = itemsList.filter((item, index) => index !== id);
     setItemsList(updatedItemsList);
   };
 
@@ -319,8 +320,8 @@ const AddBill = ({}) => {
   };
 
   const handleItemDescriptionChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Description: event.target.value,
@@ -332,8 +333,8 @@ const AddBill = ({}) => {
   };
 
   const handleQuantityChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
         return {
           ...item,
           Qty: Number(event.target.value),
@@ -345,8 +346,8 @@ const AddBill = ({}) => {
   };
 
   const handleRateChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item) => {
-      if (item.ItemId === itemId) {
+    const updatedItemsList = itemsList.map((item , index) => {
+      if (index === itemId) {
         return {
           ...item,
           Rate: Number(event.target.value),
@@ -426,7 +427,7 @@ const AddBill = ({}) => {
 
   const deleteCatagory = (id) => {
     const updatedItemsList = catagoryList.filter(
-      (item) => item.AccountId !== id
+      (item, index) => index !== id
     );
     setCatagoryList(updatedItemsList);
   };
@@ -866,7 +867,10 @@ const AddBill = ({}) => {
                                 {item?.Name || ""}
                               </td>
                               <td>
-                                <input
+                                <TextField
+                                size="small"
+                                multiline
+                                  style={{height: "fit-content"}}
                                   type="text"
                                   className="form-control form-control-sm"
                                   value={item.Description}
@@ -892,7 +896,7 @@ const AddBill = ({}) => {
                               </td>
                               <td>
                                 <Button
-                                  onClick={() => deleteCatagory(item.AccountId)}
+                                  onClick={() => deleteCatagory(index)}
                                 >
                                   <Delete color="error" />
                                 </Button>
@@ -930,7 +934,10 @@ const AddBill = ({}) => {
                             />
                           </td>
                           <td>
-                            <input
+                            <TextField
+                                size="small"
+                                multiline
+                                  style={{  height: "fit-content"}}
                               type="text"
                               value={catagoryInput.Description}
                               className="form-control form-control-sm"
@@ -1001,15 +1008,17 @@ const AddBill = ({}) => {
                     <tbody>
                       {itemsList && itemsList.length > 0 ? (
                         itemsList.map((item, index) => (
-                          <tr colSpan={2} key={item.ItemId}>
+                          <tr colSpan={2} key={index}>
                             <td className="itemName-width">{item.Name}</td>
                             <td>
-                              <input
-                                style={{ width: "17em" }}
+                              <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                                 className="form-control form-control-sm"
                                 value={item.Description}
                                 onChange={(e) =>
-                                  handleItemDescriptionChange(item.ItemId, e)
+                                  handleItemDescriptionChange(index, e)
                                 }
                               />
                             </td>
@@ -1020,7 +1029,7 @@ const AddBill = ({}) => {
                                 className="form-control form-control-sm"
                                 value={item.Qty}
                                 onChange={(e) =>
-                                  handleQuantityChange(item.ItemId, e)
+                                  handleQuantityChange(index, e)
                                 }
                               />
                             </td>
@@ -1031,7 +1040,7 @@ const AddBill = ({}) => {
                                 style={{ width: "7em" }}
                                 className="form-control form-control-sm"
                                 onChange={(e) =>
-                                  handleRateChange(item.ItemId, e)
+                                  handleRateChange(index, e)
                                 }
                               />
                             </td>
@@ -1041,7 +1050,7 @@ const AddBill = ({}) => {
                               <div className="badgeBox">
                                 <Button
                                   onClick={() => {
-                                    deleteItem(item.ItemId);
+                                    deleteItem(index);
                                   }}
                                 >
                                   <Delete color="error" />
@@ -1108,8 +1117,10 @@ const AddBill = ({}) => {
                           </>
                         </td>
                         <td>
-                          <input
-                            name="Description"
+                          <TextField
+                                size="small"
+                                multiline
+                                  style={{ width: "17em" , height: "fit-content"}}
                             value={itemInput?.Description}
                             onChange={(e) =>
                               setItemInput({
@@ -1117,7 +1128,7 @@ const AddBill = ({}) => {
                                 Description: e.target.value,
                               })
                             }
-                            style={{ width: "17em" }}
+                          
                             className="form-control form-control-sm"
                             placeholder="Description"
                             onKeyPress={(e) => {
@@ -1404,30 +1415,23 @@ const AddBill = ({}) => {
                 <div>
                   {idParam ? (
                     <>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn"
+                      <PrintButton
+                       varient="mail"
                         onClick={() => {
                           navigate(`/send-mail?title=${"Bill"}`);
-                          // sendEmail(
-                          //   `/bills/bill-preview?id=${idParam}`,
-                          //   formData.SupplierId,
-                          //   0,
-                          //   true
-                          // );
+                          
                         }}
                       >
-                        <Email />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary estm-action-btn me-2"
+                     
+                      </PrintButton>
+                      <PrintButton
+                         varient="print"
                         onClick={() => {
                           navigate(`/bills/bill-preview?id=${idParam}`);
                         }}
                       >
-                        <Print></Print>
-                      </button>
+                       
+                      </PrintButton>
                     </>
                   ) : (
                     <></>
