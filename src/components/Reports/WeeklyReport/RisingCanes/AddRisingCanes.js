@@ -1188,45 +1188,46 @@ const AddRisingCanes = () => {
                   );
                 })}
               </div>
-              <div className="row m-2 text-end">
-                
-
-                <div className="col-md-12 ps-0 mt-2 ">
-                {idParam ? (
+              <div className="row m-2">
+                <div className="col-md-4 ps-0 mt-2 ">
+                  {" "}
+                  <div className="ms-2">
+                    <BackButton
+                      onClick={() => {
+                        navigate(`/weekly-reports/rising-canes`);
+                      }}
+                    >
+                      Back
+                    </BackButton>
+                  </div>
+                </div>
+                <div className="col-md-8 ps-0 mt-2  text-end">
+                  {idParam ? (
                     <>
                       <PrintButton
-                       varient="mail"
+                        varient="mail"
                         onClick={() => {
                           navigate(
                             `/send-mail?title=${"Weekly Report - Rising Canes"}&mail=${contactEmail}`
                           );
-                       
                         }}
                       >
                         <Email />
                       </PrintButton>
 
                       <PrintButton
-                         varient="print"
+                        varient="print"
                         onClick={() => {
                           navigate(
                             `/weekly-reports/rising-canes-preview?id=${idParam}`
                           );
                         }}
-                      >
-                     
-                      </PrintButton>
+                      ></PrintButton>
                     </>
                   ) : (
                     <></>
                   )}
-                  <BackButton
-                    onClick={() => {
-                      navigate(`/weekly-reports/rising-canes`);
-                    }}
-                  >
-                    Back
-                  </BackButton>
+
                   <LoaderButton
                     loading={disableButton}
                     handleSubmit={handleSubmit}

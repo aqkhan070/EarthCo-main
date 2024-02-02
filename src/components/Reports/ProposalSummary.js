@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import useFetchProposalReports from "../Hooks/useFetchProposalReports";
 import { DataContext } from "../../context/AppData";
 import { CircularProgress } from "@mui/material";
@@ -69,36 +69,66 @@ const ProposalSummary = () => {
       setToggleFullscreen(true);
     }, 3000);
   };
+
+  const [pdfClicked, setPdfClicked] = useState(false);
+
+  const pdfDownload = () => {
+    setPdfClicked(true);
+    setTimeout(() => {
+      handleDownload();
+    }, 1000);
+  };
+  
   const handleDownload = async () => {
     const input = document.getElementById("PS-preview");
   
-    // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
   
-    // Use html2canvas to capture the content as an image with higher DPI
-    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
   
-    // Calculate the width and height of the PDF based on the A4 landscape format
-    const pdfWidth = 297; // A4 width in mm
-    const pdfHeight = 210; // A4 height in mm
-  
-    // Create a new jsPDF instance with landscape orientation
     const pdf = new jsPDF({
-      unit: "mm",
-      format: [pdfWidth, pdfHeight],
       orientation: "landscape",
+      unit: "mm",
+      format: "a4",
     });
   
-    // Add the captured image to the PDF
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, pdfWidth, pdfHeight);
+    // Get the width and height of the input content
+    const contentWidth = input.offsetWidth;
+    const contentHeight = input.offsetHeight;
   
-    // Save the PDF
-    pdf.save("Proposal Summary.pdf");
+    // Convert the dimensions from pixels to millimeters for PDF
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // Calculate scale to fit the content width to the pdf width
+    const scale = pdfWidth / contentWidth;
+    const scaledHeight = contentHeight * scale;
   
-    // Reset the font to its default value
-    input.style.fontFamily = "";
+    // Render the canvas with the calculated scale
+    html2canvas(input, { scale: 4, logging: true }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg");
+  
+      // Check if scaled height is greater than pdf page height
+      if (scaledHeight > pdfHeight) {
+        // Content will take more than one page
+        let position = 0;
+        while (position < scaledHeight) {
+          // Crop and add part of the image that fits into one page
+          let pageSection = Math.min(scaledHeight - position, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', 0, -position, pdfWidth, scaledHeight);
+          position += pdfHeight;
+  
+          // Add a new page if there is more content to add
+          if (position < scaledHeight) {
+            pdf.addPage();
+          }
+        }
+      } else {
+        // Content fits into one page
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
+      }
+  
+      pdf.save("download.pdf");
+    });
   };
-  
   if (reportError) {
     return (
       <div className="text-center">
@@ -123,56 +153,61 @@ const ProposalSummary = () => {
       ) : (
         <div className="container-fluid ">
           {toggleFullscreen && !isGeneralReport ? (
-            <div className="row me-3">
-              <div className="col-md-11 text-end">
-                {" "}
-                {isMail ? (
-                  <></>
-                ) : (
-                  <button
-                    className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                    onClick={() => {
-                      navigate(`/summary-report`);
-                    }}
-                    style={{ padding: "5px 10px" }}
-                  >
-                   <ArrowBackIcon sx={{ fontSize: 17 }} />
-                  </button>
-                )}
-                <button
-                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                  onClick={handlePrint}
-                >
-                  <i className="fa fa-print"></i>
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                  onClick={handleDownload}
-                >
-                  <i className="fa fa-download"></i>
-                </button>
-                {isMail ? (
-                  <></>
-                ) : (
-                  <button
-                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                    onClick={() => {
-                      // sendEmail(
-                      //   `/proposal-summary?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
-                      //   customerParam,
-                      //   0,
-                      //   false
-                      // );
-                      navigate(
-                        `/send-mail?title=${"Proposal Summary"}&mail=${customerMail}`
-                      );
-                    }}
-                  >
-                    <i className="fa-regular fa-envelope"></i>
-                  </button>
-                )}
-              </div>
-            </div>
+           <div className="print-page-width">
+           <div style={{ width: "28.7cm" }}>
+             <div className="row ">
+               <div className="col-md-1">
+                 {isMail ? (
+                   <></>
+                 ) : (
+                   <button
+                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
+                     onClick={() => {
+                       navigate(`/summary-report`);
+                     }}
+                   >
+                     <ArrowBackIcon sx={{ fontSize: 17 }} />
+                   </button>
+                 )}
+               </div>
+               <div className="col-md-11 text-end">
+                 {" "}
+                 <button
+                   className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                   onClick={handlePrint}
+                 >
+                   <i className="fa fa-print"></i>
+                 </button>
+                 <button
+                   className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                   onClick={pdfDownload}
+                 >
+                   <i className="fa fa-download"></i>
+                 </button>{" "}
+                 {isMail ? (
+                   <></>
+                 ) : (
+                   <button
+                     className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                     onClick={() => {
+                       // sendEmail(
+                       //   `/PunchlistPreview?id=${idParam}`,
+                       //   pLData.CustomerId,
+                       //   pLData.ContactId,
+                       //   false
+                       // );
+                       navigate(
+                         `/send-mail?title=${"Proposal Summary"}&mail=${customerMail}&customer=${name}`
+                       );
+                     }}
+                   >
+                     <i className="fa-regular fa-envelope"></i>
+                   </button>
+                 )}
+               </div>
+             </div>
+           </div>
+           </div>
           ) : (
             <></>
           )}
@@ -192,12 +227,13 @@ const ProposalSummary = () => {
                       <div style={{ color: "black" }}>
                         
                       </div>
-                      <div style={{ color: "black" }}>
-                        {reportData[0].Address}
-                      </div>
+                     
                       <div className="mt-4" style={{ color: "black" }}>Submitted To: </div>
                       <div style={{ color: "black" }}>
                       {name}
+                      </div>
+                       <div style={{ color: "black" }}>
+                        {reportData[0].Address}
                       </div>
                     </div>
                     <div className="mt-5 col-xl-7 col-lg-7 col-md-7 col-sm-6 text-center">
@@ -233,10 +269,11 @@ const ProposalSummary = () => {
                       <tbody>
                         {reportData.map((report, index) => {
                           return (
+                            <>
                             <tr className="preview-table-row text-start" key={index}>
                               <td>{formatDate(report.CreatedDate, false)}</td>
                               <td className="left strong">
-                                {report.EstimateNumber}
+                              {report.EstimateNumber}
                               </td>
                               <td style={{ maxWidth: "20em" }}>
                                 {report.EstimateNotes}
@@ -250,6 +287,12 @@ const ProposalSummary = () => {
                               </td>
                               <td>{report.Status}</td>
                             </tr>
+                            {index  === 11 && pdfClicked &&(
+  <tr  style={{ height: "6em" }} key={`empty-${index}`} className="empty-row">
+    <td colSpan="4"></td>
+  </tr>
+)}
+                            </>
                           );
                         })}
                       </tbody>

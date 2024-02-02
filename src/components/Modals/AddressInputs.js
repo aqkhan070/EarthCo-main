@@ -181,7 +181,7 @@ const AddressInputs = ({
                 Type: "ShipAddr",
                 Description: newValue.description,
               },
-            ],
+            ] ,
           }));
 
           console.log(`Street Number: ${streetNumber}`);

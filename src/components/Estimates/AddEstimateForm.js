@@ -1537,7 +1537,7 @@ const AddEstimateForm = () => {
                             style={{ color: "blue" }}
                             className="ms-2"
                             onClick={() => {
-                              navigate(`/Bills/addbill?id=${formData.BillId}`);
+                              navigate(`/Bills/add-bill?id=${formData.BillId}`);
                             }}
                           >
                             View
@@ -1593,7 +1593,7 @@ const AddEstimateForm = () => {
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
                         <tr>
-                          <th className="itemName-width">Item</th>
+                          <th >Item</th>
                           <th>Description</th>
                           <th>Qty</th>
                           <th>Rate</th>
@@ -1609,12 +1609,12 @@ const AddEstimateForm = () => {
                             .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                             .map((item, index) => (
                               <tr colSpan={2} key={index}>
-                                <td className="itemName-width">{item.Name}</td>
+                                <td >{item.Name}</td>
                                 <td>
                                   <TextField
                                 size="small"
                                 multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                                  style={{  height: "fit-content"}}
                                     className="form-control form-control-sm"
                                     value={item.Description}
                                     onChange={(e) =>
@@ -1625,7 +1625,7 @@ const AddEstimateForm = () => {
                                 <td>
                                   <input
                                     type="number"
-                                    style={{ width: "7em" }}
+                                 
                                     className="form-control form-control-sm"
                                     value={item.Qty}
                                     onChange={(e) =>
@@ -1636,7 +1636,7 @@ const AddEstimateForm = () => {
                                 <td>
                                   <input
                                     type="number"
-                                    style={{ width: "7em" }}
+                                   
                                     className="form-control form-control-sm"
                                     value={item.Rate}
                                     onChange={(e) =>
@@ -1644,13 +1644,13 @@ const AddEstimateForm = () => {
                                     }
                                   />
                                 </td>
-                                <td>
-                                  {item ? (item.Qty * item.Rate).toFixed(2) : 0}
+                                <td className="text-right">
+                                  $ {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                                 </td>
                                 <td>
                                   <input
                                     type="number"
-                                    style={{ width: "7em" }}
+                                 
                                     className="form-control form-control-sm"
                                     value={item.PurchasePrice}
                                     onChange={(e) =>
@@ -1675,7 +1675,7 @@ const AddEstimateForm = () => {
                           <></>
                         )}
                         <tr>
-                          <td className="itemName-width">
+                          <td >
                             <>
                               <Autocomplete
                                 id="search-items"
@@ -1731,7 +1731,7 @@ const AddEstimateForm = () => {
                             <TextField
                                 size="small"
                                 multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                                  style={{ height: "fit-content"}}
                               value={itemInput?.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -1762,7 +1762,7 @@ const AddEstimateForm = () => {
                                   Qty: Number(e.target.value),
                                 })
                               }
-                              style={{ width: "7em" }}
+                             
                               className="form-control form-control-sm"
                               placeholder="Quantity"
                               onKeyPress={(e) => {
@@ -1775,11 +1775,11 @@ const AddEstimateForm = () => {
                             />
                           </td>
                           <td>
-                            <div className="col-sm-9">
+                            
                               <input
                                 type="number"
                                 name="Rate"
-                                style={{ width: "7em" }}
+                               
                                 className="form-control form-control-sm"
                                 value={itemInput.Rate || ""}
                                 onChange={(e) =>
@@ -1802,21 +1802,21 @@ const AddEstimateForm = () => {
                                   }
                                 }}
                               />
-                            </div>
+                          
                           </td>
-                          <td>
+                          <td className="text-right">
                             <h5 style={{ margin: "0" }}>
-                              {itemInput
+                              $ {itemInput
                                 ? (itemInput.Rate * itemInput.Qty).toFixed(2)
                                 : 0}
                             </h5>
                           </td>
                           <td>
-                            <div className="col-sm-9">
+                        
                               <input
                                 type="number"
                                 name="CostPrice"
-                                style={{ width: "7em" }}
+                               
                                 className="form-control form-control-sm"
                                 value={itemInput.PurchasePrice || ""}
                                 onChange={(e) =>
@@ -1839,7 +1839,7 @@ const AddEstimateForm = () => {
                                   }
                                 }}
                               />
-                            </div>
+                            
                           </td>
                           <td></td>
                         </tr>
@@ -2509,10 +2509,21 @@ const AddEstimateForm = () => {
                     </div>
                   </div>
                 </div>
-                <div className="mb-2 row text-right">
-                  <div className="col-md-5 col-sm-4"></div>
+                <div className="mb-2 row ">
+                  <div className="col-md-5 col-sm-4">
+                  <BackButton
+                      onClick={() => {
+                        navigate(`/estimates`);
+                        setPunchListData({
+                          ContactIds: [],
+                        });
+                      }}
+                    >
+                      back
+                    </BackButton>
+                  </div>
 
-                  <div className="col-md-7 col-sm-7 p-0 ">
+                  <div className="col-md-7 col-sm-7 p-0 text-right ">
                     {idParam ? (
                       <>
                      
@@ -2586,16 +2597,7 @@ const AddEstimateForm = () => {
                     ) : (
                       <></>
                     )}{" "}
-                    <BackButton
-                      onClick={() => {
-                        navigate(`/estimates`);
-                        setPunchListData({
-                          ContactIds: [],
-                        });
-                      }}
-                    >
-                      back
-                    </BackButton>
+                    
                     {idParam ? (
                       <>
                       

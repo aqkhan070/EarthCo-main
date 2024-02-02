@@ -14,6 +14,7 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
 const Audit = () => {
   const token = Cookies.get("token");
@@ -40,6 +41,7 @@ const Audit = () => {
 
   const [irrDetails, setIrrDetails] = useState({});
   const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
+  const { name, setName, fetchName } = useFetchCustomerName();
 
   const fetchIrrigation = async () => {
     if (idParam === 0) {
@@ -53,6 +55,7 @@ const Audit = () => {
       console.log("selected irrigation is", res.data);
       setIrrDetails(res.data);
       fetchCustomerEmail(res.data.IrrigationData.CustomerId);
+      fetchName(res.data.IrrigationData.CustomerId);
     } catch (error) {
       console.log("fetch irrigation api call error", error);
     }
@@ -73,34 +76,68 @@ const Audit = () => {
     }, 3000);
   };
 
-  const handleDownload = async () => {
-    const input = document.getElementById("irrigation-preview");
+  const [pdfClicked, setPdfClicked] = useState(false);
+
+const pdfDownload = () => {
+  setPdfClicked(true);
+  setTimeout(() => {
+    handleDownload();
+  }, 1000);
+};
+
+const handleDownload = async () => {
+  const input = document.getElementById("irrigation-preview");
+
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+  });
+
+  // Get the width and height of the input content
+  const contentWidth = input.offsetWidth;
+  const contentHeight = input.offsetHeight;
+
+  // Convert the dimensions from pixels to millimeters for PDF
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
   
-    // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
+  // Calculate scale to fit the content width to the pdf width
+  const scale = pdfWidth / contentWidth;
+  const scaledHeight = contentHeight * scale;
+
+  // Render the canvas with the calculated scale
+  html2canvas(input, { scale: 4, logging: true }).then((canvas) => {
+    const imgData = canvas.toDataURL("image/jpeg");
+
+    // Check if scaled height is greater than pdf page height
+    if (scaledHeight > pdfHeight) {
+      // Content will take more than one page
+      let position = 0;
+      while (position < scaledHeight) {
+        // Crop and add part of the image that fits into one page
+        let pageSection = Math.min(scaledHeight - position, pdfHeight);
+        pdf.addImage(imgData, 'JPEG', 0, -position, pdfWidth, scaledHeight);
+        position += pdfHeight;
+
+        // Add a new page if there is more content to add
+        if (position < scaledHeight) {
+          pdf.addPage();
+        }
+      }
+    } else {
+      // Content fits into one page
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
+    }
+
+    pdf.save("Irrigation.pdf");
+  });
+  setTimeout(() => {
+    setPdfClicked(false);
+  }, 2000);
+};
+
   
-    // Use html2canvas to capture the content as an image with higher DPI
-    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
-  
-    // Calculate the height of the PDF based on the content
-    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
-  
-    // Create a new jsPDF instance
-    const pdf = new jsPDF({
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait",
-    });
-  
-    // Add the captured image to the PDF
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
-  
-    // Save the PDF
-    pdf.save("Irrigation-Audit.pdf");
-  
-    // Reset the font to its default value
-    input.style.fontFamily = "";
-  };
   
 
   if (!irrDetails.IrrigationData) {
@@ -133,7 +170,7 @@ const Audit = () => {
                     <></>
                   ) : (
                     <button
-                      className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                      className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                       onClick={() => {
                         navigate(`/irrigation`);
                       }}
@@ -145,14 +182,14 @@ const Audit = () => {
                 <div className="col-md-11 text-end">
                   {" "}
                   <button
-                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                     onClick={handlePrint}
                   >
                     <i className="fa fa-print"></i>
                   </button>
                   <button
-                    className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                    onClick={handleDownload}
+                    className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                    onClick={pdfDownload}
                   >
                     <i className="fa fa-download"></i>
                   </button>{" "}
@@ -160,7 +197,7 @@ const Audit = () => {
                     <></>
                   ) : (
                     <button
-                      className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                      className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                       onClick={() => {
                         // sendEmail(
                         //   `/irrigation/audit-report?id=${idParam}`,
@@ -195,7 +232,7 @@ const Audit = () => {
                   className="card-body get-preview perview-pd"
                 >
                   <div className="row mb-5">
-                    <div className="mt-4 col-xl-3 col-lg-3 col-md-3 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
+                    <div className="mt-2 col-xl-3 col-lg-3 col-md-3 col-sm-3 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
                       <div className="brand-logo mb-2 inovice-logo">
                         <img
                           className="irr-preview-Logo ms-3"
@@ -224,7 +261,7 @@ const Audit = () => {
                     >
                       {" "}
                       <strong>Customer Name</strong>{" "}
-                      <div>{irrDetails?.IrrigationData.CompanyName}</div>
+                      <div>{name}</div>
                     </div>
                     <div
                       style={{ color: "black" }}
@@ -260,8 +297,9 @@ const Audit = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {irrDetails.ControllerData.map((item) => {
+                        {irrDetails.ControllerData.map((item, index) => {
                           return (
+                            <>
                             <tr
                               key={item.ControllerId}
                               className="Irr-preview-table-row"
@@ -404,6 +442,12 @@ const Audit = () => {
                                 <br />
                               </td>
                             </tr>
+                            {index  === 0 && pdfClicked &&(
+  <tr  style={{ height: "12em" }} key={`empty-${index}`} className="empty-row">
+    <td colSpan="4"></td>
+  </tr>
+)}
+                            </>
                           );
                         })}
                       </tbody>

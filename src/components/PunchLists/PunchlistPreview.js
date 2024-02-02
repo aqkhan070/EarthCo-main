@@ -91,32 +91,55 @@ const PunchlistPreview = () => {
   };
 
   const handleDownload = async () => {
-    const input = document.getElementById("PL-preview");
+    const input = document.getElementById("PL-preview"); 
   
-    // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
   
-    // Use html2canvas to capture the content as an image with higher DPI
-    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
-  
-    // Calculate the height of the PDF based on the content
-    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
-  
-    // Create a new jsPDF instance
     const pdf = new jsPDF({
+      orientation: "landscape",
       unit: "mm",
       format: "a4",
-      orientation: "portrait",
     });
   
-    // Add the captured image to the PDF
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+    // Get the width and height of the input content
+    const contentWidth = input.offsetWidth;
+    const contentHeight = input.offsetHeight;
   
-    // Save the PDF
-    pdf.save("PunchList.pdf");
+    // Convert the dimensions from pixels to millimeters for PDF
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // Calculate scale to fit the content width to the pdf width
+    const scale = pdfWidth / contentWidth;
+    const scaledHeight = contentHeight * scale;
   
-    // Reset the font to its default value
-    input.style.fontFamily = "";
+    // Render the canvas with the calculated scale
+    html2canvas(input, { scale: 4, logging: true }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg");
+  
+      // Check if scaled height is greater than pdf page height
+      if (scaledHeight > pdfHeight) {
+        // Content will take more than one page
+        let position = 0;
+        while (position < scaledHeight) {
+          // Crop and add part of the image that fits into one page
+          let pageSection = Math.min(scaledHeight - position, pdfHeight);
+          pdf.addImage(imgData, 'JPEG', 0, -position, pdfWidth, scaledHeight);
+          position += pdfHeight;
+  
+          // Add a new page if there is more content to add
+          if (position < scaledHeight) {
+            pdf.addPage();
+          }
+        }
+      } else {
+        // Content fits into one page
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
+      }
+  
+      pdf.save("PunchList.pdf");
+    });
+
+    
   };
   
 
@@ -133,55 +156,60 @@ const PunchlistPreview = () => {
         className="container-fluid"
       >
         {toggleFullscreen ? (
-          <div className="row me-3">
-            <div className="col-md-11 text-end">
-              {" "}
-              {isMail ? (
-                <></>
-              ) : (
+          <div className="print-page-width">
+          <div style={{ width: "28.7cm" }}>
+            <div className="row ">
+              <div className="col-md-1">
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
+                    onClick={() => {
+                      navigate(`/punchlist`);
+                    }}
+                  >
+                    <ArrowBackIcon sx={{ fontSize: 17 }} />
+                  </button>
+                )}
+              </div>
+              <div className="col-md-11 text-end">
+                {" "}
                 <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
-                  style={{ padding: "5px 10px" }}
-                  onClick={() => {
-                    navigate(`/punchlist`);
-                  }}
+                  className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                  onClick={handlePrint}
                 >
-                  <ArrowBackIcon sx={{ fontSize: 17 }} />
+                  <i className="fa fa-print"></i>
                 </button>
-              )}
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handlePrint}
-              >
-                <i className="fa fa-print"></i>
-              </button>
-              <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                onClick={handleDownload}
-              >
-                <i className="fa fa-download"></i>
-              </button>{" "}
-              {isMail ? (
-                <></>
-              ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
-                  onClick={() => {
-                    // sendEmail(
-                    //   `/PunchlistPreview?id=${idParam}`,
-                    //   pLData.CustomerId,
-                    //   pLData.ContactId,
-                    //   false
-                    // );
-                    navigate(
-                      `/send-mail?title=${"Punch List"}&mail=${contactEmail}`
-                    );
-                  }}
+                  className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                  onClick={handleDownload}
                 >
-                  <i className="fa-regular fa-envelope"></i>
-                </button>
-              )}
+                  <i className="fa fa-download"></i>
+                </button>{" "}
+                {isMail ? (
+                  <></>
+                ) : (
+                  <button
+                    className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                    onClick={() => {
+                      // sendEmail(
+                      //   `/PunchlistPreview?id=${idParam}`,
+                      //   pLData.CustomerId,
+                      //   pLData.ContactId,
+                      //   false
+                      // );
+                      navigate(
+                        `/send-mail?title=${"Punch List"}&mail=${contactEmail}`
+                      );
+                    }}
+                  >
+                    <i className="fa-regular fa-envelope"></i>
+                  </button>
+                )}
+              </div>
             </div>
+          </div>
           </div>
         ) : (
           <></>

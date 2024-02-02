@@ -11,13 +11,27 @@ import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 
-export default function ActivityLog() {
+export default function ActivityLog({ activityLogs, type }) {
   const [state, setState] = React.useState({
     top: false,
     left: false,
     bottom: false,
     right: false,
   });
+
+  function formatCreatedDate(createdDate) {
+    const date = new Date(createdDate);
+    const options = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true, // Always use 12-hour clock format (AM/PM)
+    };
+    return date.toLocaleString("en-US", options);
+  }
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
@@ -39,26 +53,42 @@ export default function ActivityLog() {
     >
       <h4 className="ms-3 mt-3">Activity Log</h4>
       <List className="mx-2">
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem
-            key={text}
-            disablePadding
-            sx={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)" }}
-          >
-            <div className="row mx-2 mt-3">
-              <div className="col-md-12">
-                <h5 className="mb-0 pb-0">
-                  <>Customer Name</>
-                </h5>
+        {activityLogs.length <= 0 ? (
+          <>
+            <ListItem
+              disablePadding
+              sx={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)" }}
+            >
+              <div className="row mx-2 mt-3">
+                <div className="col-md-12">
+                  <h5 className="mb-3 pb-0">No Activity To Show</h5>
+                </div>
               </div>
-              <div className="col-md-12">
-                <p>
-                 Estimate was sent to dummy@gmail.com on 24/6/2024
-                </p>
-              </div>
-            </div>
-          </ListItem>
-        ))}
+            </ListItem>
+          </>
+        ) : (
+          <>
+            {activityLogs.map((text, index) => (
+              <ListItem
+                key={index}
+                disablePadding
+                sx={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)" }}
+              >
+                <div className="row mx-2 mt-3">
+                  <div className="col-md-12">
+                    <h5 className="mb-0 pb-0">Sent by: {text.CreatedByName}</h5>
+                  </div>
+                  <div className="col-md-12">
+                    <p>
+                      {type} was sent to {text.Email} on{" "}
+                      {formatCreatedDate(text.CreatedDate)}
+                    </p>
+                  </div>
+                </div>
+              </ListItem>
+            ))}
+          </>
+        )}
       </List>
     </Box>
   );

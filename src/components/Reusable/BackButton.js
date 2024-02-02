@@ -6,15 +6,16 @@ const BackButton = ({ onClick, children }) => {
     <Button
       variant="outlined"
       sx={{
-        color: "#171717",
-        border: "1px solid #171717",
+        color: "#404040",
+        border: "1px solid #0000003d",
+        borderRadius: "5px",
         marginRight: "0.5em",
-       
+        padding: "5px 12px",
         textTransform: "capitalize",
         "&:hover": {
-          backgroundColor: "#171717",
-          color: "white",
-          border: "1px solid black",
+          // backgroundColor: "#171717",
+          // color: "white",
+          border: "1px solid #404040",
           outlineColor: "black",
         },
       }}
@@ -22,7 +23,7 @@ const BackButton = ({ onClick, children }) => {
       color="primary"
       startIcon={<ArrowBackRoundedIcon sx={{ padding: 0 }} />}
     >
-      {children}
+      {/* {children} */}
     </Button>
   );
 };

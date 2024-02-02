@@ -56,35 +56,53 @@ const InvoicePreview = () => {
     Authorization: `Bearer ${token}`,
   };
 
+  const [pdfClicked, setPdfClicked] = useState(false);
+
+  const pdfDownload = () => {
+    setPdfClicked(true);
+    setTimeout(() => {
+      handleDownload();
+    }, 1000);
+  };
+  
   const handleDownload = async () => {
     const input = document.getElementById("invoice-preview");
   
-    // Explicitly set the font for the PDF generation
     input.style.fontFamily = "Times New Roman";
   
-    // Use html2canvas to capture the content as an image with higher DPI
-    const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+    const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
   
-    // Calculate the height of the PDF based on the content
-    const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
-  
-    // Create a new jsPDF instance
     const pdf = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
   
-    // Add the captured image to the PDF
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
+    const imgWidth = 210; // A4 width in mm
+    const pageHeight = 295; // A4 height in mm
+    let imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
   
-    // Save the PDF
+    let position = 0;
+  
+    pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+  
     pdf.save("Invoice.pdf");
+    setTimeout(() => {
+      setPdfClicked(false);
+    }, 3000);
   
-    // Reset the font to its default value
     input.style.fontFamily = "";
   };
-  
 
   const fetchInvoice = async () => {
     if (idParam === 0) {
@@ -337,6 +355,7 @@ const InvoicePreview = () => {
                     <tbody>
                       {InvoicePreviewData.ItemData.map((item, index) => {
                         return (
+                          <>
                           <tr className="preview-table-row" key={index}>
                             <td className="text-start">{item.Qty}</td>
                             <td>{item.Description}</td>
@@ -344,6 +363,18 @@ const InvoicePreview = () => {
                               {(item.Qty * item.Rate).toFixed(2)}
                             </td>
                           </tr>
+                          {index === 17 && pdfClicked && (
+  <tr
+    style={{ height: "9em" }}
+    className="preview-table-row"
+    key={`empty-row-${index}`}
+  >
+    <td className="text-start"></td>
+    <td></td>
+    <td className="text-right"></td>
+  </tr>
+)}
+                          </>
                         );
                       })}
                     </tbody>
@@ -407,7 +438,7 @@ const InvoicePreview = () => {
               ) : (
                 <div className="p-2 bd-highlight">
                   <button
-                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/invoices`);
@@ -421,7 +452,7 @@ const InvoicePreview = () => {
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary   estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
                 >
                   <i className="fa fa-print"></i>
@@ -430,8 +461,8 @@ const InvoicePreview = () => {
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary  estm-action-btn"
-                  onClick={handleDownload}
+                  className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
+                  onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
                 </button>
@@ -441,7 +472,7 @@ const InvoicePreview = () => {
               ) : (
                 <div className="p-2 pt-0 bd-highlight">
                   <button
-                    className="btn btn-sm btn-outline-primary  estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                     onClick={() => {
                       // sendEmail(
                       //   `/invoices/invoice-preview?id=${idParam}`,

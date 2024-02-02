@@ -4,16 +4,14 @@ import ArrowBackRoundedIcon from "@mui/icons-material/Print";
 const PreviewButtons = ({children, onClick}) => {
   return (
     <Button
-    sx={{ textTransform: "capitalize", padding: "8px 10px", color: "#171717",
-        border: "1px solid #171717",
+    sx={{ textTransform: "capitalize", padding: "8px 10px",   color: "#404040",
+    border: "1px solid #0000003d",
+    borderRadius: "5px",
         marginRight: "0.5em",
        
         textTransform: "capitalize",
         "&:hover": {
-          backgroundColor: "#171717",
-          color: "white",
-          border: "1px solid black",
-          outlineColor: "black",
+          border: "1px solid #404040",
         }, }}
     variant="outlined"
    

@@ -1094,54 +1094,59 @@ const LandscapeForm = () => {
                       </div>
                     </div>
                   </div>
+
+                  <div className="row mb-2 ">
+                  <div className="col-md-4 ">
+                    <div className="ms-4"> <BackButton
+                onClick={() => {
+                  navigate("/landscape");
+                }}
+              >
+                Back
+              </BackButton></div>
+                   </div>
+            <div className="col-md-8 ps-0 text-end">
+            {idParam ? (
+                <>
+                  <PrintButton
+                      varient="mail"
+                    onClick={() => {
+                      navigate(
+                        `/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`
+                      );
+                     
+                    }}
+                  >
+                
+                  </PrintButton>
+
+                  <PrintButton
+                      varient="print"
+                    onClick={() => {
+                      navigate(`/landscape/landscape-report?id=${idParam}`);
+                    }}
+                  >
+                   
+                  </PrintButton>
+                </>
+              ) : (
+                <></>
+              )}
+              
+              <LoaderButton
+                loading={disableButton}
+                handleSubmit={handleSubmit}
+              >
+                Save & Perview
+              </LoaderButton>
+            </div>
+          </div>
+
                 </div>
               </div>
             </div>
 
-            <div className="row text-end">
-            
-              <div className="col-md-12 ps-0">
-              {idParam ? (
-                  <>
-                    <PrintButton
-                        varient="mail"
-                      onClick={() => {
-                        navigate(
-                          `/send-mail?title=${"Monthly Landscape"}&mail=${contactEmail}`
-                        );
-                       
-                      }}
-                    >
-                  
-                    </PrintButton>
-
-                    <PrintButton
-                        varient="print"
-                      onClick={() => {
-                        navigate(`/landscape/landscape-report?id=${idParam}`);
-                      }}
-                    >
-                     
-                    </PrintButton>
-                  </>
-                ) : (
-                  <></>
-                )}
-                <BackButton
-                  onClick={() => {
-                    navigate("/landscape");
-                  }}
-                >
-                  Back
-                </BackButton>
-                <LoaderButton
-                  loading={disableButton}
-                  handleSubmit={handleSubmit}
-                >
-                  Save & Perview
-                </LoaderButton>
-              </div>
-            </div>
+           
           </>
         )}
       </div>

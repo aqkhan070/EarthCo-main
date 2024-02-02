@@ -1,6 +1,6 @@
 import React from "react";
 import OpenWithIcon from '@mui/icons-material/PendingActions';
-import TaskIcon from '@mui/icons-material/Task';
+import TaskIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 const StatusCards = ({
   setStatusId,
   statusId,

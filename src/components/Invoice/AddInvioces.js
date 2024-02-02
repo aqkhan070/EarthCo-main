@@ -28,7 +28,12 @@ import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
 import PrintButton from "../Reusable/PrintButton";
-import ActivityLog from "../Reusable/ActivityLog"
+import ActivityLog from "../Reusable/ActivityLog";
+import HandleDelete from "../Reusable/HandleDelete";
+import useGetActivityLog from "../Hooks/useGetActivityLog";
+import Checkbox from "@mui/material/Checkbox";
+import Tooltip from "@mui/material/Tooltip";
+import useFetchPo from "../Hooks/useFetchPo";
 
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
@@ -46,7 +51,8 @@ const AddInvioces = ({}) => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-  const { loggedInUser } = useContext(DataContext);
+  const { loggedInUser, selectedImages, setSelectedImages } =
+    useContext(DataContext);
   const currentDate = new Date();
   const [formData, setFormData] = useState({
     currentDate: currentDate,
@@ -70,6 +76,7 @@ const AddInvioces = ({}) => {
   const { name, setName, fetchName } = useFetchCustomerName();
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
+  const { getLogs, activityLogs } = useGetActivityLog();
 
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [profitPercentage, setProfitPercentage] = useState(0);
@@ -85,6 +92,7 @@ const AddInvioces = ({}) => {
   const navigate = useNavigate();
   const { estimateLinkData, setEstimateLinkData } = useEstimateContext();
   const { syncQB } = useQuickBook();
+  const { PoList, fetchPo } = useFetchPo();
 
   // const [error, seterror] = useState("")
 
@@ -161,6 +169,18 @@ const AddInvioces = ({}) => {
 
     setCustomerAddress(newValue?.Address || "");
     handleChange(simulatedEvent);
+  };
+
+  const handlePoAutocompleteChange = (event, newValue) => {
+   
+
+    setFormData((prevData) => ({
+      ...prevData,
+      PurchaseOrderId: newValue.PurchaseOrderId,
+      PurchaseOrderNumber: newValue.PurchaseOrderNumber,
+    }));
+
+   
   };
 
   const fetchServiceLocations = async (id) => {
@@ -262,6 +282,8 @@ const AddInvioces = ({}) => {
     getInvoice();
     fetchBills();
     fetchCustomers();
+    getLogs(idParam, "Invoice");
+    fetchPo();
     console.log("link estimate data is", estimateLinkData);
   }, []);
 
@@ -273,8 +295,10 @@ const AddInvioces = ({}) => {
       EstimateId: estimateLinkData.EstimateId,
       AssignTo: estimateLinkData.AssignTo,
       BillId: estimateLinkData.BillId,
+      PurchaseOrderId : estimateLinkData.PurchaseOrderId,
+      PurchaseOrderNumber : estimateLinkData.PurchaseOrderNumber,
       EstimateNumber: estimateLinkData.EstimateNumber,
-      CustomerMessage : estimateLinkData.EstimateNotes,
+      CustomerMessage: estimateLinkData.EstimateNotes,
       tblInvoiceItems: estimateLinkData.tblEstimateItems,
       tblInvoiceFiles: estimateLinkData.FileData,
     }));
@@ -979,6 +1003,27 @@ const AddInvioces = ({}) => {
     setEstimateLinkData({ ...estimateLinkData, FileData: updatedFiles });
   };
 
+  const handleImageSelect = (image) => {
+    // Check if the image is already selected
+    const isSelected = selectedImages.some(
+      (selectedImage) => selectedImage.InvoiceFileId === image.InvoiceFileId
+    );
+
+    if (isSelected) {
+      // If already selected, remove it from the selectedImages state
+      setSelectedImages((prevSelectedImages) =>
+        prevSelectedImages.filter(
+          (selectedImage) => selectedImage.InvoiceFileId !== image.InvoiceFileId
+        )
+      );
+    } else {
+      // If not selected, add it to the selectedImages state
+      setSelectedImages((prevSelectedImages) => [...prevSelectedImages, image]);
+    }
+
+    console.log("selected images arew", selectedImages);
+  };
+
   return (
     <>
       <InvoiceTitleBar />
@@ -1069,7 +1114,7 @@ const AddInvioces = ({}) => {
                       id="staff-autocomplete"
                       size="small"
                       options={staffData.filter(
-                        (staff) => staff.Role === "Admin"
+                        (staff) => staff.Role === "Regional Manager"
                       )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
@@ -1254,7 +1299,7 @@ const AddInvioces = ({}) => {
                                 className="ms-2"
                                 onClick={() => {
                                   navigate(
-                                    `/Bills/addbill?id=${formData.BillId}`
+                                    `/Bills/add-bill?id=${formData.BillId}`
                                   );
                                 }}
                               >
@@ -1316,6 +1361,55 @@ const AddInvioces = ({}) => {
                             />
                           )}
                           aria-label="Default select example"
+                        />
+                      </div>
+                      <div className="mt-2 col-md-6">
+                        <label className="form-label">
+                          Purchase Order
+                          {formData.PurchaseOrderId ? (
+                            <>
+                              <a
+                                href=""
+                                style={{ color: "blue" }}
+                                className="ms-2"
+                                onClick={() => {
+                                  navigate(
+                                    `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
+                                  );
+                                }}
+                              >
+                                View
+                              </a>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </label>
+                        <Autocomplete
+                          size="small"
+                          options={PoList}
+                          getOptionLabel={(option) =>
+                            option.PurchaseOrderNumber || ""
+                          }
+                          value={
+                            PoList.find(
+                              (po) =>
+                                po.PurchaseOrderId === formData.PurchaseOrderId
+                            ) || null
+                          }
+                          onChange={handlePoAutocompleteChange}
+                          isOptionEqualToValue={(option, value) =>
+                            option.PurchaseOrderId === value.PurchaseOrderId
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Purchase order No"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Contact select"
                         />
                       </div>
                     </div>
@@ -1426,7 +1520,7 @@ const AddInvioces = ({}) => {
                   <table id="empoloyees-tblwrapper" className="table">
                     <thead>
                       <tr>
-                        <th className="itemName-width">Item</th>
+                        <th>Item</th>
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Rate</th>
@@ -1442,12 +1536,12 @@ const AddInvioces = ({}) => {
                           .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                           .map((item, index) => (
                             <tr colSpan={2} key={index}>
-                              <td className="itemName-width">{item.Name}</td>
+                              <td>{item.Name}</td>
                               <td>
                                 <TextField
-                                size="small"
-                                multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                                  size="small"
+                                  multiline
+                                  style={{ height: "fit-content" }}
                                   className="form-control form-control-sm"
                                   value={item.Description}
                                   onChange={(e) =>
@@ -1458,7 +1552,6 @@ const AddInvioces = ({}) => {
                               <td>
                                 <input
                                   type="number"
-                                  style={{ width: "7em" }}
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={(e) =>
@@ -1469,7 +1562,6 @@ const AddInvioces = ({}) => {
                               <td>
                                 <input
                                   type="number"
-                                  style={{ width: "7em" }}
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={(e) =>
@@ -1477,13 +1569,12 @@ const AddInvioces = ({}) => {
                                   }
                                 />
                               </td>
-                              <td>
-                                {item ? (item.Qty * item.Rate).toFixed(2) : 0}
+                              <td className="text-right">
+                                $ {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                               </td>
                               <td>
                                 <input
                                   type="number"
-                                  style={{ width: "7em" }}
                                   className="form-control form-control-sm"
                                   value={item.PurchasePrice}
                                   onChange={(e) =>
@@ -1508,7 +1599,7 @@ const AddInvioces = ({}) => {
                         <></>
                       )}
                       <tr>
-                        <td className="itemName-width">
+                        <td>
                           <>
                             <Autocomplete
                               id="search-items"
@@ -1562,9 +1653,9 @@ const AddInvioces = ({}) => {
                         </td>
                         <td>
                           <TextField
-                                size="small"
-                                multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                            size="small"
+                            multiline
+                            style={{ height: "fit-content" }}
                             value={itemInput.Description}
                             onChange={(e) =>
                               setItemInput({
@@ -1572,7 +1663,6 @@ const AddInvioces = ({}) => {
                                 Description: e.target.value,
                               })
                             }
-                          
                             className="form-control form-control-sm"
                             placeholder="Description"
                             onKeyPress={(e) => {
@@ -1595,7 +1685,6 @@ const AddInvioces = ({}) => {
                                 Qty: Number(e.target.value),
                               })
                             }
-                            style={{ width: "7em" }}
                             className="form-control form-control-sm"
                             placeholder="Quantity"
                             onKeyPress={(e) => {
@@ -1608,71 +1697,65 @@ const AddInvioces = ({}) => {
                           />
                         </td>
                         <td>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              name="Rate"
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              value={itemInput.Rate || ""}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Rate: Number(e.target.value),
-                                })
+                          <input
+                            type="number"
+                            name="Rate"
+                            className="form-control form-control-sm"
+                            value={itemInput.Rate || ""}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Rate: Number(e.target.value),
+                              })
+                            }
+                            onClick={(e) => {
+                              setSelectedItem({
+                                ...selectedItem,
+                                SalePrice: 0,
+                              });
+                            }}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
                               }
-                              onClick={(e) => {
-                                setSelectedItem({
-                                  ...selectedItem,
-                                  SalePrice: 0,
-                                });
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddItem();
-                                }
-                              }}
-                            />
-                          </div>
+                            }}
+                          />
                         </td>
                         <td>
-                          <h5 style={{ margin: "0" }}>
+                          <h5 className="text-right" style={{ margin: "0" }}>
                             {itemInput
                               ? (itemInput.Rate * itemInput.Qty).toFixed(2)
                               : 0}
                           </h5>
                         </td>
                         <td>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              name="Rate"
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              value={itemInput.PurchasePrice || ""}
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  PurchasePrice: Number(e.target.value),
-                                })
+                          <input
+                            type="number"
+                            name="Rate"
+                            className="form-control form-control-sm"
+                            value={itemInput.PurchasePrice || ""}
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                PurchasePrice: Number(e.target.value),
+                              })
+                            }
+                            onClick={(e) => {
+                              setSelectedItem({
+                                ...selectedItem,
+                                PurchasePrice: 0,
+                              });
+                            }}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
                               }
-                              onClick={(e) => {
-                                setSelectedItem({
-                                  ...selectedItem,
-                                  PurchasePrice: 0,
-                                });
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddItem();
-                                }
-                              }}
-                            />
-                          </div>
+                            }}
+                          />
                         </td>
                         <td></td>
                       </tr>
@@ -2006,23 +2089,28 @@ const AddInvioces = ({}) => {
                           <td className="right text-right">$0.00</td>
                         </tr> */}
                       <tr>
-                      <td className="left custom-table-row">
-                        
-                        <div
-                          style={{ width: "12em" }}
-                          className="input-group"
-                        ><strong className="mt-2">Discount</strong>
-                          <input
-                            type="text"
-                            style={{ width: "5em", marginLeft : "1em", borderRadius : "8px" }}
-                            className="form-control form-control-sm"
-                            name="Discount"
-                            value={totalDiscount}
-                            onChange={discountChange}
-                            placeholder="Discount"
-                          /><strong className="mt-2" > &nbsp;&nbsp;%</strong>
-                        </div>
-                      </td>
+                        <td className="left custom-table-row">
+                          <div
+                            style={{ width: "12em" }}
+                            className="input-group"
+                          >
+                            <strong className="mt-2">Discount</strong>
+                            <input
+                              type="text"
+                              style={{
+                                width: "5em",
+                                marginLeft: "1em",
+                                borderRadius: "8px",
+                              }}
+                              className="form-control form-control-sm"
+                              name="Discount"
+                              value={totalDiscount}
+                              onChange={discountChange}
+                              placeholder="Discount"
+                            />
+                            <strong className="mt-2"> &nbsp;&nbsp;%</strong>
+                          </div>
+                        </td>
                         <td className="right text-right">
                           $
                           {totalDiscount && subtotal
@@ -2153,9 +2241,9 @@ const AddInvioces = ({}) => {
                     key={index}
                     className="col-md-2 col-md-2 mt-3 image-container"
                     style={{
-                      width: "150px", // Set the desired width
-                      height: "120px", // Set the desired height
-                      margin: "1em",
+                      width: "150px",
+                      height: "120px",
+
                       position: "relative",
                     }}
                   >
@@ -2192,16 +2280,61 @@ const AddInvioces = ({}) => {
                     >
                       {file.FileName}
                     </p>
+                    {selectedImages.some(
+                      (selectedImage) =>
+                        selectedImage.InvoiceFileId === file.InvoiceFileId
+                    ) ? (
+                      <span
+                        className=""
+                        style={{
+                          position: "absolute",
+                          top: "3px",
+                          left: "14px",
+                        }}
+                      >
+                        <Tooltip
+                          title="Click to select image"
+                          placement="top"
+                          arrow
+                        >
+                          <Checkbox
+                            checked={true}
+                            onChange={() => handleImageSelect(file)}
+                          />
+                        </Tooltip>
+                      </span>
+                    ) : (
+                      <span
+                        className=""
+                        style={{
+                          position: "absolute",
+                          top: "3px",
+                          left: "14px",
+                        }}
+                      >
+                        <Tooltip
+                          title="Click to select image"
+                          placement="top"
+                          arrow
+                        >
+                          <Checkbox
+                            checked={false}
+                            onChange={() => handleImageSelect(file)}
+                          />
+                        </Tooltip>
+                      </span>
+                    )}
                     <span
                       className="file-delete-button"
                       style={{
                         left: "140px",
                       }}
-                      onClick={() => {
-                        deleteInvoiceFile(file.InvoiceFileId, getInvoice);
-                      }}
                     >
-                      <span>
+                      <span
+                        onClick={() => {
+                          deleteInvoiceFile(file.InvoiceFileId, getInvoice);
+                        }}
+                      >
                         <Delete color="error" />
                       </span>
                     </span>
@@ -2266,6 +2399,15 @@ const AddInvioces = ({}) => {
 
             <div className="mb-3 row ">
               <div className="col-md-6">
+                <div className="ms-2">
+                  <BackButton
+                    onClick={() => {
+                      navigate("/invoices");
+                    }}
+                  >
+                    Back
+                  </BackButton>
+                </div>
                 {/* {emptyFieldsError && (
                   <Alert severity="error">
                     Please fill all required fields
@@ -2284,39 +2426,34 @@ const AddInvioces = ({}) => {
               <div className="col-md-6 text-right">
                 {idParam ? (
                   <>
-                    <ActivityLog />
+                    <ActivityLog activityLogs={activityLogs} type="Invoice" />
+                    <HandleDelete
+                      id={idParam}
+                      endPoint={"Invoice/DeleteInvoice?id="}
+                      to="/invoices"
+                      syncQB={syncQB}
+                    />
                     <PrintButton
                       varient="mail"
                       onClick={() => {
-                      
                         navigate(
                           `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${name}&number=${
                             formData.InvoiceNumber
                           }`
                         );
                       }}
-                    >
-                   
-                    </PrintButton>
+                    ></PrintButton>
                     <PrintButton
-                       varient="print"
+                      varient="print"
                       onClick={() => {
                         navigate(`/invoices/invoice-preview?id=${idParam}`);
                       }}
-                    >
-                     
-                    </PrintButton>
+                    ></PrintButton>
                   </>
                 ) : (
                   <></>
                 )}
-                <BackButton
-                  onClick={() => {
-                    navigate("/invoices");
-                  }}
-                >
-                  Back
-                </BackButton>{" "}
+
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

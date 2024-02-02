@@ -35,7 +35,7 @@ const LoaderButton = ({
       <LoadingButton
         variant="contained"
         loading={loading}
-        color={color}
+        // color={color}
         // loadingIndicator="Saving…"
         // startIcon={<DeleteIcon />}
         // loadingPosition="start"
@@ -47,8 +47,14 @@ const LoaderButton = ({
           marginRight: "0.6em",
 
           color: "#fff",
-          border: "0.5px solid #000",
+          backgroundColor : "#5C636A",
+         
           textTransform: "capitalize",
+          "&:hover": {
+            backgroundColor: "#474d52",
+                   
+           
+          },
         }}
       >
         {children}

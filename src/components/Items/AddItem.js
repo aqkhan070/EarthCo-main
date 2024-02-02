@@ -353,6 +353,14 @@ const AddItem = ({}) => {
                   </div>
                 </div>
                 <div className="col-md-8">
+                <BackButton
+                    onClick={() => {
+                      setFormData({});
+                      navigate(`/items`);
+                    }}
+                  >
+                    Cancel
+                  </BackButton>
                   {/* {emptyFieldError && (
                   <Alert severity="error">
                     Please Fill All Required Fields
@@ -374,14 +382,7 @@ const AddItem = ({}) => {
                     Save
                   </LoaderButton>
 
-                  <BackButton
-                    onClick={() => {
-                      setFormData({});
-                      navigate(`/items`);
-                    }}
-                  >
-                    Cancel
-                  </BackButton>
+                  
                 </div>
               </div>
             </div>

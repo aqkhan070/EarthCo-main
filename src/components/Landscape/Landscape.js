@@ -149,7 +149,7 @@ const Landscape = () => {
                 <></>
               ) : (
                 <button
-                  className="btn btn-outline-primary btn-sm estm-action-btn mb-2 mt-3 "
+                  className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                   style={{ padding: "5px 10px" }}
                   onClick={() => {
                     navigate(`/landscape`);
@@ -159,13 +159,13 @@ const Landscape = () => {
                 </button>
               )}
               <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                 onClick={handlePrint}
               >
                 <i className="fa fa-print"></i>
               </button>
               <button
-                className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                 onClick={handleDownload}
               >
                 <i className="fa fa-download"></i>
@@ -174,7 +174,7 @@ const Landscape = () => {
                 <></>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary mb-2 mt-3 estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                   onClick={() => {
                     // sendEmail(
                     //   `/landscape/landscape-report?Customer=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,

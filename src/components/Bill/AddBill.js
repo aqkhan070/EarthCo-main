@@ -24,6 +24,8 @@ import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
 import PrintButton from "../Reusable/PrintButton";
+import HandleDelete from "../Reusable/HandleDelete";
+import useFetchInvoices from "../Hooks/useFetchInvoices";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -58,10 +60,13 @@ const AddBill = ({}) => {
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
 
+  const { invoiceList, fetchInvoices } = useFetchInvoices();
+
   const [vendorList, setVendorList] = useState([]);
   const [supplierAddress, setSupplierAddress] = useState("");
   const [tags, setTags] = useState([]);
   const [terms, setTerms] = useState([]);
+  const [estimates, setEstimates] = useState([]);
 
   const { PoList, fetchPo } = useFetchPo();
   const { deleteBillFile } = useDeleteFile();
@@ -102,6 +107,8 @@ const AddBill = ({}) => {
     fetchTags();
     fetchTerms();
     fetchPo();
+    getEstimate();
+    fetchInvoices();
   }, []);
 
   const fetchVendors = async (searchText = "") => {
@@ -120,6 +127,18 @@ const AddBill = ({}) => {
         setVendorList([]);
         console.log("contacts data fetch error", error);
       });
+  };
+  const getEstimate = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateList",
+        { headers }
+      );
+      console.log("estimate response is", response.data);
+      setEstimates(response.data);
+    } catch (error) {
+      console.error("API Call Error:", error);
+    }
   };
   const handleVendorAutocompleteChange = (event, newValue) => {
     const simulatedEvent = {
@@ -190,15 +209,50 @@ const AddBill = ({}) => {
     handleInputChange(simulatedEvent);
   };
 
-  const handlePoAutocompleteChange = (event, newValue) => {
-    const simulatedEvent = {
-      target: {
-        name: "PurchaseOrderId",
-        value: newValue ? newValue.PurchaseOrderId : null,
-      },
-    };
+  const handleEstimatesAutocompleteChange = (event, newValue) => {
+    if (newValue) {
+      // Update the formData with both EstimateId and EstimateNumber
+      setFormData((prevData) => ({
+        ...prevData,
+        EstimateId: newValue.EstimateId,
+        EstimateNumber: newValue.EstimateNumber,
+      }));
+    } else {
+      // Handle the case where the newValue is null (e.g., when the selection is cleared)
+      // Reset both EstimateId and EstimateNumber in formData
+      setFormData((prevData) => ({
+        ...prevData,
+        EstimateId: "",
+        EstimateNumber: "",
+      }));
+    }
+  };
 
-    handleChange(simulatedEvent);
+  const handleAutocompleteChange = (
+    fieldName,
+    valueProperty,
+    event,
+    newValue
+  ) => {
+    
+    setFormData((prevData) => ({
+      ...prevData,
+      InvoiceId: newValue.InvoiceId,
+      InvoiceNumber: newValue.InvoiceNumber,
+    }));
+
+    
+  };
+
+  const handlePoAutocompleteChange = (event, newValue) => {
+    
+    setFormData((prevData) => ({
+      ...prevData,
+      PurchaseOrderId: newValue.PurchaseOrderId,
+      PurchaseOrderNumber: newValue.PurchaseOrderNumber,
+    }));
+
+   
   };
 
   const handleInputChange = (e, newValue) => {
@@ -346,7 +400,7 @@ const AddBill = ({}) => {
   };
 
   const handleRateChange = (itemId, event) => {
-    const updatedItemsList = itemsList.map((item , index) => {
+    const updatedItemsList = itemsList.map((item, index) => {
       if (index === itemId) {
         return {
           ...item,
@@ -426,9 +480,7 @@ const AddBill = ({}) => {
   };
 
   const deleteCatagory = (id) => {
-    const updatedItemsList = catagoryList.filter(
-      (item, index) => index !== id
-    );
+    const updatedItemsList = catagoryList.filter((item, index) => index !== id);
     setCatagoryList(updatedItemsList);
   };
 
@@ -684,7 +736,7 @@ const AddBill = ({}) => {
                       </div>
                       <div className="col-md-9">
                         <div className="row">
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">Bill # </label>
                             <div className="input-group mb-2">
                               <TextField
@@ -698,7 +750,7 @@ const AddBill = ({}) => {
                               />
                             </div>
                           </div>
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">Tags</label>
                             <Autocomplete
                               id="inputState19"
@@ -727,7 +779,7 @@ const AddBill = ({}) => {
                               aria-label="Default select example"
                             />
                           </div>
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">
                               Date<span className="text-danger">*</span>
                             </label>
@@ -743,7 +795,7 @@ const AddBill = ({}) => {
                               />
                             </div>
                           </div>
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">Due</label>
                             <div className="input-group mb-2">
                               <input
@@ -756,7 +808,7 @@ const AddBill = ({}) => {
                             </div>
                           </div>
 
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">
                               Purchase Order
                               {formData.PurchaseOrderId ? (
@@ -806,7 +858,7 @@ const AddBill = ({}) => {
                               aria-label="Contact select"
                             />
                           </div>
-                          <div className="mb-3 col-md-4">
+                          <div className=" col-md-4">
                             <label className="form-label">Terms</label>
                             <Autocomplete
                               id="inputState19"
@@ -832,6 +884,113 @@ const AddBill = ({}) => {
                                 />
                               )}
                               aria-label="Default select example"
+                            />
+                          </div>
+                          <div className=" col-md-4">
+                            <label className="form-label">
+                              Linked Estimate
+                              {formData.EstimateId ? (
+                                <>
+                                  <a
+                                    href=""
+                                    style={{ color: "blue" }}
+                                    className="ms-2"
+                                    onClick={() => {
+                                      navigate(
+                                        `/estimates/add-estimate?id=${formData.EstimateId}`
+                                      );
+                                    }}
+                                  >
+                                    View
+                                  </a>
+                                </>
+                              ) : (
+                                ""
+                              )}
+                            </label>
+
+                            <Autocomplete
+                              id="inputState19"
+                              size="small"
+                              options={estimates}
+                              getOptionLabel={(option) =>
+                                option.EstimateNumber || ""
+                              }
+                              value={
+                                estimates.find(
+                                  (customer) =>
+                                    customer.EstimateNumber ===
+                                    formData.EstimateNumber
+                                ) || null
+                              }
+                              onChange={handleEstimatesAutocompleteChange}
+                              isOptionEqualToValue={(option, value) =>
+                                option.EstimateId === value.EstimateNumber
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label=""
+                                  placeholder="Estimate No"
+                                />
+                              )}
+                              aria-label="Default select example"
+                            />
+                          </div>
+                          <div className="col-md-4 ">
+                            <label className="form-label">
+                              Linked Invoice
+                              {formData.InvoiceId ? (
+                                <>
+                                  <a
+                                    href=""
+                                    style={{ color: "blue" }}
+                                    className="ms-2"
+                                    onClick={() => {
+                                      navigate(
+                                        `/invoices/add-invoices?id=${formData.InvoiceId}`
+                                      );
+                                    }}
+                                  >
+                                    View
+                                  </a>
+                                </>
+                              ) : (
+                                ""
+                              )}
+                            </label>
+                            <Autocomplete
+                              size="small"
+                              options={invoiceList}
+                              getOptionLabel={(option) =>
+                                option.InvoiceNumber || ""
+                              }
+                              value={
+                                invoiceList.find(
+                                  (invoice) =>
+                                    invoice.InvoiceId === formData.InvoiceId
+                                ) || null
+                              }
+                              onChange={(event, newValue) =>
+                                handleAutocompleteChange(
+                                  "InvoiceId",
+                                  "InvoiceId",
+                                  event,
+                                  newValue
+                                )
+                              }
+                              isOptionEqualToValue={(option, value) =>
+                                option.InvoiceId === value.InvoiceId
+                              }
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label=""
+                                  placeholder="Invoice No"
+                                  className="bg-white"
+                                />
+                              )}
+                              aria-label="Contact select"
                             />
                           </div>
                         </div>
@@ -868,9 +1027,9 @@ const AddBill = ({}) => {
                               </td>
                               <td>
                                 <TextField
-                                size="small"
-                                multiline
-                                  style={{height: "fit-content"}}
+                                  size="small"
+                                  multiline
+                                  style={{ height: "fit-content" }}
                                   type="text"
                                   className="form-control form-control-sm"
                                   value={item.Description}
@@ -895,9 +1054,7 @@ const AddBill = ({}) => {
                                 />
                               </td>
                               <td>
-                                <Button
-                                  onClick={() => deleteCatagory(index)}
-                                >
+                                <Button onClick={() => deleteCatagory(index)}>
                                   <Delete color="error" />
                                 </Button>
                               </td>
@@ -935,9 +1092,9 @@ const AddBill = ({}) => {
                           </td>
                           <td>
                             <TextField
-                                size="small"
-                                multiline
-                                  style={{  height: "fit-content"}}
+                              size="small"
+                              multiline
+                              style={{ height: "fit-content" }}
                               type="text"
                               value={catagoryInput.Description}
                               className="form-control form-control-sm"
@@ -996,12 +1153,12 @@ const AddBill = ({}) => {
                   <table id="empoloyees-tblwrapper" className="table">
                     <thead>
                       <tr>
-                        <th className="itemName-width">Item</th>
+                        <th>Item</th>
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Rate</th>
                         <th>Amount</th>
-                        <th>Tax</th>
+
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -1009,12 +1166,12 @@ const AddBill = ({}) => {
                       {itemsList && itemsList.length > 0 ? (
                         itemsList.map((item, index) => (
                           <tr colSpan={2} key={index}>
-                            <td className="itemName-width">{item.Name}</td>
+                            <td>{item.Name}</td>
                             <td>
                               <TextField
                                 size="small"
                                 multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                                style={{ height: "fit-content" }}
                                 className="form-control form-control-sm"
                                 value={item.Description}
                                 onChange={(e) =>
@@ -1025,27 +1182,23 @@ const AddBill = ({}) => {
                             <td>
                               <input
                                 type="number"
-                                style={{ width: "7em" }}
                                 className="form-control form-control-sm"
                                 value={item.Qty}
-                                onChange={(e) =>
-                                  handleQuantityChange(index, e)
-                                }
+                                onChange={(e) => handleQuantityChange(index, e)}
                               />
                             </td>
                             <td>
                               <input
                                 type="number"
                                 value={item.Rate}
-                                style={{ width: "7em" }}
                                 className="form-control form-control-sm"
-                                onChange={(e) =>
-                                  handleRateChange(index, e)
-                                }
+                                onChange={(e) => handleRateChange(index, e)}
                               />
                             </td>
-                            <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                            <td>NaN</td>
+                            <td className="text-right">
+                              $ {(item.Rate * item.Qty).toFixed(2)}
+                            </td>
+
                             <td>
                               <div className="badgeBox">
                                 <Button
@@ -1063,7 +1216,7 @@ const AddBill = ({}) => {
                         <></>
                       )}
                       <tr>
-                        <td className="itemName-width">
+                        <td>
                           <>
                             <Autocomplete
                               id="search-items"
@@ -1118,9 +1271,9 @@ const AddBill = ({}) => {
                         </td>
                         <td>
                           <TextField
-                                size="small"
-                                multiline
-                                  style={{ width: "17em" , height: "fit-content"}}
+                            size="small"
+                            multiline
+                            style={{ height: "fit-content" }}
                             value={itemInput?.Description}
                             onChange={(e) =>
                               setItemInput({
@@ -1128,7 +1281,6 @@ const AddBill = ({}) => {
                                 Description: e.target.value,
                               })
                             }
-                          
                             className="form-control form-control-sm"
                             placeholder="Description"
                             onKeyPress={(e) => {
@@ -1151,7 +1303,6 @@ const AddBill = ({}) => {
                                 Qty: Number(e.target.value),
                               })
                             }
-                            style={{ width: "7em" }}
                             className="form-control form-control-sm"
                             placeholder="Quantity"
                             onKeyPress={(e) => {
@@ -1164,51 +1315,38 @@ const AddBill = ({}) => {
                           />
                         </td>
                         <td>
-                          <div className="col-sm-9">
-                            <input
-                              type="number"
-                              name="Rate"
-                              style={{ width: "7em" }}
-                              className="form-control form-control-sm"
-                              value={
-                                selectedItem?.SalePrice || itemInput.Rate || ""
-                              }
-                              onChange={(e) =>
-                                setItemInput({
-                                  ...itemInput,
-                                  Rate: Number(e.target.value),
-                                })
-                              }
-                              onClick={(e) => {
-                                setSelectedItem({
-                                  ...selectedItem,
-                                  SalePrice: 0,
-                                });
-                              }}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddItem();
-                                }
-                              }}
-                            />
-                          </div>
-                        </td>
-                        <td>
-                          <h5 style={{ margin: "0" }}>
-                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
-                          </h5>
-                        </td>
-                        <td>
                           <input
                             type="number"
-                            name="tax"
-                            style={{ width: "7em" }}
-                            disabled
+                            name="Rate"
                             className="form-control form-control-sm"
-                            placeholder="tax"
+                            value={
+                              selectedItem?.SalePrice || itemInput.Rate || ""
+                            }
+                            onChange={(e) =>
+                              setItemInput({
+                                ...itemInput,
+                                Rate: Number(e.target.value),
+                              })
+                            }
+                            onClick={(e) => {
+                              setSelectedItem({
+                                ...selectedItem,
+                                SalePrice: 0,
+                              });
+                            }}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                // Handle item addition when Enter key is pressed
+                                e.preventDefault(); // Prevent form submission
+                                handleAddItem();
+                              }
+                            }}
                           />
+                        </td>
+                        <td>
+                          <h5 className="text-right" style={{ margin: "0" }}>
+                            $ {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                          </h5>
                         </td>
                       </tr>
                     </tbody>
@@ -1393,8 +1531,17 @@ const AddBill = ({}) => {
               ))}
             </div>
 
-            <div className="row mb-3 mx-3">
+            <div className="row mb-3 ">
               <div className="col-md-6">
+                <div className="ms-3">
+                  <BackButton
+                    onClick={() => {
+                      navigate(`/bills`);
+                    }}
+                  >
+                    Back
+                  </BackButton>
+                </div>
                 {/* {addCustomerSuccess && (
                 <Alert severity="success">
                   {addCustomerSuccess
@@ -1415,35 +1562,33 @@ const AddBill = ({}) => {
                 <div>
                   {idParam ? (
                     <>
+                      <HandleDelete
+                        id={idParam}
+                        endPoint={"Bill/DeleteBill?id="}
+                        to="/bills"
+                        syncQB={syncQB}
+                      />
                       <PrintButton
-                       varient="mail"
+                        varient="mail"
                         onClick={() => {
-                          navigate(`/send-mail?title=${"Bill"}`);
-                          
+                          navigate(
+                            `/send-mail?title=${"Bill"}&mail=${""}&customer=${supplierName}&number=${
+                              formData.BillNumber
+                            }`
+                          );
                         }}
-                      >
-                     
-                      </PrintButton>
+                      ></PrintButton>
                       <PrintButton
-                         varient="print"
+                        varient="print"
                         onClick={() => {
                           navigate(`/bills/bill-preview?id=${idParam}`);
                         }}
-                      >
-                       
-                      </PrintButton>
+                      ></PrintButton>
                     </>
                   ) : (
                     <></>
                   )}
 
-                  <BackButton
-                    onClick={() => {
-                      navigate(`/bills`);
-                    }}
-                  >
-                    Back
-                  </BackButton>
                   <LoaderButton
                     loading={disableButton}
                     handleSubmit={handleSubmit}

@@ -45202,16 +45202,19 @@ table.dataTable thead .sorting_asc {
 .active-projects tbody tr td {
     font-size: 13px;
     font-weight: 400;
-    padding: 0.625rem 1rem;
+    padding: 0.2rem 0.2rem;
+}
+
+.active-projects tbody tr td:nth-child(1),
+.active-projects tbody tr td:nth-child(2) {
+    width: 25%; /* You can adjust the width as needed */
 }
 
 .active-projects tbody tr td:last-child {
     text-align: right;
 }
 
-.active-projects tbody tr td:first-child {
-    padding-right: 0;
-}
+
 
 .active-projects .tbl-caption {
     padding: 10px 0px;
@@ -54194,6 +54197,19 @@ color : black;
 .Pl-preview p{
     color : black;
     }
+
+    .custom-csv-link {
+        color: #404040 !important; /* Preserve the text color */
+        background-color: transparent !important; /* Remove the background color */
+        border: 1px solid #404040 !important; /* Add a custom border color if needed */
+      }
+      
+      .custom-csv-link:hover {
+        color: black !important; /* Preserve the text color on hover */
+        background-color: transparent !important; /* Remove the background color on hover */
+        border: 1px solid  black !important; /* Preserve the custom border color on hover */
+      }
+      
 
  
 @media print{

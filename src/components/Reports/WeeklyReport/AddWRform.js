@@ -929,53 +929,53 @@ const AddWRform = () => {
                     );
                   })}
                 </div>
-              </div>
-            </div>
 
-            <div className="row text-end">
-              
-              <div className="col-md-12 ps-0">
-              {idParam ? (
-                  <>
-                    <PrintButton
-                      varient="mail"
-                      onClick={() => {
-                        navigate(
-                          `/send-mail?title=${"Weekly Report"}&mail=${contactEmail}`
-                        );
-                     
-                      }}
-                    >
-                      <Email />
-                    </PrintButton>
+                <div className="row mt-3 ">
+                  <div className="col-md-4 ps-0">
+                    <div className="ms-4">
+                      <BackButton
+                        onClick={() => {
+                          navigate("/weekly-reports");
+                        }}
+                      >
+                        Back
+                      </BackButton>
+                    </div>
+                  </div>
+                  <div className="col-md-8 ps-0 text-end">
+                    {idParam ? (
+                      <>
+                        <PrintButton
+                          varient="mail"
+                          onClick={() => {
+                            navigate(
+                              `/send-mail?title=${"Weekly Report"}&mail=${contactEmail}`
+                            );
+                          }}
+                        >
+                          <Email />
+                        </PrintButton>
 
-                    <PrintButton
-                    varient="print"
-                      onClick={() => {
-                        navigate(
-                          `/weekly-reports/weekly-report-preview?id=${idParam}`
-                        );
-                      }}
+                        <PrintButton
+                          varient="print"
+                          onClick={() => {
+                            navigate(
+                              `/weekly-reports/weekly-report-preview?id=${idParam}`
+                            );
+                          }}
+                        ></PrintButton>
+                      </>
+                    ) : (
+                      <></>
+                    )}{" "}
+                    <LoaderButton
+                      loading={disableButton}
+                      handleSubmit={handleSubmit}
                     >
-                     
-                    </PrintButton>
-                  </>
-                ) : (
-                  <></>
-                )}
-                <BackButton
-                  onClick={() => {
-                    navigate("/weekly-reports");
-                  }}
-                >
-                  Back
-                </BackButton>{" "}
-                <LoaderButton
-                  loading={disableButton}
-                  handleSubmit={handleSubmit}
-                >
-                  Save and Preview
-                </LoaderButton>
+                      Save and Preview
+                    </LoaderButton>
+                  </div>
+                </div>
               </div>
             </div>
           </>

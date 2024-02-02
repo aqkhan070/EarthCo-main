@@ -2,10 +2,10 @@ import React from "react";
 import formatAmount from "../../custom/FormatAmount";
 import SingleCard from "./SingleCard";
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import WorkHistoryIcon from '@mui/icons-material/WorkHistoryOutlined';
+import CheckBoxIcon from '@mui/icons-material/BeenhereOutlined';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import FactCheckIcon from '@mui/icons-material/FactCheck';
+import FactCheckIcon from '@mui/icons-material/FactCheckOutlined';
 const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
   return (
     <>
@@ -38,7 +38,8 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
         statusId={statusId}
         status={1}
         title={"Open Approved"}
-        color={"primary"}
+        color={"success"}
+        // iconColor={"#fff"}
         number={estmRecords.totalApprovedRecords}
         amount={estmRecords.totalApprovedRecordsSum}
       />
@@ -58,7 +59,7 @@ const StatusCards = ({ setStatusId, estmRecords, statusId }) => {
         statusId={statusId}
         status={2}
         title={"Closed Billed"}
-        color={"primary"}
+        color={"success"}
         number={estmRecords.totalClosedRecords}
         amount={estmRecords.totalClosedRecordsSum}
       />

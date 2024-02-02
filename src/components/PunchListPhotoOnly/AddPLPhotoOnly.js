@@ -689,15 +689,16 @@ const AddPLPhotoOnly = () => {
             <></>
           )} */}
 
-            <div className="row">
-              <div className="col-md-12 text-end">
-                <BackButton
+            <div className="row mt-3">
+            <div className="col-md-6 "><BackButton
                   onClick={() => {
                     navigate(`/punchList-photos-only`);
                   }}
                 >
                   Back
-                </BackButton>
+                </BackButton></div>
+              <div className="col-md-6 text-end">
+                
                 <LoaderButton
                   loading={disableButton}
                   handleSubmit={handleSubmit}

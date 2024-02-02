@@ -454,7 +454,7 @@ const RisingCanesPreview = () => {
               ) : (
                 <div className="p-2 bd-highlight">
                   <button
-                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/weekly-reports/rising-canes`);
@@ -468,7 +468,7 @@ const RisingCanesPreview = () => {
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary   estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
                 >
                   <i className="fa fa-print"></i>
@@ -477,7 +477,7 @@ const RisingCanesPreview = () => {
               <div className="p-2 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary  estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
@@ -489,7 +489,7 @@ const RisingCanesPreview = () => {
               ) : (
                 <div className="p-2 bd-highlight">
                   <button
-                    className="btn btn-sm btn-outline-primary  estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                     onClick={() => {
                       navigate(
                         `/send-mail?title=${"Weekly Report - Rising Canes"}&mail=${contactEmail}`

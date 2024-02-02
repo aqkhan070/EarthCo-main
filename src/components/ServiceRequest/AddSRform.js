@@ -682,7 +682,7 @@ const AddSRform = () => {
         <div className="container-fluid">
           <div className="card">
             <div className="">
-              <div className="">
+              <div className="card-body p-0">
                 {/* Add service form */}
 
                 <div className="">
@@ -1027,6 +1027,33 @@ const AddSRform = () => {
                     </div>
                     <div className="row mx-1 mb-3">
                       <div className="col-lg-3 col-md-3 ">
+                        {loggedInUser.userRole == "5" ? (
+                          <><div
+                          className="overlay"
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "100%",
+                            backgroundColor: "rgba(0, 0, 0, 0)",
+                            zIndex: 999,
+                          }}
+                        ></div></>
+                        ) : (
+                          <div
+                            className="overlay"
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              backgroundColor: "rgba(0, 0, 0, 0)",
+                              zIndex: 999,
+                            }}
+                          ></div>
+                        )}
                         <label className="form-label">Status:</label>
                         <FormControl fullWidth>
                           <Select
@@ -1073,23 +1100,24 @@ const AddSRform = () => {
                       <table id="empoloyees-tblwrapper" className="table ">
                         <thead>
                           <tr>
-                            <th className="itemName-width">Item</th>
+                            <th >Item</th>
                             <th>Description</th>
                             <th>Qty</th>
                             <th>Rate</th>
                             <th>Amount</th>
-                            <th>Tax</th>
+                          
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {tblSRItems?.map((item, index) => (
-                            <tr colSpan={2} key={index} style={{height  :"fit-content"}}>
-                              <td className="itemName-width">{item.Name}</td>
+                            <tr key={index} style={{height  :"fit-content"}}>
+                              <td>{item.Name}</td>
                               <td>
-                                <textarea
-                               
-                               style={{ width: "17em" , height: "fit-content"}}
+                                <TextField
+                               size="small"
+                               multiline
+                               style={{ height: "fit-content"}}
                                   className="form-control form-control-sm"
                                   value={item.Description}
                                   onChange={
@@ -1101,7 +1129,7 @@ const AddSRform = () => {
                               <td>
                                 <input
                                   type="number"
-                                  style={{ width: "7em" }}
+                                 
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={
@@ -1112,7 +1140,7 @@ const AddSRform = () => {
                               <td>
                                 <input
                                   type="number"
-                                  style={{ width: "7em" }}
+                                 
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={
@@ -1120,8 +1148,8 @@ const AddSRform = () => {
                                   }
                                 />
                               </td>
-                              <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                              <td>NaN</td>
+                              <td className="text-right">$ {(item.Rate * item.Qty).toFixed(2)}</td>
+                             
                               <td>
                                 <div className="badgeBox">
                                   <Button onClick={() => removeItem(index)}>
@@ -1133,7 +1161,7 @@ const AddSRform = () => {
                           ))}
 
                           <tr>
-                            <td className="itemName-width">
+                            <td>
                               <>
                                 <Autocomplete
                                   id="search-items"
@@ -1186,10 +1214,10 @@ const AddSRform = () => {
                               </>
                             </td>
                             <td>
-                              <textarea
+                              <TextField
                                 size="small"
-                              
-                                  style={{ width: "17em" , height: "fit-content"}}
+                              multiline
+                                  style={{ height: "fit-content"}}
                                 value={itemInput.Description}
                                 onChange={(e) =>
                                   setItemInput({
@@ -1219,8 +1247,7 @@ const AddSRform = () => {
                                     ...itemInput,
                                     Qty: Number(e.target.value),
                                   })
-                                }
-                                style={{ width: "7em" }}
+                                }  
                                 className="form-control form-control-sm"
                                 placeholder="Quantity"
                                 onKeyPress={(e) => {
@@ -1233,11 +1260,11 @@ const AddSRform = () => {
                               />
                             </td>
                             <td>
-                              <div className="col-sm-9">
+                             
                                 <input
                                   type="number"
                                   name="Rate"
-                                  style={{ width: "7em" }}
+                                 
                                   className="form-control form-control-sm"
                                   value={itemInput.Rate}
                                   onChange={(e) =>
@@ -1259,23 +1286,14 @@ const AddSRform = () => {
                                     }
                                   }}
                                 />
-                              </div>
+                             
                             </td>
-                            <td>
+                            <td className="text-right">
                               <h5 style={{ margin: "0" }}>
                                 {(itemInput.Rate * itemInput.Qty).toFixed(2)}
                               </h5>
                             </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="tax"
-                                style={{ width: "7em" }}
-                                disabled
-                                className="form-control form-control-sm"
-                                placeholder="tax"
-                              />
-                            </td>
+                            
                           </tr>
                         </tbody>
                       </table>
@@ -1313,7 +1331,7 @@ const AddSRform = () => {
                                 fullWidth
                               />
                             </div>
-                         
+                            {SRData.ServiceRequestData.SRTypeId === 3? <></>:<>
 
                           <div className="col-md-4 mb-1">
                             {" "}
@@ -1332,7 +1350,7 @@ const AddSRform = () => {
                               fullWidth
                               size="small"
                             />
-                          </div>
+                          </div></>}
 
                           <div className=" col-md-4">
                             <label className="form-label">
@@ -1544,28 +1562,21 @@ const AddSRform = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="row">
-                <div className="col-md-6">
-                  {/* {addCustomerSuccess && (
-                    <Alert severity="success">
-                      {addCustomerSuccess
-                        ? addCustomerSuccess
-                        : "Susseccfully added/Updated Service Request"}
-                    </Alert>
-                  )}
-
-                  {errorMessage && (
-                    <Alert className="" severity="error">
-                      {errorMessage}
-                    </Alert>
-                  )}
-                  {emptyFieldsError && (
-                    <Alert className="mb-3" severity="error">
-                      Please fill all the required fields
-                    </Alert>
-                  )} */}
+             <div className="row">
+                <div className="col-md-6 ">
+                  <div className="ms-3">
+                <BackButton
+                    className="btn btn-danger  light ms-2"
+                    
+                    onClick={() => {
+                      setPunchListData({});
+                      navigate("/service-requests");
+                    }}
+                  >
+                    back
+                  </BackButton>
+                  </div>
+                 
                 </div>
                 <div className="col-md-6 mb-3 text-right">
                   {idParam ? (
@@ -1641,6 +1652,8 @@ const AddSRform = () => {
                         style={{ marginRight: "1em" }}
                         onClick={() => {
                           setPunchListData({
+                            ServiceRequestId : SRData.ServiceRequestData.ServiceRequestId,
+                            ServiceRequestNumber : SRData.ServiceRequestData.ServiceRequestNumber,
                             CustomerId: SRData.ServiceRequestData.CustomerId,
                             ServiceLocationId:
                               SRData.ServiceRequestData.ServiceLocationId,
@@ -1661,16 +1674,7 @@ const AddSRform = () => {
                   ) : (
                     <></>
                   )}
-                  <BackButton
-                    className="btn btn-danger  light me-2"
-                    style={{ marginRight: "1em" }}
-                    onClick={() => {
-                      setPunchListData({});
-                      navigate("/service-requests");
-                    }}
-                  >
-                    back
-                  </BackButton>
+                 
                   <LoaderButton
                     loading={loadingButton}
                     handleSubmit={submitHandler}
@@ -1686,7 +1690,9 @@ const AddSRform = () => {
                     Submit
                   </button> */}
                 </div>
-              </div>
+              </div> </div>
+
+              
             </div>
           </div>
         </div>

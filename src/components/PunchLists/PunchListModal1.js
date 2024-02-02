@@ -521,12 +521,12 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                   <table id="empoloyees-tblwrapper" className="table">
                     <thead>
                       <tr>
-                        <th className="itemName-width">Item</th>
+                        <th >Item</th>
                         <th>Description</th>
                         <th>Qty</th>
                         <th>Rate</th>
                         <th>Amount</th>
-                        <th>Tax</th>
+                       
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -534,10 +534,10 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                       {itemsList && itemsList.length > 0 ? (
                         itemsList.map((item, index) => (
                           <tr colSpan={2} key={index}>
-                            <td className="itemName-width">{item.Name}</td>
+                            <td >{item.Name}</td>
                             <td>
-                              <textarea
-                                style={{ width: "17em" }}
+                              <TextField
+                               size="small"
                                 className="form-control form-control-sm"
                                 value={item.Description}
                                 onChange={(e) =>
@@ -548,7 +548,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                             <td>
                               <input
                                 type="number"
-                                style={{ width: "7em" }}
+                               
                                 className="form-control form-control-sm"
                                 value={item.Qty}
                                 onChange={(e) =>
@@ -560,15 +560,15 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                               <input
                                 type="number"
                                 value={item.Rate}
-                                style={{ width: "7em" }}
+                               
                                 className="form-control form-control-sm"
                                 onChange={(e) =>
                                   handleRateChange(index, e)
                                 }
                               />
                             </td>
-                            <td>{(item.Rate * item.Qty).toFixed(2)}</td>
-                            <td>NaN</td>
+                            <td className="text-right">$ {(item.Rate * item.Qty).toFixed(2)}</td>
+                          
                             <td>
                               <div className="badgeBox">
                                 <Button
@@ -586,7 +586,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                         <></>
                       )}
                       <tr>
-                        <td className="itemName-width">
+                        <td>
                           <>
                             <Autocomplete
                               id="search-items"
@@ -641,7 +641,10 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                         </td>
                         <td>
                           <p>
-                            <textarea
+                            <TextField
+                            size="small"
+                            multiline
+                            sx={{height : "fit"}}
                               name="Description"
                               value={itemInput.Description}
                               onChange={(e) =>
@@ -650,7 +653,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                   Description: e.target.value,
                                 })
                               }
-                              style={{ width: "17em" }}
+                            
                               className="form-control form-control-sm"
                               placeholder="Description"
                               onKeyPress={(e) => {
@@ -674,7 +677,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                 Qty: Number(e.target.value),
                               })
                             }
-                            style={{ width: "7em" }}
+                           
                             className="form-control form-control-sm"
                             placeholder="Quantity"
                             onKeyPress={(e) => {
@@ -687,11 +690,11 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                           />
                         </td>
                         <td>
-                          <div className="col-sm-9">
+                        
                             <input
                               type="number"
                               name="Rate"
-                              style={{ width: "7em" }}
+                            
                               className="form-control form-control-sm"
                               value={
                                 selectedItem?.SalePrice || itemInput.Rate || ""
@@ -716,23 +719,14 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                 }
                               }}
                             />
-                          </div>
+                        
                         </td>
                         <td>
-                          <h5 style={{ margin: "0" }}>
-                            {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                          <h5 className="text-right" style={{ margin: "0" }}>
+                            $ {(itemInput.Rate * itemInput.Qty).toFixed(2)}
                           </h5>
                         </td>
-                        <td>
-                          <input
-                            type="number"
-                            name="tax"
-                            style={{ width: "7em" }}
-                            disabled
-                            className="form-control form-control-sm"
-                            placeholder="tax"
-                          />
-                        </td>
+                        
                       </tr>
                     </tbody>
                   </table>

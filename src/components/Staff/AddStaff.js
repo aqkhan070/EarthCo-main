@@ -554,8 +554,9 @@ const AddStaff = ({}) => {
                         )}
                         {/* <div>{customerInfo.Password} {customerInfo.ConfirmPassword}</div> */}
                       </div>
-
-                      <div className=" mt-4 col-md-6 text-end">
+                      </div>
+<div className="row">
+<div className=" mt-4 col-md-6 ">
                         <BackButton
                           onClick={() => {
                             loggedInUser.userRole == "1"
@@ -565,9 +566,11 @@ const AddStaff = ({}) => {
                         >
                           back
                         </BackButton>{" "}
-                        {/* <button className="btn btn-primary me-1" onClick={addStaff}>
-                      Submit
-                    </button> */}
+                   
+                       
+                      </div>
+                      <div className=" mt-4 col-md-6 text-end">
+                       
                         <LoaderButton
                           loading={loadingButton}
                           handleSubmit={addStaff}

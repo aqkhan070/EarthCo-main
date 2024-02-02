@@ -1,6 +1,7 @@
 import React from "react";
 import OpenWithIcon from '@mui/icons-material/PendingActions';
-import TaskIcon from '@mui/icons-material/Task';
+import TaskIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
+import DensitySmallOutlinedIcon from '@mui/icons-material/DensitySmallOutlined';
 const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
   return (
     <div className="row">
@@ -105,24 +106,8 @@ const PunchListCards = ({ totalRecords, statusId, setStatusId }) => {
             }}
           >
             <div className="media ai-icon">
-              <span className="me-3 bgl-secondary text-secondary">
-                <svg
-                  id="icon-database-widget"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="feather feather-database"
-                >
-                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                  <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                </svg>
+              <span className="me-3 bgl-info text-info">
+              <DensitySmallOutlinedIcon fontSize="large" />
               </span>
               <div className="media-body">
                 <p className="mb-1">Total</p>

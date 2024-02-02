@@ -9,7 +9,7 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
-
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -54,7 +54,7 @@ const DeleteAllModal = ({ selectedItems, endpoint, bindingFunction }) => {
         </DialogTitle>
         <DialogContent sx={{ margin: "2em 5em 0em 5em" }}>
           <DialogContentText>
-            <h6>Are you sure you want to delete all selected items?</h6>
+          <h5><ErrorOutlineIcon sx={{fontSize : 30}} color="error"/> Are you sure you want to delete all selected items?</h5>
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -1,7 +1,7 @@
 import React from 'react'
 import formatAmount from '../../custom/FormatAmount';
 import { Icon } from '@mui/material';
-const SingleCard = ({setStatusId, statusId, status, title, number, amount, color, icon}) => {
+const SingleCard = ({setStatusId, statusId, status, title, number, amount, color, icon, iconColor}) => {
   return (
     <div className='col'>
     <div className="widget-stat card">
@@ -24,13 +24,13 @@ const SingleCard = ({setStatusId, statusId, status, title, number, amount, color
             className={`me-1 bgl-${color} text-${color}`}
           >
             {/* <i className="ti-user"></i>  */}
-            <Icon component={icon} fontSize='large' />
+            <Icon component={icon} fontSize='large' sx={{color: iconColor}} />
           </span>
           <div className="media-body">
             <p style={{whiteSpace : "nowrap"}} >{title}</p>
             <div className="row">
               <div className="col-md-12 col-sm-12">
-                <h4 className="mb-0">{number}</h4>
+                <h4 className="mb-0 ms-2">{number}</h4>
                 {/* <span className="badge badge-primary">15%</span> */}
               </div>
               <div className="col-md-12 col-sm-12  text-end">

@@ -43,11 +43,12 @@ const useGetEstimate = () => {
     pageNo = 1,
     PageLength = 10,
     StatusId = statusId,
-    isAscending = false
+    isAscending = false,
+    poFilter = 2,invoiceFilter= 2,billFilter= 2
   ) => {
     try {
       const response = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}`,
+        `https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateServerSideList?Search="${Search}"&DisplayStart=${pageNo}&DisplayLength=${PageLength}&StatusId=${StatusId}&isAscending=${isAscending}&isPurchaseOrder=${poFilter}&isBill=${billFilter}&isInvoice=${invoiceFilter}`,
         { headers }
       );
       console.log("filter estimate response is", response.data);
@@ -58,7 +59,7 @@ const useGetEstimate = () => {
       setIsLoading(false);
     } catch (error) {
       setTableError(true);
-      setFilterdEstm({});
+      setFilterdEstm([]);
       // setTimeout(() => {
       //   setTableError(false);
       // }, 4000);

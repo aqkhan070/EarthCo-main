@@ -491,8 +491,16 @@ const AddIrrigationAudit = () => {
                           placeholder="Created"
                         />
                       </div>
-
-                      <div className="col-md-12 text-end mt-4">
+                      <div className="col-md-4 mt-4"><BackButton
+                            onClick={() => {
+                              // setShowContent(true);
+                              // setSelectedIrr(0);
+                              navigate(`/irrigation-audit`);
+                            }}
+                          >
+                            Back
+                          </BackButton></div>
+                      <div className="col-md-8 text-end mt-4">
                         <div>
                           {idParam === 0 ? null : (
                             <>
@@ -519,15 +527,7 @@ const AddIrrigationAudit = () => {
                               </PrintButton>
                             </>
                           )}
-                          <BackButton
-                            onClick={() => {
-                              // setShowContent(true);
-                              // setSelectedIrr(0);
-                              navigate(`/irrigation-audit`);
-                            }}
-                          >
-                            Back
-                          </BackButton>{" "}
+                          {" "}
                           <LoaderButton
                             loading={disableButton}
                             handleSubmit={handleSubmit}

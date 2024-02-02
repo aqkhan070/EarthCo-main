@@ -246,14 +246,14 @@ const SRPreview = () => {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6 text-end p-0">
-                          <strong>Target completion:</strong>
+                          {/* <strong>Target completion:</strong> */}
                         </div>
                         <div className="col-md-6 col-sm-6 p-0 text-start">
                           {" "}
                           <div style={{ color: "black" }} className="">
                             <p className="">
-                              &nbsp;
-                              {formatDate(sRPreviewData.Data.DueDate, false)}
+                              {/* &nbsp;
+                              {formatDate(sRPreviewData.Data.DueDate, false)} */}
                             </p>
                           </div>
                         </div>
@@ -400,7 +400,7 @@ const SRPreview = () => {
               ) : (
                 <div className="p-2 bd-highlight">
                   <button
-                    className="btn btn-outline-primary btn-sm estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
                       navigate(`/service-requests`);
@@ -414,7 +414,7 @@ const SRPreview = () => {
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary   estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handlePrint}
                 >
                   <i className="fa fa-print"></i>
@@ -423,7 +423,7 @@ const SRPreview = () => {
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
                 <button
-                  className="btn btn-sm btn-outline-primary  estm-action-btn"
+                  className="btn btn-sm btn-outline-secondary  custom-csv-link estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
@@ -435,7 +435,7 @@ const SRPreview = () => {
                 <div className="p-2 pt-0 bd-highlight">
                   {" "}
                   <button
-                    className="btn btn-sm btn-outline-primary estm-action-btn"
+                    className="btn btn-sm btn-outline-secondary  custom-csv-link estm-action-btn"
                     onClick={() => {
                       // sendEmail(
                       //   `/service-requests/service-request-preview?id=${idParam}`,

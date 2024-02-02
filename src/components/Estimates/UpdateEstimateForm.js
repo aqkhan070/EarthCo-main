@@ -1143,7 +1143,7 @@ const UpdateEstimateForm = ({
                             href=""
                             style={{ color: "blue" }}
                             onClick={() => {
-                              navigate(`/bills/addbill?id=${formData.BillId}`);
+                              navigate(`/bills/add-bill?id=${formData.BillId}`);
                             }}
                           >
                             Go to Bill

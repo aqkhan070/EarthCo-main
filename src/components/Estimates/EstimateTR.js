@@ -37,6 +37,7 @@ import formatAmount from "../../custom/FormatAmount";
 import { CSVLink } from "react-csv";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import TableFilterPopover from "../Reusable/TableFilterPopover";
+import CustomizedTooltips from "../Reusable/CustomizedTooltips";
 
 const theme = createTheme({
   palette: {
@@ -73,6 +74,10 @@ const EstimateTR = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const [poFilter, setPoFilter] = useState(2);
+  const [invoiceFilter, setInvoiceFilter] = useState(2);
+  const [billFilter, setBillFilter] = useState(2);
+
   const navigate = useNavigate();
 
   const filteredEstimates = filterdEstm;
@@ -102,7 +107,7 @@ const EstimateTR = ({
   const [tablePage, setTablePage] = useState(0);
   const [search, setSearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
-
+  const [CsvItems, setCsvItems] = useState([]);
   useEffect(() => {
     // Initial fetch of estimates
     getFilteredEstimate();
@@ -116,9 +121,36 @@ const EstimateTR = ({
       tablePage + 1,
       rowsPerPage,
       statusId,
-      isAscending
+      isAscending,
+      poFilter,
+      invoiceFilter,
+      billFilter
     );
-  }, [search, tablePage, rowsPerPage, statusId, isAscending]);
+    setCsvItems(
+      filteredEstimates.map((estimate) => ({
+        Customer: estimate.CustomerName,
+        "Regional Manager": estimate.RegionalManager,
+        Date: estimate.Date,
+        Status: estimate.Status,
+        "Estimate Number": estimate.EstimateNumber,
+        "Description of Work": estimate.DescriptionofWork,
+        "PO#": estimate.PurchaseOrderNumber,
+        "Bill#": estimate.BillNumber,
+        "Invoice#": estimate.InvoiceNumber,
+        "Profit %": estimate.ProfitPercentage?.toFixed(2),
+        Amount: formatAmount(estimate.EstimateAmount),
+      }))
+    );
+  }, [
+    search,
+    tablePage,
+    rowsPerPage,
+    statusId,
+    isAscending,
+    poFilter,
+    invoiceFilter,
+    billFilter,
+  ]);
 
   const handleChangePage = (event, newPage) => {
     // Update the tablePage state
@@ -163,19 +195,26 @@ const EstimateTR = ({
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCell, setSelectedCell] = useState("");
-  const [poFilter, setPoFilter] = useState("")
-  const [invoiceFilter, setInvoiceFilter] = useState("")
-  const [billFilter, setBillFilter] = useState("")
 
   const handleCellClick = (cellValue) => (event) => {
     setAnchorEl(event.currentTarget);
     setSelectedCell(cellValue);
   };
-
+  function filterBytext(number) {
+ 
+    if (number === 0) {
+      return 'Not generated';
+    } else if (number == 2) {
+      return 'All';
+    } else if (number == 1) {
+      return 'Generated';
+    } else {
+      return 'Invalid number';
+    }
+  }
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
-
 
   return (
     <>
@@ -183,16 +222,17 @@ const EstimateTR = ({
         <TableFilterPopover
           anchorEl={anchorEl}
           onClose={handlePopoverClose}
-
           selectedCell={selectedCell}
           setPoFilter={setPoFilter}
           setInvoiceFilter={setInvoiceFilter}
           setBillFilter={setBillFilter}
+          billFilter={billFilter}
+          invoiceFilter={invoiceFilter}
+          poFilter={poFilter}
         />
         <div className="card">
           <div className="card-header flex-wrap d-flex justify-content-between  border-0">
             <div>
-           
               <TextField
                 label="Search Estimate"
                 variant="standard"
@@ -200,17 +240,30 @@ const EstimateTR = ({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-            </div> <div className=" me-2">
-            <CSVLink
-            className="btn btn-sm btn-outline-primary me-2"
-              data={filteredEstimates}
-              filename={"Estimates.csv"}
-              target="_blank"
-              separator={","}
-            >
-              Download CSV
-            </CSVLink>
-           
+            </div>{" "}
+            <div className=" me-2">
+              <CSVLink
+                className="btn btn-sm btn-outline-secondary me-2 custom-csv-link"
+                data={filteredEstimates.map((estimate) => ({
+                  Customer: estimate.CustomerName,
+                  "Regional Manager": estimate.RegionalManager,
+                  Date: estimate.Date,
+                  Status: estimate.Status,
+                  "Estimate Number": estimate.EstimateNumber,
+                  "Description of Work": estimate.DescriptionofWork,
+                  "PO#": estimate.PurchaseOrderNumber,
+                  "Bill#": estimate.BillNumber,
+                  "Invoice#": estimate.InvoiceNumber,
+                  "Profit %": estimate.ProfitPercentage?.toFixed(2),
+                  Amount: formatAmount(estimate.EstimateAmount),
+                }))}
+                filename={"Estimates.csv"}
+                target="_blank"
+                separator={","}
+              >
+                <i className="fa fa-download"></i> CSV
+              </CSVLink>
+
               <FormControl className="  me-2" variant="outlined">
                 <Select
                   labelId="customer-type-label"
@@ -379,27 +432,38 @@ const EstimateTR = ({
                       <TableCell
                         align="center"
                         className="table-cell-align"
-                        style={{cursor: "pointer"}}
-                        onClick={handleCellClick("PO")}
+                        style={{ cursor: "pointer" }}
+                        onClick={handleCellClick("PO filter by")}
                       >
-                        PO #  <FilterAltIcon sx={{color : "#424242"}}  />
+                        PO #{" "}
+                        <CustomizedTooltips title={`PO filter:-${filterBytext(poFilter)}`}  placement="top">
+                          {" "}
+                          <FilterAltIcon sx={{ color: "#424242" }} />
+                        </CustomizedTooltips>
                       </TableCell>
                       <TableCell
                         align="center"
-                        style={{cursor: "pointer"}}
+                        style={{ cursor: "pointer" }}
                         className="table-cell-align"
-
-                        onClick={handleCellClick("Bill")}
+                        onClick={handleCellClick("Bill filter by")}
                       >
-                        Bill #  <FilterAltIcon sx={{color : "#424242"}}  />
+                        Bill #{" "}
+                        <CustomizedTooltips  title={`Bill filter:- ${filterBytext(billFilter)}`} placement="top">
+                          {" "}
+                          <FilterAltIcon sx={{ color: "#424242" }} />
+                        </CustomizedTooltips>
                       </TableCell>
                       <TableCell
                         align="center"
-                        style={{cursor: "pointer"}}
+                        style={{ cursor: "pointer" }}
                         className="table-cell-align"
-                        onClick={handleCellClick("Invoice")}
+                        onClick={handleCellClick("Invoice filter by")}
                       >
-                        Invoice #  <FilterAltIcon sx={{color : "#424242"}} />
+                        Invoice #{" "}
+                        <CustomizedTooltips title={`Invoice filter:-${filterBytext(invoiceFilter)}`} placement="top">
+                          {" "}
+                          <FilterAltIcon sx={{ color: "#424242" }} />
+                        </CustomizedTooltips>
                       </TableCell>
                       <TableCell
                         align="center"

@@ -18,7 +18,9 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    tblUserAddresses: []
+  });
   const [contactAddress, setContactAddress] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -30,7 +32,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       CustomerId: idParam,
-      Address: contactAddress.Address,
+      Address: contactAddress.Address || "",
     }));
 
     console.log("contact payload izzzz", formData);
@@ -44,7 +46,7 @@ const Contacts = ({ getCustomerData, contactDataList, setContactDataList }) => {
       return; // Return early if any required field is empty
     }
 
-    if (!validator.isLength(formData.CompanyName, { min: 3, max: 30 })) {
+    if (formData.CompanyName &&!validator.isLength(formData.CompanyName, { min: 3, max: 30 })) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Company Name should be 3 to 30 characters");

@@ -184,7 +184,7 @@ const AddCustomer = () => {
       !companyData.ContactName ||
       !companyData.Email ||
       !companyData.Address
-    ) { 
+    ) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -428,17 +428,14 @@ const AddCustomer = () => {
                     </div>
                   </div>
                 </div>
-
+                <EventPopups
+                  open={openSnackBar}
+                  setOpen={setOpenSnackBar}
+                  color={snackBarColor}
+                  text={snackBarText}
+                />
                 <div className="row">
                   <div className="col-md-9">
-                    <EventPopups
-                      open={openSnackBar}
-                      setOpen={setOpenSnackBar}
-                      color={snackBarColor}
-                      text={snackBarText}
-                    />
-                  </div>
-                  <div className="col-md-3 text-end">
                     <BackButton
                       onClick={() => {
                         navigate(`/customers`);
@@ -446,6 +443,8 @@ const AddCustomer = () => {
                     >
                       Back
                     </BackButton>
+                  </div>
+                  <div className="col-md-3 text-end">
                     {/* <NavLink to="/customers">
                       <button className="btn btn-danger light  m-1 ">
                         Cancel

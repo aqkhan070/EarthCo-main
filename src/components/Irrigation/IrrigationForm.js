@@ -470,7 +470,15 @@ const IrrigationForm = () => {
                           placeholder="Controller Number"
                         />
                       </div> */}
-                      <div className="col-md-12 text-end mt-4">
+                      <div className="col-md-4 mt-4">
+                      <BackButton
+                          onClick={() => {
+                            navigate(`/irrigation`);
+                          }}
+                        >
+                          Back
+                        </BackButton></div>
+                      <div className="col-md-8 text-end mt-4">
                         {idParam === 0 ? null : (
                           <>
                             <PrintButton
@@ -496,13 +504,7 @@ const IrrigationForm = () => {
                             </PrintButton>
                           </>
                         )}
-                        <BackButton
-                          onClick={() => {
-                            navigate(`/irrigation`);
-                          }}
-                        >
-                          Back
-                        </BackButton>{" "}
+                        
                         <LoaderButton
                           loading={disableButton}
                           handleSubmit={handleSubmit}
