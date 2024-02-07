@@ -74,7 +74,11 @@ import IrrigationAuditTable from "../components/IrrigationAudit/IrrigationAuditT
 import AddIrrigationAudit from "../components/IrrigationAudit/AddIrrigationAudit.js";
 import IrrigationAuditPreview from "../components/IrrigationAudit/IrrigationAuditPreview.js";
 import CompanySelect from "./CompanySelect.js";
-
+import WagesTable from "../components/Staff/WagesTable.js";
+import SprayTechForm from "../components/SprayTech/SprayTechForm.js";
+import SprayTechIndex from "../components/SprayTech/SprayTechIndex.js";
+import SprayTechList from "../components/SprayTech/SprayTechList.js";
+import STPreview from "../components/SprayTech/STPreview.js";
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const { toggleFullscreen } = useContext(DataContext);
@@ -203,6 +207,15 @@ const DashboardPage = () => {
                 <Route path="add-sRform" element={<AddSRform />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
               </Route>
+
+              <Route path="spray-tech/*" element={<SprayTechIndex />}>
+                <Route path="" element={<SprayTechList />} />
+               
+                <Route path="preview" element={<STPreview />} />
+                <Route path="add" element={<SprayTechForm />} />
+                {/* <Route path="spray-tech" element={<ServiceRequest />} /> */}
+              </Route>
+
               <Route path="purchase-order/*" element={<PurchaseOrderIndex />}>
                 <Route path="" element={<PurchaseOrder />}>
                   <Route
@@ -246,6 +259,7 @@ const DashboardPage = () => {
               />
               <Route path="general-report" element={<GenralReport />} />
               <Route path="/company-select" element={<CompanySelect />} />
+              <Route path="/wages" element={<WagesTable />} />
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>
                 <Route path="" element={<WeeklyReportlist />} />

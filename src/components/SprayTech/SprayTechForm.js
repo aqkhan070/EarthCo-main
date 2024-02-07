@@ -29,7 +29,8 @@ import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import PrintButton from "../Reusable/PrintButton";
 
-const AddSRform = () => {
+
+const SprayTechForm = () => {
   const token = Cookies.get("token");
   const headers = {
     Authorization: `Bearer ${token}`,
@@ -558,10 +559,10 @@ const AddSRform = () => {
   }, [searchText]);
 
   const handleItemChange = (event) => {
-    
+    setShowItem(true);
     setSearchText(event.target.value);
 
-    // setSelectedItem({}); 
+    setSelectedItem({}); // Clear selected item when input changes
   };
 
   const handleAddItem = () => {
@@ -660,7 +661,7 @@ const AddSRform = () => {
 
   return (
     <>
-      <TitleBar icon={icon} title={`Add Service Request  ${SRData.ServiceRequestData.Type? " - "+ SRData.ServiceRequestData.Type : ""}`} />
+      <TitleBar icon={icon} title="Add Spray Tech" />
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
@@ -688,7 +689,7 @@ const AddSRform = () => {
                 <div className="">
                   <div className="">
                     <div className="itemtitleBar">
-                      <h4>Service Request Details</h4>
+                      <h4>Spray Tech Details</h4>
                     </div>{" "}
                     <div
                       className=" card-body"
@@ -970,7 +971,7 @@ const AddSRform = () => {
                           {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">
-                            Service Request Number
+                            Spray Tech Number
                           </label>
                           <TextField
                             name="ServiceRequestNumber"
@@ -991,12 +992,7 @@ const AddSRform = () => {
                             <Select
                               name="SRTypeId"
                               value={SRData.ServiceRequestData.SRTypeId || ""}
-                              onChange={(e) => {
-                                
-                                handleInputChange(e)
-                               
-                              
-                              }}
+                              onChange={handleInputChange}
                               size="small"
                             >
                               <MenuItem value=""></MenuItem>
@@ -1004,14 +1000,6 @@ const AddSRform = () => {
                                 <MenuItem
                                   key={type.SRTypeId}
                                   value={type.SRTypeId}
-                                  onClick={() => {
-                                    setSRData((prevData) => ({
-                                      ServiceRequestData: {
-                                        ...prevData.ServiceRequestData,
-                                      Type : type.Type,
-                                      },
-                                    }));
-                                  }}
                                 >
                                   {type.Type}
                                 </MenuItem>
@@ -1097,7 +1085,7 @@ const AddSRform = () => {
                 <div className="itemtitleBar">
                   <h4>Items</h4>
                 </div>
-                <div className="card-body  pt-0 pb-0">
+                <div className="card-body  pt-0 ">
                   <div className="estDataBox">
                     <div className="table-responsive active-projects style-1 mt-2">
                       <table id="empoloyees-tblwrapper" className="table ">
@@ -1167,7 +1155,7 @@ const AddSRform = () => {
                             <td>
                               <>
                                 <Autocomplete
-                                 
+                                  id="search-items"
                                   options={searchResults}
                                   getOptionLabel={(item) => item.ItemName}
                                   value={selectedItem.ItemName} // This should be the selected item, not searchText
@@ -1181,11 +1169,10 @@ const AddSRform = () => {
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}
-                                      label="Search for items"
+                                      label="Search for items..."
                                       variant="outlined"
-                                      size="small"                                    
+                                      size="small"
                                       fullWidth
-                                   
                                       onChange={handleItemChange}
                                     />
                                   )}
@@ -1196,7 +1183,7 @@ const AddSRform = () => {
                                         width: "30em",
                                       }}
                                       {...props}
-                                      // // onClick={() => handleItemClick(item)}
+                                      // onClick={() => handleItemClick(item)}
                                     >
                                       <div className="customer-dd-border">
                                         <p>
@@ -1306,7 +1293,7 @@ const AddSRform = () => {
                 </div>
 
                 {/* Details */}
-                <div className=" ">
+                <div className=" mt-3">
                   <div className="">
                     <div className="itemtitleBar">
                       <h4>Details</h4>
@@ -1377,10 +1364,16 @@ const AddSRform = () => {
                           </div>
 
                           <div className="col-md-12">
-                            {SRData.ServiceRequestData.SRTypeId === 3 || SRData.ServiceRequestData.SRTypeId === 8 ? (
+                            {SRData.ServiceRequestData.SRTypeId === 3 ? (
                               <MapCo />
                             ) : (
-                             
+                              // <iframe
+                              //   className="SRmap"
+                              //   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d27233.071725612084!2d74.27175771628481!3d31.437978669606856!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39190143e0e99feb%3A0xf39379efff4dd86!2sUniversity%20of%20Management%20%26%20Technology!5e0!3m2!1sen!2s!4v1692089484116!5m2!1sen!2s"
+                              //   allowFullScreen=""
+                              //   loading="lazy"
+                              //   referrerPolicy="no-referrer-when-downgrade"
+                              // ></iframe>
                               ""
                             )}
                           </div>
@@ -1390,7 +1383,55 @@ const AddSRform = () => {
 
                     <div className="row card-body">
                       <div className="col-xl-2 col-md-2">
-                     
+                        {/* <label className="form-label">Attachments</label>
+                       <h4 className="card-title mt-2">Attachments</h4>
+                        <div className="dz-default dlab-message upload-img mb-3">
+                          <form action="#" className="dropzone">
+                            <svg
+                              width="41"
+                              height="40"
+                              viewBox="0 0 41 40"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M20.5 20V35"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M34.4833 30.6501C36.1088 29.7638 37.393 28.3615 38.1331 26.6644C38.8731 24.9673 39.027 23.0721 38.5703 21.2779C38.1136 19.4836 37.0724 17.8926 35.6111 16.7558C34.1497 15.619 32.3514 15.0013 30.4999 15.0001H28.3999C27.8955 13.0488 26.9552 11.2373 25.6498 9.70171C24.3445 8.16614 22.708 6.94647 20.8634 6.1344C19.0189 5.32233 17.0142 4.93899 15.0001 5.01319C12.9861 5.0874 11.015 5.61722 9.23523 6.56283C7.45541 7.50844 5.91312 8.84523 4.7243 10.4727C3.53549 12.1002 2.73108 13.9759 2.37157 15.959C2.01205 17.9421 2.10678 19.9809 2.64862 21.9222C3.19047 23.8634 4.16534 25.6565 5.49994 27.1667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                              <path
+                                d="M27.1666 26.6667L20.4999 20L13.8333 26.6667"
+                                stroke="#DADADA"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              ></path>
+                            </svg>
+                            <div className="fallback mb-3">
+                              <input
+                                name="file"
+                                type="file"
+                                onChange={trackFile}
+                              />
+                            </div>
+                          </form>
+                        </div> */}
                         <FileUploadButton onClick={trackFile}>
                           Upload File
                         </FileUploadButton>
@@ -1520,7 +1561,7 @@ const AddSRform = () => {
                     
                     onClick={() => {
                       setPunchListData({});
-                      navigate("/service-requests");
+                      navigate("/spray-tech");
                     }}
                   >
                     back
@@ -1651,4 +1692,4 @@ const AddSRform = () => {
   );
 };
 
-export default AddSRform;
+export default SprayTechForm

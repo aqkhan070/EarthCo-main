@@ -39149,7 +39149,9 @@ button:focus {
 .light.btn-warning g [fill] {
     fill: #FF9F00;
 }
-
+.navLabel{
+    padding-top: 3px;
+}
 [data-theme-version="dark"] .light.btn-warning {
     background-color: rgba(255, 159, 0, 0.1);
     border-color: transparent;

@@ -77,6 +77,12 @@ import IrrigationAuditPreview from "./components/IrrigationAudit/IrrigationAudit
 import TermsandConditions from "./pages/TermsandConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CompanySelect from "./pages/CompanySelect";
+import WagesTable from "./components/Staff/WagesTable";
+import SprayTechForm from "./components/SprayTech/SprayTechForm";
+import SprayTechIndex from "./components/SprayTech/SprayTechIndex";
+import SprayTechList from "./components/SprayTech/SprayTechList";
+import STPreview from "./components/SprayTech/STPreview";
+
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
 
@@ -124,6 +130,14 @@ function App() {
                 <Route path={SRroute} element={<ServiceRequest />} />
               </Route>
 
+              <Route path="spray-tech/*" element={<SprayTechIndex />}>
+                <Route path="" element={<SprayTechList />} />
+               
+                <Route path="preview" element={<STPreview />} />
+                <Route path="add" element={<SprayTechForm />} />
+                {/* <Route path="spray-tech" element={<ServiceRequest />} /> */}
+              </Route>
+
               <Route path="purchase-order/*" element={<PurchaseOrderIndex />}>
                 <Route path="" element={<PurchaseOrder />}>
                   <Route
@@ -167,6 +181,7 @@ function App() {
               />
               <Route path="general-report" element={<GenralReport />} />
               <Route path="/company-select" element={<CompanySelect />} />
+              <Route path="/wages" element={<WagesTable />} />
 
               <Route path="proposal-summary" element={<ProposalSummary />} />
               <Route path="weekly-reports" element={<WeeklyReportIndex />}>

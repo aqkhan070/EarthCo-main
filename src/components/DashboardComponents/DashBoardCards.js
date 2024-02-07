@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../context/AppData";
 import SingleCard from "./SingleCard";
 import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-import CheckBoxIcon from '@mui/icons-material/BeenhereOutlined';
-import FactCheckIcon from '@mui/icons-material/FactCheckOutlined';
-import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
+import CheckBoxIcon from "@mui/icons-material/BeenhereOutlined";
+import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
+import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 const DashBoardCards = ({ dashBoardData }) => {
   const navigate = useNavigate();
   const { loggedInUser, setStatusId } = useContext(DataContext);
@@ -38,14 +39,14 @@ const DashBoardCards = ({ dashBoardData }) => {
                 title={"Pending Estimates"}
                 color="info"
                 count={dashBoardData.OpenEstimateCount}
-                total={dashBoardData.OpenEstimateSum}
+                total={dashBoardData.OpenEstimateSum || "$ 0.00"}
                 onClick={() => {
                   navigate(`/estimates`);
                   setStatusId(4);
                 }}
               >
                 {" "}
-                <PendingActionsIcon fontSize="large" sx={{color: "white"}} />
+                <PendingActionsIcon fontSize="large" sx={{ color: "white" }} />
               </SingleCard>
             </div>
             <div className="col-xl-3  col-lg-6 col-sm-6">
@@ -53,14 +54,14 @@ const DashBoardCards = ({ dashBoardData }) => {
                 title={"Approved Estimates"}
                 color="success"
                 count={dashBoardData.ApprovedEstimateCount}
-                total={dashBoardData.ApprovedEstimateSum}
+                total={dashBoardData.ApprovedEstimateSum || "$ 0.00"}
                 onClick={() => {
                   navigate(`/estimates`);
                   setStatusId(1);
                 }}
               >
                 {" "}
-                <CheckBoxIcon fontSize="large" sx={{color: "white"}} />
+                <CheckBoxIcon fontSize="large" sx={{ color: "white" }} />
               </SingleCard>
             </div>
             <div className="col-xl-3  col-lg-6 col-sm-6">
@@ -68,26 +69,30 @@ const DashBoardCards = ({ dashBoardData }) => {
                 title={"Ready to Invoice"}
                 color="secondary"
                 count={dashBoardData.ReadyToInvoiceCount}
-                total={dashBoardData.ReadyToInvoiceSum}
+                total={dashBoardData.ReadyToInvoiceSum || "$ 0.00"}
                 onClick={() => {
                   navigate(`/estimates`);
                   setStatusId(7);
                 }}
               >
-               <PlaylistAddCheckIcon fontSize="large" sx={{color: "white"}} />
+                <PlaylistAddCheckIcon
+                  fontSize="large"
+                  sx={{ color: "white" }}
+                />
               </SingleCard>
             </div>
             <div className="col-xl-3  col-lg-6 col-sm-6">
               <SingleCard
                 title={" Closed Billed"}
-                color="primary"
+                color="#99be5b"
                 count={dashBoardData.ClosedBillCount}
-                total={dashBoardData.ClosedBillSum}
+                total={dashBoardData.ClosedBillSum || "$ 0.00"}
                 onClick={() => {
                   navigate(`/estimates`);
                   setStatusId(2);
                 }}
-              ><FactCheckIcon fontSize="large" sx={{color: "white"}} />
+              >
+                <FactCheckIcon fontSize="large" sx={{ color: "white" }} />
               </SingleCard>
             </div>
             <div className="col-xl-3  col-lg-6 col-sm-6">
@@ -99,10 +104,24 @@ const DashBoardCards = ({ dashBoardData }) => {
                   navigate(`/punchlist`);
                   setStatusId(2);
                 }}
-              ><DnsOutlinedIcon fontSize="large" sx={{color: "white"}} />
+              >
+                <DnsOutlinedIcon fontSize="large" sx={{ color: "white" }} />
               </SingleCard>
             </div>
-          </>
+       
+     <div className="col-xl-3  col-lg-6 col-sm-6">
+          <SingleCard
+            title={"Wages"}
+            color="#2059AE"
+            count={" "}
+            onClick={() => {
+              navigate(`/wages`);
+           
+            }}
+          >
+            <AttachMoneyOutlinedIcon fontSize="large" sx={{ color: "white" }} />
+          </SingleCard>
+        </div>    </>
         )}
       </div>
     </div>

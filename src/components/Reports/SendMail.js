@@ -42,7 +42,7 @@ const SendMail = () => {
     }. We understand the importance of creating a beautiful and sustainable environment for your commercial space, and we are committed to delivering exceptional landscaping services that meet your unique needs.<br>Our dedicated team of experts is here to ensure that your landscaping dreams come to life, making your property not only aesthetically pleasing but also environmentally responsible.<br>Should you have any questions or require further assistance, please do not hesitate to contact our friendly customer support team. <br>Best Reguards <br>EarthCo Comercial Landscape`
   );
   const [subject, setSubject] = useState(
-    `${customer} ${title} ${number ? "#"+number:""}  ${isOpen ? "is" + isOpen:""}`
+    `${customer} ${title} ${number ? "#"+number:" "}  ${isOpen ? "is" + isOpen:" "}`
   );
 
   const [disableButton, setDisableButton] = useState(false);
@@ -241,8 +241,7 @@ const SendMail = () => {
         <br/>${loggedInUser.userName}
         <br/>EarthCo`);
   
-        setSubject(`Proposal ${number} for ${customer}
-        `);
+        setSubject(`Proposal ${number} for ${customer}`);
     }
 
     return () => {

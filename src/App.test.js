@@ -1,132 +1,32 @@
-const handleImageSelect = (image) => {
-  // Check if the image is already selected
-  const isSelected = selectedImages.some(
-    (selectedImage) => selectedImage.InvoiceFileId === image.InvoiceFileId
-  );
-
-  if (isSelected) {
-    // If already selected, remove it from the selectedImages state
-    setSelectedImages((prevSelectedImages) =>
-      prevSelectedImages.filter(
-        (selectedImage) =>
-          selectedImage.InvoiceFileId !== image.InvoiceFileId
-      )
-    );
-  } else {
-    // If not selected, add it to the selectedImages state
-    setSelectedImages((prevSelectedImages) => [...prevSelectedImages, image]);
-  }
-
-  console.log("selected images arew", selectedImages);
-};
-
-
-
-{PrevFiles.map((file, index) => (
-  <div
-    key={index}
-    className="col-md-2 col-md-2 mt-3 image-container"
-    style={{
-      width: "150px",
-      height: "120px",
-    
-      position: "relative",
-    }}
+<>
+  <svg
+    class="w-6 h-6 text-gray-800 dark:text-white"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
   >
-    <a
-      href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <img
-        src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-        alt={file.FileName}
-        style={{
-          width: "150px",
-          height: "120px",
-          objectFit: "cover",
-        }}
-      />
-    </a>
-    <p
-      className="file-name-overlay"
-      style={{
-        position: "absolute",
-        bottom: "0",
-        left: "13px",
-        right: "0",
-        backgroundColor: "rgba(0, 0, 0, 0.3)",
-        textAlign: "center",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-        width: "100%",
-        textOverflow: "ellipsis",
-        padding: "5px",
-      }}
-    >
-      {file.FileName}
-    </p>
-    {selectedImages.some(
-      (selectedImage) =>
-        selectedImage.InvoiceFileId ===
-        file.InvoiceFileId
-    ) ? (
-      <span
-        className=""
-        style={{
-          position: "absolute",
-          top: "3px",
-          left: "14px",
-        }}
-      >
-        <Tooltip
-          title="Click to select image"
-          placement="top"
-          arrow
-        >
-          <Checkbox
-            checked={true}
-            onChange={() => handleImageSelect(file)}
-          />
-        </Tooltip>
-      </span>
-    ) : (
-      <span
-        className=""
-        style={{
-          position: "absolute",
-          top: "3px",
-          left: "14px",
-        }}
-      >
-        <Tooltip
-          title="Click to select image"
-          placement="top"
-          arrow
-        >
-          <Checkbox
-            checked={false}
-            onChange={() => handleImageSelect(file)}
-          />
-        </Tooltip>
-      </span>
-    )}
-    <span
-      className="file-delete-button"
-      style={{
-        left: "140px",
-      }}
-    >
-      <span
-        onClick={() => {
-          deleteEstmFile(
-            file.InvoiceFileId,
-            fetchEstimates
-          );
-        }}
-      >
-        <Delete color="error" />
-      </span>
-    </span>
-  </div>
-))}
+    <path
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M10 5 9 4V3m5 2 1-1V3m-3 6v11m0-11a5 5 0 0 1 5 5m-5-5a5 5 0 0 0-5 5m5-5c1 0 2.1.4 3 1h0V8a3 3 0 0 0-6 0v2h0a5 5 0 0 1 3-1Zm-5 5H5m2 0v2a5 5 0 0 0 10 0v-2m2 0h-2M7 18H6a1 1 0 0 0-1 1v2m12-3h1a1 1 0 0 1 1 1v2m-3-10h1a1 1 0 0 0 1-1V8M8 11H7a1 1 0 0 1-1-1V8"
+    />
+  </svg>
+
+  <svg
+    class="w-6 h-6 text-gray-800 dark:text-white"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-width="2"
+      d="M4.4 7.7c2 .5 2.4 2.8 3.2 3.8 1 1.4 2 1.3 3.2 2.7 1.8 2.3 1.3 5.7 1.3 6.7M20 15h-1a4 4 0 0 0-4 4v1M8.6 4c0 .8.1 1.9 1.5 2.6 1.4.7 3 .3 3 2.3 0 .3 0 2 1.9 2 2 0 2-1.7 2-2 0-.6.5-.9 1.2-.9H20m1 4a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    />
+  </svg>
+</>;

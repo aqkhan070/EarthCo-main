@@ -1481,7 +1481,7 @@ export const AddPO = ({}) => {
                                   
                                     }}
                                     {...props}
-                                    onClick={() => handleItemClick(item)}
+                                    // onClick={() => handleItemClick(item)}
                                   >
                                     <div className="customer-dd-border">
                                       <p>

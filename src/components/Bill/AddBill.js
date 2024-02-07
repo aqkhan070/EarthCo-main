@@ -1247,7 +1247,7 @@ const AddBill = ({}) => {
                                     width: "30em",
                                   }}
                                   {...props}
-                                  onClick={() => handleItemClick(item)}
+                                  // // onClick={() => handleItemClick(item)}
                                 >
                                   <div className="customer-dd-border">
                                     <p>
