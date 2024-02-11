@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState , useCallback} from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -15,7 +15,7 @@ const useFetchDashBoardData = () => {
 
     const [loading, setLoading] = useState(true)
 
-    const getDashboardData = async () => {
+    const getDashboardData = useCallback(async () => {
         try {
           const response = await axios.get(
             "https://earthcoapi.yehtohoga.com/api/Dashboard/GetDashboardData",
@@ -31,7 +31,7 @@ const useFetchDashBoardData = () => {
           setLoading(false)
 
         }
-      };
+      })
 
       useEffect(() => {
         getDashboardData()      

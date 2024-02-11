@@ -208,9 +208,10 @@ const POPreview = () => {
                                 {PoPreviewData.Data.SupplierId}.{" "}
                                 {PoPreviewData.Data.SupplierName || ""}
                               </h6>{" "}
-                              <h6 className="mb-2">
+                              <h6 className="mb-3">
                                 {PoPreviewData.Data.SupplierAddress}
                               </h6>
+                              <h6>{PoPreviewData.Data.CustomerName}</h6>
                             </td>
                           </tr>
                         </tbody>
@@ -290,7 +291,7 @@ const POPreview = () => {
                               {(item.Qty * item.Rate).toFixed(2)}
                             </td>
                           </tr>
-                          {index === 24 && pdfClicked && (
+                          {index === 23 && pdfClicked && (
                               <tr
                                 style={{ height: "3em" }}
                                 className="preview-table-row"

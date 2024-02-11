@@ -28,7 +28,7 @@ import Contacts from "../CommonComponents/Contacts";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import PrintButton from "../Reusable/PrintButton";
-
+import SprayTechForm from "./SprayTechForm";
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -119,6 +119,18 @@ const AddSRform = () => {
       tblServiceRequestLatLongs: [],
     },
   }); // payload
+
+  const [sTechItems, setSTechItems] = useState([]);
+  const [sideData, setSideData] = useState({
+    Hours: 0,
+    isTurf: false,
+    isShrubs: false,
+    isParkways: false,
+    isTrees: false,
+    Ounces: "",
+    Pounds: "",
+    Other: "",
+  });
 
   const navigate = useNavigate();
 
@@ -392,6 +404,8 @@ const AddSRform = () => {
     SRData.ServiceRequestData.ContactId = selectedContacts[0];
     SRData.ServiceRequestData.tblServiceRequestContacts = contactIdArray;
     SRData.ServiceRequestData.tblServiceRequestLatLongs = sRMapData;
+    SRData.ServiceRequestData.tblServiceRequestSprayTechItems = sTechItems;
+    SRData.ServiceRequestData.tblServiceRequestSprayTeches = [sideData];
 
     console.log("servise request data before", SRData);
 
@@ -504,6 +518,8 @@ const AddSRform = () => {
           ...response.data.Data,
         },
       }));
+      setSideData(response.data.SRSTData[0])
+      setSTechItems(response.data.SRSTIData)
 
       setSelectedContacts(
         response.data.ContactData.map((contact) => contact.ContactId)
@@ -558,10 +574,9 @@ const AddSRform = () => {
   }, [searchText]);
 
   const handleItemChange = (event) => {
-    
     setSearchText(event.target.value);
 
-    // setSelectedItem({}); 
+    // setSelectedItem({});
   };
 
   const handleAddItem = () => {
@@ -660,7 +675,14 @@ const AddSRform = () => {
 
   return (
     <>
-      <TitleBar icon={icon} title={`Add Service Request  ${SRData.ServiceRequestData.Type? " - "+ SRData.ServiceRequestData.Type : ""}`} />
+      <TitleBar
+        icon={icon}
+        title={`Add Service Request  ${
+          SRData.ServiceRequestData.Type
+            ? " - " + SRData.ServiceRequestData.Type
+            : ""
+        }`}
+      />
       <EventPopups
         open={openSnackBar}
         setOpen={setOpenSnackBar}
@@ -684,7 +706,6 @@ const AddSRform = () => {
             <div className="">
               <div className="card-body p-0">
                 {/* Add service form */}
-
                 <div className="">
                   <div className="">
                     <div className="itemtitleBar">
@@ -992,10 +1013,7 @@ const AddSRform = () => {
                               name="SRTypeId"
                               value={SRData.ServiceRequestData.SRTypeId || ""}
                               onChange={(e) => {
-                                
-                                handleInputChange(e)
-                               
-                              
+                                handleInputChange(e);
                               }}
                               size="small"
                             >
@@ -1008,7 +1026,7 @@ const AddSRform = () => {
                                     setSRData((prevData) => ({
                                       ServiceRequestData: {
                                         ...prevData.ServiceRequestData,
-                                      Type : type.Type,
+                                        Type: type.Type,
                                       },
                                     }));
                                   }}
@@ -1039,22 +1057,26 @@ const AddSRform = () => {
                       </div>
                     </div>
                     <div className="row mx-1 mb-3">
-                      <div style={{position : "relative"}} className="col-lg-3 col-md-3 ">
+                      <div
+                        style={{ position: "relative" }}
+                        className="col-lg-3 col-md-3 "
+                      >
                         {loggedInUser.userRole == "5" ? (
-                          <><div
-                          className="overlay"
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            backgroundColor: "rgba(0, 0, 0, 0)",
-                            zIndex: 999,
-                          }}
-                        ></div></>
+                          <>
+                            <div
+                              className="overlay"
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                width: "100%",
+                                height: "100%",
+                                backgroundColor: "rgba(0, 0, 0, 0)",
+                                zIndex: 999,
+                              }}
+                            ></div>
+                          </>
                         ) : (
-                                                  
                           <></>
                         )}
                         <label className="form-label">Status:</label>
@@ -1092,7 +1114,6 @@ const AddSRform = () => {
                     </div>
                   </div>
                 </div> */}
-
                 {/* item table */}
                 <div className="itemtitleBar">
                   <h4>Items</h4>
@@ -1103,36 +1124,34 @@ const AddSRform = () => {
                       <table id="empoloyees-tblwrapper" className="table ">
                         <thead>
                           <tr>
-                            <th >Item</th>
+                            <th>Item</th>
                             <th>Description</th>
                             <th>Qty</th>
                             <th>Rate</th>
                             <th>Amount</th>
-                          
+
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           {tblSRItems?.map((item, index) => (
-                            <tr key={index} style={{height  :"fit-content"}}>
+                            <tr key={index} style={{ height: "fit-content" }}>
                               <td>{item.Name}</td>
                               <td>
                                 <TextField
-                               size="small"
-                               multiline
-                               style={{ height: "fit-content"}}
+                                  size="small"
+                                  multiline
+                                  style={{ height: "fit-content" }}
                                   className="form-control form-control-sm"
                                   value={item.Description}
                                   onChange={
-                                    (e) =>
-                                      handleDescriptionChange(index, e) // Use item.ItemId
+                                    (e) => handleDescriptionChange(index, e) // Use item.ItemId
                                   }
                                 />
                               </td>
                               <td>
                                 <input
                                   type="number"
-                                 
                                   className="form-control form-control-sm"
                                   value={item.Qty}
                                   onChange={
@@ -1143,7 +1162,6 @@ const AddSRform = () => {
                               <td>
                                 <input
                                   type="number"
-                                 
                                   className="form-control form-control-sm"
                                   value={item.Rate}
                                   onChange={
@@ -1151,8 +1169,10 @@ const AddSRform = () => {
                                   }
                                 />
                               </td>
-                              <td className="text-right">$ {(item.Rate * item.Qty).toFixed(2)}</td>
-                             
+                              <td className="text-right">
+                                $ {(item.Rate * item.Qty).toFixed(2)}
+                              </td>
+
                               <td>
                                 <div className="badgeBox">
                                   <Button onClick={() => removeItem(index)}>
@@ -1167,7 +1187,6 @@ const AddSRform = () => {
                             <td>
                               <>
                                 <Autocomplete
-                                 
                                   options={searchResults}
                                   getOptionLabel={(item) => item.ItemName}
                                   value={selectedItem.ItemName} // This should be the selected item, not searchText
@@ -1183,9 +1202,8 @@ const AddSRform = () => {
                                       {...params}
                                       label="Search for items"
                                       variant="outlined"
-                                      size="small"                                    
+                                      size="small"
                                       fullWidth
-                                   
                                       onChange={handleItemChange}
                                     />
                                   )}
@@ -1220,8 +1238,8 @@ const AddSRform = () => {
                             <td>
                               <TextField
                                 size="small"
-                              multiline
-                                  style={{ height: "fit-content"}}
+                                multiline
+                                style={{ height: "fit-content" }}
                                 value={itemInput.Description}
                                 onChange={(e) =>
                                   setItemInput({
@@ -1229,7 +1247,6 @@ const AddSRform = () => {
                                     Description: e.target.value,
                                   })
                                 }
-                             
                                 className="form-control form-control-sm"
                                 placeholder="Description"
                                 onKeyPress={(e) => {
@@ -1251,7 +1268,7 @@ const AddSRform = () => {
                                     ...itemInput,
                                     Qty: Number(e.target.value),
                                   })
-                                }  
+                                }
                                 className="form-control form-control-sm"
                                 placeholder="Quantity"
                                 onKeyPress={(e) => {
@@ -1264,47 +1281,51 @@ const AddSRform = () => {
                               />
                             </td>
                             <td>
-                             
-                                <input
-                                  type="number"
-                                  name="Rate"
-                                 
-                                  className="form-control form-control-sm"
-                                  value={itemInput.Rate}
-                                  onChange={(e) =>
-                                    setItemInput({
-                                      ...itemInput,
-                                      Rate: Number(e.target.value),
-                                    })
+                              <input
+                                type="number"
+                                name="Rate"
+                                className="form-control form-control-sm"
+                                value={itemInput.Rate}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    Rate: Number(e.target.value),
+                                  })
+                                }
+                                onClick={(e) => {
+                                  setSelectedItem({
+                                    ...selectedItem,
+                                    SalePrice: 0,
+                                  });
+                                }}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleAddItem();
                                   }
-                                  onClick={(e) => {
-                                    setSelectedItem({
-                                      ...selectedItem,
-                                      SalePrice: 0,
-                                    });
-                                  }}
-                                  onKeyPress={(e) => {
-                                    if (e.key === "Enter") {
-                                      e.preventDefault();
-                                      handleAddItem();
-                                    }
-                                  }}
-                                />
-                             
+                                }}
+                              />
                             </td>
                             <td className="text-right">
                               <h5 style={{ margin: "0" }}>
                                 {(itemInput.Rate * itemInput.Qty).toFixed(2)}
                               </h5>
                             </td>
-                            
                           </tr>
                         </tbody>
                       </table>
                     </div>
                   </div>
                 </div>
-
+                {SRData.ServiceRequestData.SRTypeId === 8 && (
+                  <SprayTechForm
+                    SrId={SRData.ServiceRequestData.ServiceRequestId}
+                    sideData={sideData}
+                    setSideData={setSideData}
+                    sTechItems={sTechItems}
+                    setSTechItems={setSTechItems}
+                  />
+                )}
                 {/* Details */}
                 <div className=" ">
                   <div className="">
@@ -1314,47 +1335,52 @@ const AddSRform = () => {
                     <div className="card-body row">
                       <div className="col-md-12 mx-1 mt-2">
                         <div className="row">
-                         
-                            <div className="col-md-4 mb-1">
-                              {" "}
-                              {/* Adjust the column size as needed */}
-                              <label className="form-label">
-                                Work Requested:
-                              </label>
-                              <TextField
-                                name="WorkRequest"
-                                multiline
-                                rows={3}
-                                value={
-                                  SRData.ServiceRequestData.WorkRequest || ""
-                                }
-                                onChange={handleInputChange}
-                                variant="outlined"
-                                placeholder="Work Requested"
-                                size="small"
-                                fullWidth
-                              />
-                            </div>
-                            {SRData.ServiceRequestData.SRTypeId === 3? <></>:<>
-
                           <div className="col-md-4 mb-1">
                             {" "}
-                            <label className="form-label">Action Taken:</label>
                             {/* Adjust the column size as needed */}
+                            <label className="form-label">
+                              Work Requested:
+                            </label>
                             <TextField
-                              name="ActionTaken"
-                              placeholder="Action Taken"
+                              name="WorkRequest"
                               multiline
                               rows={3}
                               value={
-                                SRData.ServiceRequestData.ActionTaken || ""
+                                SRData.ServiceRequestData.WorkRequest || ""
                               }
                               onChange={handleInputChange}
                               variant="outlined"
-                              fullWidth
+                              placeholder="Work Requested"
                               size="small"
+                              fullWidth
                             />
-                          </div></>}
+                          </div>
+                          {SRData.ServiceRequestData.SRTypeId === 3 ? (
+                            <></>
+                          ) : (
+                            <>
+                              <div className="col-md-4 mb-1">
+                                {" "}
+                                <label className="form-label">
+                                  Action Taken:
+                                </label>
+                                {/* Adjust the column size as needed */}
+                                <TextField
+                                  name="ActionTaken"
+                                  placeholder="Action Taken"
+                                  multiline
+                                  rows={3}
+                                  value={
+                                    SRData.ServiceRequestData.ActionTaken || ""
+                                  }
+                                  onChange={handleInputChange}
+                                  variant="outlined"
+                                  fullWidth
+                                  size="small"
+                                />
+                              </div>
+                            </>
+                          )}
 
                           <div className=" col-md-4">
                             <label className="form-label">
@@ -1377,10 +1403,10 @@ const AddSRform = () => {
                           </div>
 
                           <div className="col-md-12">
-                            {SRData.ServiceRequestData.SRTypeId === 3 || SRData.ServiceRequestData.SRTypeId === 8 ? (
+                            {SRData.ServiceRequestData.SRTypeId === 3 ||
+                            SRData.ServiceRequestData.SRTypeId === 8 ? (
                               <MapCo />
                             ) : (
-                             
                               ""
                             )}
                           </div>
@@ -1390,7 +1416,6 @@ const AddSRform = () => {
 
                     <div className="row card-body">
                       <div className="col-xl-2 col-md-2">
-                     
                         <FileUploadButton onClick={trackFile}>
                           Upload File
                         </FileUploadButton>
@@ -1512,26 +1537,24 @@ const AddSRform = () => {
                     </div>
                   </div>
                 </div>
-             <div className="row">
-                <div className="col-md-6 ">
-                  <div className="ms-3">
-                <BackButton
-                    className="btn btn-danger  light ms-2"
-                    
-                    onClick={() => {
-                      setPunchListData({});
-                      navigate("/service-requests");
-                    }}
-                  >
-                    back
-                  </BackButton>
+                <div className="row">
+                  <div className="col-md-6 ">
+                    <div className="ms-3">
+                      <BackButton
+                        className="btn btn-danger  light ms-2"
+                        onClick={() => {
+                          setPunchListData({});
+                          navigate("/service-requests");
+                        }}
+                      >
+                        back
+                      </BackButton>
+                    </div>
                   </div>
-                 
-                </div>
-                <div className="col-md-6 mb-3 text-right">
-                  {idParam ? (
-                    <>
-                      {/* <FormControl className=" mx-2">
+                  <div className="col-md-6 mb-3 text-right">
+                    {idParam ? (
+                      <>
+                        {/* <FormControl className=" mx-2">
                         <Select
                           labelId="estimateLink"
                           aria-label="Default select example"
@@ -1567,71 +1590,77 @@ const AddSRform = () => {
                           </MenuItem>
                         </Select>
                       </FormControl> */}
-                      <PrintButton
-                    
-                    varient="mail"
-                        onClick={() => {
-                          navigate(
-                            `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
-                              SRData.ServiceRequestData.ServiceRequestNumber
-                            }&isOpen=${
-                              SRData.ServiceRequestData.SRStatusId === 1
-                                ? "Open"
-                                : "Closed"
-                            }`
-                          );
-                       
-                        }}
-                      >
-                       
-                      </PrintButton>
-                      <PrintButton
-                       varient="print"
-                        onClick={() => {
-                          navigate(
-                            `/service-requests/service-request-preview?id=${idParam}`
-                          );
-                          // setestmPreviewId(estimate.EstimateId);
-                          setSRData(customer);
-                        }}
-                      >
-                       
-                      </PrintButton>
-                      <button
-                        className="btn btn-dark me-2"
-                        style={{ marginRight: "1em" }}
-                        onClick={() => {
-                          setPunchListData({
-                            ServiceRequestId : SRData.ServiceRequestData.ServiceRequestId,
-                            ServiceRequestNumber : SRData.ServiceRequestData.ServiceRequestNumber,
-                            CustomerId: SRData.ServiceRequestData.CustomerId,
-                            ServiceLocationId:
-                              SRData.ServiceRequestData.ServiceLocationId,
-                              EstimateNotes :  SRData.ServiceRequestData.WorkRequest,
-                            FilesData: PrevFiles,
-                            ContactIds: selectedContacts,
-                            ItemData: tblSRItems.map((items) => ({
-                              ...items,
-                              isCost: false,
-                            })),
-                          });
-                          navigate(`/estimates/add-estimate`);
-                        }}
-                      >
-                        Copy to Estimate
-                      </button>{" "}
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                 
-                  <LoaderButton
-                    loading={loadingButton}
-                    handleSubmit={submitHandler}
-                  >
-                    Save
-                  </LoaderButton>
-                  {/* <button
+                        <PrintButton
+                          varient="mail"
+                          onClick={() => {
+                            navigate(
+                              `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
+                                SRData.ServiceRequestData.ServiceRequestNumber
+                              }&isOpen=${
+                                SRData.ServiceRequestData.SRStatusId === 1
+                                  ? "Open"
+                                  : "Closed"
+                              }`
+                            );
+                          }}
+                        ></PrintButton>
+                        <PrintButton
+                          varient="print"
+                          onClick={() => {
+                            if(SRData.ServiceRequestData.SRTypeId === 8){
+                              navigate(
+                                `/service-requests/spray-tech-preview?id=${idParam}`
+                              );
+                            }else{
+                            navigate(
+                              `/service-requests/service-request-preview?id=${idParam}`
+                            );  
+                            }
+                            
+                            // setestmPreviewId(estimate.EstimateId);
+                            setSRData(customer);
+                          }}
+                        ></PrintButton>
+                        <button
+                          className="btn btn-dark me-2"
+                          style={{ marginRight: "1em" }}
+                          onClick={() => {
+                            setPunchListData({
+                              ServiceRequestId:
+                                SRData.ServiceRequestData.ServiceRequestId,
+                              ServiceRequestNumber:
+                                SRData.ServiceRequestData.ServiceRequestNumber,
+                              CustomerId: SRData.ServiceRequestData.CustomerId,
+                              RegionalManagerId:
+                                SRData.ServiceRequestData.Assign,
+                              ServiceLocationId:
+                                SRData.ServiceRequestData.ServiceLocationId,
+                              EstimateNotes:
+                                SRData.ServiceRequestData.WorkRequest,
+                              FilesData: PrevFiles,
+                              ContactIds: selectedContacts,
+                              ItemData: tblSRItems.map((items) => ({
+                                ...items,
+                                isCost: false,
+                              })),
+                            });
+                            navigate(`/estimates/add-estimate`);
+                          }}
+                        >
+                          Copy to Estimate
+                        </button>{" "}
+                      </>
+                    ) : (
+                      <></>
+                    )}
+
+                    <LoaderButton
+                      loading={loadingButton}
+                      handleSubmit={submitHandler}
+                    >
+                      Save
+                    </LoaderButton>
+                    {/* <button
                     type="button"
                     className="btn btn-primary me-2"
                     // disabled={disableSubmit}
@@ -1639,10 +1668,9 @@ const AddSRform = () => {
                   >
                     Submit
                   </button> */}
-                </div>
-              </div> </div>
-
-              
+                  </div>
+                </div>{" "}
+              </div>
             </div>
           </div>
         </div>

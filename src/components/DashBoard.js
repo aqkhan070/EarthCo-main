@@ -20,8 +20,8 @@ const DashBoard = () => {
   const { dashBoardData, getDashboardData, loading } = useFetchDashBoardData();
 
   const supabase = createClient(
-    "https://hgdeariacwkedtbglxwg.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhnZGVhcmlhY3drZWR0YmdseHdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDI5NjU1ODUsImV4cCI6MjAxODU0MTU4NX0.6RSteYZdFAiIBVcmDq-7N14xdqLKupGLFqGhplJs1iQ"
+    "https://hmmnbwwzuluepmdzvfvb.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbW5id3d6dWx1ZXBtZHp2ZnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDczMTU1OTAsImV4cCI6MjAyMjg5MTU5MH0.vvZ_vvKcSXe-oRJlEFBmqqsNXs0cHwLkBZ49T11h5y4"
   );
 
   const { loggedInUser, dashBoardRefresh, setDashBoardRefresh } =

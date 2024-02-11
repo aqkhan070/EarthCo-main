@@ -500,6 +500,13 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   ) => {
     console.log("Creating calendar event");
 
+    if (dayjs(end).isBefore(dayjs(start))) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("End time cannot be before start time");
+      return; // Exit the function early if end time is before start time
+    }
+
     // Format the start and end date-times
     const formattedStart = dayjs(date)
       .hour(dayjs(start).hour())

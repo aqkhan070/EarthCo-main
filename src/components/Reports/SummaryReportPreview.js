@@ -15,7 +15,7 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
-const SummaryReportPreview = () => {
+const SummaryReportPreview = ({setShowSummaryReport}) => {
   const {
     sRProposalData,
     setsRProposalData,
@@ -122,6 +122,9 @@ const SummaryReportPreview = () => {
 
 
   if (reportError) {
+    if (isGeneralReport) {
+      setShowSummaryReport(false)
+    }
     return (
       <div className="text-center">
         {" "}

@@ -179,9 +179,9 @@ const AddCustomer = () => {
 
     setSubmitClicked(true);
     if (
-      !companyData.CompanyName ||
+
       !companyData.FirstName ||
-      !companyData.ContactName ||
+   
       !companyData.Email ||
       !companyData.Address
     ) {
@@ -193,13 +193,13 @@ const AddCustomer = () => {
       return; // Return early if any required field is empty
     }
 
-    if (!validator.isLength(companyData.CompanyName, { min: 3, max: 100 })) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Company name should be 3 to 30 characters");
-      console.log("Company name should be between 3 and 30 characters");
-      return;
-    }
+    // if (!validator.isLength(companyData.CompanyName, { min: 3, max: 100 })) {
+    //   setOpenSnackBar(true);
+    //   setSnackBarColor("error");
+    //   setSnackBarText("Company name should be 3 to 30 characters");
+    //   console.log("Company name should be between 3 and 30 characters");
+    //   return;
+    // }
 
     // Validate first name length
     if (!validator.isLength(companyData.FirstName, { min: 3, max: 100 })) {
@@ -210,13 +210,13 @@ const AddCustomer = () => {
       return;
     }
 
-    if (!validator.isLength(companyData.ContactName, { min: 3, max: 100 })) {
-      setOpenSnackBar(true);
-      setSnackBarColor("error");
-      setSnackBarText("Contact Name should be between 3 and 30 characters");
-      console.log("Last name should be between 3 and 30 characters");
-      return;
-    }
+    // if (!validator.isLength(companyData.ContactName, { min: 3, max: 100 })) {
+    //   setOpenSnackBar(true);
+    //   setSnackBarColor("error");
+    //   setSnackBarText("Contact Name should be between 3 and 30 characters");
+    //   console.log("Last name should be between 3 and 30 characters");
+    //   return;
+    // }
 
     // if (!validator.isEmail(companyData.Email)) {
     //   setOpenSnackBar(true);
@@ -340,7 +340,7 @@ const AddCustomer = () => {
                           placeholder="Customer Name"
                         />
                       </div>
-                      <div className="col-xl-4 mb-3">
+                      {/* <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
                           className="form-label"
@@ -358,7 +358,7 @@ const AddCustomer = () => {
                           error={submitClicked && !companyData.ContactName}
                           placeholder="Contact Name"
                         />
-                      </div>
+                      </div> 
                       <div className="col-xl-4 mb-3">
                         <label
                           htmlFor="exampleFormControlInput1"
@@ -378,7 +378,7 @@ const AddCustomer = () => {
                           onChange={handleCompanyChange}
                           placeholder="Contact Company"
                         />
-                      </div>
+                      </div>*/}
 
                       <div className="col-xl-4 mb-3">
                         <label

@@ -483,6 +483,8 @@ export const AddPO = ({}) => {
       ...prevData,
       EstimateId: estimateLinkData.EstimateId,
       EstimateNumber: estimateLinkData.EstimateNumber,
+      CustomerName : estimateLinkData.CustomerName,
+      RegionalManager : estimateLinkData.RegionalManagerId,
     }));
     console.log("item List is", itemsList);
   }, []);
@@ -575,6 +577,20 @@ export const AddPO = ({}) => {
     });
     setItemsList(updatedItemsList);
   };
+  const handleCostChange = (itemId, event) => {
+    const updatedItemsList = itemsList.map((item, index) => {
+      if (index === itemId) {
+        return {
+          ...item,
+          PurchasePrice: Number(event.target.value),
+        };
+      }
+      return item;
+    });
+    setItemsList(updatedItemsList);
+  };
+
+
 
   const handleItemChange = (event) => {
     setShowItem(true);
@@ -608,7 +624,7 @@ export const AddPO = ({}) => {
   const calculateTotalAmount = () => {
     if (itemsList) {
       const total = itemsList.reduce((acc, item) => {
-        return acc + item.Rate * item.Qty;
+        return acc + item.PurchasePrice * item.Qty;
       }, 0);
       return total;
     } else {
@@ -975,7 +991,7 @@ export const AddPO = ({}) => {
                               </p>
                             </li>
                             <li>
-                              <span>Sipping </span>
+                              <span>Shipping </span>
                               <p>
                                 {" "}
                                 {supplierAddress ||
@@ -983,6 +999,15 @@ export const AddPO = ({}) => {
                                   ""}
                               </p>
                             </li>
+                            <li>
+                              <span>Customer Name</span>
+                              <p>
+                                {" "}
+                                {formData.CustomerName ||
+                                  ""}
+                              </p>
+                            </li>
+
                           </ul>
                         </div>
                       </div>
@@ -1431,8 +1456,18 @@ export const AddPO = ({}) => {
                                 
                                 
                               </td>
-                              <td className="text-right">$ {(item.Rate * item.Qty).toFixed(2)}</td>
-                              <td>{item.PurchasePrice}</td>
+                              <td className="text-right">${item.PurchasePrice? (item.PurchasePrice * item.Qty).toFixed(2) : "0.00"}</td>
+                              <td>
+                              <input
+                                    type="number"
+                                 
+                                    className="form-control form-control-sm"
+                                    value={item.PurchasePrice}
+                                    onChange={(e) =>
+                                      handleCostChange(index, e)
+                                    }
+                                  />
+                                </td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
@@ -1585,12 +1620,37 @@ export const AddPO = ({}) => {
                           </td>
                           <td>
                             <h5 className="text-right" style={{ margin: "0" }}>
-                              $ {(itemInput.Rate * itemInput.Qty).toFixed(2)}
+                              ${itemInput.PurchasePrice? (itemInput.PurchasePrice * itemInput.Qty).toFixed(2) : "0.00"}
                             </h5>
                           </td>
                           <td>
                             <h5 style={{ margin: "0" }}>
-                              {itemInput.PurchasePrice}
+                            <input
+                                type="number"
+                                name="CostPrice"
+                               
+                                className="form-control form-control-sm"
+                                value={itemInput.PurchasePrice || ""}
+                                onChange={(e) =>
+                                  setItemInput({
+                                    ...itemInput,
+                                    PurchasePrice: Number(e.target.value),
+                                  })
+                                }
+                                onClick={(e) => {
+                                  setSelectedItem({
+                                    ...selectedItem,
+                                    PurchasePrice: 0,
+                                  });
+                                }}
+                                onKeyPress={(e) => {
+                                  if (e.key === "Enter") {
+                                    // Handle item addition when Enter key is pressed
+                                    e.preventDefault(); // Prevent form submission
+                                    handleAddItem();
+                                  }
+                                }}
+                              />
                             </h5>
                           </td>
                           <td></td>
@@ -1724,7 +1784,7 @@ export const AddPO = ({}) => {
                               <strong>Total</strong>
                             </td>
                             <td className="text-right">
-                              <strong>${formatAmount(totalAmount)}</strong>
+                              <strong>${totalAmount? formatAmount(totalAmount): "0.00"}</strong>
                             </td>
                           </tr>
                         </tbody>

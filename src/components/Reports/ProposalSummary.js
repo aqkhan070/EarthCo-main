@@ -15,7 +15,7 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 
-const ProposalSummary = () => {
+const ProposalSummary = ({setShowProposal}) => {
   const {
     sRProposalData,
     setsRProposalData,
@@ -49,6 +49,7 @@ const ProposalSummary = () => {
     fetchReport(customerParam, yearParam, MonthParam, "proposal");
     // fetchEmail(reportData[0].ContactId);
     fetchCustomerEmail(customerParam);
+    
 
     console.log("sr propoal dala", reportData);
   }, []);
@@ -130,6 +131,10 @@ const ProposalSummary = () => {
     });
   };
   if (reportError) {
+    if (isGeneralReport) {
+      
+      setShowProposal(false)
+    }
     return (
       <div className="text-center">
         {" "}

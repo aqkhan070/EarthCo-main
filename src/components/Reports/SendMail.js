@@ -65,8 +65,7 @@ const SendMail = () => {
       setEmails([...emails, emailInput.trim()]);
       setEmailInput("");
       setDisableButton(false);
-    }
-  };
+    }}
   const handleRemoveEmail = (emailToRemove) => {
     setEmails(emails.filter((email) => email !== emailToRemove));
   };
@@ -82,6 +81,8 @@ const SendMail = () => {
       setCCInput("");
       setDisableButton(false);
     }
+     
+
   };
   const handleRemoveCC = (CCToRemove) => {
     setCCs(CCs.filter((CC) => CC !== CCToRemove));
@@ -279,6 +280,12 @@ const SendMail = () => {
                 value={emailInput}
                 onChange={handleEmailInputChange}
                 onKeyPress={handleEmailInputKeyPress}
+                onBlur={() => {
+                  if(emailInput){
+                  setEmails([...emails, emailInput.trim()]);
+                  setEmailInput("");
+                  setDisableButton(false);}
+                }}
                 InputProps={{
                   startAdornment: emails.map((email) => (
                     <Chip
@@ -310,6 +317,12 @@ const SendMail = () => {
                 value={CCInput}
                 onChange={handleCCInputChange}
                 onKeyPress={handleCCInputKeyPress}
+                onBlur={() => {
+                  if(CCInput){
+                  setCCs((prevCCs) => [...prevCCs, CCInput.trim()]);
+                  setCCInput("");
+                  setDisableButton(false);}
+                }}
                 InputProps={{
                   startAdornment: CCs.map((CC) => (
                     <Chip

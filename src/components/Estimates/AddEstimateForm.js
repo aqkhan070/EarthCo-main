@@ -30,6 +30,7 @@ import LoaderButton from "../Reusable/LoaderButton";
 import Contacts from "../CommonComponents/Contacts";
 import ServiceLocations from "../CommonComponents/ServiceLocations";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
+import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
 import useQuickBook from "../Hooks/useQuickBook";
@@ -137,6 +138,7 @@ const AddEstimateForm = () => {
   const { billList, fetchBills } = useFetchBills();
   const { PoList, fetchPo } = useFetchPo();
   const { contactEmail, fetchEmail } = useFetchContactEmail();
+  const {customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
@@ -178,8 +180,9 @@ const AddEstimateForm = () => {
         ...prevState,
         FileData: response.data.EstimateFileData,
       }));
-      fetchName(response.data.EstimateItemData.CustomerId);
+      fetchName(response.data.EstimateData.CustomerId);
       fetchEmail(response.data.EstimateItemData.ContactId);
+       fetchCustomerEmail(response.data.EstimateData.CustomerId)
       setSelectedContacts(
         response.data.EstimateContactData.map((contact) => contact.ContactId)
       );
@@ -335,6 +338,8 @@ const AddEstimateForm = () => {
     setEstimateLinkData((prevState) => ({
       ...prevState,
       ...formData,
+      CustomerName : name,
+      RegionalManager : formData.RegionalManagerId,
     }));
   };
 
@@ -1518,13 +1523,13 @@ const AddEstimateForm = () => {
                       placeholder="Select Status"
                       fullWidth
                     >
-                      <MenuItem value={1}>Accepted</MenuItem>
-                      <MenuItem value={2}>Closed - Billed</MenuItem>
-                      <MenuItem value={3}>Converted</MenuItem>
                       <MenuItem value={4}>Pending</MenuItem>
-                      <MenuItem value={5}>Rejected</MenuItem>
                       <MenuItem value={6}>Needs PO</MenuItem>
+                      <MenuItem value={1}>Accepted</MenuItem>
                       <MenuItem value={7}>Ready to Invoice</MenuItem>
+                      <MenuItem value={2}>Closed - Billed</MenuItem>
+                      <MenuItem value={5}>Rejected</MenuItem>
+                      <MenuItem value={3}>Converted</MenuItem>
                     </Select>
                   </div>
                   <div className="col-md-3 mt-2 ">
@@ -2574,7 +2579,7 @@ const AddEstimateForm = () => {
                          varient="mail"
                           onClick={() => {
                             navigate(
-                              `/send-mail?title=${"Estimate"}&mail=${contactEmail}&customer=${name}&number=${
+                              `/send-mail?title=${"Estimate"}&mail=${customerMail}&customer=${name}&number=${
                                 formData.EstimateNumber
                               }`
                             );

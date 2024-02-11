@@ -8,6 +8,7 @@ import { RoutingContext } from '../../context/RoutesContext'
 import AddSRform from './AddSRform'
 import SRPreview from './SRPreview'
 import UpdateSRForm from './UpdateSRForm'
+import SprayTechPreview from './SprayTechPreview'
 const ServiceIndex = () => {
 
     const { SRroute } = useContext(RoutingContext)
@@ -19,6 +20,7 @@ const ServiceIndex = () => {
                 <Route path='add-sRform' element={<AddSRform />} />
                 <Route path='update-sRform' element={<UpdateSRForm />} />
                 <Route path='service-request-preview' element={<SRPreview />} />
+                <Route path='spray-tech-preview' element={<SprayTechPreview />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
             </Routes>
         </>

@@ -15,7 +15,7 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
-import { useReactToPrint } from "react-to-print";
+
 const SRPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -44,22 +44,22 @@ const SRPreview = () => {
 
   const { contactEmail, fetchEmail } = useFetchContactEmail();
 
-  // const handlePrint = () => {
-  //   // setToggleFullscreen(false);
-  //   setShowButtons(false);
-  //   setTimeout(() => {
-  //     window.print();
-  //   }, 1000);
-  //   setTimeout(() => {
-  //     //setToggleFullscreen(true);
-  //     setShowButtons(true);
-  //   }, 3000);
-  // };
+  const handlePrint = () => {
+    // setToggleFullscreen(false);
+    setShowButtons(false);
+    setTimeout(() => {
+      window.print();
+    }, 1000);
+    setTimeout(() => {
+      //setToggleFullscreen(true);
+      setShowButtons(true);
+    }, 3000);
+  };
 
   const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
+  // const handlePrint = useReactToPrint({
+  //   content: () => componentRef.current,
+  // });
 
   const handleDownload = async () => {
     const input = document.getElementById("SR-preview");

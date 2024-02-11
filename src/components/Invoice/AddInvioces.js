@@ -293,7 +293,7 @@ const AddInvioces = ({}) => {
       ...prevData,
       CustomerId: estimateLinkData.CustomerId,
       EstimateId: estimateLinkData.EstimateId,
-      AssignTo: estimateLinkData.AssignTo,
+      AssignTo: estimateLinkData.RegionalManagerId,
       BillId: estimateLinkData.BillId,
       PurchaseOrderId : estimateLinkData.PurchaseOrderId,
       PurchaseOrderNumber : estimateLinkData.PurchaseOrderNumber,

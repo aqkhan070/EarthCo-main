@@ -82,6 +82,7 @@ import SprayTechForm from "./components/SprayTech/SprayTechForm";
 import SprayTechIndex from "./components/SprayTech/SprayTechIndex";
 import SprayTechList from "./components/SprayTech/SprayTechList";
 import STPreview from "./components/SprayTech/STPreview";
+import SprayTechPreview from "./components/ServiceRequest/SprayTechPreview";
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -125,6 +126,7 @@ function App() {
               <Route path="service-requests/*" element={<ServiceIndex />}>
                 <Route path="" element={<SRlist />} />
                 <Route path="service-request-preview" element={<SRPreview />} />
+                <Route path='spray-tech-preview' element={<SprayTechPreview />} />
                 <Route path="add-sRform" element={<AddSRform />} />
                 <Route path="update-sRform" element={<UpdateSRForm />} />
                 <Route path={SRroute} element={<ServiceRequest />} />

@@ -72,7 +72,7 @@ const PunchListDetailRow = ({
 
     setPunchListData((prevData) => ({
       ...prevData,
-      AssignTo: item.Data.AssignedTo,
+      RegionalManagerId: item.Data.AssignedTo,
       ContactId: item.Data.ContactId,
       PunchlistId: item.Data.PunchlistId,
       CustomerId: item.Data.CustomerId,

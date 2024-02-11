@@ -79,6 +79,8 @@ import SprayTechForm from "../components/SprayTech/SprayTechForm.js";
 import SprayTechIndex from "../components/SprayTech/SprayTechIndex.js";
 import SprayTechList from "../components/SprayTech/SprayTechList.js";
 import STPreview from "../components/SprayTech/STPreview.js";
+import SprayTechPreview from "../components/ServiceRequest/SprayTechPreview.js";
+
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const { toggleFullscreen } = useContext(DataContext);
@@ -97,6 +99,9 @@ const DashboardPage = () => {
     window.location.pathname.includes("estimate-preview");
   const isSRPreviewRoute = window.location.pathname.includes(
     "service-request-preview"
+  );
+  const isSTPreviewRoute = window.location.pathname.includes(
+    "spray-tech-preview"
   );
   const isBillPreviewRoute = window.location.pathname.includes("bill-preview");
   const isInvoicePreviewRoute =
@@ -151,6 +156,7 @@ const DashboardPage = () => {
     !isWeeklyReportRisingCanesRoute &&
     !isPLphotosPreviewRoute &&
     !isIrrigationAuditPreviewRoute &&
+    !isSTPreviewRoute &&
     !isGenetalReportPreviewRoute;
 
   return (
@@ -204,6 +210,7 @@ const DashboardPage = () => {
                 <Route path="" element={<SRlist />} />
                 <Route path="update-sRform" element={<UpdateSRForm />} />
                 <Route path="service-request-preview" element={<SRPreview />} />
+                <Route path='spray-tech-preview' element={<SprayTechPreview />} />
                 <Route path="add-sRform" element={<AddSRform />} />
                 <Route path={SRroute} element={<ServiceRequest />} />
               </Route>

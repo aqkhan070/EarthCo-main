@@ -119,6 +119,8 @@ const EstimatePreview = () => {
       );
       setPreviewData(response.data);
       fetchEmail(response.data.EstimateData.ContactId);
+      fetchName(response.data.EstimateData.CustomerId);
+      fetchStaffName(response.data.EstimateData.RegionalManagerId);
 
       console.log("selected estimate is", response.data);
       console.log("selected estimate is", previewData);
@@ -130,12 +132,7 @@ const EstimatePreview = () => {
   useEffect(() => {
     fetchEstimates();
   }, []);
-  useEffect(() => {
-    if (previewData && previewData.EstimateData) {
-      fetchName(previewData.EstimateData.CustomerId);
-      fetchStaffName(previewData.EstimateData.RegionalManagerId);
-    }
-  }, [previewData]);
+  
   useEffect(() => {
     // Calculate the total amount when previewData changes
     if (previewData && previewData.EstimateItemData) {
@@ -284,7 +281,7 @@ const EstimatePreview = () => {
                     <div className="col-md-12 col-sm-12 text-center">
                       {" "}
                       <h3 className="mb-0">
-                        <strong>South Peak</strong>
+                        <strong>{name}</strong>
                       </h3>{" "}
                       <hr className="mt-0" />
                     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/SaveOutlined";
+import Send from '@mui/icons-material/Send';
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 const LoaderButton = ({
   disable,
@@ -69,7 +70,7 @@ const LoaderButton = ({
         // loadingIndicator="Saving…"
         // startIcon={<DeleteIcon />}
         // loadingPosition="start"
-        startIcon={<SendIcon sx={{ fontSize: 2 }} />}
+        startIcon={ children == "Send" ? <Send sx={{ fontSize: 2 }} />: <SendIcon sx={{ fontSize: 2 }} />}
         onClick={handleSubmit}
         disabled={disable}
         disableElevation
