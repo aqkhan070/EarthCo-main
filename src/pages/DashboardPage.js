@@ -81,9 +81,15 @@ import SprayTechList from "../components/SprayTech/SprayTechList.js";
 import STPreview from "../components/SprayTech/STPreview.js";
 import SprayTechPreview from "../components/ServiceRequest/SprayTechPreview.js";
 
+import { useLocation } from 'react-router-dom';
+
+import WeeklyReportPdf from "../components/Reports/WeeklyReport/WeeklyReportPdf.js";
+
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
   const { toggleFullscreen } = useContext(DataContext);
+
+  const location = useLocation();
 
   const token = Cookies.get("token");
 
@@ -95,6 +101,29 @@ const DashboardPage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const segments = location.pathname.split('/');
+    const lastSegment = segments[1]; // Extracting the last segment value from the URL
+    
+    // Capitalize the last segment for better readability
+    const capitalizedSegment = lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+    
+    document.title = `${capitalizedSegment}`;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        document.title = 'EarthCo';
+      } else {
+        document.title = `${capitalizedSegment}`;
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+}, [location.pathname]);
   const isEstimatePreviewRoute =
     window.location.pathname.includes("estimate-preview");
   const isSRPreviewRoute = window.location.pathname.includes(
@@ -322,6 +351,10 @@ const DashboardPage = () => {
               <Route
                 path="irrigation-audit/preview"
                 element={<IrrigationAuditPreview />}
+              />
+               <Route
+                path="testpdf"
+                element={<WeeklyReportPdf />}
               />
             </Routes>
           </div>

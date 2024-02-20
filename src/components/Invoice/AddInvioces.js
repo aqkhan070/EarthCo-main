@@ -34,7 +34,8 @@ import useGetActivityLog from "../Hooks/useGetActivityLog";
 import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
 import useFetchPo from "../Hooks/useFetchPo";
-
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePDF from "./InvoicePDF";
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -172,15 +173,11 @@ const AddInvioces = ({}) => {
   };
 
   const handlePoAutocompleteChange = (event, newValue) => {
-   
-
     setFormData((prevData) => ({
       ...prevData,
       PurchaseOrderId: newValue.PurchaseOrderId,
       PurchaseOrderNumber: newValue.PurchaseOrderNumber,
     }));
-
-   
   };
 
   const fetchServiceLocations = async (id) => {
@@ -285,27 +282,33 @@ const AddInvioces = ({}) => {
     getLogs(idParam, "Invoice");
     fetchPo();
     console.log("link estimate data is", estimateLinkData);
+    return () => {
+      setEstimateLinkData({});
+    };
   }, []);
 
   useEffect(() => {
-    // setFormData(estimateLinkData);
+    let approvedItems = [];
+    if (estimateLinkData && estimateLinkData.tblEstimateItems) {
+      approvedItems = estimateLinkData.tblEstimateItems.filter(
+        (item) => item.IsApproved === true
+      );
+    }
     setFormData((prevData) => ({
       ...prevData,
       CustomerId: estimateLinkData.CustomerId,
       EstimateId: estimateLinkData.EstimateId,
       AssignTo: estimateLinkData.RegionalManagerId,
       BillId: estimateLinkData.BillId,
-      PurchaseOrderId : estimateLinkData.PurchaseOrderId,
-      PurchaseOrderNumber : estimateLinkData.PurchaseOrderNumber,
+      PurchaseOrderId: estimateLinkData.PurchaseOrderId,
+      PurchaseOrderNumber: estimateLinkData.PurchaseOrderNumber,
       EstimateNumber: estimateLinkData.EstimateNumber,
       CustomerMessage: estimateLinkData.EstimateNotes,
-      tblInvoiceItems: estimateLinkData.tblEstimateItems,
+      tblInvoiceItems: approvedItems,
       tblInvoiceFiles: estimateLinkData.FileData,
     }));
+
     console.log("link data izz", estimateLinkData);
-    return () => {
-      setEstimateLinkData({});
-    };
   }, [estimateLinkData]);
 
   const handleBillAutocompleteChange = (event, newValue) => {
@@ -599,13 +602,43 @@ const AddInvioces = ({}) => {
       PurchasePrice: item.PurchasePrice,
       isCost: false,
     });
+
+    setFormData((prevData) => ({
+      ...prevData,
+      tblInvoiceItems: [
+        ...(prevData.tblInvoiceItems || []),
+        {
+          ...itemInput,
+          ItemId: item.ItemId,
+          Name: item.ItemName,
+          Description: item.SaleDescription,
+          Rate: item.SalePrice,
+          PurchasePrice: item.PurchasePrice,
+          isCost: false,
+        },
+      ], // Initialize as an empty array if undefined
+    }));
+
     itemInput ? setItemBtnDisable(false) : setItemBtnDisable(true);
 
     setShowItem(false);
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", item);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
   };
+
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [formData.tblInvoiceItems.length]);
 
   const handleAddItem = () => {
     if (!itemInput.ItemId) {
@@ -1114,7 +1147,11 @@ const AddInvioces = ({}) => {
                       id="staff-autocomplete"
                       size="small"
                       options={staffData.filter(
-                        (staff) => staff.Role === "Regional Manager"
+                        (staff) =>
+                          staff.Role === "Regional Manager" ||
+                          staff.UserId === 1593 ||
+                          staff.UserId === 3252 ||
+                          staff.UserId === 6146
                       )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
@@ -1554,6 +1591,12 @@ const AddInvioces = ({}) => {
                                   type="number"
                                   className="form-control form-control-sm"
                                   value={item.Qty}
+                                  ref={
+                                    index ===
+                                    formData.tblInvoiceItems.length - 1
+                                      ? quantityInputRef
+                                      : null
+                                  }
                                   onChange={(e) =>
                                     handleQuantityChange(index, e, 0)
                                   }
@@ -2449,6 +2492,31 @@ const AddInvioces = ({}) => {
                         navigate(`/invoices/invoice-preview?id=${idParam}`);
                       }}
                     ></PrintButton>
+
+<PDFDownloadLink
+                          document={
+                            <InvoicePDF
+                              data={{
+                                ...formData,
+                              
+                                SelectedCompany: loggedInUser.CompanyName,
+                                CustomerName: name,
+                                ApprovedItems: formData.tblInvoiceItems,
+                                Amount: totalItemAmount,
+                              }}
+                            />
+                          }
+                          fileName="invoice.pdf"
+                        >
+                          {({ blob, url, loading, error }) =>
+                            loading ? (
+                              " "
+                            ) : (
+                              <PrintButton varient="Download" onClick={() => {console.log("error", error)}}></PrintButton>
+                            )
+                          }
+                        </PDFDownloadLink>
+
                   </>
                 ) : (
                   <></>

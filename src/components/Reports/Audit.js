@@ -15,6 +15,8 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import AuditPdf from "./AuditPdf";
 
 const Audit = () => {
   const token = Cookies.get("token");
@@ -78,67 +80,64 @@ const Audit = () => {
 
   const [pdfClicked, setPdfClicked] = useState(false);
 
-const pdfDownload = () => {
-  setPdfClicked(true);
-  setTimeout(() => {
-    handleDownload();
-  }, 1000);
-};
+  const pdfDownload = () => {
+    setPdfClicked(true);
+    setTimeout(() => {
+      handleDownload();
+    }, 1000);
+  };
 
-const handleDownload = async () => {
-  const input = document.getElementById("irrigation-preview");
+  const handleDownload = async () => {
+    const input = document.getElementById("irrigation-preview");
 
-  const pdf = new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: "a4",
-  });
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4",
+    });
 
-  // Get the width and height of the input content
-  const contentWidth = input.offsetWidth;
-  const contentHeight = input.offsetHeight;
+    // Get the width and height of the input content
+    const contentWidth = input.offsetWidth;
+    const contentHeight = input.offsetHeight;
 
-  // Convert the dimensions from pixels to millimeters for PDF
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
-  
-  // Calculate scale to fit the content width to the pdf width
-  const scale = pdfWidth / contentWidth;
-  const scaledHeight = contentHeight * scale;
+    // Convert the dimensions from pixels to millimeters for PDF
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
 
-  // Render the canvas with the calculated scale
-  html2canvas(input, { scale: 4, logging: true }).then((canvas) => {
-    const imgData = canvas.toDataURL("image/jpeg");
+    // Calculate scale to fit the content width to the pdf width
+    const scale = pdfWidth / contentWidth;
+    const scaledHeight = contentHeight * scale;
 
-    // Check if scaled height is greater than pdf page height
-    if (scaledHeight > pdfHeight) {
-      // Content will take more than one page
-      let position = 0;
-      while (position < scaledHeight) {
-        // Crop and add part of the image that fits into one page
-        let pageSection = Math.min(scaledHeight - position, pdfHeight);
-        pdf.addImage(imgData, 'JPEG', 0, -position, pdfWidth, scaledHeight);
-        position += pdfHeight;
+    // Render the canvas with the calculated scale
+    html2canvas(input, { scale: 4, logging: true }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg");
 
-        // Add a new page if there is more content to add
-        if (position < scaledHeight) {
-          pdf.addPage();
+      // Check if scaled height is greater than pdf page height
+      if (scaledHeight > pdfHeight) {
+        // Content will take more than one page
+        let position = 0;
+        while (position < scaledHeight) {
+          // Crop and add part of the image that fits into one page
+          let pageSection = Math.min(scaledHeight - position, pdfHeight);
+          pdf.addImage(imgData, "JPEG", 0, -position, pdfWidth, scaledHeight);
+          position += pdfHeight;
+
+          // Add a new page if there is more content to add
+          if (position < scaledHeight) {
+            pdf.addPage();
+          }
         }
+      } else {
+        // Content fits into one page
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, scaledHeight);
       }
-    } else {
-      // Content fits into one page
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
-    }
 
-    pdf.save("Irrigation.pdf");
-  });
-  setTimeout(() => {
-    setPdfClicked(false);
-  }, 2000);
-};
-
-  
-  
+      pdf.save("Irrigation.pdf");
+    });
+    setTimeout(() => {
+      setPdfClicked(false);
+    }, 2000);
+  };
 
   if (!irrDetails.IrrigationData) {
     return (
@@ -157,10 +156,7 @@ const handleDownload = async () => {
         color={emailAlertColor}
         text={emailAlertTxt}
       />
-      <div
-        style={{ fontFamily: "Times New Roman" }}
-        className="container-fluid "
-      >
+      <div style={{ fontFamily: "Arial" }} className="container-fluid ">
         {toggleFullscreen ? (
           <div className="print-page-width">
             <div style={{ width: "28.7cm" }}>
@@ -187,12 +183,28 @@ const handleDownload = async () => {
                   >
                     <i className="fa fa-print"></i>
                   </button>
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                     onClick={pdfDownload}
                   >
                     <i className="fa fa-download"></i>
-                  </button>{" "}
+                  </button>{" "} */}
+                  <PDFDownloadLink
+                    document={
+                      <AuditPdf irrDetails={irrDetails} CustomerName={name} />
+                    }
+                    fileName="Irrigation Audit.pdf"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? (
+                        " "
+                      ) : (
+                        <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn">
+                          <i className="fa fa-download"></i>
+                        </button>
+                      )
+                    }
+                  </PDFDownloadLink>
                   {isMail ? (
                     <></>
                   ) : (
@@ -260,8 +272,7 @@ const handleDownload = async () => {
                       className="col-md-4 col-sm-6"
                     >
                       {" "}
-                      <strong>Customer Name</strong>{" "}
-                      <div>{name}</div>
+                      <strong>Customer Name</strong> <div>{name}</div>
                     </div>
                     <div
                       style={{ color: "black" }}
@@ -300,153 +311,159 @@ const handleDownload = async () => {
                         {irrDetails.ControllerData.map((item, index) => {
                           return (
                             <>
-                            <tr
-                              key={item.ControllerId}
-                              className="Irr-preview-table-row"
-                            >
-                              <td
-                                style={{ verticalAlign: "top" }}
-                                className="tdbreak"
+                              <tr
+                                key={item.ControllerId}
+                                className="Irr-preview-table-row"
                               >
-                                <strong>Controller Number:</strong>
-                                <br />
-                                {item.ControllerId}
-                                <br />
-                                <strong>Controller Make/ Model:</strong>
-                                <br />
-                                {item.MakeAndModel}
-                                <br />
-                                <strong>Serial:</strong>
-                                <br />
-                                {item.SerialNumber}
-                                <br />
-                                <strong>Location:</strong>
-                                <br />
-                                {item.LoacationClosestAddress}
-                                <br />
-                                <strong>Satellite Based?:</strong>
-                                <br />
-                                {item.isSatelliteBased ? "yes" : "No"}
-                                <br />
-                                <strong>Type of Water:</strong>
-                                <br />
-                                {item.TypeofWater}
-                                <br />
+                                <td
+                                  style={{ verticalAlign: "top" }}
+                                  className="tdbreak"
+                                >
+                                  <strong>Controller Number:</strong>
+                                  <br />
+                                  {item.ControllerId}
+                                  <br />
+                                  <strong>Controller Make/ Model:</strong>
+                                  <br />
+                                  {item.MakeAndModel}
+                                  <br />
+                                  <strong>Serial:</strong>
+                                  <br />
+                                  {item.SerialNumber}
+                                  <br />
+                                  <strong>Location:</strong>
+                                  <br />
+                                  {item.LoacationClosestAddress}
+                                  <br />
+                                  <strong>Satellite Based?:</strong>
+                                  <br />
+                                  {item.isSatelliteBased ? "yes" : "No"}
+                                  <br />
+                                  <strong>Type of Water:</strong>
+                                  <br />
+                                  {item.TypeofWater}
+                                  <br />
 
-                                <strong>Controller photo:</strong>
-                                <br />
-                                {item.ControllerPhotoPath ? (
-                                  <>
-                                    <img
-                                      src={`https://earthcoapi.yehtohoga.com/${item.ControllerPhotoPath}`}
-                                      style={{
-                                        width: "150px",
-                                        height: "120px",
-                                        objectFit: "cover",
-                                      }}
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
-                                <br />
-                              </td>
-                              <td
-                                style={{ verticalAlign: "top" }}
-                                className="tdbreak"
-                              >
-                                <strong>Meter Number:</strong>
-                                <br />
-                                {item.MeterNumber}
-                                <br />
-                                <strong>Meter Size:</strong>
-                                <br />
-                                rt-454
-                                <br />
-                              </td>
-                              <td
-                                style={{ verticalAlign: "top" }}
-                                className="tdbreak"
-                              >
-                                <strong>Master Valve?:</strong>
-                                <br />
-                                {item.MakeAndModel}
-                                <br />
-                                <strong>Flow Sensor?:</strong>
-                                <br />
+                                  <strong>Controller photo:</strong>
+                                  <br />
+                                  {item.ControllerPhotoPath ? (
+                                    <>
+                                      <img
+                                        src={`https://earthcoapi.yehtohoga.com/${item.ControllerPhotoPath}`}
+                                        style={{
+                                          width: "150px",
+                                          height: "120px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
+                                  <br />
+                                </td>
+                                <td
+                                  style={{ verticalAlign: "top" }}
+                                  className="tdbreak"
+                                >
+                                  <strong>Meter Number:</strong>
+                                  <br />
+                                  {item.MeterNumber}
+                                  <br />
+                                  <strong>Meter Size:</strong>
+                                  <br />
+                                  {item.MeterSize}
+                                  <br />
+                                </td>
+                                <td
+                                  style={{ verticalAlign: "top" }}
+                                  className="tdbreak"
+                                >
+                                  <strong>Master Valve?:</strong>
+                                  <br />
+                                  {item.MakeAndModel}
+                                  <br />
+                                  <strong>Flow Sensor?:</strong>
+                                  <br />
 
-                                <br />
-                                <strong>No. of Valves:</strong>
-                                <br />
-                                {item.NumberofValves}
-                                <br />
-                                <strong>No. Stations:</strong>
-                                <br />
-                                {item.NumberofStation}
-                                <br />
-                                <strong>Number of Broken Main Lines:</strong>
-                                <br />
-                                {item.NumberofBrokenMainLines}
-                                <br />
-                                <strong>Type of Valves</strong>
-                                <br />
-                                {item.TypeofValves}
-                                <br />
-                                <strong>Number of Leaking Valves:</strong>
-                                <br />
-                                {item.LeakingValves}
-                                <br />
-                                <strong>Number Malfunctioning:</strong>
-                                <br />
-                                {item.MalfunctioningValves}
-                                <br />
-                                <strong>Number of Broken Lateral Lines:</strong>
-                                <br />
-                                {item.NumberofBrokenLateralLines}
-                                <br />
-                                <strong>Number of Broken Heads:</strong>
-                                <br />
-                                {item.NumberofBrokenHeads}
-                                <br />
-                              </td>
-                              <td
-                                style={{ verticalAlign: "top" }}
-                                className="tdbreak"
-                              >
-                                <strong>Repairs:</strong>
-                                <br />
-                                {item.RepairsMade}
-                                <br />
-                                <strong>Upgrades:</strong>
-                                <br />
-                                {item.UpgradesMade}
+                                  <br />
+                                  <strong>No. of Valves:</strong>
+                                  <br />
+                                  {item.NumberofValves}
+                                  <br />
+                                  <strong>No. Stations:</strong>
+                                  <br />
+                                  {item.NumberofStation}
+                                  <br />
+                                  <strong>Number of Broken Main Lines:</strong>
+                                  <br />
+                                  {item.NumberofBrokenMainLines}
+                                  <br />
+                                  <strong>Type of Valves</strong>
+                                  <br />
+                                  {item.TypeofValves}
+                                  <br />
+                                  <strong>Number of Leaking Valves:</strong>
+                                  <br />
+                                  {item.LeakingValves}
+                                  <br />
+                                  <strong>Number Malfunctioning:</strong>
+                                  <br />
+                                  {item.MalfunctioningValves}
+                                  <br />
+                                  <strong>
+                                    Number of Broken Lateral Lines:
+                                  </strong>
+                                  <br />
+                                  {item.NumberofBrokenLateralLines}
+                                  <br />
+                                  <strong>Number of Broken Heads:</strong>
+                                  <br />
+                                  {item.NumberofBrokenHeads}
+                                  <br />
+                                </td>
+                                <td
+                                  style={{ verticalAlign: "top" }}
+                                  className="tdbreak"
+                                >
+                                  <strong>Repairs:</strong>
+                                  <br />
+                                  {item.RepairsMade}
+                                  <br />
+                                  <strong>Upgrades:</strong>
+                                  <br />
+                                  {item.UpgradesMade}
 
-                                <br />
-                                <strong>photo:</strong>
-                                <br />
-                                {item.PhotoPath ? (
-                                  <>
-                                    <img
-                                      src={`https://earthcoapi.yehtohoga.com/${item.PhotoPath}`}
-                                      style={{
-                                        width: "150px",
-                                        height: "120px",
-                                        objectFit: "cover",
-                                      }}
-                                    />
-                                  </>
-                                ) : (
-                                  <></>
-                                )}
+                                  <br />
+                                  <strong>photo:</strong>
+                                  <br />
+                                  {item.PhotoPath ? (
+                                    <>
+                                      <img
+                                        src={`https://earthcoapi.yehtohoga.com/${item.PhotoPath}`}
+                                        style={{
+                                          width: "150px",
+                                          height: "120px",
+                                          objectFit: "cover",
+                                        }}
+                                      />
+                                    </>
+                                  ) : (
+                                    <></>
+                                  )}
 
-                                <br />
-                              </td>
-                            </tr>
-                            {index  === 0 && pdfClicked &&(
-  <tr  style={{ height: "12em" }} key={`empty-${index}`} className="empty-row">
-    <td colSpan="4"></td>
-  </tr>
-)}
+                                  <br />
+                                </td>
+                              </tr>
+                              {index === 0 && pdfClicked && (
+                                <tr
+                                  style={{ height: "12em" }}
+                                  key={`empty-${index}`}
+                                  className="empty-row"
+                                >
+                                  <td colSpan="4"></td>
+                                </tr>
+                              )}
                             </>
                           );
                         })}

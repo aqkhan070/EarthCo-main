@@ -28,7 +28,7 @@ import Tooltip from "@mui/material/Tooltip";
 import useSaveGoogleToken from "../Hooks/useSaveGoogleToken";
 import { DataContext } from "../../context/AppData";
 import CustomizedTooltips from "../Reusable/CustomizedTooltips";
-
+import Cookies from "js-cookie";
 const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   const requestAbortController = useRef(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
 
   const session = useSession();
   const supabase = useSupabaseClient();
-  const { loggedInUser } = useContext(DataContext);
+  const { loggedInUser , setLoggedInUser} = useContext(DataContext);
 
   const { isLoading } = useSessionContext();
   const { sendToken, deleteToken } = useSaveGoogleToken();
@@ -96,7 +96,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         updatedEvent,
         {
           headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken,
+            Authorization: "Bearer " + loggedInUser.ProviderToken,
           },
         }
       );
@@ -376,7 +376,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
           UserId: Number(loggedInUser.userId),
           UserEmail: session.user.email,
         },
-        getDashboardData()
+        getDashboardData
       );
     }
   }, [session]);
@@ -391,7 +391,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
           headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken, // Use OAuth token
+            Authorization: "Bearer " + loggedInUser.ProviderToken, // Use OAuth token
           },
           params: {
             timeMin: currentDate.toISOString(),
@@ -412,7 +412,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
             UserId: Number(loggedInUser.userId),
             UserEmail: session.user.email,
           },
-          getDashboardData
+          getDashboardData()
         );
       }
     } catch (error) {
@@ -423,7 +423,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   useEffect(() => {
     fetchHighlightedDays(initialValue);
     fetchGoogleEvents();
-    console.log("dashboard data is in calender", dashBoardData.ProviderToken);
+    console.log("logged in user data is in calender", loggedInUser);
     // abort request on unmount
     return () => requestAbortController.current?.abort();
   }, []);
@@ -471,6 +471,8 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         getDashboardData
       );
       getDashboardData();
+      Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
+        Cookies.set("UserEmailGoogle", session.user.email, { expires: 7 });
     }
   };
 
@@ -480,6 +482,11 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
       console.log("signed out");
       // Call your success function here
       deleteToken(Number(loggedInUser.userId), getDashboardData);
+      setLoggedInUser({
+        ...loggedInUser,
+        ProviderToken : null,
+        UserEmailGoogle : ""
+      })
     } catch (error) {
       console.error("Error signing out:", error);
       // Handle the error or call an error handling function if needed
@@ -535,7 +542,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         event,
         {
           headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken, // Access token for Google
+            Authorization: "Bearer " + loggedInUser.ProviderToken, // Access token for Google
           },
         }
       );
@@ -559,7 +566,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
         {
           headers: {
-            Authorization: "Bearer " + dashBoardData.ProviderToken,
+            Authorization: "Bearer " + loggedInUser.ProviderToken,
           },
         }
       );
@@ -598,7 +605,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
                 </h5>
               </span>
             </div>
-            {dashBoardData.ProviderToken && (
+            {loggedInUser.ProviderToken && (
               <>
                 <CustomizedTooltips title="Refresh Calender" placement="top">
                   <div className="col-sm-2">
@@ -626,11 +633,11 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         <div className="card-body schedules-cal p-2">
           <div style={{ width: "100%" }}>
             <div className="p-0 " style={{ color: "black" }}>
-              {dashBoardData.UserEmail && dashBoardData.UserEmail
-                ? dashBoardData.UserEmail
+              {loggedInUser.UserEmailGoogle && loggedInUser.UserEmailGoogle
+                ? loggedInUser.UserEmailGoogle
                 : ""}
             </div>
-            {dashBoardData.ProviderToken ? (
+            {loggedInUser.ProviderToken ? (
               <>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateCalendar

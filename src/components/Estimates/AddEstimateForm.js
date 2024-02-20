@@ -37,8 +37,12 @@ import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
-import ActivityLog from "../Reusable/ActivityLog"
+import ActivityLog from "../Reusable/ActivityLog";
 import PrintButton from "../Reusable/PrintButton";
+import useGetEstimate from "../Hooks/useGetEstimate";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import EstimatePdf from "./EstimatePdf";
+
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -78,6 +82,7 @@ const AddEstimateForm = () => {
     setSROBJ,
   } = useContext(DataContext);
   const { syncQB } = useQuickBook();
+  const { getEstimateStatus, estimateStatus } = useGetEstimate();
 
   useEffect(() => {
     fetchName(PunchListData.CustomerId);
@@ -91,8 +96,7 @@ const AddEstimateForm = () => {
     if (PunchListData.EstimateNotes) {
       setFormData((prevState) => ({
         ...prevState,
-        EstimateNotes: PunchListData.EstimateNotes
-       
+        EstimateNotes: PunchListData.EstimateNotes,
       }));
     }
 
@@ -138,7 +142,7 @@ const AddEstimateForm = () => {
   const { billList, fetchBills } = useFetchBills();
   const { PoList, fetchPo } = useFetchPo();
   const { contactEmail, fetchEmail } = useFetchContactEmail();
-  const {customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
+  const { customerMail, fetchCustomerEmail } = useFetchCustomerEmail();
 
   const [totalItemAmount, setTotalItemAmount] = useState(0);
   const [shippingCost, setShippingCost] = useState(0);
@@ -151,7 +155,8 @@ const AddEstimateForm = () => {
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { deleteEstmFile } = useDeleteFile();
 
-  const { name, setName, fetchName } = useFetchCustomerName();
+  const { name, setName, fetchName, staffName, fetchStaffName } =
+    useFetchCustomerName();
 
   const [estimateFiles, setEstimateFiles] = useState([]);
 
@@ -159,6 +164,8 @@ const AddEstimateForm = () => {
 
   const [PrevFiles, setPrevFiles] = useState([]);
   const [btnDisable, setBtnDisable] = useState(false);
+
+  const [approvedItems, setApprovedItems] = useState([]);
 
   const fetchEstimates = async (id) => {
     if (!id) {
@@ -181,8 +188,9 @@ const AddEstimateForm = () => {
         FileData: response.data.EstimateFileData,
       }));
       fetchName(response.data.EstimateData.CustomerId);
+      fetchStaffName(response.data.EstimateData.RegionalManagerId);
       fetchEmail(response.data.EstimateItemData.ContactId);
-       fetchCustomerEmail(response.data.EstimateData.CustomerId)
+      fetchCustomerEmail(response.data.EstimateData.CustomerId);
       setSelectedContacts(
         response.data.EstimateContactData.map((contact) => contact.ContactId)
       );
@@ -191,6 +199,10 @@ const AddEstimateForm = () => {
         ...response.data.EstimateItemData,
         ...response.data.EstimateCostItemData,
       ];
+
+      setApprovedItems(
+        response.data.EstimateItemData.filter((item) => item.IsApproved === true)
+      );
 
       setFormData((prevState) => ({
         ...prevState,
@@ -338,8 +350,8 @@ const AddEstimateForm = () => {
     setEstimateLinkData((prevState) => ({
       ...prevState,
       ...formData,
-      CustomerName : name,
-      RegionalManager : formData.RegionalManagerId,
+      CustomerName: name,
+      RegionalManager: formData.RegionalManagerId,
     }));
   };
 
@@ -461,6 +473,7 @@ const AddEstimateForm = () => {
     fetchBills();
     fetchPo();
     fetchCustomers();
+    getEstimateStatus();
   }, []);
 
   useEffect(() => {
@@ -478,6 +491,7 @@ const AddEstimateForm = () => {
       ...prevData,
       EstimateStatusId: value,
     }));
+    console.log("status is", formData);
   };
 
   // new items
@@ -533,25 +547,59 @@ const AddEstimateForm = () => {
       Rate: item.SalePrice,
       PurchasePrice: item.PurchasePrice,
       isCost: false,
+      IsApproved: true,
     });
 
     setSearchResults([]); // Clear the search results
 
-    console.log("selected item is", item);
+    // Update the formData.tblEstimateItems state
+    setFormData((prevData) => ({
+      ...prevData,
+      tblEstimateItems: [
+        ...prevData.tblEstimateItems,
+        {
+          ...itemInput,
+          ItemId: item.ItemId,
+          Name: item.ItemName,
+          Description: item.SaleDescription,
+          Rate: item.SalePrice,
+          PurchasePrice: item.PurchasePrice,
+          isCost: false,
+          IsApproved: true,
+        },
+      ],
+    }));
+
+    // Clear the itemInput state
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
   };
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [formData.tblEstimateItems.length]);
 
   const handleAddItem = () => {
+    console.log("handle add items", itemInput);
     const newAmount = itemInput.Qty * itemInput.Rate;
     const newItem = {
       ...itemInput,
+
       Amount: newAmount,
     };
-    if (!newItem.ItemId) {
+    if (!itemInput.ItemId) {
+      console.log("handle add items return", newItem);
       return;
     }
     setFormData((prevData) => ({
       ...prevData,
-      tblEstimateItems: [...prevData.tblEstimateItems, newItem],
+      tblEstimateItems: [...prevData.tblEstimateItems, itemInput],
     }));
 
     setSearchText("");
@@ -570,7 +618,7 @@ const AddEstimateForm = () => {
 
   const handleDescriptionChange = (i, event, add) => {
     if (add === 0) {
-      const updatedItems = formData.tblEstimateItems.map((item ,index) => {
+      const updatedItems = formData.tblEstimateItems.map((item, index) => {
         if (index === i && item.isCost == false) {
           const updatedItem = { ...item };
           updatedItem.Description = event.target.value;
@@ -697,6 +745,32 @@ const AddEstimateForm = () => {
         tblEstimateItems: updatedItems,
       }));
     }
+  };
+
+  const handleIsApproved = (i, event, add) => {
+    const updatedItems = formData.tblEstimateItems.map((item, index) => {
+      if (index === i) {
+        // Check if the condition for isCost matches the `add` parameter
+        if (
+          (add === 0 && item.isCost === false) ||
+          (add === 1 && item.isCost === true)
+        ) {
+          // Copy the item and update IsApproved based on the checkbox's checked state
+          const updatedItem = {
+            ...item,
+            IsApproved: event.target.checked, // Use checked for boolean state
+          };
+          // Optionally update the Amount if needed
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+      }
+      return item;
+    });
+    setFormData((prevData) => ({
+      ...prevData,
+      tblEstimateItems: updatedItems,
+    }));
   };
 
   // AC
@@ -1096,7 +1170,11 @@ const AddEstimateForm = () => {
                       id="staff-autocomplete"
                       size="small"
                       options={staffData.filter(
-                        (staff) => staff.Role === "Regional Manager"
+                        (staff) =>
+                          staff.Role === "Regional Manager" ||
+                          staff.UserId === 1593 ||
+                          staff.UserId === 3252 ||
+                          staff.UserId === 6146
                       )}
                       getOptionLabel={(option) => option.FirstName || ""}
                       value={
@@ -1523,13 +1601,11 @@ const AddEstimateForm = () => {
                       placeholder="Select Status"
                       fullWidth
                     >
-                      <MenuItem value={4}>Pending</MenuItem>
-                      <MenuItem value={6}>Needs PO</MenuItem>
-                      <MenuItem value={1}>Accepted</MenuItem>
-                      <MenuItem value={7}>Ready to Invoice</MenuItem>
-                      <MenuItem value={2}>Closed - Billed</MenuItem>
-                      <MenuItem value={5}>Rejected</MenuItem>
-                      <MenuItem value={3}>Converted</MenuItem>
+                      {estimateStatus.map((status, index) => (
+                        <MenuItem key={index} value={status.EstimateStatusId}>
+                          {status.Status}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </div>
                   <div className="col-md-3 mt-2 ">
@@ -1584,7 +1660,6 @@ const AddEstimateForm = () => {
                     />
                   </div>
                   <div className="col-md-3 mt-2"></div>
-                  
                 </div>
               </div>
 
@@ -1598,12 +1673,13 @@ const AddEstimateForm = () => {
                     <table id="empoloyees-tblwrapper" className="table">
                       <thead>
                         <tr>
-                          <th >Item</th>
+                          <th>Item</th>
                           <th>Description</th>
                           <th>Qty</th>
                           <th>Rate</th>
                           <th>Amount</th>
                           <th>Cost Price</th>
+                          <th>Is Approved</th>
                           <th>Action</th>
                         </tr>
                       </thead>
@@ -1614,12 +1690,12 @@ const AddEstimateForm = () => {
                             .filter((item) => item.isCost === false) // Filter items with isCost equal to 1
                             .map((item, index) => (
                               <tr colSpan={2} key={index}>
-                                <td >{item.Name}</td>
+                                <td>{item.Name}</td>
                                 <td>
                                   <TextField
-                                size="small"
-                                multiline
-                                  style={{  height: "fit-content"}}
+                                    size="small"
+                                    multiline
+                                    style={{ height: "fit-content" }}
                                     className="form-control form-control-sm"
                                     value={item.Description}
                                     onChange={(e) =>
@@ -1630,9 +1706,14 @@ const AddEstimateForm = () => {
                                 <td>
                                   <input
                                     type="number"
-                                 
                                     className="form-control form-control-sm"
                                     value={item.Qty}
+                                    ref={
+                                      index ===
+                                      formData.tblEstimateItems.length - 1
+                                        ? quantityInputRef
+                                        : null
+                                    } // Set ref for last row's quantity input
                                     onChange={(e) =>
                                       handleQuantityChange(index, e, 0)
                                     }
@@ -1641,7 +1722,6 @@ const AddEstimateForm = () => {
                                 <td>
                                   <input
                                     type="number"
-                                   
                                     className="form-control form-control-sm"
                                     value={item.Rate}
                                     onChange={(e) =>
@@ -1650,16 +1730,25 @@ const AddEstimateForm = () => {
                                   />
                                 </td>
                                 <td className="text-right">
-                                  $ {item ? (item.Qty * item.Rate).toFixed(2) : 0}
+                                  ${" "}
+                                  {item ? (item.Qty * item.Rate).toFixed(2) : 0}
                                 </td>
                                 <td>
                                   <input
                                     type="number"
-                                 
                                     className="form-control form-control-sm"
                                     value={item.PurchasePrice}
                                     onChange={(e) =>
                                       handleCostChange(index, e, 0)
+                                    }
+                                  />
+                                </td>
+                                <td className="text-center">
+                                  <Checkbox
+                                    value={item.IsApproved}
+                                    checked={item.IsApproved}
+                                    onChange={(e) =>
+                                      handleIsApproved(index, e, 0)
                                     }
                                   />
                                 </td>
@@ -1680,7 +1769,7 @@ const AddEstimateForm = () => {
                           <></>
                         )}
                         <tr>
-                          <td >
+                          <td>
                             <>
                               <Autocomplete
                                 id="search-items"
@@ -1734,9 +1823,9 @@ const AddEstimateForm = () => {
                           </td>
                           <td>
                             <TextField
-                                size="small"
-                                multiline
-                                  style={{ height: "fit-content"}}
+                              size="small"
+                              multiline
+                              style={{ height: "fit-content" }}
                               value={itemInput?.Description}
                               onChange={(e) =>
                                 setItemInput({
@@ -1744,7 +1833,6 @@ const AddEstimateForm = () => {
                                   Description: e.target.value,
                                 })
                               }
-                            
                               className="form-control form-control-sm"
                               placeholder="SaleDescription"
                               onKeyPress={(e) => {
@@ -1767,7 +1855,6 @@ const AddEstimateForm = () => {
                                   Qty: Number(e.target.value),
                                 })
                               }
-                             
                               className="form-control form-control-sm"
                               placeholder="Quantity"
                               onKeyPress={(e) => {
@@ -1780,71 +1867,66 @@ const AddEstimateForm = () => {
                             />
                           </td>
                           <td>
-                            
-                              <input
-                                type="number"
-                                name="Rate"
-                               
-                                className="form-control form-control-sm"
-                                value={itemInput.Rate || ""}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    Rate: Number(e.target.value),
-                                  })
+                            <input
+                              type="number"
+                              name="Rate"
+                              className="form-control form-control-sm"
+                              value={itemInput.Rate || ""}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  Rate: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  SalePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
                                 }
-                                onClick={(e) => {
-                                  setSelectedItem({
-                                    ...selectedItem,
-                                    SalePrice: 0,
-                                  });
-                                }}
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
-                              />
-                          
+                              }}
+                            />
                           </td>
                           <td className="text-right">
                             <h5 style={{ margin: "0" }}>
-                              $ {itemInput
+                              ${" "}
+                              {itemInput
                                 ? (itemInput.Rate * itemInput.Qty).toFixed(2)
                                 : 0}
                             </h5>
                           </td>
                           <td>
-                        
-                              <input
-                                type="number"
-                                name="CostPrice"
-                               
-                                className="form-control form-control-sm"
-                                value={itemInput.PurchasePrice || ""}
-                                onChange={(e) =>
-                                  setItemInput({
-                                    ...itemInput,
-                                    PurchasePrice: Number(e.target.value),
-                                  })
+                            <input
+                              type="number"
+                              name="CostPrice"
+                              className="form-control form-control-sm"
+                              value={itemInput.PurchasePrice || ""}
+                              onChange={(e) =>
+                                setItemInput({
+                                  ...itemInput,
+                                  PurchasePrice: Number(e.target.value),
+                                })
+                              }
+                              onClick={(e) => {
+                                setSelectedItem({
+                                  ...selectedItem,
+                                  PurchasePrice: 0,
+                                });
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === "Enter") {
+                                  // Handle item addition when Enter key is pressed
+                                  e.preventDefault(); // Prevent form submission
+                                  handleAddItem();
                                 }
-                                onClick={(e) => {
-                                  setSelectedItem({
-                                    ...selectedItem,
-                                    PurchasePrice: 0,
-                                  });
-                                }}
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
-                              />
-                            
+                              }}
+                            />
                           </td>
                           <td></td>
                         </tr>
@@ -2203,20 +2285,25 @@ const AddEstimateForm = () => {
                         </tr> */}
                         <tr>
                           <td className="left custom-table-row">
-                        
                             <div
                               style={{ width: "12em" }}
                               className="input-group"
-                            ><strong className="mt-2">Discount</strong>
+                            >
+                              <strong className="mt-2">Discount</strong>
                               <input
                                 type="text"
-                                style={{ width: "5em", marginLeft : "1em", borderRadius : "8px" }}
+                                style={{
+                                  width: "5em",
+                                  marginLeft: "1em",
+                                  borderRadius: "8px",
+                                }}
                                 className="form-control form-control-sm"
                                 name="Discount"
                                 value={totalDiscount}
                                 onChange={discountChange}
                                 placeholder="Discount"
-                              /><strong className="mt-2" > &nbsp;&nbsp;%</strong>
+                              />
+                              <strong className="mt-2"> &nbsp;&nbsp;%</strong>
                             </div>
                           </td>
                           <td className="right text-right">
@@ -2301,7 +2388,7 @@ const AddEstimateForm = () => {
                           style={{
                             width: "150px", // Set the desired width
                             height: "120px", // Set the desired height
-                           
+
                             position: "relative",
                           }}
                         >
@@ -2351,11 +2438,10 @@ const AddEstimateForm = () => {
                       {PrevFiles.map((file, index) => (
                         <div
                           key={index}
-                          className="col-md-2 col-md-2 mt-3 image-container"
+                          className="col-md-2 col-md-2 mt-3 me-1 image-container"
                           style={{
                             width: "150px",
                             height: "120px",
-                          
                             position: "relative",
                           }}
                         >
@@ -2464,12 +2550,11 @@ const AddEstimateForm = () => {
                           style={{
                             width: "150px", // Set the desired width
                             height: "120px", // Set the desired height
-                           
+
                             position: "relative",
                           }}
                         >
                           <img
-                          
                             src={URL.createObjectURL(file)}
                             alt={file.name}
                             style={{
@@ -2516,7 +2601,7 @@ const AddEstimateForm = () => {
                 </div>
                 <div className="mb-2 row ">
                   <div className="col-md-5 col-sm-4">
-                  <BackButton
+                    <BackButton
                       onClick={() => {
                         navigate(`/estimates`);
                         setPunchListData({
@@ -2531,7 +2616,6 @@ const AddEstimateForm = () => {
                   <div className="col-md-7 col-sm-7 p-0 text-right ">
                     {idParam ? (
                       <>
-                     
                         {loggedInUser.userRole == "1" ? (
                           <>
                             <FormControl className="me-2">
@@ -2576,7 +2660,7 @@ const AddEstimateForm = () => {
                         )}
 
                         <PrintButton
-                         varient="mail"
+                          varient="mail"
                           onClick={() => {
                             navigate(
                               `/send-mail?title=${"Estimate"}&mail=${customerMail}&customer=${name}&number=${
@@ -2584,38 +2668,67 @@ const AddEstimateForm = () => {
                               }`
                             );
                           }}
-                        >
-                      
-                        </PrintButton>
+                        ></PrintButton>
 
                         <PrintButton
-                         varient="print"
+                          varient="print"
                           onClick={() => {
                             navigate(
                               `/estimates/estimate-preview?id=${idParam}`
                             );
                           }}
+                        ></PrintButton>
+                        <PDFDownloadLink
+                          document={
+                            <EstimatePdf
+                              data={{
+                                ...formData,
+                                RegionalManagerName: staffName,
+                                SelectedCompany: loggedInUser.CompanyName,
+                                CustomerName: name,
+                                ApprovedItems: formData.tblEstimateItems.filter((item) => item.IsApproved === true),
+                                Amount: formData.tblEstimateItems.filter((item) => item.IsApproved === true).reduce(
+                                  (accumulator, item) =>
+                                    accumulator + item.Amount,
+                                  0
+                                ),
+                              }}
+                            />
+                          }
+                          fileName="Estimate.pdf"
                         >
-                         
-                        </PrintButton>
+                          {({ blob, url, loading, error }) =>
+                            loading ? (
+                              " "
+                            ) : (
+                              <PrintButton varient="Download" onClick={() => {console.log("error", error)}}></PrintButton>
+                            )
+                          }
+                        </PDFDownloadLink>
+                        {/* <PrintButton
+                          varient="Download"
+                          onClick={() => {
+                            const url = `/estimates/estimate-preview?id=${idParam}&download=${1}`;
+                            window.open(url, "_blank");
+                          }}
+                        ></PrintButton> */}
                       </>
                     ) : (
                       <></>
                     )}{" "}
-                    
                     {idParam ? (
                       <>
-                      
-                      <LoaderButton
-                        loading={disableButton}
-                        disable={btnDisable}
-                        handleSubmit={() => {
-                          handleSubmit(0, "");
-                        }}
-                        color={"customColor"}
-                      >
-                        Save as copy
-                      </LoaderButton></>
+                        <LoaderButton
+                          loading={disableButton}
+                          disable={btnDisable}
+                          handleSubmit={() => {
+                            handleSubmit(0, "");
+                          }}
+                          color={"customColor"}
+                        >
+                          Save as copy
+                        </LoaderButton>
+                      </>
                     ) : (
                       <></>
                     )}
@@ -2631,11 +2744,9 @@ const AddEstimateForm = () => {
                   </div>
                 </div>
               </div>
-
             </>
           )}
         </>
-       
       </div>
     </>
   );

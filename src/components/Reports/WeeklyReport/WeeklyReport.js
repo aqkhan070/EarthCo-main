@@ -14,6 +14,9 @@ import EventPopups from "../../Reusable/EventPopups";
 import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
 import useFetchCustomerName from "../../Hooks/useFetchCustomerName";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import WeeklyReportPdf from "./WeeklyReportPdf";
+
 const WeeklyReport = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -69,7 +72,7 @@ const WeeklyReport = () => {
     const input = document.getElementById("WR-preview");
   
     // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
   
     // Use html2canvas to capture the content as an image with higher DPI
     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
@@ -108,7 +111,7 @@ const WeeklyReport = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid print-page-width"
       >
         <div className="row PageA4 mt-2">
@@ -309,12 +312,28 @@ const WeeklyReport = () => {
               </div>
               <div className="p-2 bd-highlight">
                 {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
+
+                <PDFDownloadLink
+                  document={<WeeklyReportPdf weeklyPreviewData={{...weeklyPreviewData, name : name}} />}
+                  fileName="Weekly Report.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
+
               </div>
 
               {isMail ? (

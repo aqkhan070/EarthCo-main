@@ -29,6 +29,10 @@ import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import PrintButton from "../Reusable/PrintButton";
 import SprayTechForm from "./SprayTechForm";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import SRPdf from "./SRPdf";
+import SprayTechPdf from "./SprayTechPdf";
+
 const AddSRform = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -94,11 +98,6 @@ const AddSRform = () => {
     </svg>
   );
 
-  const [customersList, setCustomersList] = useState([]);
-  const [customer, setCustomer] = useState();
-
-  const [sRList, setSRList] = useState({});
-
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
@@ -106,10 +105,8 @@ const AddSRform = () => {
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       ServiceRequestId: idParam,
-
       CustomerId: 0,
       ServiceRequestNumber: "",
-
       SRTypeId: loggedInUser.userRole == 5 ? 3 : 1,
       SRStatusId: 1,
       Assign: "",
@@ -217,6 +214,7 @@ const AddSRform = () => {
     //   console.log("service locations fetch error", error);
     // }
   };
+  const [selectedContact, setSelectedContact] = useState("");
 
   const fetctContacts = async (id) => {
     if (!id) {
@@ -230,6 +228,11 @@ const AddSRform = () => {
       .then((res) => {
         console.log("contacts data isss", res.data);
         setContactList(res.data);
+        res.data.forEach((element) => {
+          if (SRData.ServiceRequestData.ContactId === element.ContactId) {
+            setSelectedContact(element.FirstName);
+          }
+        });
       })
       .catch((error) => {
         setContactList([]);
@@ -408,7 +411,7 @@ const AddSRform = () => {
     SRData.ServiceRequestData.tblServiceRequestSprayTeches = [sideData];
 
     console.log("servise request data before", SRData);
-
+    //  return
     formData.append(
       "ServiceRequestData",
       JSON.stringify(SRData.ServiceRequestData)
@@ -493,7 +496,7 @@ const AddSRform = () => {
     setFiles(updatedFiles);
   };
   const [PrevFiles, setPrevFiles] = useState([]);
-
+  const [sRPreviewData, setSRPreviewData] = useState({});
   const fetchSR = async () => {
     if (idParam === 0) {
       setLoading(false);
@@ -506,9 +509,7 @@ const AddSRform = () => {
         { headers }
       );
 
-      setSRList(response.data.Data);
-      // setSROBJ(response.data);
-
+      setSRPreviewData(response.data);
       setSRMapData(response.data.LatLongData);
 
       setSRData((prevData) => ({
@@ -518,8 +519,8 @@ const AddSRform = () => {
           ...response.data.Data,
         },
       }));
-      setSideData(response.data.SRSTData[0])
-      setSTechItems(response.data.SRSTIData)
+      setSideData(response.data.SRSTData[0]);
+      setSTechItems(response.data.SRSTIData);
 
       setSelectedContacts(
         response.data.ContactData.map((contact) => contact.ContactId)
@@ -618,11 +619,34 @@ const AddSRform = () => {
       Description: item.SaleDescription,
       Rate: item.SalePrice,
     });
+    setTblSRItems([
+      ...tblSRItems,
+      {
+        ...itemInput,
+        ItemId: item.ItemId,
+        Name: item.ItemName,
+        Description: item.SaleDescription,
+        Rate: item.SalePrice,
+      },
+    ]);
     setShowItem(false);
     setSearchResults([]); // Clear the search results
     itemInput.ItemId && setItemBtnDisable(false);
     console.log("selected item is", itemInput);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: 0,
+    });
   };
+
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [tblSRItems.length]);
 
   const handleDescriptionChange = (itemId, event) => {
     const updatedItems = tblSRItems.map((item, index) => {
@@ -934,7 +958,12 @@ const AddSRform = () => {
                             id="staff-autocomplete"
                             size="small"
                             options={staffData.filter(
-                              (staff) => staff.Role !== "Admin"
+                              (staff) =>
+                                staff.Role === "Regional Manager" ||
+                                staff.Role === "Irrigator" ||
+                                staff.UserId === 1593 ||
+                                staff.UserId === 3252 ||
+                                staff.UserId === 6146
                             )}
                             getOptionLabel={(option) => option.FirstName || ""}
                             value={
@@ -1154,6 +1183,11 @@ const AddSRform = () => {
                                   type="number"
                                   className="form-control form-control-sm"
                                   value={item.Qty}
+                                  ref={
+                                    index === tblSRItems.length - 1
+                                      ? quantityInputRef
+                                      : null
+                                  }
                                   onChange={
                                     (e) => handleQuantityChange(index, e) // Use item.ItemId
                                   }
@@ -1600,27 +1634,49 @@ const AddSRform = () => {
                                 SRData.ServiceRequestData.SRStatusId === 1
                                   ? "Open"
                                   : "Closed"
-                              }`
+                              }&contact=${selectedContact}`
                             );
                           }}
                         ></PrintButton>
                         <PrintButton
                           varient="print"
                           onClick={() => {
-                            if(SRData.ServiceRequestData.SRTypeId === 8){
+                            if (SRData.ServiceRequestData.SRTypeId === 8) {
                               navigate(
                                 `/service-requests/spray-tech-preview?id=${idParam}`
                               );
-                            }else{
-                            navigate(
-                              `/service-requests/service-request-preview?id=${idParam}`
-                            );  
+                            } else {
+                              navigate(
+                                `/service-requests/service-request-preview?id=${idParam}`
+                              );
                             }
-                            
-                            // setestmPreviewId(estimate.EstimateId);
-                            setSRData(customer);
                           }}
                         ></PrintButton>
+                        <PDFDownloadLink
+                          document={
+                            SRData.ServiceRequestData.SRTypeId === 8 ? (
+                              <SprayTechPdf
+                                sRPreviewData={{ ...sRPreviewData, name: name }}
+                              />
+                            ) : (
+                              <SRPdf data={{ ...sRPreviewData, name: name }} />
+                            )
+                          }
+                          fileName="Service Request.pdf"
+                        >
+                          {({ blob, url, loading, error }) =>
+                            loading ? (
+                              " "
+                            ) : (
+                              <PrintButton
+                                varient="Download"
+                                onClick={() => {
+                                  console.log("error", error);
+                                }}
+                              ></PrintButton>
+                            )
+                          }
+                        </PDFDownloadLink>
                         <button
                           className="btn btn-dark me-2"
                           style={{ marginRight: "1em" }}

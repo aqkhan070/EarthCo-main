@@ -15,6 +15,8 @@ import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import LandScapePdf from "./LandScapePdf";
 
 const Landscape = () => {
   const token = Cookies.get("token");
@@ -80,7 +82,7 @@ const Landscape = () => {
     const input = document.getElementById("landscape-preview");
   
     // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
   
     // Use html2canvas to capture the content as an image with higher DPI
     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
@@ -138,7 +140,7 @@ const Landscape = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid "
       >
         {toggleFullscreen && !isGeneralReport ? (
@@ -164,12 +166,30 @@ const Landscape = () => {
               >
                 <i className="fa fa-print"></i>
               </button>
-              <button
+              {/* <button
                 className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                 onClick={handleDownload}
               >
                 <i className="fa fa-download"></i>
+              </button> */}
+
+              <PDFDownloadLink
+                  document={<LandScapePdf landscapeData={{...landscapeData, name : name}} />}
+                  fileName="Landscape.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button
+                className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+               
+              >
+                <i className="fa fa-download"></i>
               </button>
+                    )
+                  }
+                </PDFDownloadLink> 
               {isMail ? (
                 <></>
               ) : (
@@ -246,37 +266,7 @@ const Landscape = () => {
 
                 <div className="row my-2">
                   <div className="col-md-7 col-sm-7">
-                    {/* <div className="table-responsive">
-                      <table className=" table-striped table table-bordered text-start">
-                        <thead>
-                          <tr
-                            style={{ backgroundColor: "gray" }}
-                            className="preview-table-head LandScape-TablePadding"
-                          >
-                            <th className="landscap-preview-heading">
-                              Requested By:
-                            </th>
-                            <th className="landscap-preview-heading">
-                              Service Location:
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="preview-table-row">
-                            <td style={{ color: "black" }}>
-                              {landscapeData.RequestByName} <br />
-                              {landscapeData.ServiceLocationName}
-                            </td>
-                            <td
-                              style={{ color: "black" }}
-                              className="left strong"
-                            >
-                              {landscapeData.ServiceLocationName}
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div> */}
+                    
                   </div>
 
                   <div

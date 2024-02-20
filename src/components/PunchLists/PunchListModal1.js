@@ -160,11 +160,34 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
       Description: item.SaleDescription,
       Rate: item.SalePrice,
     });
+    setItemsList((prevItems) => [
+      ...prevItems,
+      {
+        ...itemInput,
+        ItemId: item.ItemId,
+        Name: item.ItemName,
+        Description: item.SaleDescription,
+        Rate: item.SalePrice,
+      } // Ensure each item has a unique 'id'
+    ]);
     setShowItem(false);
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", itemInput);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
   };
+
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [itemsList.length]);
 
   const deleteItem = (id) => {
     const updatedItemsList = itemsList.filter((item, index) => index !== id);
@@ -323,7 +346,7 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
     const PunchlistDetailData = {
       ...formData,
       tblPunchlistItems: itemsList,
-      StatusId: 1,
+      StatusId: 2,
     };
 
     console.log("PunchlistDetailData:", PunchlistDetailData);
@@ -536,8 +559,9 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                           <tr colSpan={2} key={index}>
                             <td >{item.Name}</td>
                             <td>
-                              <TextField
+                              <textarea
                                size="small"
+                               rows="3"
                                 className="form-control form-control-sm"
                                 value={item.Description}
                                 onChange={(e) =>
@@ -551,6 +575,12 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                                
                                 className="form-control form-control-sm"
                                 value={item.Qty}
+                                ref={
+                                  index ===
+                                  itemsList.length - 1
+                                    ? quantityInputRef
+                                    : null
+                                }
                                 onChange={(e) =>
                                   handleQuantityChange(index, e)
                                 }
@@ -641,10 +671,9 @@ const PunchListModal1 = ({ selectedPL, fetchFilterdPunchList, plDetailId }) => {
                         </td>
                         <td>
                           <p>
-                            <TextField
-                            size="small"
-                            multiline
-                            sx={{height : "fit"}}
+                            <textarea
+                            size="small"                       
+                            rows="3"
                               name="Description"
                               value={itemInput.Description}
                               onChange={(e) =>

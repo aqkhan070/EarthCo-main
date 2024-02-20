@@ -15,6 +15,8 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import SRPdf from "./SRPdf";
 
 const SRPreview = () => {
   const token = Cookies.get("token");
@@ -63,26 +65,33 @@ const SRPreview = () => {
 
   const handleDownload = async () => {
     const input = document.getElementById("SR-preview");
-  
-    input.style.fontFamily = "Times New Roman";
-  
+
+    input.style.fontFamily = "Arial";
+
     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
-  
+
     const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
-  
+
     const pdf = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
-  
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
-  
+
+    pdf.addImage(
+      canvas.toDataURL("image/jpeg", 1.0),
+      "JPEG",
+      0,
+      0,
+      210,
+      pdfHeight
+    );
+
     pdf.save("Service request.pdf");
-  
+
     input.style.fontFamily = "";
   };
-  
+
   const fetchSR = async () => {
     if (idParam === 0) {
       return;
@@ -139,14 +148,13 @@ const SRPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
             : ""
         }
       >
-        {" "}
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
@@ -157,7 +165,7 @@ const SRPreview = () => {
                 >
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
-                      <h5 className="mb-0">EarthCo</h5>{" "}
+                      <h5 className="mb-0">EarthCo</h5>
                       <h6 className="mb-0">
                         1225 East Wakeham Avenue <br /> Santa Ana, California
                         92705
@@ -168,7 +176,6 @@ const SRPreview = () => {
                       <h6 className="mb-0">www.earthcompany.org</h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
-                      {" "}
                       <h3>
                         <strong>Service Request </strong>
                       </h3>
@@ -222,7 +229,7 @@ const SRPreview = () => {
                             </tr>
                           </tbody>
                         </table>
-                      </div>{" "}
+                      </div>
                     </div>
 
                     <div
@@ -234,7 +241,6 @@ const SRPreview = () => {
                           <strong>Date Created:</strong>
                         </div>
                         <div className="col-md-6 col-sm-6 p-0 text-start">
-                          {" "}
                           <div style={{ color: "black" }}>
                             <p>
                               &nbsp;
@@ -249,7 +255,6 @@ const SRPreview = () => {
                           {/* <strong>Target completion:</strong> */}
                         </div>
                         <div className="col-md-6 col-sm-6 p-0 text-start">
-                          {" "}
                           <div style={{ color: "black" }} className="">
                             <p className="">
                               {/* &nbsp;
@@ -272,21 +277,24 @@ const SRPreview = () => {
                         </tr>
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
-                            <strong>Service Request Number: </strong>{" "}
+                            <strong>Service Request Number: </strong>
                           </td>
                           <td> {sRPreviewData.Data.ServiceRequestNumber}</td>
                         </tr>
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
-                            <strong>Second Request: </strong>{" "}
+                            <strong>Second Request: </strong>
                           </td>
                           <td> NO</td>
                         </tr>
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
-                            <strong>Date Completed: </strong>{" "}
+                            <strong>Date Completed: </strong>
                           </td>
-                          <td> {sRPreviewData.Data.CompletedDate}</td>
+                          <td> {formatDate(
+                                sRPreviewData.Data.CompletedDate,
+                                false
+                              )} </td>
                         </tr>
                         <tr>
                           <td className="landscap-preview-heading" colSpan={2}>
@@ -296,13 +304,13 @@ const SRPreview = () => {
 
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
-                            <strong>Work Requested: </strong>{" "}
+                            <strong>Work Requested: </strong>
                           </td>
                           <td> {sRPreviewData.Data.WorkRequest}</td>
                         </tr>
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
-                            <strong>Action taken </strong>{" "}
+                            <strong>Action taken </strong>
                           </td>
                           <td> {sRPreviewData.Data.ActionTaken}</td>
                         </tr>
@@ -348,7 +356,7 @@ const SRPreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0">
-                        {" "}
+                        
                         <strong>SUBTOTAL:</strong>
                       </h6>
                     </div>
@@ -360,10 +368,10 @@ const SRPreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                   <h6 className="mb-0">
-                    {" "}
+                    
                     <strong>DISCOUNT:</strong>
                   </h6>
-                </div>{" "} 
+                </div> 
                     <hr className="mb-1" />
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
@@ -391,7 +399,7 @@ const SRPreview = () => {
               </div>
             </div>
           </div>
-        </div>{" "}
+        </div>
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
@@ -412,7 +420,6 @@ const SRPreview = () => {
               )}
 
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handlePrint}
@@ -421,19 +428,31 @@ const SRPreview = () => {
                 </button>
               </div>
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary  custom-csv-link estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>{" "}
+                </button> */}
+                <PDFDownloadLink
+                  document={<SRPdf data={{...sRPreviewData, name : name}} />}
+                  fileName="Service Request.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
               </div>
               {isMail ? (
                 <></>
               ) : (
                 <div className="p-2 pt-0 bd-highlight">
-                  {" "}
                   <button
                     className="btn btn-sm btn-outline-secondary  custom-csv-link estm-action-btn"
                     onClick={() => {

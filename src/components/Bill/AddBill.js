@@ -26,6 +26,8 @@ import formatAmount from "../../custom/FormatAmount";
 import PrintButton from "../Reusable/PrintButton";
 import HandleDelete from "../Reusable/HandleDelete";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
+import BillPdf from "./BillPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -72,6 +74,7 @@ const AddBill = ({}) => {
   const { deleteBillFile } = useDeleteFile();
 
   const [loading, setLoading] = useState(false);
+  const [billPreviewData, setBillPreviewData] = useState({});
 
   const getBill = async () => {
     setLoading(true);
@@ -86,6 +89,7 @@ const AddBill = ({}) => {
         `https://earthcoapi.yehtohoga.com/api/Bill/GetBill?id=${idParam}`,
         { headers }
       );
+      setBillPreviewData(res.data)
       setFormData(res.data.Data);
       fetchSupplierName(res.data.Data.SupplierId);
       setItemsList(res.data.ItemData);
@@ -356,10 +360,34 @@ const AddBill = ({}) => {
       Rate: item.SalePrice,
     });
 
+    setItemsList((prevItems) => [
+      ...prevItems,
+      {
+        ...itemInput,
+        ItemId: item.ItemId,
+      Name: item.ItemName,
+      Description: item.SaleDescription,
+      Rate: item.SalePrice,
+      }, // Ensure each item has a unique 'id'
+    ]);
+
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", item);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
   };
+
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [itemsList.length]);
 
   const deleteItem = (id) => {
     const updatedItemsList = itemsList.filter((item, index) => index !== id);
@@ -1184,6 +1212,12 @@ const AddBill = ({}) => {
                                 type="number"
                                 className="form-control form-control-sm"
                                 value={item.Qty}
+                                ref={
+                                  index ===
+                                  itemsList.length - 1
+                                    ? quantityInputRef
+                                    : null
+                                }
                                 onChange={(e) => handleQuantityChange(index, e)}
                               />
                             </td>
@@ -1584,6 +1618,18 @@ const AddBill = ({}) => {
                           navigate(`/bills/bill-preview?id=${idParam}`);
                         }}
                       ></PrintButton>
+                      <PDFDownloadLink
+                  document={<BillPdf data={{...billPreviewData , Total : totalAmount}} />}
+                  fileName="Bill.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <PrintButton varient="Download" onClick={() => {console.log("error", error)}}></PrintButton>
+                    )
+                  }
+                </PDFDownloadLink>
                     </>
                   ) : (
                     <></>

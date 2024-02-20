@@ -54008,11 +54008,13 @@ height: 30px !important;
   }
   .preview-table-head th{
     color: #2e2e2e;
+    padding: 0.2rem 0.5rem !important;
     
   }
 
   .preview-table-row td{
     color: black;
+    padding: 0.2rem 0.5rem !important;
    
   }
 

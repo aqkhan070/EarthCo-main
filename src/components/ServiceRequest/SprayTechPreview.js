@@ -15,6 +15,8 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import SprayTechPdf from "./SprayTechPdf";
 
 const SprayTechPreview = () => {
   const token = Cookies.get("token");
@@ -65,10 +67,9 @@ const SprayTechPreview = () => {
     }, 1000);
   };
   const handleDownload = async () => {
-   
     const input = document.getElementById("ST-preview");
 
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
 
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -104,34 +105,34 @@ const SprayTechPreview = () => {
     input.style.fontFamily = "";
   };
 
-//   const handleDownload = async () => {
-//     const input = document.getElementById("ST-preview");
+  //   const handleDownload = async () => {
+  //     const input = document.getElementById("ST-preview");
 
-//     input.style.fontFamily = "Times New Roman";
+  //     input.style.fontFamily = "Arial";
 
-//     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
+  //     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
 
-//     const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
+  //     const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
 
-//     const pdf = new jsPDF({
-//       unit: "mm",
-//       format: "a4",
-//       orientation: "portrait",
-//     });
+  //     const pdf = new jsPDF({
+  //       unit: "mm",
+  //       format: "a4",
+  //       orientation: "portrait",
+  //     });
 
-//     pdf.addImage(
-//       canvas.toDataURL("image/jpeg", 1.0),
-//       "JPEG",
-//       0,
-//       0,
-//       210,
-//       pdfHeight
-//     );
+  //     pdf.addImage(
+  //       canvas.toDataURL("image/jpeg", 1.0),
+  //       "JPEG",
+  //       0,
+  //       0,
+  //       210,
+  //       pdfHeight
+  //     );
 
-//     pdf.save("Spray Tech.pdf");
+  //     pdf.save("Spray Tech.pdf");
 
-//     input.style.fontFamily = "";
-//   };
+  //     input.style.fontFamily = "";
+  //   };
 
   const fetchSR = async () => {
     if (idParam === 0) {
@@ -189,7 +190,7 @@ const SprayTechPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
@@ -200,7 +201,7 @@ const SprayTechPreview = () => {
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
-              <div  id="ST-preview" className=" get-preview ">
+              <div id="ST-preview" className=" get-preview ">
                 <div
                   className="card-body perview-pd"
                   style={{ minHeight: "23cm" }}
@@ -217,7 +218,7 @@ const SprayTechPreview = () => {
                   </div>
 
                   <div className="row">
-                    <div className="col-md-2 col-sm-2">
+                    <div className="col-md-2 col-sm-2 pe-2">
                       <img
                         className="preview-Logo"
                         style={{ width: "120px" }}
@@ -227,20 +228,33 @@ const SprayTechPreview = () => {
                     </div>
                     <div className="col-md-10 col-sm-10">
                       <div className="row">
-                        <div className="col-md-2 col-sm-2 me-0 pe-0">
-                          <h6>Customer Name</h6>
+                        <div
+                        
+                          className="col-md-2 col-sm-2 me-0 pe-0"
+                        >
+                          <h6>
+                            <strong>Customer Name:</strong>
+                          </h6>
                         </div>
                         <div className="col-md-3 col-sm-3 me-0 pe-0">
-                          <h6>{name}</h6>
+                          <h6>
+                            <strong>{name}</strong>
+                          </h6>
                         </div>
-                        <div className="col-md-1 col-sm-1 me-0 pe-0 text-end">
-                          <h6>Type</h6>
+                        <div className="col-md-1 col-sm-1 me-0 pe-0 ">
+                          <h6>
+                            <strong>Type:</strong>
+                          </h6>
                         </div>
                         <div className="col-md-3 col-sm-3 me-0 pe-0">
-                          <h6>Spray Tech Form</h6>
+                          <h6>
+                            <strong>Spray Tech Form</strong>
+                          </h6>
                         </div>
-                        <div className="col-md-1 col-sm-1 me-0 pe-0 text-end">
-                          <h6>Date</h6>
+                        <div className="col-md-1 col-sm-1 me-0 pe-0 ">
+                          <h6>
+                            <strong>Date:</strong>
+                          </h6>
                         </div>
                         <div className="col-md-2 col-sm-2 me-0 pe-0">
                           <h6>
@@ -248,30 +262,37 @@ const SprayTechPreview = () => {
                           </h6>
                         </div>
                       </div>
-                      <div className="row">
-                        <div className="col-md-2 col-sm-2 me-0 pe-0">
-                          <h6>Service Location</h6>
-                        </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0">
-                          <h6> {sRPreviewData.Data.ServiceLocationAddress}</h6>
-                        </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0 text-end">
-                          <h6>Regional Manager</h6>
-                        </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0">
-                          <h6>Regional Manager</h6>
-                        </div>
+                      <div className="row mt-3">
                         <div
-                          style={{ whiteSpace: "nowrap" }}
-                          className="col-md-1 col-sm-1 mx-0 px-0 "
+                         
+                          className="col-md-2 col-sm-2 me-0 pe-0"
                         >
-                          <h6>Spray Tech</h6>
+                          <h6>
+                            <strong>Service Location:</strong>
+                          </h6>
+                        </div>
+                        <div className="col-md-4 col-sm-4 me-0 pe-0">
+                          <h6>
+                            <strong>
+                              {sRPreviewData.Data.ServiceLocationAddress}
+                            </strong>
+                          </h6>
+                        </div>
+                        <div className="col-md-3 col-sm-3 me-0 pe-0 ">
+                          <h6>
+                            <strong>Regional Manager:</strong>
+                          </h6>
+                        </div>
+                        <div className="col-md-3 col-sm-3 me-0 pe-0">
+                          <h6>
+                            <strong>{sRPreviewData.Data.ReginoalManagerName}</strong>
+                          </h6>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-md-8 col-sm-8">
+                    <div className="col-md-9 col-sm-9">
                       <div className="table-responsive">
                         <table className="table-bordered table  LandScape-TablePadding">
                           <thead>
@@ -283,52 +304,55 @@ const SprayTechPreview = () => {
                           </thead>
                           <tbody>
                             {sRPreviewData.SRSTIData.map((item, index) => (
-                                <>
-                              <tr
-                                key={item.SprayTechItemId}
-                                style={{
-                                  height: "fit-content",
-                                  color: item.isOrganic ? "red" : "black",
-                                }}
-                              >
-                                <td>{item.isUsed ? <>&#10003;</> : <></>}</td>
-                                <td>{index}{item.ItemName}</td>
-                                <td>
-                                  {item.Rate} {item.Unit}
-                                </td>
-                                <td>{item.Notes}</td>
-                                <td>{item.Type}</td>
-                              </tr>
-                              {index === 22 && pdfClicked && (
-                              <tr
-                                style={{ height: "9em" }}
-                                className="preview-table-row"
-                                key={`empty-row-${index}`}
-                              >
-                                
-                              </tr>
-                            )}
+                              <>
+                                <tr
+                                  key={item.SprayTechItemId}
+                                  style={{
+                                    height: "fit-content",
+                                    color: item.isOrganic ? "red" : "black",
+                                  }}
+                                >
+                                  <td>{item.isUsed ? <>&#10003;</> : <></>}</td>
+                                  <td>{item.ItemName}</td>
+                                  <td>
+                                    {item.Rate} {item.Unit}
+                                  </td>
+                                  <td>{item.Notes}</td>
+                                  <td>{item.Type}</td>
+                                </tr>
+                                {index === 22 && pdfClicked && (
+                                  <tr
+                                    style={{ height: "9em" }}
+                                    className="preview-table-row"
+                                    key={`empty-row-${index}`}
+                                  ></tr>
+                                )}
                               </>
                             ))}
                           </tbody>
                         </table>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
+                    <div className="col-md-3 col-sm-3">
                       <div className="row" style={{ color: "black" }}>
                         <div
-                          className="col-md-12 mt-2"
+                          className="col-md-12 "
                           style={{ backgroundColor: "#cccccc" }}
                         >
-                          <h4 style={{ backgroundColor: "#cccccc" }} className="mb-1 pb-0 mt-1">
-                            <strong style={{ backgroundColor: "#cccccc" }}>Sprayed Hours</strong>
+                          <h4
+                            style={{ backgroundColor: "#cccccc" }}
+                            className="mb-1 pb-0 mt-1"
+                          >
+                            <strong style={{ backgroundColor: "#cccccc" }}>
+                              Sprayed Hours
+                            </strong>
                           </h4>
                         </div>
                         <div className="col-md-12 mt-3">
                           {" "}
                           <label className="form-label mt-2 me-1">
                             {" "}
-                            Hours: {" "}{sRPreviewData.SRSTData[0].Hours}
+                            Hours: {sRPreviewData.SRSTData[0].Hours}
                           </label>
                           {/* <TextField
                 size="small"
@@ -342,8 +366,13 @@ const SprayTechPreview = () => {
                           className="col-md-12 mt-3"
                           style={{ backgroundColor: "#cccccc" }}
                         >
-                          <h4 style={{ backgroundColor: "#cccccc" }} className="mb-1 pb-0 mt-1">
-                            <strong style={{ backgroundColor: "#cccccc" }}>Landscape treated</strong>
+                          <h4
+                            style={{ backgroundColor: "#cccccc" }}
+                            className="mb-1 pb-0 mt-1"
+                          >
+                            <strong style={{ backgroundColor: "#cccccc" }}>
+                              Landscape treated
+                            </strong>
                           </h4>
                         </div>
                         <div className="col-md-1">
@@ -355,7 +384,12 @@ const SprayTechPreview = () => {
                         </div>
                         <div className="col-md-11">
                           <h5 className="mb-0 pb-0 mt-1">
-                            {sRPreviewData.SRSTData[0].isTurf ? <>&#128505;</>: <>&#9744;</>} Turf
+                            {sRPreviewData.SRSTData[0].isTurf ? (
+                              <>&#128505;</>
+                            ) : (
+                              <>&#9744;</>
+                            )}{" "}
+                            Turf
                           </h5>
                         </div>
                         <div className="col-md-1">
@@ -367,7 +401,15 @@ const SprayTechPreview = () => {
               /> */}
                         </div>
                         <div className="col-md-11">
-                          <h5 className="mb-0 pb-0 mt-1"> {sRPreviewData.SRSTData[0].isShrubs ? <>&#128505;</>: <>&#9744;</>} Shrubs</h5>
+                          <h5 className="mb-0 pb-0 mt-1">
+                            {" "}
+                            {sRPreviewData.SRSTData[0].isShrubs ? (
+                              <>&#128505;</>
+                            ) : (
+                              <>&#9744;</>
+                            )}{" "}
+                            Shrubs
+                          </h5>
                         </div>
                         <div className="col-md-1">
                           {/* <Checkbox
@@ -378,7 +420,14 @@ const SprayTechPreview = () => {
               /> */}
                         </div>
                         <div className="col-md-11">
-                          <h5 className="mb-0 pb-0 mt-1">{sRPreviewData.SRSTData[0].isParkways ? <>&#128505;</>: <>&#9744;</>}Parkways</h5>
+                          <h5 className="mb-0 pb-0 mt-1">
+                            {sRPreviewData.SRSTData[0].isParkways ? (
+                              <>&#128505;</>
+                            ) : (
+                              <>&#9744;</>
+                            )}{" "}
+                            Parkways
+                          </h5>
                         </div>
                         <div className="col-md-1">
                           {/* <Checkbox
@@ -389,21 +438,33 @@ const SprayTechPreview = () => {
               /> */}
                         </div>
                         <div className="col-md-11">
-                          <h5 className="mb-0 pb-0 mt-1">{sRPreviewData.SRSTData[0].isTrees ? <>&#128505;</>: <>&#9744;</>}Trees</h5>
+                          <h5 className="mb-0 pb-0 mt-1">
+                            {sRPreviewData.SRSTData[0].isTrees ? (
+                              <>&#128505;</>
+                            ) : (
+                              <>&#9744;</>
+                            )}{" "}
+                            Trees
+                          </h5>
                         </div>
                         <div
                           className="col-md-12 mt-3"
                           style={{ backgroundColor: "#cccccc" }}
                         >
-                          <h4 style={{ backgroundColor: "#cccccc" }} className="mb-1 pb-0 mt-1">
-                            <strong style={{ backgroundColor: "#cccccc" }}>Quantity</strong>
+                          <h4
+                            style={{ backgroundColor: "#cccccc" }}
+                            className="mb-1 pb-0 mt-1"
+                          >
+                            <strong style={{ backgroundColor: "#cccccc" }}>
+                              Quantity
+                            </strong>
                           </h4>
                         </div>
                         <div className="col-md-12 mt-3">
                           {" "}
                           <label className="form-label mt-2 me-1">
                             {" "}
-                            Ounces: {" "}{sRPreviewData.SRSTData[0].Ounces}
+                            Ounces: {sRPreviewData.SRSTData[0].Ounces}
                           </label>
                           {/* <TextField
                 size="small"
@@ -416,7 +477,7 @@ const SprayTechPreview = () => {
                           {" "}
                           <label className="form-label mt-2 me-1">
                             {" "}
-                            Pounds: {" "}{sRPreviewData.SRSTData[0].Pounds}
+                            Pounds: {sRPreviewData.SRSTData[0].Pounds}
                           </label>
                           {/* <TextField
                 size="small"
@@ -429,7 +490,7 @@ const SprayTechPreview = () => {
                           {" "}
                           <label className="form-label mt-2 me-2">
                             {" "}
-                            Others: {" "}{sRPreviewData.SRSTData[0].Other}
+                            Others: {sRPreviewData.SRSTData[0].Other}
                           </label>
                           {/* <TextField
                 size="small"
@@ -515,9 +576,7 @@ const SprayTechPreview = () => {
                     </div>*/}
                 </div>
                 <div className="card-footer border-0 text-center">
-                  <h6 style={{ fontSize: "12px" }}>
-                   
-                  </h6>
+                  <h6 style={{ fontSize: "12px" }}></h6>
                 </div>
               </div>
             </div>
@@ -553,12 +612,26 @@ const SprayTechPreview = () => {
               </div>
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary  custom-csv-link estm-action-btn"
                   onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>{" "}
+                </button>{" "} */}
+                <PDFDownloadLink
+                  document={<SprayTechPdf sRPreviewData={{...sRPreviewData, name : name}} />}
+                  fileName="Spray Tech.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
               </div>
               {isMail ? (
                 <></>

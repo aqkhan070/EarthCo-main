@@ -229,16 +229,14 @@ const PunchTR = ({
           <Table>
             <TableHead>
               <TableRow className="table-header">
-                {[
-                  "",
-                  "Customer Name",
-                  "Title",
-                  "Regional Manager",
-                  "Date Created",
-                  "Status",
-                ].map((column, index) => (
-                  <TableCell key={index}>{column}</TableCell>
-                ))}
+              <TableCell ></TableCell>
+              <TableCell >Customer Name</TableCell>
+              <TableCell >Title</TableCell>
+              <TableCell >Regional Manager</TableCell>
+              <TableCell >Date Created</TableCell>
+               
+                  <TableCell >Status</TableCell>
+                
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>

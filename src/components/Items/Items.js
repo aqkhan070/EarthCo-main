@@ -25,11 +25,15 @@ import { Delete, Create } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router";
 import AddButton from "../Reusable/AddButton";
+import EventPopups from "../Reusable/EventPopups";
+import useQuickBook from "../Hooks/useQuickBook";
 
 const Items = () => {
   const headers = {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
+
+  const { syncQB } = useQuickBook();
 
   const navigate = useNavigate();
 
@@ -44,18 +48,10 @@ const Items = () => {
 
   const [successRes, setSuccessRes] = useState("");
 
-  const getItemsList = async () => {
-    try {
-      const res = await axios.get(
-        `https://earthcoapi.yehtohoga.com/api/Item/GetItemList`,
-        { headers }
-      );
-      console.log("items data", res.data);
-      setItemsList(res.data);
-    } catch (error) {
-      console.log("Api call error", error);
-    }
-  };
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [snackBarColor, setSnackBarColor] = useState("");
+  const [snackBarText, setSnackBarText] = useState("");
+
   const [totalRecords, setTotalRecords] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -91,7 +87,15 @@ const Items = () => {
         { headers }
       );
       console.log("item deleted", res.data);
+      syncQB(res.data.SyncId);
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Item Deleted Successfuly");
+      getFilteredItemsList()
     } catch (error) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Error deleting item");
       console.log("Api call error", error);
     }
   };
@@ -120,17 +124,6 @@ const Items = () => {
   //   setPage(newPage);
   // };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleSortRequest = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
   const filteredItems = itemsList;
 
   const emptyRows =
@@ -139,6 +132,12 @@ const Items = () => {
 
   return (
     <>
+      <EventPopups
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+        color={snackBarColor}
+        text={snackBarText}
+      />
       <div className="container-fluid">
         <div className="col-xl-12">
           <div className="card" id="bootstrap-table2">
@@ -188,7 +187,7 @@ const Items = () => {
                         <TableCell>Name</TableCell>
                         <TableCell>SKU</TableCell>
                         <TableCell align="center">Account #</TableCell>
-                        {/* <TableCell className="text-end">Actions</TableCell> */}
+                        <TableCell className="text-end">Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -201,91 +200,97 @@ const Items = () => {
                       ).map((item, index) => (
                         <TableRow
                           className="material-tbl-alignment"
-                          onClick={() => {
-                            // setSelectedItem(item.ItemId);
-                            // setShowContent(false);
-                            navigate(`/items/add-item?id=${item.ItemId}`);
-                          }}
                           key={index}
                           hover
                         >
-                          <TableCell>{item.ItemName}</TableCell>
-                          <TableCell>{item.SKU}</TableCell>
-                          <TableCell align="center">
+                          <TableCell
+                            onClick={() => {
+                              navigate(`/items/add-item?id=${item.ItemId}`);
+                            }}
+                          >
+                            {item.ItemName}
+                          </TableCell>
+                          <TableCell
+                            onClick={() => {
+                              navigate(`/items/add-item?id=${item.ItemId}`);
+                            }}
+                          >
+                            {item.SKU}
+                          </TableCell>
+                          <TableCell
+                            align="center"
+                            onClick={() => {
+                              navigate(`/items/add-item?id=${item.ItemId}`);
+                            }}
+                          >
                             {item.IncomeAccount}
                           </TableCell>
-                          {/* <TableCell className="text-end">
-                              <Button
-                                //  className=" btn btn-primary  btn-icon-xxs me-2"
-                                size="small"
-                                onClick={() => {
-                                  setSelectedItem(item.ItemId);
-                                  setShowContent(false);
-                                }}
-                              >
-                            <i className="fa fa-pencil"></i> 
-                                <Create></Create>
-                              </Button>
-                              <Button
-                                //  className="btn btn-danger btn-icon-xxs "
-                                size="small"
-                                data-bs-toggle="modal"
-                                // className="btn btn-danger btn-icon-xxs mr-2"
-                                data-bs-target={`#deleteItemModal${item.ItemId}`}
-                              >
-                            <i className="fa fa-trash"></i>
-                                <Delete color="error" />
-                              </Button>
+                          <TableCell className="text-end">
+                            <Button
+                              //  className=" btn btn-primary  btn-icon-xxs me-2"
+                              size="small"
+                              onClick={() => {
+                                setSelectedItem(item.ItemId);
+                                setShowContent(false);
+                              }}
+                            ></Button>
+                            <Button
+                              //  className="btn btn-danger btn-icon-xxs "
+                              size="small"
+                              data-bs-toggle="modal"
+                              // className="btn btn-danger btn-icon-xxs mr-2"
+                              data-bs-target={`#deleteItemModal${item.ItemId}`}
+                            >
+                              <Delete color="error" />
+                            </Button>
 
+                            <div
+                              className="modal fade"
+                              id={`deleteItemModal${item.ItemId}`}
+                              tabIndex="-1"
+                              aria-labelledby="deleteModalLabel"
+                              aria-hidden="true"
+                            >
                               <div
-                                className="modal fade"
-                                id={`deleteItemModal${item.ItemId}`}
-                                tabIndex="-1"
-                                aria-labelledby="deleteModalLabel"
-                                aria-hidden="true"
+                                className="modal-dialog modal-dialog-centered"
+                                role="document"
                               >
-                                <div
-                                  className="modal-dialog modal-dialog-centered"
-                                  role="document"
-                                >
-                                  <div className="modal-content">
-                                    <div className="modal-header">
-                                      <h5 className="modal-title">
-                                        Delete Item
-                                      </h5>
-                                      <button
-                                        type="button"
-                                        className="btn-close"
-                                        data-bs-dismiss="modal"
-                                      ></button>
-                                    </div>
-                                    <div className="modal-body text-center">
-                                      <p>
-                                        Are you sure you want to delete{" "}
-                                        {item.ItemName}
-                                      </p>
-                                    </div>
-                                    <div className="modal-footer">
-                                      <button
-                                        type="button"
-                                        id="closer"
-                                        className="btn btn-danger light me-"
-                                        data-bs-dismiss="modal"
-                                      >
-                                        Close
-                                      </button>
-                                      <button
-                                        className="btn btn-primary"
-                                        data-bs-dismiss="modal"
-                                        onClick={() => deleteItem(item.ItemId)}
-                                      >
-                                        Yes
-                                      </button>
-                                    </div>
+                                <div className="modal-content">
+                                  <div className="modal-header">
+                                    <h5 className="modal-title">Delete Item</h5>
+                                    <button
+                                      type="button"
+                                      className="btn-close"
+                                      data-bs-dismiss="modal"
+                                    ></button>
+                                  </div>
+                                  <div className="modal-body text-center">
+                                    <p>
+                                      Are you sure you want to delete{" "}
+                                      {item.ItemName}
+                                    </p>
+                                  </div>
+                                  <div className="modal-footer">
+                                    <button
+                                      type="button"
+                                      id="closer"
+                                      className="btn btn-danger light me-"
+                                      data-bs-dismiss="modal"
+                                    >
+                                      Close
+                                    </button>
+                                    <button
+                                      className="btn btn-primary"
+                                      data-bs-dismiss="modal"
+                                      onClick={() => deleteItem(item.ItemId)}
+                                    >
+                                      Yes
+                                    </button>
                                   </div>
                                 </div>
                               </div>
-                            </TableCell> */}
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                       {emptyRows > 0 && (

@@ -72,7 +72,7 @@ const PLPhotoOnlyPreview = () => {
     const input = document.getElementById("PL-photos-only-preview");
   
   
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
   
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -120,7 +120,7 @@ const PLPhotoOnlyPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid print-page-width"
       >
         <div className="row PageA4 mt-2">

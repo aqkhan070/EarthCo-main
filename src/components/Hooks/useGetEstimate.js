@@ -15,6 +15,7 @@ const useGetEstimate = () => {
   const [tableError, setTableError] = useState(false);
   const [estmRecords, setEstmRecords] = useState({});
   const [filterdEstm, setFilterdEstm] = useState([]);
+  const [estimateStatus, setEstimateStatus] = useState([])
 
   const getEstimate = async () => {
     try {
@@ -68,6 +69,29 @@ const useGetEstimate = () => {
     }
   };
 
+  const getEstimateStatus = async () => {
+    try {
+      const response = await axios.get(
+        "https://earthcoapi.yehtohoga.com/api/Estimate/GetEstimateStatusList",
+        { headers }
+      );
+      console.log("estimate response is", response.data);
+      setEstimateStatus(response.data)
+      // setTableError(false)
+      // setEstimates(response.data);
+      // if (response.data != null) {
+      //   setIsLoading(false);
+      // }
+    } catch (error) {
+      // setTableError(true);
+      // setTimeout(() => {
+      //   setTableError(false);
+      // }, 4000);
+      // setIsLoading(false);
+      console.error("API Call Error:", error);
+    }
+  };
+
   useEffect(() => {
     // getEstimate();
     getFilteredEstimate();
@@ -81,6 +105,8 @@ const useGetEstimate = () => {
     tableError,
     getEstimate,
     getFilteredEstimate,
+    getEstimateStatus,
+    estimateStatus
   };
 };
 

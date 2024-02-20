@@ -228,6 +228,8 @@ const HeaderExp = () => {
       userId: Cookies.get("userId"),
       CompanyName: Cookies.get("CompanyName"),
       CompanyId: Cookies.get("CompanyId"),
+      ProviderToken : Cookies.get("ProviderToken")=="null" ? null :Cookies.get("ProviderToken") ,
+      UserEmailGoogle : Cookies.get("UserEmailGoogle")
     });
   }, []);
 

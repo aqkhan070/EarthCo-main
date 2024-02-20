@@ -29,6 +29,7 @@ const SprayTechForm = ({ SrId, sTechItems, setSTechItems, sideData, setSideData 
 useEffect(() => {
     console.log("sTechItems", sideData);
   }, [sideData]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setSideData(prevState => ({
@@ -119,6 +120,7 @@ useEffect(() => {
                 name="isTurf"
                 onChange={handleChange}
                 value={sideData.isTurf}
+                checked={sideData.isTurf}
               />
             </div>
             <div className="col-md-11">

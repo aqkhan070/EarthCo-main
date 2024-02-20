@@ -13,8 +13,16 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import GenralReportPdf from "./GenralReportPdf";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const GenralReport = () => {
+  const token = Cookies.get("token");
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const {
     sRProposalData,
     setsRProposalData,
@@ -43,6 +51,60 @@ const GenralReport = () => {
     emailAlertColor,
   } = useSendEmail();
 
+
+  const [reportData, setReportData,] = useState([]);
+  const fetchReport = async (customerId, year, month, type = "proposal") => {
+   
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Report/GetReportList?CustomerId=${customerParam}&Year=${yearParam}&Month=${MonthParam}&Type=${type}`,
+        { headers }
+      );
+   
+      setReportData(res.data)
+      console.log("proposal report data is", res.data);
+    } catch (error) {
+     
+     
+
+      console.log("report api call error fetching summary report", error);
+    }
+  };
+const [SummaryReportData, setSummaryReportData] = useState([])
+  const fetchSummaryReport = async (customerId, year, month, type =  "Service Request") => {
+   
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Report/GetReportList?CustomerId=${customerParam}&Year=${yearParam}&Month=${MonthParam}&Type=${type}`,
+        { headers }
+      );
+   
+      setSummaryReportData(res.data)
+      console.log("proposal report data is", res.data);
+    } catch (error) {
+     
+     
+
+      console.log("report api call error fetching summary report", error);
+    }
+  };
+  const [landscapeData, setLandscapeData] = useState({});
+  const getLandscape = async () => {
+    try {
+      const res = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/MonthlyLandsacpe/GetMonthlyLandsacpe?id=${idParam}&CustomerId=${customerParam}&Year=${yearParam}&Month=${MonthParam}`,
+        { headers }
+      );
+      setLandscapeData(res.data);
+     
+      console.log("reponse landscape is", res.data);
+    } catch (error) {
+      console.log("api call error", error);
+    }
+  };
+
+
+
   const handlePrint = () => {
     setToggleFullscreen(false);
     setTimeout(() => {
@@ -56,7 +118,7 @@ const GenralReport = () => {
   const handleDownload = async () => {
     const input = document.getElementById("General-preview");
 
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
 
     const pdf = new jsPDF({
       unit: "mm",
@@ -105,6 +167,9 @@ const GenralReport = () => {
     console.log("sr data", sRProposalData);
     fetchCustomerEmail(customerParam);
     fetchName(customerParam);
+    getLandscape()
+    fetchSummaryReport()
+    fetchReport()
   }, []);
 
   return (
@@ -143,12 +208,26 @@ const GenralReport = () => {
                   >
                     <i className="fa fa-print"></i>
                   </button>
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                     onClick={handleDownload}
                   >
                     <i className="fa fa-download"></i>
-                  </button>
+                  </button> */}
+                  <PDFDownloadLink
+                  document={<GenralReportPdf SummaryReportData={SummaryReportData} reportData={reportData} landscapeData={landscapeData} CustomerName={name} />}
+                  fileName="Genral Report.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
                   {isMail ? (
                     <></>
                   ) : (

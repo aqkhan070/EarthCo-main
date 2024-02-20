@@ -33,6 +33,9 @@ import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
 import PrintButton from "../Reusable/PrintButton";
 import HandleDelete from "../Reusable/HandleDelete";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import POPdf from "./POPdf";
+
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -140,6 +143,8 @@ export const AddPO = ({}) => {
   } = useSendEmail();
 
   const [isPoClosed, setIsPoClosed] = useState(false);
+  const [PoPreviewData, setPoPreviewData] = useState({});
+
   const fetchpoData = async () => {
     if (idParam === 0) {
       return;
@@ -151,6 +156,7 @@ export const AddPO = ({}) => {
         { headers }
       );
       setLoading(false);
+      setPoPreviewData(res.data);
 
       console.log("selected purchase order is", res.data);
       setFormData(res.data.Data);
@@ -473,7 +479,7 @@ export const AddPO = ({}) => {
     console.log("estimate link data is", estimateLinkData);
 
     if (estimateLinkData.tblEstimateItems) {
-      setItemsList(estimateLinkData.tblEstimateItems);
+      setItemsList(estimateLinkData.tblEstimateItems.filter((item) => item.IsApproved === true));
     }
     if (estimateLinkData.FileData) {
       setEstimateFiles(estimateLinkData.FileData);
@@ -610,11 +616,35 @@ export const AddPO = ({}) => {
       Rate: item.SalePrice,
       PurchasePrice: item.PurchasePrice,
     });
+
+    setItemsList((prevItems) => [
+      ...prevItems,
+      {
+        ...itemInput,
+        ItemId: item.ItemId,
+        Name: item.ItemName,
+        Description: item.SaleDescription,
+        Rate: item.SalePrice,
+        PurchasePrice: item.PurchasePrice,
+      }, // Ensure each item has a unique 'id'
+    ]);
     setShowItem(false);
     setSearchResults([]); // Clear the search results
 
     console.log("selected item is", itemInput);
+    setItemInput({
+      Name: "",
+      Qty: 1,
+      Description: "",
+      Rate: null,
+    });
   };
+  const quantityInputRef = useRef(null);
+  useEffect(() => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  }, [itemsList.length]);
 
   const deleteItem = (id) => {
     const updatedItemsList = itemsList.filter((item, index) => index !== id);
@@ -1080,8 +1110,12 @@ export const AddPO = ({}) => {
                           id="staff-autocomplete"
                           size="small"
                           options={staffData.filter(
-                            (staff) => staff.Role === "Regional Manager"
-                          )}
+                            (staff) =>
+                            staff.Role === "Regional Manager" ||
+                            staff.UserId === 1593 ||
+                            staff.UserId === 3252 ||
+                            staff.UserId ===6146
+                        )}
                           getOptionLabel={(option) => option.FirstName || ""}
                           value={
                             staffData.find(
@@ -1432,6 +1466,12 @@ export const AddPO = ({}) => {
                                   type="number"
                                   name="Qty"
                                   value={item.Qty}
+                                  ref={
+                                    index ===
+                                    itemsList.length - 1
+                                      ? quantityInputRef
+                                      : null
+                                  }
                                   onChange={(e) =>
                                     handleQuantityChange(index, e)
                                   }
@@ -2033,6 +2073,19 @@ export const AddPO = ({}) => {
                               );
                             }}
                           ></PrintButton>
+
+<PDFDownloadLink
+                  document={<POPdf data={{...PoPreviewData , Total : totalAmount}} />}
+                  fileName="Purchase Order.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <PrintButton varient="Download" onClick={() => {console.log("error", error)}}></PrintButton>
+                    )
+                  }
+                </PDFDownloadLink> 
                         </>
                       ) : (
                         <></>

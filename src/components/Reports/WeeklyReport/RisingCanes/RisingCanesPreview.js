@@ -74,7 +74,7 @@ const RisingCanesPreview = () => {
     const input = document.getElementById("WR-RC-preview");
   
     // Explicitly set the font for the PDF generation
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
   
     // Use html2canvas to capture the content as an image with higher DPI
     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
@@ -112,7 +112,7 @@ const RisingCanesPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid print-page-width"
       >
         <div className="row PageA4 mt-2">

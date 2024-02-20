@@ -632,7 +632,7 @@ const EstimateTR = ({
                                 );
                               }}
                             >
-                              {formatAmount(estimate.EstimateAmount)}
+                              ${formatAmount(estimate.EstimateAmount)}
                             </TableCell>
                           </TableRow>
                         ))

@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import LocalPrintshopOutlinedIcon from "@mui/icons-material/LocalPrintshopOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import CustomizedTooltips from "./CustomizedTooltips";
+import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
 const PrintButton = ({ onClick, varient }) => {
   if (varient === "mail") {
     return (
@@ -54,6 +55,29 @@ const PrintButton = ({ onClick, varient }) => {
         </IconButton>
       </CustomizedTooltips>
     );
+  }else if (varient == "Download") {
+    return (
+    <CustomizedTooltips title="Download pdf" placement="top">
+        <IconButton
+          sx={{
+            color: "#404040",
+            border: "1px solid #0000003d",
+            borderRadius: "5px",
+            marginRight: "0.5em",
+            padding: "5px 12px",
+            textTransform: "capitalize",
+            "&:hover": {
+              // backgroundColor: "#171717",
+              // color: "white",
+              border: "1px solid #404040",
+              outlineColor: "black",
+            },
+          }}
+          onClick={onClick}
+        >
+          <DownloadOutlinedIcon sx={{ padding: 0 }} />
+        </IconButton>
+      </CustomizedTooltips>)
   }
 };
 

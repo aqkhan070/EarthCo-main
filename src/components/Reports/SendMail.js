@@ -18,6 +18,7 @@ const SendMail = () => {
   const title = queryParams.get("title");
   const mail = queryParams.get("mail");
   const customer = queryParams.get("customer");
+  const contact = queryParams.get("contact");
   const number = queryParams.get("number");
   const isOpen = queryParams.get("isOpen");
   const token = Cookies.get("token");
@@ -213,7 +214,7 @@ const SendMail = () => {
     if (title == `Service Request` && isOpen == "Open") {
       setEditorContent(`<p>
       <strong>Dear ${
-        customer ? customer : ""
+        contact ? contact : ""
       }</strong>, <br/><br/>Thank you for submitting your submitting your Service Request. We have processed your request, and have listed some important information attached to this e-mail.
       <br/><br/>If you have any additional questions or concerns, please contact us at ${
         loggedInUser.userEmail
@@ -224,7 +225,7 @@ const SendMail = () => {
     if (title == `Service Request` && isOpen == "Closed") {
       setEditorContent(`   <p>
       <strong>Dear ${
-         customer ? customer : ""
+        contact ? contact : ""
        },</strong> <br/><br/>The following Service Request - #${number} has been Closed.  We have completed your request, and have listed some important information attached to this e-mail.
        <br/><br/>If you have any additional questions or concerns, please contact us at ${
          loggedInUser.userEmail

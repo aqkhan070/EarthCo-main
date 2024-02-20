@@ -11,7 +11,7 @@ const useFetchCustomerName = () => {
   const [supplierName, setSupplierName] = useState("");
   const [staffName, setStaffName] = useState("")
 
-  const fetchName = async (id) => {
+  const fetchName = async (id, anonymFunction = () => {}) => {
     if (!id) {
       return;
     }
@@ -21,6 +21,7 @@ const useFetchCustomerName = () => {
         { headers }
       );
       setName(response.data);
+      anonymFunction()
     } catch (error) {
       console.error("API Call Error:", error);
     }

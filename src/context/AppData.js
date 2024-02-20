@@ -227,6 +227,8 @@ const DataFun = ({ children }) => {
     userEmail: Cookies.get("userEmail"),
     userRole: Cookies.get("userRole"),
     userId: Cookies.get("userId"),
+    ProviderToken : Cookies.get("ProviderToken")=="null" ? null :Cookies.get("ProviderToken"),
+    UserEmailGoogle : Cookies.get("UserEmailGoogle")
   });
 
   const [sRData, setSRData] = useState({});

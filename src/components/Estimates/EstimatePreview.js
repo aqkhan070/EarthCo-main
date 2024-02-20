@@ -17,10 +17,12 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import formatAmount from "../../custom/FormatAmount";
-
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import EstimatePdf from "./EstimatePdf";
 const EstimatePreview = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
+  const isDownload = Number(queryParams.get("download"));
   const isMail = queryParams.get("isMail");
 
   const { name, setName, fetchName, staffName, fetchStaffName } =
@@ -35,7 +37,8 @@ const EstimatePreview = () => {
 
   const navigate = useNavigate();
   const { estmPreviewId } = useContext(RoutingContext);
-  const { toggleFullscreen, setToggleFullscreen } = useContext(DataContext);
+  const { toggleFullscreen, setToggleFullscreen, loggedInUser } =
+    useContext(DataContext);
 
   const token = Cookies.get("token");
   const headers = {
@@ -72,7 +75,7 @@ const EstimatePreview = () => {
   const handleDownload = async () => {
     const input = document.getElementById("estimate-preview");
 
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
 
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -106,8 +109,16 @@ const EstimatePreview = () => {
     }, 3000);
 
     input.style.fontFamily = "";
+    if (isDownload == 1) {
+      window.close();
+    }
   };
-
+  const autoDownload = () => {
+    if (isDownload == 1) {
+      pdfDownload();
+    }
+  };
+  const [approvedItem, setApprovedItem] = useState([]);
   const fetchEstimates = async () => {
     if (idParam === 0) {
       return;
@@ -119,7 +130,12 @@ const EstimatePreview = () => {
       );
       setPreviewData(response.data);
       fetchEmail(response.data.EstimateData.ContactId);
-      fetchName(response.data.EstimateData.CustomerId);
+      setApprovedItem(
+        response.data.EstimateItemData.filter(
+          (item) => item.IsApproved === true
+        )
+      );
+      fetchName(response.data.EstimateData.CustomerId, autoDownload);
       fetchStaffName(response.data.EstimateData.RegionalManagerId);
 
       console.log("selected estimate is", response.data);
@@ -132,11 +148,11 @@ const EstimatePreview = () => {
   useEffect(() => {
     fetchEstimates();
   }, []);
-  
+
   useEffect(() => {
     // Calculate the total amount when previewData changes
     if (previewData && previewData.EstimateItemData) {
-      const total = previewData.EstimateItemData.reduce(
+      const total = approvedItem.reduce(
         (accumulator, item) => accumulator + item.Amount,
         0
       );
@@ -161,14 +177,13 @@ const EstimatePreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial", fontSize: "0.8rem" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width"
             : ""
         }
       >
-        {" "}
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
@@ -179,17 +194,17 @@ const EstimatePreview = () => {
                 >
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
-                      <h5 className="mb-0">EarthCo</h5>{" "}
-                      <h6 className="mb-0">
+                      <h5 style={{ lineHeight: 1 }} className="mb-0">
+                        {loggedInUser.CompanyName}
+                      </h5>
+                      <h6 style={{ lineHeight: 1.1 }} className="mb-0">
                         1225 East Wakeham Avenue
                         <br /> Santa Ana, California 92705 <br /> O 714.571.0455
                         F 714.571.0580 <br /> CL# C27 823185 / D49 1025053
-                      </h6>{" "}
+                      </h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
-                      {" "}
                       <h3>
-                        {" "}
                         <strong>Proposal</strong>
                       </h3>
                     </div>
@@ -203,14 +218,15 @@ const EstimatePreview = () => {
                     </div>
                   </div>
 
-                  <div className="row">
+                  <div style={{ fontSize: 12, lineHeight: 1 }} className="row">
                     <div className="col-md-6 col-sm-6">
-                      <h5 className="p-0 pt-4 mb-0 ">
+                      <h5 className="p-0  mb-0 ">
                         <strong>Submitted to</strong>
                       </h5>
-                      <h6 className="p-0 " style={{ maxWidth: " 18em" }}>
-                        {previewData.EstimateData.ContactName}
-                        <br />
+                      <h6 className="p-0 ">
+                        {previewData.EstimateData.ContactName},
+                        {previewData.EstimateData.ContactCompanyName}
+                        {/* <br />
                         {previewData.EstimateData.ContactAddress?.split(", ")
                           .slice(0, 2)
                           .join(", ")}
@@ -219,25 +235,22 @@ const EstimatePreview = () => {
                           .slice(2)
                           .join(", ")}
                         <br />
-                        {/* {previewData.EstimateData.ContactEmail} <br />
+                        {previewData.EstimateData.ContactEmail} <br />
                         {previewData.EstimateData.ContactPhone}*/}
                       </h6>
                     </div>
 
                     <div className="col-md-2 col-sm-2"></div>
                     <div className="col-md-4 col-sm-4">
-                      <table className="preview-table">
+                      <table className="preview-table mt-2">
                         <thead>
                           <tr>
                             <th>
-                              {" "}
                               <h6 className="mb-0">
-                                {" "}
                                 <strong>Date</strong>
-                              </h6>{" "}
+                              </h6>
                             </th>
                             <th>
-                              {" "}
                               <h6 className="text-right mb-0">
                                 {formatDate(
                                   previewData.EstimateData.IssueDate,
@@ -252,7 +265,7 @@ const EstimatePreview = () => {
                             <td className="table-cell-align mb-0 me-2">
                               <h6 className="mb-0">
                                 <strong>Estimate #</strong>
-                              </h6>{" "}
+                              </h6>
                             </td>
 
                             <td className="table-cell-align mb-0 text-right">
@@ -265,7 +278,7 @@ const EstimatePreview = () => {
                             <td className="table-cell-align me-2">
                               <h6 className="mb-0">
                                 <strong>Submitted by</strong>
-                              </h6>{" "}
+                              </h6>
                             </td>
 
                             <td className="table-cell-align text-right">
@@ -279,32 +292,32 @@ const EstimatePreview = () => {
 
                   <div className="row mt-2">
                     <div className="col-md-12 col-sm-12 text-center">
-                      {" "}
-                      <h3 className="mb-0">
+                      <h3 style={{ fontSize: 14 }} className="mb-0">
                         <strong>{name}</strong>
-                      </h3>{" "}
+                      </h3>
                       <hr className="mt-0" />
                     </div>
                     <div className="col-md-12 col-sm-12">
-                      {" "}
-                      <h4 className="mb-0">
+                      <h4 style={{ fontSize: 14 }} className="mb-0">
                         <strong>Description of work</strong>
                       </h4>
-                      <h6 className="mb-0">
-                        {" "}
+                      <h6 style={{ fontSize: 12 }} className="mb-0">
                         {previewData.EstimateData.EstimateNotes}
                       </h6>
                     </div>
                   </div>
-                  <h5 className="mb-0 mt-3">
+                  <h5 style={{ fontSize: 14 }} className="mb-0 mt-3">
                     <strong>Item(s)</strong>
                   </h5>
-                  <table id="empoloyees-tblwrapper" className="table mt-2">
+                  <table
+                    id="empoloyees-tblwrapper"
+                    className="table item-preview-table mt-2"
+                  >
                     <thead className="">
                       <tr className="preview-table-head preview-table-header">
                         <th className="text-start">
                           <strong>QTY</strong>
-                        </th>{" "}
+                        </th>
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
@@ -317,27 +330,23 @@ const EstimatePreview = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {previewData.EstimateItemData.map((item, index) => {
+                      {approvedItem.map((item, index) => {
                         return (
                           <>
                             <tr className="preview-table-row" key={index}>
-                              <td className="text-start">{item.Qty}</td>
+                              <td className="text-end">{item.Qty}</td>
                               <td>{item.Description}</td>
                               {/* <td className="text-right">{item.Rate}</td> */}
                               <td className="text-right">
-                                {item.Amount.toFixed(2)}
+                                ${formatAmount(item.Amount)}
                               </td>
                             </tr>
-                            {index === 17 && pdfClicked && (
+                            {index === 32 && pdfClicked && (
                               <tr
                                 style={{ height: "9em" }}
                                 className="preview-table-row"
                                 key={`empty-row-${index}`}
-                              >
-                                <td className="text-start"></td>
-                                <td></td>
-                                <td className="text-right"></td>
-                              </tr>
+                              ></tr>
                             )}
                           </>
                         );
@@ -347,7 +356,6 @@ const EstimatePreview = () => {
                 </div>
 
                 <div className="card-footer border-0">
-                  {" "}
                   <div className="row text-end px-5">
                     <div className="col-md-9 col-sm-8"></div>
                     <div
@@ -371,7 +379,7 @@ const EstimatePreview = () => {
                           <strong>Total:</strong>
                         </span>
                         <span style={{ fontSize: "16px", color: "black" }}>
-                          {formatAmount(totalAmount)}
+                          ${formatAmount(totalAmount)}
                         </span>
                       </div>
                     </div>
@@ -439,7 +447,7 @@ const EstimatePreview = () => {
               </div>
             </div>
           </div>
-        </div>{" "}
+        </div>
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
@@ -459,7 +467,6 @@ const EstimatePreview = () => {
                 </div>
               )}
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
@@ -468,13 +475,42 @@ const EstimatePreview = () => {
                 </button>
               </div>
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
-                <button
+                <PDFDownloadLink
+                  document={
+                    <EstimatePdf
+                      data={{
+                        ...previewData.EstimateData,
+                        RegionalManagerName: staffName,
+                        SelectedCompany: loggedInUser.CompanyName,
+                        CustomerName: name,
+                        ApprovedItems: approvedItem.filter(
+                          (item) => item.IsApproved === true
+                        ),
+                        Amount: approvedItem.reduce(
+                          (accumulator, item) => accumulator + item.Amount,
+                          0
+                        ),
+                      }}
+                    />
+                  }
+                  fileName="Estimate.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink>
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
               </div>
               {isMail ? (
                 <></>

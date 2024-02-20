@@ -14,6 +14,10 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import ProposalSummaryPdf from "./ProposalSummaryPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
+
 
 const ProposalSummary = ({setShowProposal}) => {
   const {
@@ -183,12 +187,26 @@ const ProposalSummary = ({setShowProposal}) => {
                  >
                    <i className="fa fa-print"></i>
                  </button>
-                 <button
+                 {/* <button
                    className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                    onClick={pdfDownload}
                  >
                    <i className="fa fa-download"></i>
-                 </button>{" "}
+                 </button> */}
+                 <PDFDownloadLink
+                  document={<ProposalSummaryPdf reportData={reportData}  CustomerName={name} />}
+                  fileName="Proposal Summary Report.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
                  {isMail ? (
                    <></>
                  ) : (
@@ -217,7 +235,7 @@ const ProposalSummary = ({setShowProposal}) => {
             <></>
           )}
 
-          <div  style={{ fontFamily: "Times New Roman" }} className="print-page-width">
+          <div  style={{ fontFamily: "Arial" }} className="print-page-width">
             <div className="PageLandscape mt-2">
               <div className="card">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">
@@ -263,7 +281,7 @@ const ProposalSummary = ({setShowProposal}) => {
                   <div className="table-responsive">
                     <table className="text-center table table-bordered ">
                       <thead>
-                        <tr className="preview-table-head text-start">
+                        <tr style={{padding : "0.5rem 0.5rem"}} className="preview-table-head text-start">
                           <th>SUBMITTED</th>
                           <th>PROPOSAL #</th>
                           <th style={{ maxWidth: "20em" }}>DESCRIPTION</th>

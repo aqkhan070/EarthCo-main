@@ -16,6 +16,8 @@ import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
 import formatAmount from "../../custom/FormatAmount";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import InvoicePDF from "./InvoicePDF";
 
 const InvoicePreview = () => {
   const { InvoiceData, toggleFullscreen, setToggleFullscreen, loggedInUser } =
@@ -64,43 +66,43 @@ const InvoicePreview = () => {
       handleDownload();
     }, 1000);
   };
-  
+
   const handleDownload = async () => {
     const input = document.getElementById("invoice-preview");
-  
-    input.style.fontFamily = "Times New Roman";
-  
+
+    input.style.fontFamily = "Arial";
+
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
-  
+
     const pdf = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
-  
+
     const imgWidth = 210; // A4 width in mm
     const pageHeight = 295; // A4 height in mm
     let imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
-  
+
     let position = 0;
-  
+
     pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
-  
+
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
-  
+
     pdf.save("Invoice.pdf");
     setTimeout(() => {
       setPdfClicked(false);
     }, 3000);
-  
+
     input.style.fontFamily = "";
   };
 
@@ -154,7 +156,6 @@ const InvoicePreview = () => {
 
   return (
     <>
-      {" "}
       <EventPopups
         open={showEmailAlert}
         setOpen={setShowEmailAlert}
@@ -162,30 +163,39 @@ const InvoicePreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className={
           toggleFullscreen
             ? "container-fluid custom-font-style print-page-width "
             : ""
         }
       >
-        {" "}
         <div className="row PageA4 mt-2">
           <div className="card">
             <div className={toggleFullscreen ? "" : ""}>
               <div id="invoice-preview" className=" get-preview ">
-                <div  style={{ minHeight: "23cm" }} className="card-body perview-pd">
+                <div
+                  style={{ minHeight: "23cm" }}
+                  className="card-body perview-pd"
+                >
                   <div className="row mt-2">
                     <div className="col-md-5 col-sm-5">
-                      <h5 className="mb-0">{loggedInUser.CompanyName}</h5>{" "}
-                      <h6 className="mb-0" style={{ width: "13em" }}>
-                        1225 E. Wakeham Avenue <br /> Santa Ana CA 92705 US{" "}
+                      <h5
+                        style={{ fontSize: 12, lineHeight: 1 }}
+                        className="mb-0"
+                      >
+                        {loggedInUser.CompanyName}
+                      </h5>
+                      <h6
+                        className="mb-0"
+                        style={{ width: "13em", fontSize: 12, lineHeight: 1 }}
+                      >
+                        1225 E. Wakeham Avenue <br /> Santa Ana CA 92705 US
                         <br /> lolas@earthcompany.org <br />
                         www.earthcompany.org
                       </h6>
                     </div>
                     <div className="col-md-3 col-sm-3 text-center">
-                      {" "}
                       <h3>
                         <strong>INVOICE</strong>
                       </h3>
@@ -210,6 +220,7 @@ const InvoicePreview = () => {
                                 <strong>BILL TO</strong>
                               </h5>
                               <h6 className="p-0 m-0">
+
                                 {name} <br />
                                 {InvoicePreviewData.Data.CustomerAddress?.split(
                                   ", "
@@ -299,7 +310,7 @@ const InvoicePreview = () => {
                           <strong>TERMS</strong>
                         </th>
                         <th className="text-right">
-                          <strong>Enclosed</strong>
+                          <strong>ENCLOSED</strong>
                         </th>
                       </tr>
                     </thead>
@@ -343,7 +354,7 @@ const InvoicePreview = () => {
                       <tr className="preview-table-head preview-table-header">
                         <th className="text-start">
                           <strong>QTY</strong>
-                        </th>{" "}
+                        </th>
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
@@ -356,24 +367,20 @@ const InvoicePreview = () => {
                       {InvoicePreviewData.ItemData.map((item, index) => {
                         return (
                           <>
-                          <tr className="preview-table-row" key={index}>
-                            <td className="text-start">{item.Qty}</td>
-                            <td>{item.Description}</td>
-                            <td className="text-right">
-                              {(item.Qty * item.Rate).toFixed(2)}
-                            </td>
-                          </tr>
-                          {index === 17 && pdfClicked && (
-  <tr
-    style={{ height: "9em" }}
-    className="preview-table-row"
-    key={`empty-row-${index}`}
-  >
-    <td className="text-start"></td>
-    <td></td>
-    <td className="text-right"></td>
-  </tr>
-)}
+                            <tr className="preview-table-row" key={index}>
+                              <td className="text-start">{item.Qty}</td>
+                              <td>{item.Description}</td>
+                              <td className="text-right">
+                                ${formatAmount(item.Qty * item.Rate)}
+                              </td>
+                            </tr>
+                            {index === 25 && pdfClicked && (
+                              <tr
+                                style={{ height: "9em" }}
+                                className="preview-table-row"
+                                key={`empty-row-${index}`}
+                              ></tr>
+                            )}
                           </>
                         );
                       })}
@@ -384,7 +391,6 @@ const InvoicePreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0">
-                        {" "}
                         <strong>SUBTOTAL:</strong>
                       </h6>
                     </div>
@@ -396,10 +402,10 @@ const InvoicePreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     {/* <div className="col-md-2 col-sm-3">
                   <h6 className="mb-0">
-                    {" "}
+                    
                     <strong>DISCOUNT:</strong>
                   </h6>
-                </div>{" "} */}
+                </div> */}
                     <div className="col-md-12 py-0">
                       <hr className="mb-1" />
                     </div>
@@ -411,7 +417,9 @@ const InvoicePreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">${formatAmount(totalAmount)}</h6>
+                      <h6 className=" text-end">
+                        ${formatAmount(totalAmount)}
+                      </h6>
                     </div>
                     <div className="col-md-12 py-0">
                       <div
@@ -424,12 +432,14 @@ const InvoicePreview = () => {
                 </div>
                 <div className="card-footer border-0 text-center">
                   <h6 style={{ fontSize: "12px" }}>
-                For invoice questions please contact Yisel Ferreyra at Yiself@earthcompany.org</h6>
+                    For invoice questions please contact Yisel Ferreyra at
+                    Yiself@earthcompany.org
+                  </h6>
                 </div>
               </div>
             </div>
           </div>
-        </div>{" "}
+        </div>
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
@@ -450,7 +460,6 @@ const InvoicePreview = () => {
               )}
 
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
@@ -459,13 +468,37 @@ const InvoicePreview = () => {
                 </button>
               </div>
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
-                <button
+               <PDFDownloadLink
+                  document={
+                    <InvoicePDF
+                      data={{
+                        ...InvoicePreviewData.Data,
+                        RegionalManagerName: "staffName",
+                        SelectedCompany: loggedInUser.CompanyName,
+                        CustomerName: name,
+                        ApprovedItems: InvoicePreviewData.ItemData,
+                        Amount: totalAmount
+                      }}
+                    />
+                  }
+                  fileName="Invoice.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
               </div>
               {isMail ? (
                 <></>

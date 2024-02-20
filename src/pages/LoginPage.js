@@ -114,6 +114,8 @@ const LoginPage = () => {
         Cookies.set("userId", response.data.Data.UserId, { expires: 7 });
         Cookies.set("CompanyName", response.data.CompanyName, { expires: 7 });
         Cookies.set("CompanyId", response.data.CompanyId, { expires: 7 });
+        Cookies.set("ProviderToken", response.data.ProviderToken, { expires: 7 });
+        Cookies.set("UserEmailGoogle", response.data.UserEmail, { expires: 7 });
         setBtndisable(false);
         setError("");
         const token = response.data.token.data;

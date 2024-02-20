@@ -14,6 +14,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import formatAmount from "../../custom/FormatAmount";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import POPdf from "./POPdf";
 
 const POPreview = () => {
   const token = Cookies.get("token");
@@ -97,54 +99,51 @@ const POPreview = () => {
     }, 3000);
   };
 
-
-
   const pdfDownload = () => {
     setPdfClicked(true);
     setTimeout(() => {
       handleDownload();
     }, 1000);
   };
-  
+
   const handleDownload = async () => {
     const input = document.getElementById("PO-preview");
-  
-    input.style.fontFamily = "Times New Roman";
-  
+
+    input.style.fontFamily = "Arial";
+
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
-  
+
     const pdf = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
-  
+
     const imgWidth = 210; // A4 width in mm
     const pageHeight = 295; // A4 height in mm
     let imgHeight = (canvas.height * imgWidth) / canvas.width;
     let heightLeft = imgHeight;
-  
+
     let position = 0;
-  
+
     pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
-  
+
     while (heightLeft >= 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
       pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
-  
+
     pdf.save("purchase order.pdf");
     setTimeout(() => {
       setPdfClicked(false);
     }, 3000);
-  
+
     input.style.fontFamily = "";
   };
-  
 
   return (
     <>
@@ -162,9 +161,8 @@ const POPreview = () => {
             : ""
         }
       >
-        {" "}
         <div
-          style={{ fontFamily: "Times New Roman" }}
+          style={{ fontFamily: "Arial", fontSize: "0.8rem" }}
           className="row PageA4 mt-2"
         >
           <div className="card">
@@ -173,18 +171,16 @@ const POPreview = () => {
                 <div className="card-body perview-pd">
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
-                      {/* <h5 className="mb-0 mt-3">EarthCo</h5>{" "} */}
+                      {/* <h5 className="mb-0 mt-3">EarthCo</h5> */}
                       {/* <h6 className="mb-0">
                         1225 East Wakeham Avenue <br />
                         Santa Ana, California <br /> 92705 O 714.571.0455 F
                         714.571.0580 CL# C27 823185 / D49 1025053
-                      </h6>{" "} */}
+                      </h6> */}
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
-                      {" "}
                       <h3>
-                        {" "}
-                        <strong>Purchase  Order</strong>
+                        <strong>Purchase Order</strong>
                       </h3>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
@@ -203,11 +199,10 @@ const POPreview = () => {
                         <tbody>
                           <tr>
                             <td className="p-0">
-                              {" "}
                               <h6 className="mb-0 mt-3">
-                                {PoPreviewData.Data.SupplierId}.{" "}
+                                {/* {PoPreviewData.Data.SupplierId}. */}
                                 {PoPreviewData.Data.SupplierName || ""}
-                              </h6>{" "}
+                              </h6>
                               <h6 className="mb-3">
                                 {PoPreviewData.Data.SupplierAddress}
                               </h6>
@@ -222,14 +217,12 @@ const POPreview = () => {
                       <table className="preview-table">
                         <thead>
                           <tr className=" ">
-                            <th className="text-end">
-                              {" "}
+                            <th className="">
                               <h6 className="mb-0">
                                 <strong>Date: </strong>
-                              </h6>{" "}
+                              </h6>
                             </th>
                             <th>
-                              {" "}
                               <h6 className="text-start mb-0">
                                 &nbsp;
                                 {formatDate(
@@ -242,10 +235,10 @@ const POPreview = () => {
                         </thead>
                         <tbody>
                           <tr>
-                            <td className="table-cell-align me-2 text-end">
+                            <td className="table-cell-align me-2 ">
                               <h6>
                                 <strong>Purchase Order #: </strong>
-                              </h6>{" "}
+                              </h6>
                             </td>
 
                             <td className="table-cell-align text-start">
@@ -263,7 +256,7 @@ const POPreview = () => {
                       <tr className="preview-table-head preview-table-header">
                         <th>
                           <strong>Item Code</strong>
-                        </th>{" "}
+                        </th>
                         <th>
                           <strong>DESCRIPTION</strong>
                         </th>
@@ -282,25 +275,21 @@ const POPreview = () => {
                       {PoPreviewData.ItemData.map((item, index) => {
                         return (
                           <>
-                          <tr className="preview-table-row" key={index}>
-                            <td>{item.ItemId}</td>
-                            <td>{item.Description}</td>
-                            <td className="text-right">{item.Qty}</td>
-                            <td className="text-right">{item.Rate}</td>
-                            <td className="text-right">
-                              {(item.Qty * item.Rate).toFixed(2)}
-                            </td>
-                          </tr>
-                          {index === 23 && pdfClicked && (
+                            <tr className="preview-table-row" key={index}>
+                              <td>{item.ItemId}</td>
+                              <td> {index}{item.Description}</td>
+                              <td className="text-right">{item.Qty}</td>
+                              <td className="text-right">{item.Rate}</td>
+                              <td className="text-right">
+                                ${formatAmount(item.Qty * item.Rate)}
+                              </td>
+                            </tr>
+                            {index === 32 && pdfClicked && (
                               <tr
-                                style={{ height: "3em" }}
+                                style={{ height: "7em" }}
                                 className="preview-table-row"
                                 key={`empty-row-${index}`}
-                              >
-                                <td className="text-start"></td>
-                                <td></td>
-                                <td className="text-right"></td>
-                              </tr>
+                              ></tr>
                             )}
                           </>
                         );
@@ -311,7 +300,6 @@ const POPreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0">
-                        {" "}
                         <strong>SUBTOTAL:</strong>
                       </h6>
                     </div>
@@ -323,10 +311,10 @@ const POPreview = () => {
                     <div className="col-md-8 col-sm-6"></div>
                     {/* <div className="col-md-2 col-sm-3">
                   <h6 className="mb-0">
-                    {" "}
+                    
                     <strong>DISCOUNT:</strong>
                   </h6>
-                </div>{" "} */}
+                </div> */}
                     <div className="col-md-12 py-0">
                       <hr className="mb-1" />
                     </div>
@@ -338,7 +326,9 @@ const POPreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
-                      <h6 className=" text-end">${formatAmount(totalAmount)}</h6>
+                      <h6 className=" text-end">
+                        ${formatAmount(totalAmount)}
+                      </h6>
                     </div>
                     <div className="col-md-12 py-0">
                       <div
@@ -352,7 +342,7 @@ const POPreview = () => {
               </div>
             </div>
           </div>
-        </div>{" "}
+        </div>
         {showbuttons ? (
           <div className={toggleFullscreen ? "row ms-2" : ""}>
             <div className="d-flex align-items-end flex-column bd-highlight mb-3">
@@ -373,7 +363,6 @@ const POPreview = () => {
               )}
 
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
@@ -382,13 +371,28 @@ const POPreview = () => {
                 </button>
               </div>
               <div className="p-2 pt-0 bd-highlight">
-                {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
+
+                <PDFDownloadLink
+                  document={<POPdf data={{...PoPreviewData , Total : totalAmount}} />}
+                  fileName="Purchase Order.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
+
               </div>
               {isMail ? (
                 <></>

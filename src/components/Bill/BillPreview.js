@@ -14,6 +14,9 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import formatAmount from "../../custom/FormatAmount";
+import BillPdf from "./BillPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
 const BillPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ const BillPreview = () => {
   const handleDownload = async () => {
     const input = document.getElementById("bill-preview");
   
-    input.style.fontFamily = "Times New Roman";
+    input.style.fontFamily = "Arial";
   
     const canvas = await html2canvas(input, { dpi: 300, scale: 3 });
     const imgData = canvas.toDataURL("image/jpeg", 1.0);
@@ -161,7 +164,7 @@ const BillPreview = () => {
       >
         {" "}
         <div
-          style={{ fontFamily: "Times New Roman" }}
+          style={{ fontFamily: "Arial" }}
           className="row PageA4 mt-2"
         >
           <div className="card">
@@ -174,7 +177,7 @@ const BillPreview = () => {
                       <h6 className="mb-0">
                         1225 East Wakeham Avenue
                         <br /> Santa Ana, California 92705 <br /> O 714.571.0455
-                        F 714.571.0580 CL# C27 823185 / D49 1025053
+                        F 714.571.0580 <br /> CL# C27 823185 / D49 1025053
                       </h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
@@ -202,7 +205,7 @@ const BillPreview = () => {
                             <td className="p-0 pt-2">
                               {" "}
                               <h6 className="mb-0">
-                                {billPreviewData.Data.SupplierId}.{" "}
+                             
                                 {billPreviewData.Data.SupplierName || ""}
                               </h6>{" "}
                               <h6 className="mb-2">
@@ -275,11 +278,11 @@ const BillPreview = () => {
                         return (
                           <>
                           <tr className="preview-table-row" key={index}>
-                            <td>{index}{item.Description}</td>
+                            <td>{item.Description}</td>
                             <td className="text-right">{item.Qty}</td>
                             <td className="text-right">{item.Rate}</td>
                             <td className="text-right">
-                              {(item.Qty * item.Rate).toFixed(2)}
+                              ${formatAmount(item.Qty * item.Rate)}
                             </td>
                           </tr>
                           {index === 22 && pdfClicked && (
@@ -374,12 +377,27 @@ const BillPreview = () => {
               </div>
               <div className="p-2 pt-0 bd-highlight">
                 {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={pdfDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>{" "}
+                </button>{" "} */}
+
+                <PDFDownloadLink
+                  document={<BillPdf data={{...billPreviewData , Total : totalAmount}} />}
+                  fileName="bill.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
               </div>
               {isMail ? (
                 <></>

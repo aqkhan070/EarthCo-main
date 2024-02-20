@@ -117,7 +117,7 @@ const Bills = () => {
                       <TableCell>Memo</TableCell>
                       <TableCell>Currency</TableCell>
                       <TableCell>Tags</TableCell>
-                      <TableCell align="center">Preview</TableCell>
+                      {/* <TableCell align="center">Preview</TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -145,12 +145,12 @@ const Bills = () => {
                           <TableCell>{bill.SupplierName}</TableCell>
                           <TableCell>{TblDateFormat(bill.DueDate)}</TableCell>
                           <TableCell className="text-end ">
-                            ${formatAmount(bill.Amount)}
+                           ${formatAmount(bill.Amount)}
                           </TableCell>
                           <TableCell>{bill.Memo}</TableCell>
                           <TableCell>{bill.Currency}</TableCell>
                           <TableCell>{bill.Tags}</TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             <Button
                               onClick={() => {
                                 navigate(
@@ -160,7 +160,7 @@ const Bills = () => {
                             >
                               <Visibility />
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       ))}
                   </TableBody>

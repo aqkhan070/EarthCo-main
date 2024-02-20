@@ -83,6 +83,12 @@ import SprayTechIndex from "./components/SprayTech/SprayTechIndex";
 import SprayTechList from "./components/SprayTech/SprayTechList";
 import STPreview from "./components/SprayTech/STPreview";
 import SprayTechPreview from "./components/ServiceRequest/SprayTechPreview";
+import WeeklyReportPdf from "./components/Reports/WeeklyReport/WeeklyReportPdf";
+
+
+
+
+
 
 function App() {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
@@ -240,6 +246,10 @@ function App() {
               <Route
                 path="irrigation-audit/preview"
                 element={<IrrigationAuditPreview />}
+              />
+               <Route
+                path="testpdf"
+                element={<WeeklyReportPdf />}
               />
             </Route>
             <Route path="*" element={<ErrorPage />} />

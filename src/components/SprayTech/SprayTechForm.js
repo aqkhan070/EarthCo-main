@@ -914,8 +914,12 @@ const SprayTechForm = () => {
                             id="staff-autocomplete"
                             size="small"
                             options={staffData.filter(
-                              (staff) => staff.Role !== "Admin"
-                            )}
+                              (staff) =>
+                              staff.Role === "Regional Manager" ||
+                              staff.UserId === 1593 ||
+                              staff.UserId === 3252 ||
+                              staff.UserId ===6146
+                          )}
                             getOptionLabel={(option) => option.FirstName || ""}
                             value={
                               staffData.find(

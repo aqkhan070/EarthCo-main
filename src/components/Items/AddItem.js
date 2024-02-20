@@ -1,4 +1,11 @@
-import { Alert, FormControl, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Alert,
+  FormControl,
+  MenuItem,
+  Select,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useContext, useEffect, useState } from "react";
@@ -59,6 +66,23 @@ const AddItem = ({}) => {
     } catch (error) {
       console.log("API call error", error);
     }
+  };
+
+  const handleAutocompleteChange = (
+    fieldName,
+    valueProperty,
+    event,
+    newValue
+  ) => {
+    const simulatedEvent = {
+      target: {
+        name: fieldName,
+        value: newValue ? newValue[valueProperty] : "",
+        type: "number",
+      },
+    };
+
+    handleChange(simulatedEvent);
   };
 
   const handleChange = (e) => {
@@ -179,22 +203,36 @@ const AddItem = ({}) => {
                   <label htmlFor="lastName" className="form-label">
                     Income Account<span className="text-danger">*</span>
                   </label>
-                  <FormControl fullWidth variant="outlined">
-                    <Select
-                      name="IncomeAccount"
-                      error={submitClicked && !formData.IncomeAccount}
-                      value={formData.IncomeAccount || ""}
-                      onChange={handleChange}
-                      size="small"
-                    >
-                      <MenuItem value=""></MenuItem>
-                      {incomeAccountList.map((type) => (
-                        <MenuItem key={type.AccountId} value={type.AccountId}>
-                          {type.Name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <Autocomplete
+                    size="small"
+                    options={incomeAccountList}
+                    getOptionLabel={(option) => option.Name || ""}
+                    value={
+                      incomeAccountList.find(
+                        (po) => po.AccountId === formData.IncomeAccount
+                      ) || null
+                    }
+                    onChange={(event, newValue) =>
+                      handleAutocompleteChange(
+                        "IncomeAccount",
+                        "AccountId",
+                        event,
+                        newValue
+                      )
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.AccountId === value.IncomeAccount
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        placeholder="Select Account"
+                        className="bg-white"
+                      />
+                    )}
+                    aria-label="Contact select"
+                  />
                 </div>
                 <div className="col-md-3 mb-3">
                   <label htmlFor="lastName" className="form-label">
@@ -329,31 +367,42 @@ const AddItem = ({}) => {
                         <label htmlFor="firstName" className="form-label">
                           Expense Account<span className="text-danger">*</span>
                         </label>
-                        <FormControl fullWidth variant="outlined">
-                          <Select
-                            name="ExpenseAccount"
-                            error={submitClicked && !formData.ExpenseAccount}
-                            value={formData.ExpenseAccount || ""}
-                            onChange={handleChange}
-                            size="small"
-                          >
-                            <MenuItem value=""></MenuItem>
-                            {incomeAccountList.map((type) => (
-                              <MenuItem
-                                key={type.AccountId}
-                                value={type.AccountId}
-                              >
-                                {type.Name}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
+                        <Autocomplete
+                    size="small"
+                    options={incomeAccountList}
+                    getOptionLabel={(option) => option.Name || ""}
+                    value={
+                      incomeAccountList.find(
+                        (po) => po.AccountId === formData.ExpenseAccount
+                      ) || null
+                    }
+                    onChange={(event, newValue) =>
+                      handleAutocompleteChange(
+                        "ExpenseAccount",
+                        "AccountId",
+                        event,
+                        newValue
+                      )
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.AccountId === value.ExpenseAccount
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label=""
+                        placeholder="Select Account"
+                        className="bg-white"
+                      />
+                    )}
+                    aria-label="Contact select"
+                  />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="col-md-8">
-                <BackButton
+                  <BackButton
                     onClick={() => {
                       setFormData({});
                       navigate(`/items`);
@@ -381,8 +430,6 @@ const AddItem = ({}) => {
                   >
                     Save
                   </LoaderButton>
-
-                  
                 </div>
               </div>
             </div>

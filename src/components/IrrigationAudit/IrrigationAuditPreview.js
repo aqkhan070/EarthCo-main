@@ -14,6 +14,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import IrrigationAuditPdf from "./IrrigationAuditPdf";
 
 const IrrigationAuditPreview = () => {
   const token = Cookies.get("token");
@@ -139,7 +141,7 @@ const IrrigationAuditPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid "
       >
         {toggleFullscreen ? (
@@ -168,12 +170,28 @@ const IrrigationAuditPreview = () => {
                   >
                     <i className="fa fa-print"></i>
                   </button>
-                  <button
+                  {/* <button
                     className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                     onClick={handleDownload}
                   >
                     <i className="fa fa-download"></i>
-                  </button>{" "}
+                  </button>{" "} */}
+                  <PDFDownloadLink
+                    document={
+                      <IrrigationAuditPdf controllerData={controllerData} />
+                    }
+                    fileName="Controller Audit.pdf"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? (
+                        " "
+                      ) : (
+                        <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn">
+                          <i className="fa fa-download"></i>
+                        </button>
+                      )
+                    }
+                  </PDFDownloadLink>
                   {isMail ? (
                     <></>
                   ) : (

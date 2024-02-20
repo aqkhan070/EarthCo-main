@@ -314,7 +314,7 @@ const PurchaseOrder = () => {
                               <TableCell>{po.BillNumber}</TableCell>
                               <TableCell>{po.InvoiceNumber}</TableCell>
                               <TableCell className="text-end">
-                                {formatAmount(po.Amount)}
+                                ${formatAmount(po.Amount)}
                               </TableCell>
                               {/* <TableCell>
                                     <div className="button-container">

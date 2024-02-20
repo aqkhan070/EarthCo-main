@@ -14,6 +14,8 @@ import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useFetchCustomerName from "../Hooks/useFetchCustomerName";
+import SummaryReportPdf from "./SummaryReportPdf"
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const SummaryReportPreview = ({setShowSummaryReport}) => {
   const {
@@ -173,12 +175,26 @@ const SummaryReportPreview = ({setShowSummaryReport}) => {
                  >
                    <i className="fa fa-print"></i>
                  </button>
-                 <button
+                 {/* <button
                    className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                    onClick={handleDownload}
                  >
                    <i className="fa fa-download"></i>
-                 </button>{" "}
+                 </button> */}
+                 <PDFDownloadLink
+                  document={<SummaryReportPdf reportData={reportData}  CustomerName={name} />}
+                  fileName="Summary Report.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink> 
                  {isMail ? (
                    <></>
                  ) : (
@@ -207,7 +223,7 @@ const SummaryReportPreview = ({setShowSummaryReport}) => {
             <></>
           )}
 
-          <div  style={{ fontFamily: "Times New Roman" }} className="print-page-width">
+          <div  style={{ fontFamily: "Arial" }} className="print-page-width">
             <div  className="PageLandscape mt-2">
               <div className="card">
                 {/* <div className="card-header"> Invoice <strong>01/01/01/2018</strong> <span className="float-end">

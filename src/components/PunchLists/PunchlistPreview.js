@@ -15,6 +15,8 @@ import EventPopups from "../Reusable/EventPopups";
 import TblDateFormat from "../../custom/TblDateFormat";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PunchListPdf from "./PunchListPdf";
 
 const PunchlistPreview = () => {
   const token = Cookies.get("token");
@@ -152,7 +154,7 @@ const PunchlistPreview = () => {
         text={emailAlertTxt}
       />
       <div
-        style={{ fontFamily: "Times New Roman" }}
+        style={{ fontFamily: "Arial" }}
         className="container-fluid"
       >
         {toggleFullscreen ? (
@@ -181,12 +183,29 @@ const PunchlistPreview = () => {
                 >
                   <i className="fa fa-print"></i>
                 </button>
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>{" "}
+                </button>{" "} */}
+              <PDFDownloadLink
+                    document={
+                      <PunchListPdf pLData={pLData} pLDetailData={pLDetailData} />
+                    }
+                    fileName="PunchList.pdf"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? (
+                        " "
+                      ) : (
+                        <button className="btn btn-sm btn-outline-secondary custom-csv-link mb-2 mt-3 estm-action-btn"
+                        onClick={() => {console.log("plpdf error", error)}}>
+                          <i className="fa fa-download"></i>
+                        </button>
+                      )
+                    }
+                  </PDFDownloadLink>
                 {isMail ? (
                   <></>
                 ) : (

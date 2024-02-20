@@ -1,0 +1,284 @@
+import React, { useContext } from "react";
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
+import s from "../CommonComponents/PdfStyles";
+import { PDFViewer } from "@react-pdf/renderer";
+import logo from "../../assets/images/logo/earthco_logo.png";
+import formatDate from "../../custom/FormatDate";
+import formatAmount from "../../custom/FormatAmount";
+
+const SRPdf = ({ data }) => {
+  return (
+    // <PDFViewer style={{ width: "100%", height: "800px" }}>
+      <Document>
+        <Page size="A4" orientation="portrait">
+          <View style={[s.containerFluid]}>
+            <View style={[s.row]}>
+              <View style={[s.col4]}>
+                <Text style={s.text}>EarthCo</Text>
+
+                <Text style={s.text}>1225 East Wakeham Avenue</Text>
+
+                <Text style={s.text}>Santa Ana, California 92705</Text>
+                <Text style={s.text}>Phone: 714.571.0455</Text>
+                <Text style={s.text}>www.earthcompany.org</Text>
+              </View>
+              <View style={[s.col4, s.textCenter, { marginTop: "20px" }]}>
+                <Text style={s.title}>Service Request</Text>
+              </View>
+
+              <View style={[s.col4, s.textCenter]}>
+                <Image style={{ width: "130px" }} src={logo}></Image>
+              </View>
+              <View style={[s.col3, { marginTop: "10px" }]}>
+                <View
+                  style={{
+                    marginTop: " 10px",
+                    backgroundColor: "#CCCCCC",
+                    paddingLeft: "10px",
+                  }}
+                >
+                  <Text style={[s.heading, { marginBottom: 4, marginTop: 4 }]}>
+                    Requested By:
+                  </Text>
+                </View>
+              </View>
+              <View style={[s.col3, { marginTop: "10px" }]}>
+                <View
+                  style={{
+                    marginTop: " 10px",
+                    backgroundColor: "#CCCCCC",
+                    paddingLeft: "10px",
+                  }}
+                >
+                  <Text style={[s.heading, { marginBottom: 4, marginTop: 4 }]}>
+                    Service Location:
+                  </Text>
+                </View>
+              </View>
+              <View style={[s.col6, s.textCenter, { marginTop: "20px" }]}>
+                <Text style={[s.text, { fontWeight: "bold" }]}>
+                  Date Created: {formatDate(data.Data.CreatedDate, false)}
+                </Text>
+              </View>
+              <View style={[s.row, { marginTop: "0px" }]}>
+                <View
+                  style={[
+                    s.col3,
+                    { backgroundColor: "#E9E9E9", paddingLeft: "10px" },
+                  ]}
+                >
+                  <Text style={s.tblText}>{data.name}</Text>
+                  <Text style={s.tblText}>{data.Data.ContactCompanyName}</Text>
+                </View>
+                <View
+                  style={[
+                    s.col3,
+                    { backgroundColor: "#E9E9E9", paddingLeft: "10px" },
+                  ]}
+                >
+                  <Text style={s.tblText}>
+                    {data.Data.ServiceLocationAddress}
+                  </Text>
+                </View>
+                <View style={[s.col6]}></View>
+              </View>
+
+              <View
+                style={[
+                  s.col4,
+                  {
+                    marginTop: " 10px",
+                    backgroundColor: "#CCCCCC",
+                    paddingLeft: " 10px",
+                  },
+                ]}
+              >
+                <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
+                  Service Request Details
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  s.col8,
+                  {
+                    marginTop: " 10px",
+                    paddingLeft: " 10px",
+                    backgroundColor: "#CCCCCC",
+                  },
+                ]}
+              >
+                <Text
+                  style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}
+                ></Text>
+              </View>
+
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <View
+                  style={[
+                    s.col4,
+
+                    {
+                      paddingLeft: " 10px",
+                      borderBottom: "1px solid #CCCCCC",
+                    },
+                  ]}
+                >
+                  <Text style={[s.tblText, { marginRight: "30px" }]}>
+                    Service Request Number:
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.col8,
+                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                  ]}
+                >
+                  <Text style={s.tblText}>
+                    {data.Data.ServiceRequestNumber}
+                  </Text>
+                </View>
+
+                <View
+                  style={[
+                    s.col4,
+
+                    {
+                      paddingLeft: " 10px",
+                      borderBottom: "1px solid #CCCCCC",
+                    },
+                  ]}
+                >
+                  <Text style={[s.tblText, { marginRight: "30px" }]}>
+                    Second Request:
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.col8,
+                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                  ]}
+                >
+                  <Text style={s.tblText}>No</Text>
+                </View>
+
+                <View
+                  style={[
+                    s.col4,
+
+                    {
+                      paddingLeft: " 10px",
+                      borderBottom: "1px solid #CCCCCC",
+                    },
+                  ]}
+                >
+                  <Text style={[s.tblText, { marginRight: "30px" }]}>
+                    Date Completed
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.col8,
+                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                  ]}
+                >
+                  <Text style={s.tblText}>
+                    {" "}
+                    {formatDate(data.Data.CompletedDate, false)}
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={[
+                  s.col4,
+                  {
+                    marginTop: " 10px",
+                    backgroundColor: "#CCCCCC",
+                    paddingLeft: " 10px",
+                  },
+                ]}
+              >
+                <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
+                  Actions
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  s.col8,
+                  {
+                    marginTop: " 10px",
+                    paddingLeft: " 10px",
+                    backgroundColor: "#CCCCCC",
+                  },
+                ]}
+              >
+                <Text
+                  style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}
+                ></Text>
+              </View>
+
+              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <View
+                  style={[
+                    s.col4,
+
+                    {
+                      paddingLeft: " 10px",
+                      borderBottom: "1px solid #CCCCCC",
+                    },
+                  ]}
+                >
+                  <Text style={[s.tblText, { marginRight: "30px" }]}>
+                    Work Requested
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.col8,
+                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                  ]}
+                >
+                  <Text style={s.tblText}>{data.Data.WorkRequest}</Text>
+                </View>
+
+                <View
+                  style={[
+                    s.col4,
+
+                    {
+                      paddingLeft: " 10px",
+                      borderBottom: "1px solid #CCCCCC",
+                    },
+                  ]}
+                >
+                  <Text style={[s.tblText, { marginRight: "30px" }]}>
+                    Action Taken
+                  </Text>
+                </View>
+                <View
+                  style={[
+                    s.col8,
+                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                  ]}
+                >
+                  <Text style={s.tblText}>{data.Data.ActionTaken}</Text>
+                </View>
+              </View>
+
+              <View style={[s.col12, s.textCenter, { marginTop: "200px" }]}>
+                <Text style={s.small}>
+                  *Note Beginning October 1, Earthco will commence annual skip
+                  mowing of the grass due to the winter season
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Page>
+      </Document>
+    // </PDFViewer> 
+  );
+};
+
+export default SRPdf;
