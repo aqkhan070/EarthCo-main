@@ -22,6 +22,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
 
 import { useNavigate } from "react-router-dom";
+import { useEstimateContext } from "../../context/EstimateContext";
+
 
 import TblDateFormat from "../../custom/TblDateFormat";
 import AddButton from "../Reusable/AddButton";
@@ -40,9 +42,11 @@ const Invoices = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { setEstimateLinkData } = useEstimateContext();
 
   useEffect(() => {
     fetchInvoices();
+    setEstimateLinkData({})
   }, []);
 
   const [tablePage, setTablePage] = useState(0);

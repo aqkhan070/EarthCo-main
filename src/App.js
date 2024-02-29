@@ -42,7 +42,6 @@ import StaffList from "./components/Staff/StaffList";
 import AddStaff from "./components/Staff/AddStaff";
 import ErrorPage from "./pages/ErrorPage";
 import ResetPassword from "./pages/ResetPassword";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import EstimatePreview from "./components/Estimates/EstimatePreview";
 import PurchaseOrder from "./components/PurchaseOrder/PurchaseOrder";
 import PurchaseOrderIndex from "./components/PurchaseOrder/PurchaseOrderIndex";
@@ -83,7 +82,7 @@ import SprayTechIndex from "./components/SprayTech/SprayTechIndex";
 import SprayTechList from "./components/SprayTech/SprayTechList";
 import STPreview from "./components/SprayTech/STPreview";
 import SprayTechPreview from "./components/ServiceRequest/SprayTechPreview";
-import WeeklyReportPdf from "./components/Reports/WeeklyReport/WeeklyReportPdf";
+import EstimatePdf from "./components/Estimates/EstimatePdf";
 
 
 
@@ -249,7 +248,7 @@ function App() {
               />
                <Route
                 path="testpdf"
-                element={<WeeklyReportPdf />}
+                element={<EstimatePdf />}
               />
             </Route>
             <Route path="*" element={<ErrorPage />} />

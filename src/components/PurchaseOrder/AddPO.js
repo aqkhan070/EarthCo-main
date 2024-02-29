@@ -35,7 +35,8 @@ import PrintButton from "../Reusable/PrintButton";
 import HandleDelete from "../Reusable/HandleDelete";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import POPdf from "./POPdf";
-
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdfOutlined';
+;
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -1848,7 +1849,7 @@ export const AddPO = ({}) => {
                           href={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                        >
+                        >{file.FileName.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"100px", marginLeft : "20px"}} />:
                           <img
                             src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             alt={file.FileName}
@@ -1857,7 +1858,7 @@ export const AddPO = ({}) => {
                               height: "120px",
                               objectFit: "cover",
                             }}
-                          />
+                          />}
                         </a>
                         <p
                           className="file-name-overlay"
@@ -1909,6 +1910,7 @@ export const AddPO = ({}) => {
                           target="_blank"
                           rel="noopener noreferrer"
                         >
+                          {file.FileName.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"100px", marginLeft : "20px"}} />:
                           <img
                             src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                             alt={file.FileName}
@@ -1917,7 +1919,7 @@ export const AddPO = ({}) => {
                               height: "120px",
                               objectFit: "cover",
                             }}
-                          />
+                          />}
                         </a>
                         <p
                           className="file-name-overlay"

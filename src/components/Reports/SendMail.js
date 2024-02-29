@@ -12,7 +12,8 @@ import { DataContext } from "../../context/AppData";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import BackButton from "../Reusable/BackButton";
 import CustomizedTooltips from "../Reusable/CustomizedTooltips";
-
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdfOutlined';
+;
 const SendMail = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const title = queryParams.get("title");
@@ -26,7 +27,7 @@ const SendMail = () => {
     Authorization: `Bearer ${token}`,
   };
 
-  const { selectedImages, setSelectedImages, loggedInUser } =
+  const { selectedImages, setSelectedImages, loggedInUser,selectedPdf, setselectedPdf } =
     useContext(DataContext);
 
   const [emailInput, setEmailInput] = useState("");
@@ -43,7 +44,7 @@ const SendMail = () => {
     }. We understand the importance of creating a beautiful and sustainable environment for your commercial space, and we are committed to delivering exceptional landscaping services that meet your unique needs.<br>Our dedicated team of experts is here to ensure that your landscaping dreams come to life, making your property not only aesthetically pleasing but also environmentally responsible.<br>Should you have any questions or require further assistance, please do not hesitate to contact our friendly customer support team. <br>Best Reguards <br>EarthCo Comercial Landscape`
   );
   const [subject, setSubject] = useState(
-    `${customer} ${title} ${number ? "#"+number:" "}  ${isOpen ? "is" + isOpen:" "}`
+    `${customer} ${title} ${number ? "#"+number:" "}  ${isOpen ? "is " + isOpen:" "}`
   );
 
   const [disableButton, setDisableButton] = useState(false);
@@ -118,6 +119,7 @@ const SendMail = () => {
       ReplyToName: loggedInUser.userName,
       Body: editorContent,
       FilePaths: filePathsArray,
+      // Pdf : selectedPdf
     };
 
     console.log("mergedEmailData:", mergedEmailData);
@@ -245,6 +247,8 @@ const SendMail = () => {
   
         setSubject(`Proposal ${number} for ${customer}`);
     }
+
+    setFiles([selectedPdf])
 
     return () => {
       setSelectedImages([]);
@@ -406,11 +410,12 @@ const SendMail = () => {
                       }}
                     >
                       <div className="col-md-4">
+                      {file.FileName?.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"50px", marginLeft : ""}} />:
                         <img
                           src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                           alt={file.name}
                           className="img-fluid rounded-start "
-                        />
+                        />}
                       </div>
                       <div
                         className="col-md-6 ps-1"
@@ -437,7 +442,11 @@ const SendMail = () => {
                     </div>
                   </div>
                 ))}
+
+
                 {Files.map((file, index) => (
+                  <>
+                  {file.name ? 
                   <div className="card" style={{ height: "fit-content" }}>
                     <div
                       className="row g-0"
@@ -446,22 +455,23 @@ const SendMail = () => {
                         alignItems: "center", // Align items vertically in the middle
                       }}
                     >
-                      <div className="col-md-4">
+                      <div className={file.name.includes(".pdf")? "col-md-2":"col-md-4"}>
+                      {file.name.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"50px"}} />:
                         <img
                           src={URL.createObjectURL(file)}
                           alt={file.name}
                           className="img-fluid rounded-start"
-                        />
+                        />}
                       </div>
                       <div
-                        className="ps-1 col-md-6"
+                        className="ps-2 col"
                         style={{
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {file.name}
+                        {" "} {file.name}
                       </div>
                       <div className="col-md-2 text-end">
                         {" "}
@@ -476,7 +486,8 @@ const SendMail = () => {
                         />
                       </div>
                     </div>
-                  </div>
+                  </div>: <></>}
+                  </>
                 ))}
               </div>
               <div className="col-md-5 text-end mt-3">

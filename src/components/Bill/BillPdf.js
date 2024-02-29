@@ -25,7 +25,7 @@ const BillPdf = ({ data }) => {
             </View>
 
             <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "130px" }} src={logo}></Image>
+              <Image style={{ width: "100px" , marginLeft : "70px" }} src={logo}></Image>
             </View>
             <View style={[s.col8, { marginTop: "10px" }]}>
               <Text style={s.text}>{data.Data?.SupplierName}</Text>
@@ -36,8 +36,8 @@ const BillPdf = ({ data }) => {
               </Text>
             </View>
             <View style={[s.col2, { marginTop: "10px" }]}>
-              <Text style={[s.text, { marginTop: "10px" }]}>Date</Text>
-              <Text style={[s.text]}>Bill#</Text>
+              <Text style={[s.textBold, { marginTop: "10px" }]}>Date</Text>
+              <Text style={[s.textBold]}>Bill#</Text>
             </View>
             <View style={[s.col2, { marginTop: "10px" }]}>
               <Text style={[s.text, s.textEnd, { marginTop: "10px  " }]}>
@@ -109,7 +109,7 @@ const BillPdf = ({ data }) => {
                     s.col8,
                     {
                       paddingLeft: "10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -119,7 +119,7 @@ const BillPdf = ({ data }) => {
                   style={[
                     s.col1,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>{item.Qty}</Text>
@@ -129,7 +129,7 @@ const BillPdf = ({ data }) => {
                   style={[
                     s.col1,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>${item.Rate}</Text>
@@ -139,7 +139,7 @@ const BillPdf = ({ data }) => {
                   style={[
                     s.col2,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>
@@ -148,7 +148,7 @@ const BillPdf = ({ data }) => {
                   </Text>
                 </View>
 
-                {index === 29 && (
+                {index === 32 && (
                   <View style={[s.col12, { height: "80em" }]}></View>
                 )}
               </View>

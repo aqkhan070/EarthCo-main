@@ -15,6 +15,9 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import useFetchContactEmail from "../../../Hooks/useFetchContactEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import RisingCanesPdf from "./RisingCanesPdf";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
 const RisingCanesPreview = () => {
   const token = Cookies.get("token");
   const navigate = useNavigate();
@@ -476,12 +479,30 @@ const RisingCanesPreview = () => {
               </div>
               <div className="p-2 bd-highlight">
                 {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
+                <PDFDownloadLink
+                  document={
+                    <RisingCanesPdf
+                      weeklyPreviewData={weeklyPreviewData}
+                    />
+                  }
+                  fileName="Weekly Report.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn">
+                        <i className="fa fa-download"></i>
+                      </button>
+                    )
+                  }
+                </PDFDownloadLink>
               </div>
 
               {isMail ? (

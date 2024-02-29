@@ -18,6 +18,9 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import WagesCards from "./WagesCards";
+import formatAmount from "../../custom/FormatAmount";
+
 
 const WagesTable = () => {
   const token = Cookies.get("token");
@@ -36,6 +39,7 @@ const WagesTable = () => {
   const [staffData, setStaffData] = useState([]);
   const [orignalStaffData, setOrignalStaffData] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [totalHours, setTotalHours] = useState(0)
   const [selectedMonth, setSelectedMonth] = useState(currentMonth)
   const [selectedYear, setSelectedYear] = useState(currentYear)
 
@@ -113,9 +117,10 @@ const WagesTable = () => {
   useEffect(() => {
     // Calculate total amount
     const total = staffData.reduce((accumulator, staff) => accumulator + staff.Amount, 0);
-    
+    const totalHours = staffData.reduce((accumulator, staff) => accumulator + staff.Hours, 0);
     // Set total amount to state
-    setTotalAmount(total);
+    setTotalAmount(formatAmount(total));
+    setTotalHours(totalHours)
 
   }, [staffData]);
 
@@ -235,6 +240,8 @@ const WagesTable = () => {
                     </Select>
                   </FormControl>
                   </div>
+
+                  <WagesCards total={totalAmount} Hours={totalHours}/>
                   </div>
                 
                 </div>
@@ -276,7 +283,7 @@ const WagesTable = () => {
                             <TableCell align="center">{staff.Hours}</TableCell>
 
                             <TableCell align="right">
-                              ${staff.Amount}
+                              ${formatAmount(staff.Amount)}
                             </TableCell>
                           </TableRow>
                         ))}

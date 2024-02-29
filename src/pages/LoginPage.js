@@ -66,17 +66,19 @@ const LoginPage = () => {
 
   const urlParams = new URLSearchParams(window.location.hash);
   const accessToken = urlParams.get("#access_token");
+  const providerToken = urlParams.get('provider_token');
   useEffect(() => {
     const hash = window.location.hash;
     if (token) {
       // navigate(`/Dashboard`);
     }
-    if (accessToken) {
+    if (providerToken) {
+      Cookies.set("ProviderToken", urlParams.get('provider_token') || '');
+      
       navigate(`/dashboard${hash}`);
-      localStorage.setItem("access_token", accessToken);
+      
     }
-    // console.log("Full URL:", hash);
-    // console.log("accessToken", accessToken);
+   
   }, []);
 
   const handleSubmitLogin = async (e) => {
@@ -103,7 +105,7 @@ const LoginPage = () => {
         navigate("/dashboard");
       }
       if (response.data.status === "success") {
-        // if (response.status === 200){
+
         Cookies.set("userEmail", email, { expires: 7 });
         Cookies.set(
           "userName",
@@ -115,6 +117,7 @@ const LoginPage = () => {
         Cookies.set("CompanyName", response.data.CompanyName, { expires: 7 });
         Cookies.set("CompanyId", response.data.CompanyId, { expires: 7 });
         Cookies.set("ProviderToken", response.data.ProviderToken, { expires: 7 });
+        // Cookies.set("RefreshToken", response.data.Data.tblGoolgeCalendars[0].RefreshToken, { expires: 7 });
         Cookies.set("UserEmailGoogle", response.data.UserEmail, { expires: 7 });
         setBtndisable(false);
         setError("");

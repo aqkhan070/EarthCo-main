@@ -43,11 +43,12 @@ const AuditPdf = ({ irrDetails, CustomerName }) => {
             <View
               style={[
                 s.colXL8,
-                s.borderLight,
+          
                 {
                   marginTop: " 10px",
                   border: "1px solid rgb(120, 154, 61)",
                   paddingLeft: " 10px",
+                 
                 },
               ]}
             >

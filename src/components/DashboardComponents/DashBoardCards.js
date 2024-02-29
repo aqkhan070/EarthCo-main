@@ -9,6 +9,7 @@ import CheckBoxIcon from "@mui/icons-material/BeenhereOutlined";
 import FactCheckIcon from "@mui/icons-material/FactCheckOutlined";
 import DnsOutlinedIcon from "@mui/icons-material/DnsOutlined";
 import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
+import TaskIcon from '@mui/icons-material/EngineeringOutlined';
 const DashBoardCards = ({ dashBoardData }) => {
   const navigate = useNavigate();
   const { loggedInUser, setStatusId } = useContext(DataContext);
@@ -29,7 +30,7 @@ const DashBoardCards = ({ dashBoardData }) => {
             <PaymentsOutlinedIcon fontSize="large" sx={{ color: "white" }} />
           </SingleCard>
         </div>
-        {loggedInUser.userRole == "5" ? (
+        {loggedInUser.userRole == "5" || loggedInUser.userRole == "6" ? (
           <></>
         ) : (
           <>
@@ -109,7 +110,8 @@ const DashBoardCards = ({ dashBoardData }) => {
               </SingleCard>
             </div>
        
-     <div className="col-xl-3  col-lg-6 col-sm-6">
+        </>
+        )} <div className="col-xl-3  col-lg-6 col-sm-6">
           <SingleCard
             title={"Wages"}
             color="#2059AE"
@@ -119,10 +121,9 @@ const DashBoardCards = ({ dashBoardData }) => {
            
             }}
           >
-            <AttachMoneyOutlinedIcon fontSize="large" sx={{ color: "white" }} />
+            <TaskIcon fontSize="large" sx={{ color: "white" }} />
           </SingleCard>
-        </div>    </>
-        )}
+        </div>
       </div>
     </div>
   );

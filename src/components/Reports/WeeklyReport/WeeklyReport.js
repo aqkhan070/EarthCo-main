@@ -70,33 +70,39 @@ const WeeklyReport = () => {
 
   const handleDownload = async () => {
     const input = document.getElementById("WR-preview");
-  
+
     // Explicitly set the font for the PDF generation
     input.style.fontFamily = "Arial";
-  
+
     // Use html2canvas to capture the content as an image with higher DPI
     const canvas = await html2canvas(input, { dpi: 300, scale: 4 }); // Adjust DPI as needed
-  
+
     // Calculate the height of the PDF based on the content
     const pdfHeight = (canvas.height * 210) / canvas.width; // Assuming 'a4' format
-  
+
     // Create a new jsPDF instance
     const pdf = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
-  
+
     // Add the captured image to the PDF
-    pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, 210, pdfHeight);
-  
+    pdf.addImage(
+      canvas.toDataURL("image/jpeg", 1.0),
+      "JPEG",
+      0,
+      0,
+      210,
+      pdfHeight
+    );
+
     // Save the PDF
     pdf.save("Weekly report.pdf");
-  
+
     // Reset the font to its default value
     input.style.fontFamily = "";
   };
-  
 
   useEffect(() => {
     getWeeklyPreview();
@@ -120,8 +126,7 @@ const WeeklyReport = () => {
               <div className="row mb-5">
                 <div className="mt-5 col-xl-10 col-lg-10 col-md-10 col-sm-10 text-center">
                   <h2>
-                    {" "}
-                    <strong>Weekly Report</strong>{" "}
+                    <strong>Weekly Report</strong>
                   </h2>
                 </div>
                 <div className="mt-4 col-xl-2 col-lg-2 col-md-2 col-sm-2 d-flex justify-content-lg-end justify-content-md-center justify-content-xs-start">
@@ -137,9 +142,8 @@ const WeeklyReport = () => {
                 >
                   <div>
                     <h5>
-                      {" "}
                       <strong>Customer Name</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
                     <h5>{name}</h5>
@@ -150,22 +154,20 @@ const WeeklyReport = () => {
                   style={{ padding: "1%" }}
                 >
                   <div>
-                    {" "}
                     <h5>
                       <strong>Contact Name</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.ContactName}</h5>{" "}
+                    <h5>{weeklyPreviewData.ContactName}</h5>
                   </div>
                   <div>
                     <h5>
-                      {" "}
                       <strong>Contact Company</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.ContactCompany}</h5>{" "}
+                    <h5>{weeklyPreviewData.ContactCompany}</h5>
                   </div>
                 </div>
                 <div
@@ -173,13 +175,12 @@ const WeeklyReport = () => {
                   style={{ padding: "1%" }}
                 >
                   <div>
-                    {" "}
                     <h5>
                       <strong>By Regional Manager</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.RegionalManagerName}</h5>{" "}
+                    <h5>{weeklyPreviewData.RegionalManagerName}</h5>
                   </div>
                 </div>
               </div>
@@ -187,9 +188,8 @@ const WeeklyReport = () => {
                 <div className="col-md-4 col-sm-4 addborder border-end-0 border-bottom-0">
                   <div>
                     <h5>
-                      {" "}
                       <strong>Report for Week of:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
                     <h5>
@@ -199,65 +199,59 @@ const WeeklyReport = () => {
                 </div>
                 <div className="col-md-4 col-sm-4 addborder border-end-0 border-bottom-0">
                   <div>
-                    {" "}
                     <h5>
                       <strong>This week rotation:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.Thisweekrotation}</h5>{" "}
+                    <h5>{weeklyPreviewData.Thisweekrotation}</h5>
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4 addborder border-bottom-0">
                   <div>
-                    {" "}
                     <h5>
                       <strong>Next weeks rotation:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.Nextweekrotation}</h5>{" "}
+                    <h5>{weeklyPreviewData.Nextweekrotation}</h5>
                   </div>
                 </div>
                 <div className="col-md-12 addborder border-bottom-0">
                   <div>
-                    {" "}
                     <h5>
                       <strong>Service Requests:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>null</h5>{" "}
+                    <h5>null</h5>
                   </div>
                 </div>
                 <div className="col-md-12 addborder border-bottom-0">
                   <div>
-                    {" "}
                     <h5>
                       <strong>Proposals:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.ProposalsNotes}</h5>{" "}
+                    <h5>{weeklyPreviewData.ProposalsNotes}</h5>
                   </div>
                 </div>
                 <div className="col-md-12 addborder">
                   <div>
-                    {" "}
                     <h5>
                       <strong>Notes:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                   <div>
-                    <h5>{weeklyPreviewData.Notes}</h5>{" "}
+                    <h5>{weeklyPreviewData.Notes}</h5>
                   </div>
                 </div>
                 <div className="col-md-12">
                   <div>
-                    {" "}
                     <h5>
                       <strong>Photos:</strong>
-                    </h5>{" "}
+                    </h5>
                   </div>
                 </div>
 
@@ -302,7 +296,6 @@ const WeeklyReport = () => {
               )}
 
               <div className="p-2 bd-highlight">
-                {" "}
                 <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link   estm-action-btn"
                   onClick={handlePrint}
@@ -311,7 +304,6 @@ const WeeklyReport = () => {
                 </button>
               </div>
               <div className="p-2 bd-highlight">
-                {" "}
                 {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handleDownload}
@@ -320,7 +312,11 @@ const WeeklyReport = () => {
                 </button> */}
 
                 <PDFDownloadLink
-                  document={<WeeklyReportPdf weeklyPreviewData={{...weeklyPreviewData, name : name}} />}
+                  document={
+                    <WeeklyReportPdf
+                      weeklyPreviewData={{ ...weeklyPreviewData, name: name }}
+                    />
+                  }
                   fileName="Weekly Report.pdf"
                 >
                   {({ blob, url, loading, error }) =>
@@ -332,8 +328,7 @@ const WeeklyReport = () => {
                       </button>
                     )
                   }
-                </PDFDownloadLink> 
-
+                </PDFDownloadLink>
               </div>
 
               {isMail ? (

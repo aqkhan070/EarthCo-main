@@ -21,7 +21,7 @@ const IrrigationAuditPdf = ({controllerData}) => {
               <Text style={s.title}>Irrigation Audit Form </Text>
             </View>
 
-            <View style={[s.colXL4, s.textEnd, {paddingLeft : "100px" }]}>  <Image style={{ width: "100px" }} src={logo}></Image></View>
+            <View style={[s.colXL4, s.textEnd, {paddingLeft : "100px" }]}>  <Image style={{ width: "100px", marginLeft : "50px" }} src={logo}></Image></View>
 
             <View
               style={[

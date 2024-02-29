@@ -1,51 +1,66 @@
-import React, { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
-import YourDocument from './EstimatePdf'; // Import your document component
+const googleSignIn = async () => {
+  const { error, user, session } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      scopes: ["https://www.googleapis.com/auth/calendar", "https://mail.google.com/"],
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      }
+    },
+  });
 
-const YourComponent = () => {
-  const [pdfBlob, setPdfBlob] = useState(null);
+  if (error) {
+    // If there is an error, log the error and don't proceed further
+    alert("Error logging in to Google provider with Supabase");
+    console.log(error);
+  } else if (user && session) {
+    // Call fetchGoogleEvents only if the login was successful (i.e., user and session are not null)
+    fetchGoogleEvents();
 
-  // Your form data and other states
-  const formData = {
-    // your form data here
-  };
-  const staffName = ''; // your staff name here
-  const loggedInUser = { CompanyName: '' }; // your logged in user details here
-  const name = ''; // customer name
+    // Here, you need to handle token refreshing logic
+    // Check if the access token is expired and refresh it if necessary
+    if (isTokenExpired(session.access_token)) {
+      try {
+        // Call a function to refresh the token using the refresh token
+        const refreshedSession = await supabase.auth.refreshSession();
 
-  const generatePdfDocument = async () => {
-    const doc = (
-      <YourDocument
-        data={{
-          ...formData,
-          RegionalManagerName: staffName,
-          SelectedCompany: loggedInUser.CompanyName,
-          CustomerName: name,
-          ApprovedItems: formData.tblEstimateItems.filter((item) => item.IsApproved === true),
-          Amount: formData.tblEstimateItems.filter((item) => item.IsApproved === true).reduce(
-            (accumulator, item) => accumulator + item.Amount,
-            0
-          ),
-        }}
-      />
+        // Update the session object with the refreshed token
+        if (refreshedSession) {
+          session.access_token = refreshedSession.access_token;
+          session.provider_token = refreshedSession.provider_token;
+          // You may need to update other relevant session properties here
+        }
+      } catch (refreshError) {
+        console.error("Error refreshing session:", refreshError);
+        // Handle refresh token error gracefully
+        // Prompt the user to re-authenticate or take appropriate action
+      }
+    }
+
+    // Proceed with your existing code to perform further actions
+    sendToken(
+      {
+        AccessToken: session.access_token,
+        ProviderToken: session.provider_token,
+        RefreshToken: session.refresh_token,
+        TokenType: session.token_type,
+        UserId: Number(loggedInUser.userId),
+        UserEmail: session.user.email,
+      },
+      getDashboardData
     );
+    getDashboardData();
 
-    const blob = await pdf(doc).toBlob();
-    setPdfBlob(blob);
-    // You can now use pdfBlob for your needs, like saving to state, or uploading to a server
-  };
-
-  return (
-    <div>
-      <button onClick={generatePdfDocument}>Generate PDF</button>
-      {/* Render the download link only if pdfBlob is available */}
-      {pdfBlob && (
-        <a href={URL.createObjectURL(pdfBlob)} download="Estimate.pdf">
-          Download PDF
-        </a>
-      )}
-    </div>
-  );
+    // Set cookies if needed
+    Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
+    Cookies.set("UserEmailGoogle", session.user.email, { expires: 7 });
+  }
 };
 
-export default YourComponent;
+// Function to check if the token is expired
+const isTokenExpired = (accessToken) => {
+  // Implement your logic to check if the token is expired
+  // Compare the current timestamp with the token's expiration timestamp
+  // Return true if the token is expired, false otherwise
+};

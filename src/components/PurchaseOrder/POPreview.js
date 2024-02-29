@@ -237,7 +237,7 @@ const POPreview = () => {
                           <tr>
                             <td className="table-cell-align me-2 ">
                               <h6>
-                                <strong>Purchase Order #: </strong>
+                                <strong>PO #: </strong>
                               </h6>
                             </td>
 

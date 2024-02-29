@@ -25,14 +25,15 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
             <Text style={[s.text]}>{CustomerName}</Text>
             <Text style={[s.text]}> {SummaryReportData[0]?.Address}</Text>
           </View>
-          <View style={[s.colXL4, s.textCenter, { marginTop: "20px" }]}>
-            <Text style={s.title}>Service Request Summary report</Text>
-            <Text style={s.heading}>Grandview Crest</Text>
-          </View>
+          <View style={[s.colXL5, s.textCenter, { marginTop: "20px" }]}>
+                <Text style={s.title}>Service Request Summary report</Text>
+                <Text style={s.heading}>Grandview Crest</Text>
+              </View>
 
-          <View style={[s.colXL4, { paddingLeft: "80px" }]}>
-            <Image style={{ width: "100px" }} src={logo}></Image>
-          </View>
+              <View style={[s.colXL3, { paddingLeft: "80px" }]}>
+                <Image style={{ width: "100px", marginLeft : "10px" }} src={logo}></Image>
+              </View>
+              <View style={[s.colXL12, {marginTop : "30px" ,borderBottom : "2px solid #888888"}]}></View>
 
           <View
             style={[
@@ -229,8 +230,9 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
               </View>
 
               <View style={[s.colXL4, { paddingLeft: "80px" }]}>
-                <Image style={{ width: "100px" }} src={logo}></Image>
+                <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
               </View>
+              <View style={[s.colXL12, {marginTop : "30px" ,borderBottom : "2px solid #888888"}]}></View>
 
               <View
                 style={[
@@ -404,7 +406,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
               </View>
 
               <View style={[s.col4, { paddingLeft: "20px" }]}>
-                <Image style={[{ width: "100px" }]} src={logo}></Image>
+              <Image style={[{ width: "100px", marginLeft : "60px" }]} src={logo}></Image>
               </View>
 
               <View style={[s.col8, s.textEnd, { marginTop: "10px" }]}></View>
@@ -448,7 +450,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -459,7 +461,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -475,7 +477,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -486,7 +488,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -502,7 +504,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -513,7 +515,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -528,7 +530,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -539,7 +541,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -554,7 +556,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -565,7 +567,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -580,7 +582,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -591,7 +593,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -637,7 +639,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -648,7 +650,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -662,7 +664,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -673,7 +675,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -715,7 +717,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -726,7 +728,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -742,7 +744,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -753,7 +755,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -797,7 +799,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -808,7 +810,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -849,7 +851,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -862,7 +864,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -879,7 +881,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -892,7 +894,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -909,7 +911,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -922,7 +924,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -938,7 +940,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -951,7 +953,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -963,7 +965,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -976,7 +978,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -1016,7 +1018,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                   {
                     paddingLeft: " 10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -1029,7 +1031,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                   s.col6,
                   {
                     paddingLeft: "10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -1068,7 +1070,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
 
                   {
                     paddingLeft: " 10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -1079,7 +1081,7 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
                   s.col6,
                   {
                     paddingLeft: "10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >

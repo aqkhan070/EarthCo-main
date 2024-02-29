@@ -75,7 +75,7 @@ const DashBoard = () => {
                   />
                 </div>
                 <div className="">
-                  {loggedInUser.userRole == 5 ? (
+                  {loggedInUser.userRole == 5 || loggedInUser.userRole == 6 ? (
                     <></>
                   ) : (
                     <>

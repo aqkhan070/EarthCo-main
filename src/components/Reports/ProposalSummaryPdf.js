@@ -31,9 +31,9 @@ const ProposalSummaryPdf = ({ reportData, CustomerName }) => {
               </View>
 
               <View style={[s.colXL4, { paddingLeft: "80px" }]}>
-                <Image style={{ width: "100px" }} src={logo}></Image>
+                <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
               </View>
-
+              <View style={[s.colXL12, {marginTop : "30px" ,borderBottom : "2px solid #888888"}]}></View>
               <View
                 style={[
                   s.colXL2,

@@ -1,5 +1,11 @@
 // EstimatePdfStyles.js
-import { StyleSheet } from '@react-pdf/renderer';
+import { StyleSheet, Font  } from '@react-pdf/renderer';
+
+// Font.register({ family: 'test', fonts: [
+//   { src: '../Fonts/arial.ttf' }, // Assuming you have a regular font
+//   { src: '../Fonts//ARIBL0.ttf', fontWeight: 'bold' },
+// ]});
+
 const maxWidth = 760; // Maximum width
 const colXL12Width = maxWidth; // colXL12 represents the maximum size
 
@@ -7,6 +13,7 @@ const colXL1Width = maxWidth / 12;
 const colXL2Width = colXL1Width * 2;
 const colXL3Width = colXL1Width * 3;
 const colXL4Width = colXL1Width * 4;
+const colXL5Width = colXL1Width * 5;
 const colXL6Width = colXL1Width * 6;
 const colXL7Width = colXL1Width * 7;
 const colXL8Width = colXL1Width * 8;
@@ -60,6 +67,9 @@ const s = StyleSheet.create({
   col9: {
     width: '382.5em', 
   },
+  col10: {
+    width: '425em', 
+  },
   col12: {
 
     width: '510em', 
@@ -75,6 +85,9 @@ const s = StyleSheet.create({
   },
   colXL4: {
     width: `${colXL4Width}em`,
+  },
+  colXL5: {
+    width: `${colXL5Width}em`,
   },
   colXL6: {
     width: `${colXL6Width}em`,
@@ -93,7 +106,7 @@ const s = StyleSheet.create({
   },
 
   borderLight: {
-    border: "1px solid #CCCCCC" 
+    border: "0.5px solid #CCCCCC" 
   },
   textEnd: {
     textAlign: 'right',
@@ -106,34 +119,52 @@ const s = StyleSheet.create({
   },
   title: {
     fontSize: "18px",
-    fontWeight: 'bold',
+ 
     marginBottom: 10,
+    fontFamily : "Helvetica-Bold",
+    fontWeight : "bold"
   },
   heading: {
-    fontSize: "14px",
+    fontSize: "13px",
+    fontFamily : "Helvetica-Bold",
     fontWeight: 'bold',
     marginBottom: 1,
   },
   text: {
-    fontSize: "12pt",
+    fontSize: "11pt",
+    
+    marginBottom: 1,
+  },
+  text10: {
+    fontSize: "10pt",
+    
+  },
+  textBold10: {
+    fontSize: "10pt",
+    fontFamily : "Helvetica-Bold",
+  },
+  textBold: {
+    fontSize: "11pt",
+    fontFamily : "Helvetica-Bold",
     marginBottom: 1,
   },
   text2: {
-    fontSize: "10pt",
+    fontSize: "9pt",
     marginBottom: 1,
   },
   tblHeading: {
-    fontSize: "12pt",
+    fontSize: "10pt",
+    fontFamily : "Helvetica-Bold",
     marginBottom: 4,
     marginTop : 4,
   },
   tblText: {
-    fontSize: "10pt",
+    fontSize: "9pt",
     marginBottom: 4,
     marginTop : 4,
   },
   small: {
-    fontSize: "7px",
+    fontSize: "6px",
     marginBottom: 1 ,
   },
 });

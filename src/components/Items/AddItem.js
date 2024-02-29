@@ -67,6 +67,26 @@ const AddItem = ({}) => {
       console.log("API call error", error);
     }
   };
+  const [staffData, setStaffData] = useState([]);
+  const [selectedWager, setSelectedWager] = useState(0);
+
+  const fetchStaffList = async () => {
+    try {
+      const response = await axios.get(
+        `https://earthcoapi.yehtohoga.com/api/Staff/GetStaffList`,
+        { headers }
+      );
+      setStaffData(
+        response.data.filter(
+          (staff) => staff.Role === "Irrigator" || staff.Role === "Spray Tech"
+        )
+      );
+
+      console.log("staff list iss", response.data);
+    } catch (error) {
+      console.log("error getting staff list", error);
+    }
+  };
 
   const handleAutocompleteChange = (
     fieldName,
@@ -94,6 +114,36 @@ const AddItem = ({}) => {
     const parsedValue = type === "number" ? parseFloat(value) : value;
 
     // Update formData based on input type
+    if (name === "ItemName" && formData.isStaff) {
+      console.log("matching");
+      staffData.forEach((staff) => {
+        if (value.includes(":")) {
+          let staffName = value.split(":");
+
+          if (
+            staff.FirstName.toLowerCase().includes(
+              staffName[staffName.length - 1]?.toLowerCase()
+            )
+          ) {
+            setFormData({
+              ...formData,
+              UserId: staff.UserId,
+            });
+           
+          }
+        } else if (
+          staff.FirstName.toLowerCase().includes(value.toLowerCase())
+        ) {
+          setFormData({
+            ...formData,
+            UserId: staff.UserId,
+          });
+        
+         
+        }
+      });
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === "checkbox" ? checked : parsedValue,
@@ -150,6 +200,7 @@ const AddItem = ({}) => {
   useEffect(() => {
     getItem();
     getIncomeAccount();
+    fetchStaffList();
   }, []);
 
   return (
@@ -181,7 +232,7 @@ const AddItem = ({}) => {
                     error={submitClicked && !formData.ItemName}
                     name="ItemName"
                     size="small"
-                    value={formData.ItemName}
+                    value={formData.ItemName || ""}
                     className="form-control"
                     onChange={handleChange}
                     placeholder="Item Name"
@@ -247,6 +298,87 @@ const AddItem = ({}) => {
                     id="lastName"
                     placeholder=""
                   />
+                </div>
+
+                <div className="col-md-3 mb-3">
+                  <label
+                    htmlFor="lastName"
+                    className={
+                      formData.isStaff ? "form-label " : "form-label mt-3"
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      name="isStaff"
+                      style={{ height: "1rem", width: "1rem" }}
+                      value={formData.isStaff }
+                      checked={formData.isStaff}
+                      onChange={(e) => 
+                       
+                        setFormData({
+                          ...formData,
+                          isStaff : e.target.checked,
+                          UserId:null,
+                        })
+                    }
+                      className="form-check-input"
+                      id="same-address"
+                    />{" "}
+                    Link Wager(optional)
+                  </label>
+                  {formData.isStaff && (
+                    <Autocomplete
+                      id="staff-autocomplete"
+                      size="small"
+                      options={staffData}
+                      getOptionLabel={(option) => option.FirstName || ""}
+                      value={
+                        staffData.find(
+                          (staff) => staff.UserId === formData.UserId
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        setFormData({
+                          ...formData,
+                          UserId: newValue?.UserId,
+                        });
+                        setSelectedWager(newValue?.UserId);
+                      }}
+                      isOptionEqualToValue={(option, value) =>
+                        option.UserId === formData.UserId
+                      }
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <div className="customer-dd-border">
+                            <div className="row">
+                              <div className="col-md-auto">
+                                {" "}
+                                <h6 className="pb-0 mb-0">
+                                  {" "}
+                                  {option.FirstName}
+                                </h6>
+                              </div>
+                              <div className="col-md-auto">
+                                <small>
+                                  {"("}
+                                  {option.Role}
+                                  {")"}
+                                </small>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label=""
+                          placeholder="Choose..."
+                          className="bg-white"
+                        />
+                      )}
+                    />
+                  )}
                 </div>
 
                 <div className="col-md-10">
@@ -368,35 +500,35 @@ const AddItem = ({}) => {
                           Expense Account<span className="text-danger">*</span>
                         </label>
                         <Autocomplete
-                    size="small"
-                    options={incomeAccountList}
-                    getOptionLabel={(option) => option.Name || ""}
-                    value={
-                      incomeAccountList.find(
-                        (po) => po.AccountId === formData.ExpenseAccount
-                      ) || null
-                    }
-                    onChange={(event, newValue) =>
-                      handleAutocompleteChange(
-                        "ExpenseAccount",
-                        "AccountId",
-                        event,
-                        newValue
-                      )
-                    }
-                    isOptionEqualToValue={(option, value) =>
-                      option.AccountId === value.ExpenseAccount
-                    }
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label=""
-                        placeholder="Select Account"
-                        className="bg-white"
-                      />
-                    )}
-                    aria-label="Contact select"
-                  />
+                          size="small"
+                          options={incomeAccountList}
+                          getOptionLabel={(option) => option.Name || ""}
+                          value={
+                            incomeAccountList.find(
+                              (po) => po.AccountId === formData.ExpenseAccount
+                            ) || null
+                          }
+                          onChange={(event, newValue) =>
+                            handleAutocompleteChange(
+                              "ExpenseAccount",
+                              "AccountId",
+                              event,
+                              newValue
+                            )
+                          }
+                          isOptionEqualToValue={(option, value) =>
+                            option.AccountId === value.ExpenseAccount
+                          }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Select Account"
+                              className="bg-white"
+                            />
+                          )}
+                          aria-label="Contact select"
+                        />
                       </div>
                     </div>
                   </div>

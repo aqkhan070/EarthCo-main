@@ -80,14 +80,11 @@ import SprayTechIndex from "../components/SprayTech/SprayTechIndex.js";
 import SprayTechList from "../components/SprayTech/SprayTechList.js";
 import STPreview from "../components/SprayTech/STPreview.js";
 import SprayTechPreview from "../components/ServiceRequest/SprayTechPreview.js";
-
 import { useLocation } from 'react-router-dom';
-
-import WeeklyReportPdf from "../components/Reports/WeeklyReport/WeeklyReportPdf.js";
-
+import EstimatePdf from "../components/Estimates/EstimatePdf.js";
 const DashboardPage = () => {
   const { SRroute, estimateRoute } = useContext(RoutingContext);
-  const { toggleFullscreen } = useContext(DataContext);
+  const { toggleFullscreen, setLoggedInUser } = useContext(DataContext);
 
   const location = useLocation();
 
@@ -99,6 +96,17 @@ const DashboardPage = () => {
     if (!token) {
       navigate("/");
     }
+    setLoggedInUser({
+      userName: Cookies.get("userName"),
+      userEmail: Cookies.get("userEmail"),
+      userRole: Cookies.get("userRole"),
+      userId: Cookies.get("userId"),
+      CompanyName: Cookies.get("CompanyName"),
+      CompanyId: Cookies.get("CompanyId"),
+      RefreshToken: Cookies.get("RefreshToken"),
+      ProviderToken : Cookies.get("ProviderToken")=="null" ? null :Cookies.get("ProviderToken"),
+      UserEmailGoogle : Cookies.get("UserEmailGoogle")
+    });
   }, []);
 
   useEffect(() => {
@@ -114,7 +122,7 @@ const DashboardPage = () => {
       if (document.visibilityState === 'hidden') {
         document.title = 'EarthCo';
       } else {
-        document.title = `${capitalizedSegment}`;
+        document.title = `${capitalizedSegment} - EarthCo`;
       }
     };
 
@@ -354,7 +362,7 @@ const DashboardPage = () => {
               />
                <Route
                 path="testpdf"
-                element={<WeeklyReportPdf />}
+                element={<EstimatePdf />}
               />
             </Routes>
           </div>

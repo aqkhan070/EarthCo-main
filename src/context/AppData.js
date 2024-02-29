@@ -228,6 +228,7 @@ const DataFun = ({ children }) => {
     userRole: Cookies.get("userRole"),
     userId: Cookies.get("userId"),
     ProviderToken : Cookies.get("ProviderToken")=="null" ? null :Cookies.get("ProviderToken"),
+    RefreshToken: Cookies.get("RefreshToken")=="null" ? null :Cookies.get("RefreshToken"),
     UserEmailGoogle : Cookies.get("UserEmailGoogle")
   });
 
@@ -257,6 +258,7 @@ const DataFun = ({ children }) => {
   });
 
   const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedPdf, setselectedPdf] = useState({})
 
   const [statusId, setStatusId] = useState(0);
 
@@ -265,6 +267,7 @@ const DataFun = ({ children }) => {
   return (
     <DataContext.Provider
       value={{
+        selectedPdf, setselectedPdf,
         dashBoardRefresh,
         setDashBoardRefresh,
         statusId,

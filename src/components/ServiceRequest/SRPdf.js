@@ -7,8 +7,9 @@ import formatDate from "../../custom/FormatDate";
 import formatAmount from "../../custom/FormatAmount";
 
 const SRPdf = ({ data }) => {
+  data = data || { Data: {} };
   return (
-    // <PDFViewer style={{ width: "100%", height: "800px" }}>
+    //<PDFViewer style={{ width: "100%", height: "800px" }}>
       <Document>
         <Page size="A4" orientation="portrait">
           <View style={[s.containerFluid]}>
@@ -26,8 +27,8 @@ const SRPdf = ({ data }) => {
                 <Text style={s.title}>Service Request</Text>
               </View>
 
-              <View style={[s.col4, s.textCenter]}>
-                <Image style={{ width: "130px" }} src={logo}></Image>
+              <View style={[s.col4, s.textEnd]}>
+                <Image style={{ width: "100px", marginLeft : "80px"}} src={logo}></Image>
               </View>
               <View style={[s.col3, { marginTop: "10px" }]}>
                 <View
@@ -37,7 +38,7 @@ const SRPdf = ({ data }) => {
                     paddingLeft: "10px",
                   }}
                 >
-                  <Text style={[s.heading, { marginBottom: 4, marginTop: 4 }]}>
+                  <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
                     Requested By:
                   </Text>
                 </View>
@@ -50,7 +51,7 @@ const SRPdf = ({ data }) => {
                     paddingLeft: "10px",
                   }}
                 >
-                  <Text style={[s.heading, { marginBottom: 4, marginTop: 4 }]}>
+                  <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
                     Service Location:
                   </Text>
                 </View>
@@ -120,7 +121,7 @@ const SRPdf = ({ data }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -131,7 +132,7 @@ const SRPdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px",   borderBottom: "0.5px solid #CCCCCC",},
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -145,7 +146,7 @@ const SRPdf = ({ data }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -156,7 +157,7 @@ const SRPdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px",   borderBottom: "0.5px solid #CCCCCC", },
                   ]}
                 >
                   <Text style={s.tblText}>No</Text>
@@ -168,7 +169,7 @@ const SRPdf = ({ data }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -179,7 +180,7 @@ const SRPdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px",    borderBottom: "0.5px solid #CCCCCC", },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -226,7 +227,7 @@ const SRPdf = ({ data }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -237,7 +238,7 @@ const SRPdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>{data.Data.WorkRequest}</Text>
@@ -249,7 +250,7 @@ const SRPdf = ({ data }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -260,7 +261,7 @@ const SRPdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>{data.Data.ActionTaken}</Text>
@@ -277,7 +278,7 @@ const SRPdf = ({ data }) => {
           </View>
         </Page>
       </Document>
-    // </PDFViewer> 
+ // </PDFViewer> 
   );
 };
 

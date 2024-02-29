@@ -32,6 +32,8 @@ import SprayTechForm from "./SprayTechForm";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import SRPdf from "./SRPdf";
 import SprayTechPdf from "./SprayTechPdf";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import { pdf } from "@react-pdf/renderer";
 
 const AddSRform = () => {
   const token = Cookies.get("token");
@@ -58,6 +60,8 @@ const AddSRform = () => {
     PunchListData,
     setPunchListData,
     loggedInUser,
+    setselectedPdf,
+    selectedPdf,
   } = useContext(DataContext);
 
   const { customerSearch, fetchCustomers } = useCustomerSearch();
@@ -107,7 +111,8 @@ const AddSRform = () => {
       ServiceRequestId: idParam,
       CustomerId: 0,
       ServiceRequestNumber: "",
-      SRTypeId: loggedInUser.userRole == 5 ? 3 : 1,
+      SRTypeId:
+        loggedInUser.userRole == 6 ? 8 : loggedInUser.userRole == 5 ? 3 : 1,
       SRStatusId: 1,
       Assign: "",
       WorkRequest: "",
@@ -115,7 +120,7 @@ const AddSRform = () => {
       tblSRItems: [],
       tblServiceRequestLatLongs: [],
     },
-  }); // payload
+  });
 
   const [sTechItems, setSTechItems] = useState([]);
   const [sideData, setSideData] = useState({
@@ -287,6 +292,9 @@ const AddSRform = () => {
       if (loggedInUser.userRole == 5) {
         filteredSRTypes = res.data.filter((option) => option.SRTypeId === 3);
       }
+      if (loggedInUser.userRole == 6) {
+        filteredSRTypes = res.data.filter((option) => option.SRTypeId === 8);
+      }
 
       setSRTypes(filteredSRTypes);
     } catch (error) {
@@ -380,6 +388,8 @@ const AddSRform = () => {
   };
 
   const submitHandler = async () => {
+    // await handleMainButtonClick(false);
+
     setSubmitClicked(true);
 
     if (
@@ -411,16 +421,13 @@ const AddSRform = () => {
     SRData.ServiceRequestData.tblServiceRequestSprayTeches = [sideData];
 
     console.log("servise request data before", SRData);
+    console.log("files data before", files);
     //  return
     formData.append(
       "ServiceRequestData",
       JSON.stringify(SRData.ServiceRequestData)
     );
 
-    // formData.append(
-    //   "ServiceRequestData",
-    //   JSON.stringify(SRData.ServiceRequestData)
-    // );
     files.forEach((file) => {
       formData.append("Files", file);
     });
@@ -447,7 +454,7 @@ const AddSRform = () => {
       setLoadingButton(false);
 
       setTimeout(() => {
-        window.location.reload();
+        // window.location.reload();
       }, 1500);
       navigate(`/service-requests/add-sRform?id=${response.data.Id}`);
 
@@ -697,6 +704,75 @@ const AddSRform = () => {
 
   // fileAdd
 
+  const handleMainButtonClick = async (
+    navigat = true,
+    copyToEstimate = false
+  ) => {
+    try {
+      const DocumentComponent =
+        SRData.ServiceRequestData.SRTypeId === 8 ? SprayTechPdf : SRPdf;
+      const documentProps =
+        SRData.ServiceRequestData.SRTypeId === 8
+          ? {
+              sRPreviewData: {
+                ...{ Data: SRData.ServiceRequestData },
+                name: name,
+                SRSTData: [sideData],
+                SRSTIData: sTechItems,
+              },
+            }
+          : { data: { ...{ Data: SRData.ServiceRequestData }, name: name } };
+
+      // Generate the PDF document
+      const blob = await pdf(<DocumentComponent {...documentProps} />).toBlob();
+
+      // Create a File object from the blob
+      const pdfFile = new File([blob], "Service Request.pdf", {
+        type: "application/pdf",
+      });
+
+      // Store the File object in state
+      setselectedPdf(pdfFile); // Now, pdfBlob is a File object with a name and type
+      if (copyToEstimate) {
+        setPunchListData({
+          ServiceRequestId: SRData.ServiceRequestData.ServiceRequestId,
+          ServiceRequestNumber: SRData.ServiceRequestData.ServiceRequestNumber,
+          CustomerId: SRData.ServiceRequestData.CustomerId,
+          RegionalManagerId: SRData.ServiceRequestData.Assign,
+          ServiceLocationId: SRData.ServiceRequestData.ServiceLocationId,
+          EstimateNotes: SRData.ServiceRequestData.WorkRequest,
+          FilesData: PrevFiles,
+          ContactIds: selectedContacts,
+          ItemData: tblSRItems.map((items) => ({
+            ...items,
+            isCost: false,
+          })),
+        });
+        navigate(`/estimates/add-estimate`);
+        return;
+      }
+
+      if (navigat) {
+        navigate(
+          `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
+            SRData.ServiceRequestData.ServiceRequestNumber
+          }&isOpen=${
+            SRData.ServiceRequestData.SRStatusId === 1 ? "Open" : "Closed"
+          }&contact=${selectedContact}`
+        );
+      } else {
+        setFiles((prevFiles) => {
+          const updatedFiles = [...prevFiles, pdfFile]; // Assuming newEntry is the new file you want to append
+          return updatedFiles; // Return the updated files array
+        });
+
+        console.log("pdfFile", pdfFile);
+      }
+    } catch (err) {
+      console.error("Error generating PDF", err);
+    }
+  };
+
   return (
     <>
       <TitleBar
@@ -734,13 +810,14 @@ const AddSRform = () => {
                   <div className="">
                     <div className="itemtitleBar">
                       <h4>Service Request Details</h4>
-                    </div>{" "}
+                    </div>
                     <div
                       className=" card-body"
                       style={{ position: "relative" }}
                     >
                       {loggedInUser.userRole == "1" ||
-                        (loggedInUser.userRole == "5" ? (
+                        (loggedInUser.userRole == "5" ||
+                        loggedInUser.userRole == "6" ? (
                           <></>
                         ) : (
                           <div
@@ -810,11 +887,10 @@ const AddSRform = () => {
                             <div className="col-md-auto">
                               <label className="form-label">
                                 Service Locations
-                                <span className="text-danger">*</span>{" "}
+                                <span className="text-danger">*</span>
                               </label>
                             </div>
                             <div className="col-md-3">
-                              {" "}
                               {SRData.ServiceRequestData.CustomerId ? (
                                 <ServiceLocations
                                   fetchServiceLocations={fetchServiceLocations}
@@ -870,7 +946,6 @@ const AddSRform = () => {
                               </label>
                             </div>
                             <div className="col-md-3">
-                              {" "}
                               {SRData.ServiceRequestData.CustomerId ? (
                                 <Contacts
                                   fetctContacts={fetctContacts}
@@ -948,7 +1023,6 @@ const AddSRform = () => {
                           /> */}
                         </div>
                         <div className="col-xl-3 col-md-4">
-                          {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">
                             Assign / Appointment:
@@ -982,9 +1056,7 @@ const AddSRform = () => {
                                 <div className="customer-dd-border">
                                   <div className="row">
                                     <div className="col-md-auto">
-                                      {" "}
                                       <h6 className="pb-0 mb-0">
-                                        {" "}
                                         {option.FirstName}
                                       </h6>
                                     </div>
@@ -1017,7 +1089,6 @@ const AddSRform = () => {
 
                       <div className="row  mt-2 ">
                         <div className="col-md-3">
-                          {" "}
                           {/* Adjust the column size as needed */}
                           <label className="form-label">
                             Service Request Number
@@ -1090,7 +1161,8 @@ const AddSRform = () => {
                         style={{ position: "relative" }}
                         className="col-lg-3 col-md-3 "
                       >
-                        {loggedInUser.userRole == "5" ? (
+                        {loggedInUser.userRole == "5" ||
+                        loggedInUser.userRole == "6" ? (
                           <>
                             <div
                               className="overlay"
@@ -1135,7 +1207,7 @@ const AddSRform = () => {
                       <div className="row">
                        
                         {/* <div className="col-md-6 pt-4">
-                        {" "}
+                        
                          Adjust the column size as needed
                         <button className="btn schedule-btn">Schedule</button>
                       </div> 
@@ -1252,7 +1324,7 @@ const AddSRform = () => {
                                     >
                                       <div className="customer-dd-border">
                                         <p>
-                                          <strong>{item.ItemName}</strong>{" "}
+                                          <strong>{item.ItemName}</strong>
                                         </p>
                                         <p>{item.Type}</p>
                                         <small>{item.SaleDescription}</small>
@@ -1370,7 +1442,6 @@ const AddSRform = () => {
                       <div className="col-md-12 mx-1 mt-2">
                         <div className="row">
                           <div className="col-md-4 mb-1">
-                            {" "}
                             {/* Adjust the column size as needed */}
                             <label className="form-label">
                               Work Requested:
@@ -1394,7 +1465,6 @@ const AddSRform = () => {
                           ) : (
                             <>
                               <div className="col-md-4 mb-1">
-                                {" "}
                                 <label className="form-label">
                                   Action Taken:
                                 </label>
@@ -1471,15 +1541,22 @@ const AddSRform = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <img
-                              src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                              alt={file.FileName}
-                              style={{
-                                width: "150px",
-                                height: "120px",
-                                objectFit: "cover",
-                              }}
-                            />
+                            {file.FileName.includes(".pdf") ? (
+                              <PictureAsPdfIcon
+                                color="error"
+                                sx={{ fontSize: "100px", marginLeft: "20px" }}
+                              />
+                            ) : (
+                              <img
+                                src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                                alt={file.FileName}
+                                style={{
+                                  width: "150px",
+                                  height: "120px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            )}
                           </a>
                           <p
                             className="file-name-overlay"
@@ -1526,15 +1603,22 @@ const AddSRform = () => {
                             position: "relative",
                           }}
                         >
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
-                            }}
-                          />
+                          {file.name.includes(".pdf") ? (
+                            <PictureAsPdfIcon
+                              color="error"
+                              sx={{ fontSize: "100px", marginLeft: "20px" }}
+                            />
+                          ) : (
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              style={{
+                                width: "150px",
+                                height: "120px",
+                                objectFit: "cover",
+                              }}
+                            />
+                          )}
                           <p
                             className="file-name-overlay"
                             style={{
@@ -1627,15 +1711,7 @@ const AddSRform = () => {
                         <PrintButton
                           varient="mail"
                           onClick={() => {
-                            navigate(
-                              `/send-mail?title=${"Service Request"}&mail=${contactEmail}&customer=${name}&number=${
-                                SRData.ServiceRequestData.ServiceRequestNumber
-                              }&isOpen=${
-                                SRData.ServiceRequestData.SRStatusId === 1
-                                  ? "Open"
-                                  : "Closed"
-                              }&contact=${selectedContact}`
-                            );
+                            handleMainButtonClick();
                           }}
                         ></PrintButton>
                         <PrintButton
@@ -1656,10 +1732,20 @@ const AddSRform = () => {
                           document={
                             SRData.ServiceRequestData.SRTypeId === 8 ? (
                               <SprayTechPdf
-                                sRPreviewData={{ ...sRPreviewData, name: name }}
+                                sRPreviewData={{
+                                  ...{ Data: SRData.ServiceRequestData },
+                                  name: name,
+                                  SRSTData: [sideData],
+                                  SRSTIData: sTechItems,
+                                }}
                               />
                             ) : (
-                              <SRPdf data={{ ...sRPreviewData, name: name }} />
+                              <SRPdf
+                                data={{
+                                  ...{ Data: SRData.ServiceRequestData },
+                                  name: name,
+                                }}
+                              />
                             )
                           }
                           fileName="Service Request.pdf"
@@ -1671,7 +1757,7 @@ const AddSRform = () => {
                               <PrintButton
                                 varient="Download"
                                 onClick={() => {
-                                  console.log("error", error);
+                                  console.log("sTechItems", sTechItems);
                                 }}
                               ></PrintButton>
                             )
@@ -1681,30 +1767,11 @@ const AddSRform = () => {
                           className="btn btn-dark me-2"
                           style={{ marginRight: "1em" }}
                           onClick={() => {
-                            setPunchListData({
-                              ServiceRequestId:
-                                SRData.ServiceRequestData.ServiceRequestId,
-                              ServiceRequestNumber:
-                                SRData.ServiceRequestData.ServiceRequestNumber,
-                              CustomerId: SRData.ServiceRequestData.CustomerId,
-                              RegionalManagerId:
-                                SRData.ServiceRequestData.Assign,
-                              ServiceLocationId:
-                                SRData.ServiceRequestData.ServiceLocationId,
-                              EstimateNotes:
-                                SRData.ServiceRequestData.WorkRequest,
-                              FilesData: PrevFiles,
-                              ContactIds: selectedContacts,
-                              ItemData: tblSRItems.map((items) => ({
-                                ...items,
-                                isCost: false,
-                              })),
-                            });
-                            navigate(`/estimates/add-estimate`);
+                            handleMainButtonClick(false, true);
                           }}
                         >
                           Copy to Estimate
-                        </button>{" "}
+                        </button>
                       </>
                     ) : (
                       <></>
@@ -1725,7 +1792,7 @@ const AddSRform = () => {
                     Submit
                   </button> */}
                   </div>
-                </div>{" "}
+                </div>
               </div>
             </div>
           </div>

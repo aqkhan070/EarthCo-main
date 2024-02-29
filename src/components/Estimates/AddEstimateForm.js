@@ -42,7 +42,7 @@ import PrintButton from "../Reusable/PrintButton";
 import useGetEstimate from "../Hooks/useGetEstimate";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import EstimatePdf from "./EstimatePdf";
-
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdfOutlined";
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -80,6 +80,7 @@ const AddEstimateForm = () => {
     loggedInUser,
     sROBJ,
     setSROBJ,
+    selectedPdf,
   } = useContext(DataContext);
   const { syncQB } = useQuickBook();
   const { getEstimateStatus, estimateStatus } = useGetEstimate();
@@ -125,7 +126,9 @@ const AddEstimateForm = () => {
 
     fetchStaffList();
     fetctContacts(PunchListData.CustomerId);
-    console.log("PunchList Data link", PunchListData);
+
+    setFiles([selectedPdf]);
+    console.log("PunchList Data link", selectedPdf);
 
     // }
   }, [PunchListData]);
@@ -201,7 +204,9 @@ const AddEstimateForm = () => {
       ];
 
       setApprovedItems(
-        response.data.EstimateItemData.filter((item) => item.IsApproved === true)
+        response.data.EstimateItemData.filter(
+          (item) => item.IsApproved === true
+        )
       );
 
       setFormData((prevState) => ({
@@ -1294,6 +1299,7 @@ const AddEstimateForm = () => {
                             style={{ color: "blue" }}
                             className="ms-2"
                             onClick={() => {
+                              setEstimateLinkData({})
                               navigate(
                                 `/purchase-order/add-po?id=${formData.PurchaseOrderId}`
                               );
@@ -1463,6 +1469,7 @@ const AddEstimateForm = () => {
                             style={{ color: "blue" }}
                             className="ms-2"
                             onClick={() => {
+                              setEstimateLinkData({})
                               navigate(
                                 `/invoices/add-invoices?id=${formData.InvoiceId}`
                               );
@@ -2450,15 +2457,22 @@ const AddEstimateForm = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <img
-                              src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
-                              alt={file.FileName}
-                              style={{
-                                width: "150px",
-                                height: "120px",
-                                objectFit: "cover",
-                              }}
-                            />
+                            {file.FileName.includes(".pdf") ? (
+                              <PictureAsPdfIcon
+                                color="error"
+                                sx={{ fontSize: "100px", marginLeft: "20px" }}
+                              />
+                            ) : (
+                              <img
+                                src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
+                                alt={file.FileName}
+                                style={{
+                                  width: "150px",
+                                  height: "120px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            )}
                           </a>
                           <p
                             className="file-name-overlay"
@@ -2544,57 +2558,68 @@ const AddEstimateForm = () => {
                       ))}
 
                       {Files.map((file, index) => (
-                        <div
-                          key={index}
-                          className="col-md-2 col-md-2 mt-3 image-container"
-                          style={{
-                            width: "150px", // Set the desired width
-                            height: "120px", // Set the desired height
+                        <>
+                          {Object.keys(file).length !== 0 && (
+                            <div
+                              key={index}
+                              className="col-md-2 col-md-2 mt-3 image-container"
+                              style={{
+                                width: "150px", // Set the desired width
+                                height: "120px", // Set the desired height
 
-                            position: "relative",
-                          }}
-                        >
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            style={{
-                              width: "150px",
-                              height: "120px",
-                              objectFit: "cover",
-                            }}
-                          />
-                          <p
-                            className="file-name-overlay"
-                            style={{
-                              position: "absolute",
-                              bottom: "0",
-                              left: "13px",
-                              right: "0",
-                              backgroundColor: "rgba(0, 0, 0, 0.3)",
-                              textAlign: "center",
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              width: "100%",
-                              textOverflow: "ellipsis",
-                              padding: "5px",
-                            }}
-                          >
-                            {file.name}
-                          </p>
-                          <span
-                            className="file-delete-button"
-                            style={{
-                              left: "140px",
-                            }}
-                            onClick={() => {
-                              handleDeleteFile(index);
-                            }}
-                          >
-                            <span>
-                              <Delete color="error" />
-                            </span>
-                          </span>
-                        </div>
+                                position: "relative",
+                              }}
+                            >
+                              {file.name?.includes(".pdf") ? (
+                                <PictureAsPdfIcon
+                                  color="error"
+                                  sx={{ fontSize: "100px", marginLeft: "20px" }}
+                                />
+                              ) : (
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={file.name}
+                                  style={{
+                                    width: "150px",
+                                    height: "120px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              )}
+                              <p
+                                className="file-name-overlay"
+                                style={{
+                                  position: "absolute",
+                                  bottom: "0",
+                                  left: "13px",
+                                  right: "0",
+                                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                  textAlign: "center",
+                                  overflow: "hidden",
+                                  whiteSpace: "nowrap",
+                                  width: "100%",
+                                  textOverflow: "ellipsis",
+                                  padding: "5px",
+                                }}
+                              >
+                                {file.name}
+                              </p>
+                              <span
+                                className="file-delete-button"
+                                style={{
+                                  left: "140px",
+                                }}
+                                onClick={() => {
+                                  handleDeleteFile(index);
+                                }}
+                              >
+                                <span>
+                                  <Delete color="error" />
+                                </span>
+                              </span>
+                            </div>
+                          )}
+                        </>
                       ))}
                     </div>
                   </div>
@@ -2686,12 +2711,16 @@ const AddEstimateForm = () => {
                                 RegionalManagerName: staffName,
                                 SelectedCompany: loggedInUser.CompanyName,
                                 CustomerName: name,
-                                ApprovedItems: formData.tblEstimateItems.filter((item) => item.IsApproved === true),
-                                Amount: formData.tblEstimateItems.filter((item) => item.IsApproved === true).reduce(
-                                  (accumulator, item) =>
-                                    accumulator + item.Amount,
-                                  0
+                                ApprovedItems: formData.tblEstimateItems.filter(
+                                  (item) => item.IsApproved === true
                                 ),
+                                Amount: formData.tblEstimateItems
+                                  .filter((item) => item.IsApproved === true)
+                                  .reduce(
+                                    (accumulator, item) =>
+                                      accumulator + item.Amount,
+                                    0
+                                  ),
                               }}
                             />
                           }
@@ -2701,7 +2730,12 @@ const AddEstimateForm = () => {
                             loading ? (
                               " "
                             ) : (
-                              <PrintButton varient="Download" onClick={() => {console.log("error", error)}}></PrintButton>
+                              <PrintButton
+                                varient="Download"
+                                onClick={() => {
+                                  console.log("error", error);
+                                }}
+                              ></PrintButton>
                             )
                           }
                         </PDFDownloadLink>

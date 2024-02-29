@@ -42,7 +42,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
 
   const session = useSession();
   const supabase = useSupabaseClient();
-  const { loggedInUser , setLoggedInUser} = useContext(DataContext);
+  const { loggedInUser, setLoggedInUser } = useContext(DataContext);
 
   const { isLoading } = useSessionContext();
   const { sendToken, deleteToken } = useSaveGoogleToken();
@@ -69,6 +69,18 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   }
 
   const editEvent = async (eventId, summary, description, date, start, end) => {
+    if (!end || !start) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Enter start and End time");
+      return; // Exit the function early if end time is before start time
+    }
+    if (dayjs(end).isBefore(dayjs(start))) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("End time cannot be before start time");
+      return; // Exit the function early if end time is before start time
+    }
     const formattedStart = dayjs(date)
       .hour(dayjs(start).hour())
       .minute(dayjs(start).minute())
@@ -365,7 +377,12 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   useEffect(() => {
     console.log("session is ", session);
     console.log("counter is ", counter);
-    if (session && counter <= 1) {
+    if (
+      session &&
+      session.provider_token &&
+      Object.keys(session).length !== 0 &&
+      counter <= 1
+    ) {
       setCounter(counter + 1);
       sendToken(
         {
@@ -378,9 +395,11 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         },
         getDashboardData
       );
+      Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
+      console.log("asdfg");
     }
   }, [session]);
-  const fetchGoogleEvents = async () => {
+  const fetchGoogleEvents = async (click = false) => {
     try {
       // Calculate the start and end date for the time frame (current day to one month from now)
       const currentDate = new Date();
@@ -402,7 +421,11 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
       console.log("session is ", session);
       console.log("Events:", response.data.items);
       setEventsList(response.data.items);
-      if (session) {
+      if (
+        session &&
+        session.provider_token &&
+        Object.keys(session).length !== 0
+      ) {
         sendToken(
           {
             AccessToken: session.access_token,
@@ -414,9 +437,16 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
           },
           getDashboardData()
         );
+        console.log("asdfg");
       }
     } catch (error) {
-      console.error("Error fetching events:", error);
+      if (click) {
+        setOpenSnackBar(true);
+        setSnackBarColor("error");
+        setSnackBarText("Error Fetching event");
+      }
+
+      console.error("Error fetching events: error.response.status", error);
     }
   };
 
@@ -424,7 +454,22 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
     fetchHighlightedDays(initialValue);
     fetchGoogleEvents();
     console.log("logged in user data is in calender", loggedInUser);
-    // abort request on unmount
+    setLoggedInUser({
+      ...loggedInUser,
+      userName: Cookies.get("userName"),
+      userEmail: Cookies.get("userEmail"),
+      userRole: Cookies.get("userRole"),
+      userId: Cookies.get("userId"),
+      CompanyName: Cookies.get("CompanyName"),
+      CompanyId: Cookies.get("CompanyId"),
+      RefreshToken: Cookies.get("RefreshToken"),
+      ProviderToken:
+        Cookies.get("ProviderToken") == "null"
+          ? null
+          : Cookies.get("ProviderToken"),
+      UserEmailGoogle: Cookies.get("UserEmailGoogle"),
+    });
+    
     return () => requestAbortController.current?.abort();
   }, []);
 
@@ -448,7 +493,15 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
     const { error, user } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        scopes: ["https://www.googleapis.com/auth/calendar","https://mail.google.com/"]
+        scopes: [
+          "https://www.googleapis.com/auth/calendar",
+          "https://mail.google.com/",
+        ],
+
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
       },
     });
 
@@ -472,7 +525,11 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
       );
       getDashboardData();
       Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
-        Cookies.set("UserEmailGoogle", session.user.email, { expires: 7 });
+      Cookies.set("UserEmailGoogle", session.user.email, { expires: 7 });
+      setLoggedInUser({
+        ...loggedInUser,
+        ProviderToken: session.provider_token,
+      });
     }
   };
 
@@ -482,11 +539,13 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
       console.log("signed out");
       // Call your success function here
       deleteToken(Number(loggedInUser.userId), getDashboardData);
+      Cookies.set("ProviderToken", "", { expires: 7 });
+      Cookies.set("UserEmailGoogle", "", { expires: 7 });
       setLoggedInUser({
         ...loggedInUser,
-        ProviderToken : null,
-        UserEmailGoogle : ""
-      })
+        ProviderToken: null,
+        UserEmailGoogle: "",
+      });
     } catch (error) {
       console.error("Error signing out:", error);
       // Handle the error or call an error handling function if needed
@@ -507,6 +566,12 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
   ) => {
     console.log("Creating calendar event");
 
+    if (!end || !start) {
+      setOpenSnackBar(true);
+      setSnackBarColor("error");
+      setSnackBarText("Enter start and End time");
+      return; // Exit the function early if end time is before start time
+    }
     if (dayjs(end).isBefore(dayjs(start))) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
@@ -611,7 +676,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
                   <div className="col-sm-2">
                     <SyncIcon
                       style={{ cursor: "pointer", color: "white" }}
-                      onClick={() => fetchGoogleEvents()}
+                      onClick={() => fetchGoogleEvents(true)}
                     />
                   </div>
                 </CustomizedTooltips>
@@ -633,7 +698,8 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         <div className="card-body schedules-cal p-2">
           <div style={{ width: "100%" }}>
             <div className="p-0 " style={{ color: "black" }}>
-              {loggedInUser.UserEmailGoogle && loggedInUser.UserEmailGoogle
+              {loggedInUser.UserEmailGoogle &&
+              loggedInUser.UserEmailGoogle !== "null"
                 ? loggedInUser.UserEmailGoogle
                 : ""}
             </div>

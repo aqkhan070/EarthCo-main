@@ -7,8 +7,11 @@ import formatDate from "../../custom/FormatDate";
 import formatAmount from "../../custom/FormatAmount";
 
 const EstimatePdf = ({ data }) => {
+  data = data || {
+    ApprovedItems : []
+  };
   return (
-    // <PDFViewer style={{ width: "100%", height: "800px" }}>
+    //  <PDFViewer style={{ width: "100%", height: "800px" }}>
     <Document>
       <Page size="A4" orientation="portrait">
         <View style={[s.containerFluid]}>
@@ -27,18 +30,18 @@ const EstimatePdf = ({ data }) => {
             </View>
 
             <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "130px" }} src={logo}></Image>
+              <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
             </View>
             <View style={[s.col8, { marginTop: "10px" }]}>
-              <Text style={s.heading}>Submitted to</Text>
+              <Text style={s.textBold}>Submitted to</Text>
               <Text style={s.text}>
-                {data.ContactName}, {data.ContactCompanyName}
+                {data.ContactName ? data.ContactName + ", ": ""}  {data.ContactCompanyName}
               </Text>
             </View>
             <View style={[s.col2, { marginTop: "10px" }]}>
-              <Text style={[s.text, { fontWeight: "bold" }]}>Date</Text>
-              <Text style={[s.text, { fontWeight: "bold" }]}>Estimate #</Text>
-              <Text style={[s.text, { fontWeight: "bold" }]}>Submitted by</Text>
+              <Text style={[s.textBold, { fontWeight: "bold" }]}>Date</Text>
+              <Text style={[s.textBold, { fontWeight: "bold" }]}>Estimate #</Text>
+              <Text style={[s.textBold, { fontWeight: "bold" }]}>Submitted by</Text>
             </View>
             <View style={[s.col2, s.textEnd, { marginTop: "10px" }]}>
               <Text style={s.text}>{formatDate(data.IssueDate)}</Text>
@@ -57,12 +60,12 @@ const EstimatePdf = ({ data }) => {
             </View>
 
             <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.heading}>Description of work</Text>
+              <Text style={s.textBold}>Description of work</Text>
               <Text style={s.text}>{data.EstimateNotes}</Text>
             </View>
 
             <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.heading}>item(s)</Text>
+              <Text style={s.textBold}>Item(s)</Text>
             </View>
 
             <View
@@ -111,7 +114,7 @@ const EstimatePdf = ({ data }) => {
                     s.textEnd,
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -122,7 +125,7 @@ const EstimatePdf = ({ data }) => {
                 <View
                   style={[
                     s.col8,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px",  borderBottom: "0.5px solid #CCCCCC", },
                   ]}
                 >
                   <Text style={s.tblText}>{item.Description}</Text>
@@ -131,13 +134,13 @@ const EstimatePdf = ({ data }) => {
                   style={[
                     s.col2,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    {  borderBottom: "0.5px solid #CCCCCC", },
                   ]}
                 >
                   <Text style={[s.tblText]}>${formatAmount(item.Amount)}</Text>
                 </View>
 
-                {index === 24 && (
+                {index === 30 && (
                   <View style={[s.col12, { height: "60em" }]}></View>
                 )}
               </View>
@@ -146,7 +149,7 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col1,
-                { borderBottom: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderBottom: "0.5px solid #CCCCCC", marginTop: "30px" },
               ]}
             >
               <Text style={s.text}>Total:</Text>
@@ -155,7 +158,7 @@ const EstimatePdf = ({ data }) => {
               style={[
                 s.col2,
                 s.textEnd,
-                { borderBottom: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderBottom: "0.5px solid #CCCCCC", marginTop: "30px" },
               ]}
             >
               <Text style={s.text}>${formatAmount(data.Amount)}</Text>
@@ -164,7 +167,7 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col3,
-                { borderTop: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderTop: "1px solid #CCCCCC", marginTop: "60px" },
               ]}
             >
               <Text style={s.text}>ACCEPTED BY:</Text>
@@ -172,7 +175,7 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col3,
-                { borderTop: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderTop: "1px solid #CCCCCC", marginTop: "60px" },
               ]}
             >
               <Text style={s.text}>Buyer/Agent Signature</Text>
@@ -180,7 +183,7 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col2,
-                { borderTop: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderTop: "1px solid #CCCCCC", marginTop: "60px" },
               ]}
             >
               <Text style={s.text}>Print Name</Text>
@@ -188,7 +191,7 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col2,
-                { borderTop: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderTop: "1px solid #CCCCCC", marginTop: "60px" },
               ]}
             >
               <Text style={s.text}>Title</Text>
@@ -196,12 +199,12 @@ const EstimatePdf = ({ data }) => {
             <View
               style={[
                 s.col2,
-                { borderTop: "1px solid #CCCCCC", marginTop: "30px" },
+                { borderTop: "1px solid #CCCCCC", marginTop: "60px" },
               ]}
             >
               <Text style={s.text}>Date</Text>
             </View>
-            <View style={[s.col12, { marginTop: "20px" }]}>
+            <View style={[s.col12, { marginTop: "40px" }]}>
               <Text style={s.small}>
                 Payment Terms and Conditions: Please be advised that payments
                 are due upon receipt of the invoice, with any payment made
@@ -233,7 +236,7 @@ const EstimatePdf = ({ data }) => {
         </View>
       </Page>
     </Document>
-    // </PDFViewer>
+//  </PDFViewer>
   );
 };
 

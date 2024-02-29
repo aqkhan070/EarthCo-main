@@ -2,39 +2,45 @@ import React, { useEffect, useState } from "react";
 import useFetchSprayTech from "../Hooks/useFetchSprayTech";
 import { Checkbox, TextField } from "@mui/material";
 
-const SprayTechForm = ({ SrId, sTechItems, setSTechItems, sideData, setSideData }) => {
+const SprayTechForm = ({
+  SrId,
+  sTechItems,
+  setSTechItems,
+  sideData,
+  setSideData,
+}) => {
   const { sprayTechData, fetchSprayTech } = useFetchSprayTech();
-
-
 
   useEffect(() => {
     fetchSprayTech();
   }, []);
 
   useEffect(() => {
-   if (sTechItems.length === 0) {
-    const updatedSTechItems = sprayTechData.map((item) => ({
-      ...item,
-      isUsed: false,
-      ServiceRequestId: SrId,
-    }));
-    setSTechItems(updatedSTechItems);
-   }
-    
+    if (sTechItems.length === 0) {
+      const updatedSTechItems = sprayTechData.map((item) => ({
+        ...item,
+        isUsed: false,
+        ServiceRequestId: SrId,
+      }));
+      setSTechItems(updatedSTechItems);
+      console.log("updatedSTechItems", updatedSTechItems);
+    }
   }, [sprayTechData]);
 
-  
-
- 
-useEffect(() => {
+  useEffect(() => {
     console.log("sTechItems", sideData);
   }, [sideData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setSideData(prevState => ({
+    setSideData((prevState) => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? parseFloat(value) : value
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "number"
+          ? parseFloat(value)
+          : value,
     }));
   };
 
@@ -51,44 +57,52 @@ useEffect(() => {
                 <table id="empoloyees-tblwrapper" className="table">
                   <thead style={{ backgroundColor: "#F0F4F9" }}>
                     <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Rate</th>
-                      <th>Notes</th>
-                      <th>Type</th>
+                     
+                      <th colSpan={"12"} style={{ fontWeight: "bold" }} className="text-center">Chemicals</th>
+                     
                     </tr>
                   </thead>
                   <tbody>
                     {sTechItems.map((item, index) => (
-                      <tr
-                        key={item.SprayTechItemId}
-                        style={{
-                          height: "fit-content",
-                          color: item.isOrganic ? "red" : "inherit",
-                        }}
-                      >
-                        <td>
-                          <Checkbox
-                            // Here you can use item.isUsed for managing checkbox state
-                            checked={item.isUsed}
-                            onChange={() => {
-                              // Toggle isUsed value when checkbox is clicked
-                              setSTechItems((prevItems) => {
-                                const updatedItems = [...prevItems];
-                                updatedItems[index].isUsed =
-                                  !updatedItems[index].isUsed;
-                                return updatedItems;
-                              });
-                            }}
-                          />
-                        </td>
-                        <td>{item.ItemName}</td>
-                        <td>
-                          {item.Rate} {item.Unit}
-                        </td>
-                        <td>{item.Notes}</td>
-                        <td>{item.Type}</td>
-                      </tr>
+                      <>
+                        {index === 0 ||
+                        item.Type !== sTechItems[index - 1].Type ? (
+                          <tr style={{ backgroundColor: "#F0F4F9" }}>
+                            <td style={{ fontWeight: "bold" }}>#</td>
+                            <td style={{ fontWeight: "bold" }}>{item.Type}</td>
+                            <td style={{ fontWeight: "bold" }}>Rate</td>
+                            <td style={{ fontWeight: "bold" }}>Notes</td>
+                          </tr>
+                        ) : null}
+                        <tr
+                          key={item.SprayTechItemId}
+                          style={{
+                            height: "fit-content",
+                            color: item.isOrganic ? "red" : "inherit",
+                          }}
+                        >
+                          <td>
+                            <Checkbox
+                              // Here you can use item.isUsed for managing checkbox state
+                              checked={item.isUsed}
+                              onChange={() => {
+                                // Toggle isUsed value when checkbox is clicked
+                                setSTechItems((prevItems) => {
+                                  const updatedItems = [...prevItems];
+                                  updatedItems[index].isUsed =
+                                    !updatedItems[index].isUsed;
+                                  return updatedItems;
+                                });
+                              }}
+                            />
+                          </td>
+                          <td>{item.ItemName}</td>
+                          <td>
+                            {item.Rate} {item.Unit}
+                          </td>
+                          <td style={{whiteSpace : "nowrap"}}>{item.Notes}</td>
+                        </tr>
+                      </>
                     ))}
                   </tbody>
                 </table>
@@ -98,7 +112,10 @@ useEffect(() => {
         </div>
         <div className="col-md-4">
           <div className="row">
-            <div className="col-md-12 mt-2" style={{ backgroundColor: "#F0F4F9" }}>
+            <div
+              className="col-md-12 mt-2"
+              style={{ backgroundColor: "#F0F4F9" }}
+            >
               <h4 className="mb-1 pb-0 mt-1">Sprayed Hours</h4>
             </div>
             <div className="col-md-12 mt-3">
@@ -112,7 +129,10 @@ useEffect(() => {
                 value={sideData.Hours}
               />
             </div>
-            <div className="col-md-12 mt-3" style={{ backgroundColor: "#F0F4F9" }}>
+            <div
+              className="col-md-12 mt-3"
+              style={{ backgroundColor: "#F0F4F9" }}
+            >
               <h4 className="mb-1 pb-0 mt-1">Landscape treated</h4>
             </div>
             <div className="col-md-1">
@@ -159,7 +179,10 @@ useEffect(() => {
             <div className="col-md-11">
               <h5 className="mb-0 pb-0 mt-1">Trees</h5>
             </div>
-            <div className="col-md-12 mt-3" style={{ backgroundColor: "#F0F4F9" }}>
+            <div
+              className="col-md-12 mt-3"
+              style={{ backgroundColor: "#F0F4F9" }}
+            >
               <h4 className="mb-1 pb-0 mt-1">Quantity</h4>
             </div>
             <div className="col-md-12 mt-3">

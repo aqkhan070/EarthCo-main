@@ -13,6 +13,8 @@ import useSendEmail from "../Hooks/useSendEmail";
 import EventPopups from "../Reusable/EventPopups";
 import useFetchCustomerEmail from "../Hooks/useFetchCustomerEmail";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import PunchListPOPdf from "./PunchListPOPdf";
 
 const PLPhotoOnlyPreview = () => {
   const token = Cookies.get("token");
@@ -225,12 +227,29 @@ const PLPhotoOnlyPreview = () => {
               </div>
               <div className="p-2 bd-highlight">
                 {" "}
-                <button
+                {/* <button
                   className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
                   onClick={handleDownload}
                 >
                   <i className="fa fa-download"></i>
-                </button>
+                </button> */}
+                <PDFDownloadLink
+                  document={<PunchListPOPdf weeklyPreviewData={weeklyPreviewData} />}
+                  fileName="PunchList.pdf"
+                >
+                  {({ blob, url, loading, error }) =>
+                    loading ? (
+                      " "
+                    ) : (
+                      <button
+                className="btn btn-sm btn-outline-secondary custom-csv-link  estm-action-btn"
+               
+              >
+                <i className="fa fa-download"></i>
+              </button>
+                    )
+                  }
+                </PDFDownloadLink> 
               </div>
 
               {isMail ? (

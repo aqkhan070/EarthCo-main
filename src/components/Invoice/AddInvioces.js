@@ -36,6 +36,9 @@ import Tooltip from "@mui/material/Tooltip";
 import useFetchPo from "../Hooks/useFetchPo";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from "./InvoicePDF";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import { pdf } from '@react-pdf/renderer';
+
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -52,7 +55,7 @@ const AddInvioces = ({}) => {
 
   const queryParams = new URLSearchParams(window.location.search);
   const idParam = Number(queryParams.get("id"));
-  const { loggedInUser, selectedImages, setSelectedImages } =
+  const { loggedInUser, selectedImages, setSelectedImages, setselectedPdf } =
     useContext(DataContext);
   const currentDate = new Date();
   const [formData, setFormData] = useState({
@@ -1055,6 +1058,42 @@ const AddInvioces = ({}) => {
     }
 
     console.log("selected images arew", selectedImages);
+  };
+
+  const handleMainButtonClick = async () => {
+    try { 
+    
+      const blob = await pdf(<InvoicePDF
+        data={{
+          ...formData,
+        
+          SelectedCompany: loggedInUser.CompanyName,
+          CustomerName: name,
+          ApprovedItems: formData.tblInvoiceItems,
+          Amount: totalItemAmount,
+        }}
+      />).toBlob();
+  
+      // Create a File object from the blob
+      const pdfFile = new File([blob], "Invoice.pdf", {
+        type: "application/pdf",
+      });
+  
+      // Store the File object in state
+      setselectedPdf(pdfFile); // Now, pdfBlob is a File object with a name and type
+     
+      navigate(
+        `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${name}&number=${
+          formData.InvoiceNumber
+        }`
+      );  
+  
+        console.log("pdfFile", pdfFile);
+        
+     
+    } catch (err) {
+      console.error("Error generating PDF", err);
+    }
   };
 
   return (
@@ -2238,6 +2277,7 @@ const AddInvioces = ({}) => {
                       position: "relative",
                     }}
                   >
+                    {file.FileName.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"100px", marginLeft : "20px"}} />:
                     <img
                       src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                       alt={file.FileName}
@@ -2246,7 +2286,7 @@ const AddInvioces = ({}) => {
                         height: "120px",
                         objectFit: "cover",
                       }}
-                    />
+                    />}
                     <p
                       className="file-name-overlay"
                       style={{
@@ -2295,6 +2335,7 @@ const AddInvioces = ({}) => {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
+                      {file.FileName.includes(".pdf")? <PictureAsPdfIcon color="error" sx={{fontSize :"100px", marginLeft : "20px"}} />:
                       <img
                         src={`https://earthcoapi.yehtohoga.com/${file.FilePath}`}
                         alt={file.FileName}
@@ -2303,7 +2344,7 @@ const AddInvioces = ({}) => {
                           height: "120px",
                           objectFit: "cover",
                         }}
-                      />
+                      />}
                     </a>
                     <p
                       className="file-name-overlay"
@@ -2479,11 +2520,7 @@ const AddInvioces = ({}) => {
                     <PrintButton
                       varient="mail"
                       onClick={() => {
-                        navigate(
-                          `/send-mail?title=${"Invoice"}&mail=${customerMail}&customer=${name}&number=${
-                            formData.InvoiceNumber
-                          }`
-                        );
+                        handleMainButtonClick()
                       }}
                     ></PrintButton>
                     <PrintButton

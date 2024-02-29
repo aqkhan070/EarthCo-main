@@ -211,7 +211,7 @@ const EstimatePreview = () => {
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
                       <img
                         className="preview-Logo"
-                        style={{ width: "160px" }}
+                        style={{ width: "140px" }}
                         src={logo}
                         alt=""
                       />

@@ -69,7 +69,7 @@ function GoogleMapApi() {
   }, [sRMapData]);
 
   useEffect(() => {
-    if (map) {
+    if (map && markers.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
       markers.forEach((marker) => {
         bounds.extend(new window.google.maps.LatLng(marker.lat, marker.lng));
@@ -165,8 +165,8 @@ function GoogleMapApi() {
           .set({
             margin: 10,
             filename: "map_image.pdf",
-            image: { type: "jpeg", quality: 0.98 },
-            html2canvas: { scale: 2 },
+            image: { type: "jpeg", quality: 4 },
+            html2canvas: { dpi: 300, scale: 4 },
             jsPDF: { unit: "mm", format: "a4", orientation: "Landscape" },
           });
 

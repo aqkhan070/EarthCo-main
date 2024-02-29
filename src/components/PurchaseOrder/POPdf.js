@@ -21,7 +21,7 @@ const POPdf = ({data}) => {
             </View>
 
             <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "130px" }} src={logo}></Image>
+              <Image style={{ marginLeft: "80px" ,  width: "100px" }} src={logo}></Image>
             </View>
             <View style={[s.col8, { marginTop: "10px" }]}>
          
@@ -34,8 +34,8 @@ const POPdf = ({data}) => {
           
             </View>
             <View style={[s.col2, { marginTop: "10px" }]}>
-            <Text style={[s.text, {marginTop : "10px"}]}>Date</Text>
-            <Text style={[s.text]}>Purchase Order#</Text>
+            <Text style={[s.textBold, {marginTop : "10px"}]}>Date</Text>
+            <Text style={[s.textBold]}>PO#</Text>
             </View>
             <View style={[s.col2, { marginTop: "10px" }]}>
             <Text style={[s.text,s.textEnd, {marginTop : "10px  "}]}>  {formatDate(
@@ -116,7 +116,7 @@ const POPdf = ({data}) => {
                  
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -127,7 +127,7 @@ const POPdf = ({data}) => {
                     s.col6,
                     {
                       paddingLeft: "10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -137,7 +137,7 @@ const POPdf = ({data}) => {
                   style={[
                     s.col1,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>{item.Qty}</Text>
@@ -147,7 +147,7 @@ const POPdf = ({data}) => {
                   style={[
                     s.col1,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>${item.Rate}</Text>
@@ -157,14 +157,14 @@ const POPdf = ({data}) => {
                   style={[
                     s.col2,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}> ${formatAmount(item.Qty * item.Rate)}</Text>
                 </View>
                 
 
-             {index === 26 && (
+             {index === 33 && (
                   <View style={[s.col12, { height: "80em" }]}></View>
                 )} 
               </View>

@@ -25,7 +25,7 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import useFetchPo from "../Hooks/useFetchPo";
 import { NavLink, useNavigate } from "react-router-dom";
-import { DataContext } from "../../context/AppData";
+import { useEstimateContext } from "../../context/EstimateContext";
 import formatDate from "../../custom/FormatDate";
 import TitleBar from "../TitleBar";
 import TblDateFormat from "../../custom/TblDateFormat";
@@ -101,7 +101,7 @@ const PurchaseOrder = () => {
   const [postSuccessRes, setPostSuccessRes] = useState("");
 
   const navigate = useNavigate();
-  const { setPOData } = useContext(DataContext);
+  const { setEstimateLinkData } = useEstimateContext();
 
   const [tablePage, setTablePage] = useState(0);
   const [statusId, setStatusId] = useState(0);
@@ -111,6 +111,7 @@ const PurchaseOrder = () => {
   useEffect(() => {
     // Initial fetch of estimates
     fetchFilterPo();
+    setEstimateLinkData({})
   }, []);
 
   useEffect(() => {

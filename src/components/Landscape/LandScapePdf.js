@@ -30,7 +30,7 @@ const LandScapePdf = ({ landscapeData }) => {
               </View>
 
               <View style={[s.col4, { paddingLeft: "20px" }]}>
-                <Image style={[{ width: "100px" }]} src={logo}></Image>
+                <Image style={[{ width: "100px", marginLeft : "60px" }]} src={logo}></Image>
               </View>
 
               <View style={[s.col8, s.textEnd, { marginTop: "10px" }]}></View>
@@ -74,7 +74,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -85,7 +85,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -101,7 +101,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -112,7 +112,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -128,7 +128,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -139,7 +139,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -154,7 +154,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -165,7 +165,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -180,7 +180,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -191,7 +191,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -206,7 +206,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -217,7 +217,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -263,7 +263,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -274,7 +274,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -288,7 +288,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -299,7 +299,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -341,7 +341,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -352,7 +352,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -368,7 +368,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -379,7 +379,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -423,7 +423,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -434,7 +434,7 @@ const LandScapePdf = ({ landscapeData }) => {
                 <View
                   style={[
                     s.col6,
-                    { paddingLeft: "10px", borderBottom: "1px solid #CCCCCC" },
+                    { paddingLeft: "10px", borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={s.tblText}>
@@ -475,7 +475,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -488,7 +488,7 @@ const LandScapePdf = ({ landscapeData }) => {
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -505,7 +505,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -518,7 +518,7 @@ const LandScapePdf = ({ landscapeData }) => {
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -535,7 +535,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -548,7 +548,7 @@ const LandScapePdf = ({ landscapeData }) => {
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -564,7 +564,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -577,7 +577,7 @@ const LandScapePdf = ({ landscapeData }) => {
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -589,7 +589,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                       {
                         paddingLeft: " 10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -602,7 +602,7 @@ const LandScapePdf = ({ landscapeData }) => {
                       s.col6,
                       {
                         paddingLeft: "10px",
-                        borderBottom: "1px solid #CCCCCC",
+                        borderBottom: "0.5px solid #CCCCCC",
                       },
                     ]}
                   >
@@ -642,7 +642,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                   {
                     paddingLeft: " 10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -655,7 +655,7 @@ const LandScapePdf = ({ landscapeData }) => {
                   s.col6,
                   {
                     paddingLeft: "10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -694,7 +694,7 @@ const LandScapePdf = ({ landscapeData }) => {
 
                   {
                     paddingLeft: " 10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >
@@ -705,7 +705,7 @@ const LandScapePdf = ({ landscapeData }) => {
                   s.col6,
                   {
                     paddingLeft: "10px",
-                    borderBottom: "1px solid #CCCCCC",
+                    borderBottom: "0.5px solid #CCCCCC",
                   },
                 ]}
               >

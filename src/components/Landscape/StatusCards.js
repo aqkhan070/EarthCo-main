@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import OpenWithIcon from '@mui/icons-material/PendingActions';
 import TaskIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 const StatusCards = ({ statusId, setStatusId, records }) => {
-  useEffect(() => {
-    console.log("jhaduqhwwe", records);
-  }, [records]);
+  
 
   return (
     <>

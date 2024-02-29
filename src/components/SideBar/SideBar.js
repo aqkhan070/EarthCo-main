@@ -331,28 +331,28 @@ const SideBar = () => {
         </svg>
       ),
     },
-    {
-      label: "SprayTech",
-      path: "/spray-tech",
-      icon: (
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 22 22"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M4.4 7.7c2 .5 2.4 2.8 3.2 3.8 1 1.4 2 1.3 3.2 2.7 1.8 2.3 1.3 5.7 1.3 6.7M20 15h-1a4 4 0 0 0-4 4v1M8.6 4c0 .8.1 1.9 1.5 2.6 1.4.7 3 .3 3 2.3 0 .3 0 2 1.9 2 2 0 2-1.7 2-2 0-.6.5-.9 1.2-.9H20m1 4a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-            stroke="#888888"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+    // {
+    //   label: "SprayTech",
+    //   path: "/spray-tech",
+    //   icon: (
+    //     <svg
+    //       width="22"
+    //       height="22"
+    //       viewBox="0 0 22 22"
+    //       fill="none"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //     >
+    //       <path
+    //         d="M4.4 7.7c2 .5 2.4 2.8 3.2 3.8 1 1.4 2 1.3 3.2 2.7 1.8 2.3 1.3 5.7 1.3 6.7M20 15h-1a4 4 0 0 0-4 4v1M8.6 4c0 .8.1 1.9 1.5 2.6 1.4.7 3 .3 3 2.3 0 .3 0 2 1.9 2 2 0 2-1.7 2-2 0-.6.5-.9 1.2-.9H20m1 4a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    //         stroke="#888888"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //       />
          
          
-        </svg>
-      ),
-    },
+    //     </svg>
+    //   ),
+    // },
 
     {
       label: "Map",
@@ -757,7 +757,7 @@ const SideBar = () => {
           <ul className="metismenu" id="menu">
             {loggedInUser.userRole == 1
               ? renderOptions
-              : loggedInUser.userRole == 5
+              : loggedInUser.userRole == 5 || loggedInUser.userRole == 6
               ? renderOptionsIrr
               : renderOptionsRM}
 
@@ -844,7 +844,7 @@ const SideBar = () => {
                 </ul>
               )}
             </li>
-            {loggedInUser.userRole == 5 ? (
+            {loggedInUser.userRole == 5 || loggedInUser.userRole == 6 ? (
               <></>
             ) : (
               <>

@@ -27,7 +27,7 @@ const InvoicePDF = ({ data }) => {
             </View>
 
             <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "130px" }} src={logo}></Image>
+              <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
             </View>
             <View style={[s.col8, { marginTop: "10px" }]}>
               <Text style={s.heading}>Bill to</Text>
@@ -123,7 +123,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -135,7 +135,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -147,7 +147,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -159,7 +159,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -171,7 +171,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -183,7 +183,7 @@ const InvoicePDF = ({ data }) => {
 
                 {
                   paddingLeft: " 10px",
-                  borderBottom: "1px solid #CCCCCC",
+                  borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
@@ -194,12 +194,12 @@ const InvoicePDF = ({ data }) => {
             </View>
 
             <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.heading}>Description of work</Text>
-              <Text style={s.text}> {data.CustomerMessage}</Text>
+              <Text style={s.textBold}>Description of work</Text>
+              <Text style={s.text}>{data.CustomerMessage}</Text>
             </View>
 
             <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.heading}>item(s)</Text>
+              <Text style={s.textBold}>item(s)</Text>
             </View>
 
             <View
@@ -246,7 +246,7 @@ const InvoicePDF = ({ data }) => {
                     s.textEnd,
                     {
                       paddingLeft: " 10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -257,7 +257,7 @@ const InvoicePDF = ({ data }) => {
                     s.col8,
                     {
                       paddingLeft: "10px",
-                      borderBottom: "1px solid #CCCCCC",
+                      borderBottom: "0.5px solid #CCCCCC",
                     },
                   ]}
                 >
@@ -267,13 +267,13 @@ const InvoicePDF = ({ data }) => {
                   style={[
                     s.col2,
                     s.textEnd,
-                    { borderBottom: "1px solid #CCCCCC" },
+                    { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
                   <Text style={[s.tblText]}>${formatAmount(item.Amount)}</Text>
                 </View>
 
-                {index === 28 && (
+                {index === 25 && (
                   <View style={[s.col12, { height: "80em" }]}></View>
                 )}
               </View>

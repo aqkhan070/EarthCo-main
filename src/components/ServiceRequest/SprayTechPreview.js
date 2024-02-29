@@ -218,7 +218,7 @@ const SprayTechPreview = () => {
                   </div>
 
                   <div className="row">
-                    <div className="col-md-2 col-sm-2 pe-2">
+                    <div className="col-md-2 col-sm-2 pe-2 ">
                       <img
                         className="preview-Logo"
                         style={{ width: "120px" }}
@@ -231,12 +231,13 @@ const SprayTechPreview = () => {
                         <div
                         
                           className="col-md-2 col-sm-2 me-0 pe-0"
+                          style={{width : "20%"}}
                         >
                           <h6>
                             <strong>Customer Name:</strong>
                           </h6>
                         </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0">
+                        <div  style={{width : "20%"}} className="col-md-3 col-sm-3 me-0 pe-0">
                           <h6>
                             <strong>{name}</strong>
                           </h6>
@@ -262,9 +263,9 @@ const SprayTechPreview = () => {
                           </h6>
                         </div>
                       </div>
-                      <div className="row mt-3">
+                      <div className="row mt-1">
                         <div
-                         
+                          style={{width : "20%"}}
                           className="col-md-2 col-sm-2 me-0 pe-0"
                         >
                           <h6>
@@ -278,12 +279,12 @@ const SprayTechPreview = () => {
                             </strong>
                           </h6>
                         </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0 ">
+                        <div className="col-md-3 col-sm-3 me-0 pe-0 "  style={{width : "22%"}}>
                           <h6>
                             <strong>Regional Manager:</strong>
                           </h6>
                         </div>
-                        <div className="col-md-3 col-sm-3 me-0 pe-0">
+                        <div  style={{width : "20%"}} className="col-md-3 col-sm-3 me-0 pe-0">
                           <h6>
                             <strong>{sRPreviewData.Data.ReginoalManagerName}</strong>
                           </h6>
@@ -296,15 +297,22 @@ const SprayTechPreview = () => {
                       <div className="table-responsive">
                         <table className="table-bordered table  LandScape-TablePadding">
                           <thead>
-                            <th className="landscap-preview-heading">X</th>
-                            <th className="landscap-preview-heading">Name</th>
-                            <th className="landscap-preview-heading">Rate</th>
-                            <th className="landscap-preview-heading">Notes</th>
-                            <th className="landscap-preview-heading">Type</th>
+                           
+                            <th colSpan={"12"} className="landscap-preview-heading text-center">Chemicals</th>
+                          
                           </thead>
                           <tbody>
                             {sRPreviewData.SRSTIData.map((item, index) => (
                               <>
+                              {index === 0 ||
+                        item.Type !== sRPreviewData.SRSTIData[index - 1].Type ? (
+                          <tr style={{ backgroundColor: "#F0F4F9" }}>
+                            <td className="landscap-preview-heading">#</td>
+                            <td className="landscap-preview-heading">{item.Type}</td>
+                            <td className="landscap-preview-heading">Rate</td>
+                            <td className="landscap-preview-heading">Notes</td>
+                          </tr>
+                        ) : null}
                                 <tr
                                   key={item.SprayTechItemId}
                                   style={{
@@ -317,8 +325,8 @@ const SprayTechPreview = () => {
                                   <td>
                                     {item.Rate} {item.Unit}
                                   </td>
-                                  <td>{item.Notes}</td>
-                                  <td>{item.Type}</td>
+                                  <td style={{whiteSpace : "nowrap"}}>{item.Notes}</td>
+                                 
                                 </tr>
                                 {index === 22 && pdfClicked && (
                                   <tr

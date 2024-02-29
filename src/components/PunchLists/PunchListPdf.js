@@ -228,7 +228,7 @@ const PunchListPdf = ({ pLData, pLDetailData }) => {
                   ]}
                 >
                   <Text style={[s.tblText, { marginBottom: 4, marginTop: 4 }]}>
-                    img
+                  
                   </Text>
                 </View>
                 <View
