@@ -24,6 +24,12 @@ import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import CustomerFiles from "./CustomerFiles";
 import BackButton from "../Reusable/BackButton";
+import CustomerBills from "./CustomerBills";
+import CustomerPo from "./CustomerPo";
+import CustomerEstimates from "./CustomerEstimates";
+import CustomerSR from "./CustomerSR";
+import CustomerInvoice from "./CustomerInvoice";
+import TextArea from "../Reusable/TextArea";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -80,6 +86,8 @@ const AddCustomer = () => {
   const [sLAddress, setSLAddress] = useState({});
   // service Locations
   const [slForm, setSlForm] = useState([]);
+
+  const [tblData, setTblData] = useState({})
   const { syncQB } = useQuickBook();
   // tabs
   const [value, setValue] = useState(0);
@@ -104,6 +112,15 @@ const AddCustomer = () => {
       setPrevFiles(response.data.FileData);
       setContactDataList(response.data.ContactData);
       setSlForm(response.data.ServiceLocationData);
+
+      setTblData({
+        ...tblData,
+        SRData : response.data.ServiceRequestData,
+        EstimateData :  response.data.EstimateData,
+        PoData :  response.data.PurchaseOrderData,
+        InvoiceData : response.data.InvoiceData,
+        BillData :  response.data.BillData
+      })
 
       console.log(response.data.ServiceLocationData);
     } catch (error) {
@@ -155,7 +172,6 @@ const AddCustomer = () => {
     }
   };
   const [submitClicked, setSubmitClicked] = useState(false);
-  const [phoneError, setPhoneError] = useState(false);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -178,13 +194,7 @@ const AddCustomer = () => {
     console.log("check1 company id ", Number(loggedInUser.CompanyId));
 
     setSubmitClicked(true);
-    if (
-
-      !companyData.FirstName ||
-   
-      !companyData.Email ||
-      !companyData.Address
-    ) {
+    if (!companyData.FirstName || !companyData.Email || !companyData.Address) {
       setOpenSnackBar(true);
       setSnackBarColor("error");
       setSnackBarText("Please fill all required fields");
@@ -417,13 +427,13 @@ const AddCustomer = () => {
 
                       <div className="col-xl-4 mb-3">
                         <label className="form-label">Notes</label>
-                        <textarea
+                        <TextArea
                           name="Notes"
                           value={companyData.Notes || ""}
                           onChange={handleCompanyChange}
                           className=" form-control "
                           rows="2"
-                        ></textarea>
+                        ></TextArea>
                       </div>
                     </div>
                   </div>
@@ -477,6 +487,11 @@ const AddCustomer = () => {
                     <Tab label="Contacts" {...a11yProps(0)} />
                     <Tab label="Service Locations" {...a11yProps(1)} />
                     <Tab label="Files" {...a11yProps(2)} />
+                    <Tab label="Service Requests" {...a11yProps(3)} />
+                    <Tab label="Estimates" {...a11yProps(4)} />
+                    <Tab label="Invoices" {...a11yProps(5)} />
+                    <Tab label="Purchace Orders" {...a11yProps(6)} />
+                    <Tab label="Bills" {...a11yProps(7)} />
                   </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
@@ -486,7 +501,7 @@ const AddCustomer = () => {
                     getCustomerData={getCustomerData}
                   />
                 </CustomTabPanel>
-                {/* AhsanModel */}
+
                 <CustomTabPanel value={value} index={1}>
                   <ServiceLocations
                     getCustomerData={getCustomerData}
@@ -501,6 +516,21 @@ const AddCustomer = () => {
                     getCustomerData={getCustomerData}
                     prevFiles={prevFiles}
                   />
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={3}>
+                  <CustomerSR data = {tblData.SRData} />
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={4}>
+                  <CustomerEstimates  data = {tblData.EstimateData} />
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={5}>
+                  <CustomerInvoice  data = {tblData.InvoiceData}/>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={6}>
+                  <CustomerPo  data = {tblData.PoData}/>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={7}>
+                  <CustomerBills  data = {tblData.BillData} />
                 </CustomTabPanel>
               </Box>
             </>

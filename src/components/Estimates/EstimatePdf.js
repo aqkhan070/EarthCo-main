@@ -8,143 +8,189 @@ import formatAmount from "../../custom/FormatAmount";
 
 const EstimatePdf = ({ data }) => {
   data = data || {
-    ApprovedItems : []
+    ApprovedItems: [],
   };
   return (
     //  <PDFViewer style={{ width: "100%", height: "800px" }}>
     <Document>
       <Page size="A4" orientation="portrait">
-        <View style={[s.containerFluid]}>
-          <View style={[s.row]}>
-            <View style={[s.col4]}>
-              <Text style={s.text}>{data.SelectedCompany}</Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={[s.containerFluid]}>
+            <View style={[s.row]}>
+              <View style={[s.col4]}>
+                <Text style={s.text}>Earthco Landscape</Text>
 
-              <Text style={s.text}>1225 East Wakeham Avenue</Text>
+                <Text style={s.text}>1225 East Wakeham Avenue</Text>
 
-              <Text style={s.text}>Santa Ana, California 92705</Text>
-              <Text style={s.text}>O 714.571.0455 F 714.571.0580</Text>
-              <Text style={s.text}>CL# C27 823185 / D49 1025053</Text>
-            </View>
-            <View style={[s.col4, s.textCenter, { marginTop: "20px" }]}>
-              <Text style={s.title}>Proposal</Text>
-            </View>
+                <Text style={s.text}>Santa Ana, California 92705</Text>
+                <Text style={s.text}>O 714.571.0455 F 714.571.0580</Text>
+                <Text style={s.text}>CL# C27 823185 / D49 1025053</Text>
+              </View>
+              <View style={[s.col4, s.textCenter, { marginTop: "20px" }]}>
+                <Text style={s.title}>Proposal</Text>
+              </View>
 
-            <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
-            </View>
-            <View style={[s.col8, { marginTop: "10px" }]}>
-              <Text style={s.textBold}>Submitted to</Text>
-              <Text style={s.text}>
-                {data.ContactName ? data.ContactName + ", ": ""}  {data.ContactCompanyName}
-              </Text>
-            </View>
-            <View style={[s.col2, { marginTop: "10px" }]}>
-              <Text style={[s.textBold, { fontWeight: "bold" }]}>Date</Text>
-              <Text style={[s.textBold, { fontWeight: "bold" }]}>Estimate #</Text>
-              <Text style={[s.textBold, { fontWeight: "bold" }]}>Submitted by</Text>
-            </View>
-            <View style={[s.col2, s.textEnd, { marginTop: "10px" }]}>
-              <Text style={s.text}>{formatDate(data.IssueDate)}</Text>
-              <Text style={s.text}>{data.EstimateNumber}</Text>
-              <Text style={s.text}>{data.RegionalManagerName}</Text>
-            </View>
-
-            <View
-              style={[
-                s.col12,
-                s.textCenter,
-                { marginTop: "20px", borderBottom: "2px solid #888888" },
-              ]}
-            >
-              <Text style={s.heading}>{data.CustomerName}</Text>
-            </View>
-
-            <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.textBold}>Description of work</Text>
-              <Text style={s.text}>{data.EstimateNotes}</Text>
-            </View>
-
-            <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.textBold}>Item(s)</Text>
-            </View>
-
-            <View
-              style={[
-                s.col2,
-                {
-                  marginTop: " 10px",
-                  backgroundColor: "#CCCCCC",
-                  paddingLeft: " 10px",
-                },
-              ]}
-            >
-              <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
-                QTY
-              </Text>
-            </View>
-
-            <View
-              style={[
-                s.col8,
-                {
-                  marginTop: " 10px",
-                  paddingLeft: " 10px",
-                  backgroundColor: "#CCCCCC",
-                },
-              ]}
-            >
-              <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>DESCRIPTION</Text>
-            </View>
-
-            <View
-              style={[
-                s.col2,
-                s.textEnd,
-                { marginTop: " 10px", backgroundColor: "#CCCCCC" },
-              ]}
-            >
-              <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>AMOUNT</Text>
-            </View>
-
-            {data.ApprovedItems.map((item, index) => (
-              <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                <View
-                  style={[
-                    s.col2,
-                    s.textEnd,
-                    {
-                      paddingLeft: " 10px",
-                      borderBottom: "0.5px solid #CCCCCC",
-                    },
-                  ]}
-                >
-                  <Text style={[s.tblText, { marginRight: "30px" }]}>
-                    {item.Qty}
+              <View style={[s.col4, s.textCenter]}>
+                <Image
+                  style={{ width: "130px", marginLeft: "40px" }}
+                  src={logo}
+                ></Image>
+              </View>
+              <View style={[s.col8, { marginTop: "20px" }]}>
+                <Text style={s.textBold}>Submitted to:</Text>
+                <Text style={s.text}>
+                  {data.ContactName ? data.ContactName + ", " : ""}
+                  {data.ContactCompanyName}
+                </Text>
+              </View>
+              <View style={[s.col4,  { marginTop: "20px", paddingLeft : "40px" }]}>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={[s.textBold, { fontWeight: "bold" }]}>
+                    Date:
+                  </Text>
+                  <Text style={s.text}> {" "}{formatDate(data.IssueDate, false)}
                   </Text>
                 </View>
-                <View
-                  style={[
-                    s.col8,
-                    { paddingLeft: "10px",  borderBottom: "0.5px solid #CCCCCC", },
-                  ]}
-                >
-                  <Text style={s.tblText}>{item.Description}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={[s.textBold, { fontWeight: "bold" }]}>
+                    Estimate #:
+                  </Text>
+                  <Text style={s.text}> {" "}{data.EstimateNumber}</Text>
                 </View>
-                <View
-                  style={[
-                    s.col2,
-                    s.textEnd,
-                    {  borderBottom: "0.5px solid #CCCCCC", },
-                  ]}
-                >
-                  <Text style={[s.tblText]}>${formatAmount(item.Amount)}</Text>
+                <View style={{ flexDirection: "row" }}>
+                  
+                  <Text style={[s.textBold, { fontWeight: "bold" }]}>
+                    Submitted by:
+                  </Text>
+                  <Text style={s.text}> {" "}{data.RegionalManagerName}</Text>
                 </View>
-
-                {index === 30 && (
-                  <View style={[s.col12, { height: "60em" }]}></View>
-                )}
               </View>
-            ))}
+
+              <View
+                style={[
+                  s.col12,
+                  s.textCenter,
+                  { marginTop: "20px", borderBottom: "2px solid #888888" },
+                ]}
+              >
+                <Text style={[s.heading, { fontSize: "15px" }]}>
+                  {data.CustomerName}
+                </Text>
+              </View>
+
+              <View style={[s.col12, { marginTop: "20px" }]}>
+                <Text style={s.textBold}>Description of work:</Text>
+                <Text style={s.text}>{data.EstimateNotes}</Text>
+              </View>
+
+              {/* <View style={[s.col12, { marginTop: "20px" }]}>
+              <Text style={s.textBold}>Item(s)</Text>
+            </View> */}
+
+              <View
+                style={[
+                  s.col2,
+                  s.textCenter,
+                  {
+                    marginTop: " 10px",
+                    backgroundColor: "#CCCCCC",
+                    paddingLeft: " 10px",
+                  },
+                ]}
+              >
+                <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
+                  QTY
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  s.col8,
+                  {
+                    marginTop: " 10px",
+                    paddingLeft: " 10px",
+                    backgroundColor: "#CCCCCC",
+                  },
+                ]}
+              >
+                <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
+                  DESCRIPTION
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  s.col2,
+                  s.textEnd,
+                  { marginTop: " 10px", backgroundColor: "#CCCCCC" },
+                ]}
+              >
+                <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>
+                  AMOUNT
+                </Text>
+              </View>
+
+              {data.ApprovedItems.map((item, index) => (
+                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                  <View
+                    style={[
+                      s.col2,
+                      s.textCenter,
+                      {
+                        paddingLeft: " 10px",
+                        borderBottom: "0.5px solid #CCCCCC",
+                      },
+                    ]}
+                  >
+                    <Text style={[s.tblText]}>{item.Qty}</Text>
+                  </View>
+                  <View
+                    style={[
+                      s.col8,
+                      {
+                        paddingLeft: "10px",
+                        borderBottom: "0.5px solid #CCCCCC",
+                      },
+                    ]}
+                  >
+                    <Text style={s.tblText}>{item.Description}</Text>
+                  </View>
+                  <View
+                    style={[
+                      s.col2,
+                      s.textEnd,
+                      { borderBottom: "0.5px solid #CCCCCC" },
+                    ]}
+                  >
+                    <Text style={[s.tblText]}>
+                      ${formatAmount(item.Amount)}
+                    </Text>
+                  </View>
+
+                  {index === 28 && (
+                    <View style={[s.col12, { height: "60em" }]}></View>
+                  )}
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View
+            style={[
+              s.row,
+              {
+                backgroundColor: "#FFFFFF",
+                padding: 20,
+                marginHorizontal: "15px",
+              },
+            ]}
+          >
             <View style={[s.col9]}></View>
             <View
               style={[
@@ -236,7 +282,7 @@ const EstimatePdf = ({ data }) => {
         </View>
       </Page>
     </Document>
-//  </PDFViewer>
+    //  </PDFViewer>
   );
 };
 

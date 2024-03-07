@@ -76,6 +76,7 @@ const POPdf = ({data}) => {
             <View
               style={[
                 s.col1,
+                ,s.textCenter,
                 {
                   marginTop: " 10px",
                   backgroundColor: "#CCCCCC",
@@ -136,11 +137,12 @@ const POPdf = ({data}) => {
                 <View
                   style={[
                     s.col1,
+                    ,s.textCenter,
                     s.textEnd,
                     { borderBottom: "0.5px solid #CCCCCC" },
                   ]}
                 >
-                  <Text style={[s.tblText]}>{item.Qty}</Text>
+                  <Text style={[s.tblText]}>{[item.Qty]}</Text>
                 </View>
 
                 <View

@@ -1,8 +1,5 @@
 import {
-  Alert,
-  FormControl,
-  MenuItem,
-  Select,
+
   TextField,
   Autocomplete,
 } from "@mui/material";
@@ -16,7 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { DataContext } from "../../context/AppData";
 import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
-
+import TextArea from "../Reusable/TextArea"
 const AddItem = ({}) => {
   const { loggedInUser } = useContext(DataContext);
   const [formData, setFormData] = useState({});
@@ -331,7 +328,7 @@ const AddItem = ({}) => {
                       id="staff-autocomplete"
                       size="small"
                       options={staffData}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                       value={
                         staffData.find(
                           (staff) => staff.UserId === formData.UserId
@@ -355,7 +352,7 @@ const AddItem = ({}) => {
                                 {" "}
                                 <h6 className="pb-0 mb-0">
                                   {" "}
-                                  {option.FirstName}
+                                  {option.FirstName} {option.LastName}
                                 </h6>
                               </div>
                               <div className="col-md-auto">
@@ -405,14 +402,14 @@ const AddItem = ({}) => {
                         <label htmlFor="firstName" className="form-label">
                           Sales Description
                         </label>
-                        <textarea
+                        <TextArea
                           className="form-txtarea form-control"
                           name="SaleDescription"
                           value={formData.SaleDescription}
                           onChange={handleChange}
                           rows="2"
                           id="comment"
-                        ></textarea>
+                        ></TextArea>
                       </div>
                       <div className="col-md-12 mb-3">
                         <label htmlFor="firstName" className="form-label">
@@ -460,14 +457,14 @@ const AddItem = ({}) => {
                         <label htmlFor="firstName" className="form-label">
                           Purchase Description
                         </label>
-                        <textarea
+                        <TextArea
                           className="form-txtarea form-control"
                           rows="2"
                           onChange={handleChange}
                           value={formData.PurchaseDescription}
                           name="PurchaseDescription"
                           id="comment"
-                        ></textarea>
+                        ></TextArea>
                       </div>
                       <div className="col-md-12 mb-3">
                         <label htmlFor="firstName" className="form-label">

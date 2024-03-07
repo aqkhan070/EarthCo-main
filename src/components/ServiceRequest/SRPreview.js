@@ -165,7 +165,7 @@ const SRPreview = () => {
                 >
                   <div className="row mt-2">
                     <div className="col-md-4 col-sm-4">
-                      <h5 className="mb-0">EarthCo</h5>
+                      <h5 className="mb-0">Earthco Landscape</h5>
                       <h6 className="mb-0">
                         1225 East Wakeham Avenue <br /> Santa Ana, California
                         92705
@@ -176,9 +176,7 @@ const SRPreview = () => {
                       <h6 className="mb-0">www.earthcompany.org</h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
-                      <h3>
-                        <strong>Service Request </strong>
-                      </h3>
+                     
                     </div>
                     <div className="col-md-4 col-sm-4 text-center table-cell-align">
                       <img
@@ -187,6 +185,14 @@ const SRPreview = () => {
                         src={logo}
                         alt=""
                       />
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-md-12 text-center">
+                    <h3>
+                        <strong>Service Request </strong>
+                      </h3>
                     </div>
                   </div>
 
@@ -281,12 +287,7 @@ const SRPreview = () => {
                           </td>
                           <td> {sRPreviewData.Data.ServiceRequestNumber}</td>
                         </tr>
-                        <tr className="preview-table-row">
-                          <td style={{ width: "18em" }}>
-                            <strong>Second Request: </strong>
-                          </td>
-                          <td> NO</td>
-                        </tr>
+                       
                         <tr className="preview-table-row">
                           <td style={{ width: "18em" }}>
                             <strong>Date Completed: </strong>
@@ -390,12 +391,7 @@ const SRPreview = () => {
                     ></div>
                   </div>*/}
                 </div>
-                <div className="card-footer border-0 text-center">
-                  <h6 style={{ fontSize: "12px" }}>
-                    *Note Beginning October 1, Earthco will commence annual skip
-                    mowing of the grass due to the winter season
-                  </h6>
-                </div>
+               
               </div>
             </div>
           </div>

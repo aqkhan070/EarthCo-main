@@ -275,7 +275,7 @@ const PunchlistModal2 = ({
                   <Autocomplete
                     size="small"
                     options={contactList}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) => option.FirstName + " " + option.LastName|| ""}
                     value={
                       contactList.find(
                         (contact) =>
@@ -346,7 +346,7 @@ const PunchlistModal2 = ({
                     options={staffData.filter(
                       (staff) => staff.Role === "Regional Manager"
                     )}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                     value={
                       staffData.find(
                         (staff) => staff.UserId === addPunchListData.AssignedTo
@@ -362,7 +362,7 @@ const PunchlistModal2 = ({
                           <div className="row">
                             <div className="col-md-auto">
                               {" "}
-                              <h6 className="pb-0 mb-0"> {option.FirstName}</h6>
+                              <h6 className="pb-0 mb-0"> {option.FirstName} {option.LastName}</h6>
                             </div>
                             <div className="col-md-auto">
                               <small>

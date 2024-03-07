@@ -34,6 +34,7 @@ import SRPdf from "./SRPdf";
 import SprayTechPdf from "./SprayTechPdf";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdfOutlined";
 import { pdf } from "@react-pdf/renderer";
+import TextArea from "../Reusable/TextArea";
 
 const AddSRform = () => {
   const token = Cookies.get("token");
@@ -105,7 +106,7 @@ const AddSRform = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
-
+ 
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       ServiceRequestId: idParam,
@@ -256,7 +257,7 @@ const AddSRform = () => {
   useEffect(() => {
     fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
     fetctContacts(SRData.ServiceRequestData.CustomerId);
-    fetchName(SRData.ServiceRequestData.CustomerId);
+    fetchName(SRData.ServiceRequestData.CustomerId, () => {setLoading(false)});
 
     // SRData.ServiceRequestData.ContactId &&
     // SRData.ServiceRequestData.ServiceLocationId &&
@@ -535,7 +536,7 @@ const AddSRform = () => {
 
       // Set the tblSRItems state with the response.data.tblSRItems
       setTblSRItems(response.data.ItemData);
-      setLoading(false);
+    
       console.log("response.data.Data", response.data);
       setPrevFiles(response.data.FileData);
 
@@ -547,6 +548,7 @@ const AddSRform = () => {
   };
 
   useEffect(() => {
+ 
     fetchSR();
     fetchCustomers();
     return () => {
@@ -625,6 +627,7 @@ const AddSRform = () => {
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
+      PurchasePrice : item.PurchasePrice,
     });
     setTblSRItems([
       ...tblSRItems,
@@ -634,6 +637,7 @@ const AddSRform = () => {
         Name: item.ItemName,
         Description: item.SaleDescription,
         Rate: item.SalePrice,
+        PurchasePrice: item.PurchasePrice
       },
     ]);
     setShowItem(false);
@@ -645,6 +649,7 @@ const AddSRform = () => {
       Qty: 1,
       Description: "",
       Rate: 0,
+      PurchasePrice : 0
     });
   };
 
@@ -964,7 +969,7 @@ const AddSRform = () => {
                             multiple
                             size="small"
                             options={contactList}
-                            getOptionLabel={(option) => option.FirstName || ""}
+                            getOptionLabel={(option) => option.FirstName + " " + option.LastName || ""}
                             onChange={handleContactChange}
                             value={contactList.filter((company) =>
                               selectedContacts.includes(company.ContactId)
@@ -1039,7 +1044,7 @@ const AddSRform = () => {
                                 staff.UserId === 3252 ||
                                 staff.UserId === 6146
                             )}
-                            getOptionLabel={(option) => option.FirstName || ""}
+                            getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                             value={
                               staffData.find(
                                 (staff) =>
@@ -1057,7 +1062,7 @@ const AddSRform = () => {
                                   <div className="row">
                                     <div className="col-md-auto">
                                       <h6 className="pb-0 mb-0">
-                                        {option.FirstName}
+                                        {option.FirstName} {option.LastName}
                                       </h6>
                                     </div>
                                     <div className="col-md-auto">
@@ -1303,6 +1308,13 @@ const AddSRform = () => {
                                       setSelectedItem({});
                                     }
                                   }}
+                                  filterOptions={(options, { inputValue }) => {
+                                    return options.filter(
+                                      (option) =>
+                                        option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                        option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                    );
+                                  }}
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}
@@ -1446,18 +1458,17 @@ const AddSRform = () => {
                             <label className="form-label">
                               Work Requested:
                             </label>
-                            <TextField
+                            <TextArea
                               name="WorkRequest"
-                              multiline
-                              rows={3}
+                            
+                             
                               value={
                                 SRData.ServiceRequestData.WorkRequest || ""
                               }
                               onChange={handleInputChange}
-                              variant="outlined"
+                             
                               placeholder="Work Requested"
-                              size="small"
-                              fullWidth
+                             
                             />
                           </div>
                           {SRData.ServiceRequestData.SRTypeId === 3 ? (
@@ -1469,18 +1480,15 @@ const AddSRform = () => {
                                   Action Taken:
                                 </label>
                                 {/* Adjust the column size as needed */}
-                                <TextField
+                                <TextArea
                                   name="ActionTaken"
                                   placeholder="Action Taken"
-                                  multiline
-                                  rows={3}
+                                 
                                   value={
                                     SRData.ServiceRequestData.ActionTaken || ""
                                   }
                                   onChange={handleInputChange}
-                                  variant="outlined"
-                                  fullWidth
-                                  size="small"
+                                 
                                 />
                               </div>
                             </>
@@ -1763,7 +1771,7 @@ const AddSRform = () => {
                             )
                           }
                         </PDFDownloadLink>
-                        <button
+                        {loggedInUser.userRole == 1 ||loggedInUser.userRole == 4 ? <><button
                           className="btn btn-dark me-2"
                           style={{ marginRight: "1em" }}
                           onClick={() => {
@@ -1771,7 +1779,8 @@ const AddSRform = () => {
                           }}
                         >
                           Copy to Estimate
-                        </button>
+                        </button></>:<></>}
+                        
                       </>
                     ) : (
                       <></>

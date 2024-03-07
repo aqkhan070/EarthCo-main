@@ -17,6 +17,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import debounce from "lodash.debounce";
 import { Create, Delete, Update } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
@@ -82,10 +83,6 @@ const CustomerTR = ({
   const [search, setSearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
 
-  useEffect(() => {
-    // Initial fetch of estimates
-    fetchCustomers();
-  }, []);
   const { syncQB } = useQuickBook();
 
   useEffect(() => {
@@ -93,10 +90,9 @@ const CustomerTR = ({
     fetchCustomers(search, tablePage + 1, rowsPerPage, isAscending);
   }, [tablePage, rowsPerPage, isAscending]);
 
-  useEffect(() => {
-    // Fetch estimates when the tablePage changes
-    fetchCustomers(search, 1, rowsPerPage);
-  }, [search]);
+  const debouncedSearch = debounce((value) => {
+    fetchCustomers(value, 1, rowsPerPage);
+  }, 500);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -145,9 +141,7 @@ const CustomerTR = ({
       />
       {showContent ? (
         <div className="card">
-          {deleteSuccess && (
-            <Alert severity="success">Successfully deleted Company</Alert>
-          )}
+         
           <div className="card-header flex-wrap d-flex justify-content-between  border-0">
             <div>
               <TextField
@@ -155,7 +149,10 @@ const CustomerTR = ({
                 variant="standard"
                 size="small"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  debouncedSearch(e.target.value);
+                }}
               />
             </div>
             <div className="pt-2 me-2">
@@ -194,16 +191,18 @@ const CustomerTR = ({
                   {[
                     // "Select",
                     "Customer Id",
-                    "Contact Company",
-                    "Contact Name",
+                    // "Contact Company",
+                    // "Contact Name",
                     "Customer Name",
                     "Contact Email",
-                    "Actions",
                   ].map((column, index) => (
                     <TableCell className="table-cell-align" key={index}>
                       {column}
                     </TableCell>
                   ))}
+                  <TableCell className="table-cell-align" align="right">
+                    Actions
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -240,7 +239,7 @@ const CustomerTR = ({
                         {customer.CustomerId}
                       </TableCell>
 
-                      <TableCell
+                      {/* <TableCell
                         onClick={() => {
                           navigate(
                             `/customers/add-customer?id=${customer.CustomerId}`
@@ -248,7 +247,7 @@ const CustomerTR = ({
                         }}
                       >
                         {customer.CompanyName}
-                      </TableCell>
+                      </TableCell> 
                       <TableCell
                         onClick={() => {
                           navigate(
@@ -257,7 +256,7 @@ const CustomerTR = ({
                         }}
                       >
                         {customer.ContactName}
-                      </TableCell>
+                      </TableCell>*/}
                       <TableCell
                         onClick={() => {
                           navigate(

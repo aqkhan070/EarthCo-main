@@ -26,7 +26,7 @@ const DashBoard = () => {
 
   const { loggedInUser, dashBoardRefresh, setDashBoardRefresh } =
     useContext(DataContext);
-  const { setEstimateRoute, setSRroute } = useContext(RoutingContext);
+
   useEffect(() => {
     if (dashBoardRefresh) {
       // window.location.reload();
@@ -98,7 +98,6 @@ const DashBoard = () => {
               </div>
             </div>
             <div className="col-md-12">
-              {" "}
               <DashBoardCards dashBoardData={dashBoardData} />
             </div>
           </>

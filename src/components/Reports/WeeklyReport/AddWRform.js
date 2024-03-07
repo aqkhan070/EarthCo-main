@@ -27,6 +27,7 @@ import useFetchContactEmail from "../../Hooks/useFetchContactEmail";
 import BackButton from "../../Reusable/BackButton";
 import FileUploadButton from "../../Reusable/FileUploadButton";
 import PrintButton from "../../Reusable/PrintButton";
+import TextArea from "../../Reusable/TextArea";
 
 const AddWRform = () => {
   const icon = (
@@ -537,7 +538,7 @@ const AddWRform = () => {
                       id="inputState299"
                       size="small"
                       options={contactList}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName + " " + option.LastName || ""}
                       value={
                         contactList.find(
                           (contact) => contact.ContactId === formData.ContactId
@@ -573,7 +574,7 @@ const AddWRform = () => {
                         staff.UserId === 3252 ||
                         staff.UserId ===6146
                     )}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                       value={
                         staffData.find(
                           (staff) => staff.UserId === formData.AssignTo
@@ -591,7 +592,7 @@ const AddWRform = () => {
                                 {" "}
                                 <h6 className="pb-0 mb-0">
                                   {" "}
-                                  {option.FirstName}
+                                  {option.FirstName} {option.LastName}
                                 </h6>
                               </div>
                               <div className="col-md-auto">
@@ -686,13 +687,13 @@ const AddWRform = () => {
                   <div className="col-md-4">
                     <label className="form-label">Notes:</label>
                     <div className="col-md-12">
-                      <textarea
+                      <TextArea
                         className="form-txtarea form-control"
                         rows="3"
                         name="Notes"
                         onChange={handleInputChange}
-                        id="comment"
-                      ></textarea>
+                       
+                      ></TextArea>
                     </div>
                   </div>
                 </div>
@@ -710,13 +711,13 @@ const AddWRform = () => {
                     <div className="col-md-4">
                       <label className="form-label">Proposals Completed</label>
                       <div className="mb-3">
-                        <textarea
+                        <TextArea
                           className=" form-control"
                           rows="3"
                           onChange={handleInputChange}
                           name="ProposalsCompleted"
-                          id="comment"
-                        ></textarea>
+                        
+                        ></TextArea>
                       </div>
                     </div>
 
@@ -724,13 +725,13 @@ const AddWRform = () => {
                       <label className="form-label">Proposals Submitted</label>
 
                       <div className="mb-3">
-                        <textarea
+                        <TextArea
                           className=" form-control"
                           rows="3"
                           onChange={handleInputChange}
                           name="ProposalsSubmitted"
-                          id="comment"
-                        ></textarea>
+                         
+                        ></TextArea>
                       </div>
                     </div>
 
@@ -738,13 +739,13 @@ const AddWRform = () => {
                       <label className="form-label">Notes</label>
 
                       <div className="mb-3">
-                        <textarea
+                        <TextArea
                           className="form-control"
                           rows="3"
                           onChange={handleInputChange}
                           name="ProposalsNotes"
-                          id="comment"
-                        ></textarea>
+                        
+                        ></TextArea>
                       </div>
                     </div>
                   </div>

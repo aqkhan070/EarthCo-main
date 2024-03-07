@@ -262,6 +262,7 @@ const PurchaseOrder = () => {
                           <TableCell>Status</TableCell>
                           <TableCell>Regional Manager</TableCell>
                           <TableCell>Requested By</TableCell>
+                          <TableCell>PO#</TableCell>
                           <TableCell>Estimate#</TableCell>
                           <TableCell>Bill#</TableCell>
                           <TableCell>Invoice#</TableCell>
@@ -311,6 +312,7 @@ const PurchaseOrder = () => {
                               </TableCell>
                               <TableCell>{po.RegionalManager}</TableCell>
                               <TableCell>{po.RequestedBy}</TableCell>
+                              <TableCell>{po.PurchaseOrderNumber}</TableCell>
                               <TableCell>{po.EstimateNumber}</TableCell>
                               <TableCell>{po.BillNumber}</TableCell>
                               <TableCell>{po.InvoiceNumber}</TableCell>

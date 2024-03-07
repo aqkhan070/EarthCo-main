@@ -138,7 +138,7 @@ const InvoicePreview = () => {
   useEffect(() => {
     // Calculate the total amount when previewData changes
     if (InvoicePreviewData && InvoicePreviewData.ItemData) {
-      const total = InvoicePreviewData.ItemData.reduce(
+      const total = InvoicePreviewData.ItemData.filter(item => !item.IsMisc).reduce(
         (accumulator, item) => accumulator + item.Qty * item.Rate,
         0
       );
@@ -200,7 +200,7 @@ const InvoicePreview = () => {
                         <strong>INVOICE</strong>
                       </h3>
                     </div>
-                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                    <div className="col-md-4 col-sm-4 text-end table-cell-align">
                       <img
                         className="preview-Logo"
                         style={{ width: "160px" }}
@@ -217,7 +217,7 @@ const InvoicePreview = () => {
                           <tr>
                             <td className="">
                               <h5 className="mb-0">
-                                <strong>BILL TO</strong>
+                                <strong>BILL TO:</strong>
                               </h5>
                               <h6 className="p-0 m-0">
 
@@ -296,20 +296,20 @@ const InvoicePreview = () => {
                         <th>
                           <strong>INVOICE #</strong>
                         </th>
-                        <th className="text-right">
+                        <th className="">
                           <strong>DATE</strong>
                         </th>
-                        <th className="text-right">
+                        <th className="">
                           <strong>TOTAL DUE</strong>
                         </th>
 
-                        <th className="text-right">
+                        <th className="">
                           <strong>DUE DATE</strong>
                         </th>
-                        <th className="text-right">
+                        <th className="">
                           <strong>TERMS</strong>
                         </th>
-                        <th className="text-right">
+                        <th className="">
                           <strong>ENCLOSED</strong>
                         </th>
                       </tr>
@@ -317,20 +317,20 @@ const InvoicePreview = () => {
                     <tbody>
                       <tr className="preview-table-row">
                         <td>{InvoicePreviewData.Data.InvoiceNumber}</td>
-                        <td className="text-right">
+                        <td className="">
                           {formatDate(
                             InvoicePreviewData.Data.CreatedDate,
                             false
                           )}
                         </td>
-                        <td className="text-right"></td>
-                        <td className="text-right">
+                        <td className=""> ${formatAmount(totalAmount)}</td>
+                        <td className="">
                           {formatDate(InvoicePreviewData.Data.DueDate, false)}
                         </td>
-                        <td className="text-right">
+                        <td className="">
                           {InvoicePreviewData.Data.Term}
                         </td>
-                        <td className="text-right">
+                        <td className="">
                           {InvoicePreviewData.Data.StatusId === 0
                             ? "Closed"
                             : "Open"}
@@ -352,7 +352,7 @@ const InvoicePreview = () => {
                   <table id="empoloyees-tblwrapper" className="table mt-4">
                     <thead className="preview-table-header">
                       <tr className="preview-table-head preview-table-header">
-                        <th className="text-start">
+                        <th className="text-center">
                           <strong>QTY</strong>
                         </th>
                         <th>
@@ -364,11 +364,11 @@ const InvoicePreview = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {InvoicePreviewData.ItemData.map((item, index) => {
+                      {InvoicePreviewData.ItemData.filter(item => !item.IsMisc).map((item, index) => {
                         return (
                           <>
                             <tr className="preview-table-row" key={index}>
-                              <td className="text-start">{item.Qty}</td>
+                              <td className="text-center">{item.Qty}</td>
                               <td>{item.Description}</td>
                               <td className="text-right">
                                 ${formatAmount(item.Qty * item.Rate)}
@@ -388,7 +388,7 @@ const InvoicePreview = () => {
                   </table>
 
                   <div className="row ">
-                    <div className="col-md-8 col-sm-6"></div>
+                    {/* <div className="col-md-8 col-sm-6"></div>
                     <div className="col-md-2 col-sm-3">
                       <h6 className="mb-0">
                         <strong>SUBTOTAL:</strong>
@@ -398,22 +398,22 @@ const InvoicePreview = () => {
                       <h6 className="mb-0 text-end">
                         ${formatAmount(totalAmount)}
                       </h6>
-                    </div>
+                    </div> */}
                     <div className="col-md-8 col-sm-6"></div>
                     {/* <div className="col-md-2 col-sm-3">
                   <h6 className="mb-0">
                     
                     <strong>DISCOUNT:</strong>
                   </h6>
-                </div> */}
+                </div> 
                     <div className="col-md-12 py-0">
                       <hr className="mb-1" />
-                    </div>
+                    </div>*/}
 
                     <div className="col-md-8 col-sm-6 text-end"></div>
                     <div className="col-md-2 col-sm-3 ">
                       <h6 className="table-cell-align mt-2">
-                        <strong>TOTAL USD</strong>
+                        <strong>Total Due:</strong>
                       </h6>
                     </div>
                     <div className="col-md-2 col-sm-3 mt-2">
@@ -476,7 +476,7 @@ const InvoicePreview = () => {
                         RegionalManagerName: "staffName",
                         SelectedCompany: loggedInUser.CompanyName,
                         CustomerName: name,
-                        ApprovedItems: InvoicePreviewData.ItemData,
+                        ApprovedItems: InvoicePreviewData.ItemData.filter(item => !item.IsMisc),
                         Amount: totalAmount
                       }}
                     />

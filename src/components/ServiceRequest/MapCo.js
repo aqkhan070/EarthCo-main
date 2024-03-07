@@ -12,6 +12,8 @@ import SyncIcon from "@mui/icons-material/Sync";
 import html2pdf from "html2pdf.js";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/FileDownloadOutlined";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const containerStyle = {
   width: "100%",
@@ -153,32 +155,37 @@ function GoogleMapApi() {
       });
   };
   const [pdfSaveLoading, setPdfSaveLoading] = useState(false);
-  const handleSavePdf = () => {
-    setPdfSaveLoading(true);
-    toPng(divRef.current, { cacheBust: true })
-      .then((dataUrl) => {
-        const pdfContent = document.createElement("img");
-        pdfContent.src = dataUrl;
 
-        const pdf = html2pdf()
-          .from(pdfContent)
-          .set({
-            margin: 10,
-            filename: "map_image.pdf",
-            image: { type: "jpeg", quality: 4 },
-            html2canvas: { dpi: 300, scale: 4 },
-            jsPDF: { unit: "mm", format: "a4", orientation: "Landscape" },
-          });
+ 
+const handleSavePdf = () => {
+  setPdfSaveLoading(true);
+  const scaleFactor = 2; // Adjust the scale factor as needed
 
-        pdf.save();
-        setPdfSaveLoading(false);
-      })
-      .catch((err) => {
-        setPdfSaveLoading(false);
+  html2canvas(divRef.current, {
+      scale: scaleFactor,
+      useCORS: true, // Enable cross-origin resource sharing
+      allowTaint: true // Allow images from different origins to be included
+  }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/jpeg');
 
-        console.log(err);
+      const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'landscape'
       });
-  };
+
+      const imgWidth = 297; // A4 size in mm
+      const imgHeight = 150;
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+      pdf.save('map_image.pdf');
+      setPdfSaveLoading(false);
+  }).catch((error) => {
+      console.error('Error generating PDF:', error);
+      setPdfSaveLoading(false);
+  });
+};
+
 
   if (loadError) {
     return <div>Error loading maps</div>;

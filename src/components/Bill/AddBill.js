@@ -28,6 +28,7 @@ import HandleDelete from "../Reusable/HandleDelete";
 import useFetchInvoices from "../Hooks/useFetchInvoices";
 import BillPdf from "./BillPdf";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import TextArea from "../Reusable/TextArea";
 
 const AddBill = ({}) => {
   const token = Cookies.get("token");
@@ -201,16 +202,23 @@ const AddBill = ({}) => {
       });
   };
   const handleTermsAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
-    const simulatedEvent = {
-      target: {
-        name: "TermId",
-        value: newValue ? newValue.TermId : "",
-      },
-    };
-    // Assuming handleInputChange is defined somewhere within YourComponent
-    // Call handleInputChange with the simulated event
-    handleInputChange(simulatedEvent);
+   
+    if (newValue) {
+      // Update the formData with both EstimateId and EstimateNumber
+      setFormData((prevData) => ({
+        ...prevData,
+        TermId: newValue.TermId,
+       
+      }));
+    } else {
+      // Handle the case where the newValue is null (e.g., when the selection is cleared)
+      // Reset both EstimateId and EstimateNumber in formData
+      setFormData((prevData) => ({
+        ...prevData,
+       
+        TermId: null,
+      }));
+    }
   };
 
   const handleEstimatesAutocompleteChange = (event, newValue) => {
@@ -460,33 +468,18 @@ const AddBill = ({}) => {
 
   const [totalCatagoryAmount, setTotalCatagoryAmount] = useState(0);
 
-  const handleAddCatagory = () => {
-    // Check if the selected category is not null
-    console.log("add catagory", catagoryInput);
-    if (selectedCatagory) {
-      // Add the new item to the catagoryList
-      setCatagoryList((prevItems) => [...prevItems, { ...catagoryInput }]);
-      // Reset the input fields
-      setSelectedCatagory({});
-      setCatagoryInput({
-        AccountId: 0,
-        Name: "",
-        Description: "",
-        Amount: 0,
-      });
-    }
-  };
 
   const handleCatagoryClick = (item) => {
     console.log("selected catagory", item);
     setSelectedCatagory(item);
     if (item) {
-      setCatagoryInput({
+      setCatagoryList((prevItems) => [...prevItems, {
         AccountId: item.AccountId,
         Name: item.Name,
         Description: "",
         Amount: 0,
-      });
+      }]);
+    
     }
   };
 
@@ -1109,13 +1102,7 @@ const AddBill = ({}) => {
                                   fullWidth
                                 />
                               )}
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddCatagory();
-                                }
-                              }}
+                            
                             />
                           </td>
                           <td>
@@ -1133,13 +1120,7 @@ const AddBill = ({}) => {
                                 })
                               }
                               placeholder="Description"
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddCatagory();
-                                }
-                              }}
+                            
                             />
                           </td>
 
@@ -1155,13 +1136,7 @@ const AddBill = ({}) => {
                                 })
                               }
                               placeholder="Amount"
-                              onKeyPress={(e) => {
-                                if (e.key === "Enter") {
-                                  // Handle item addition when Enter key is pressed
-                                  e.preventDefault(); // Prevent form submission
-                                  handleAddCatagory();
-                                }
-                              }}
+                             
                             />
                           </td>
                           <td></td>
@@ -1263,6 +1238,13 @@ const AddBill = ({}) => {
                                 } else {
                                   setSelectedItem({});
                                 }
+                              }}
+                              filterOptions={(options, { inputValue }) => {
+                                return options.filter(
+                                  (option) =>
+                                    option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                    option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                );
                               }}
                               renderInput={(params) => (
                                 <TextField
@@ -1397,14 +1379,11 @@ const AddBill = ({}) => {
                       <label className="form-label">Memo</label>
 
                       <div className="mb-3">
-                        <textarea
-                          className="form-txtarea form-control"
-                          rows="3"
-                          id="comment"
+                        <TextArea                         
                           name="Memo"
                           value={formData.Memo}
                           onChange={handleChange}
-                        ></textarea>
+                        ></TextArea>
                       </div>
                     </div>
                   </div>

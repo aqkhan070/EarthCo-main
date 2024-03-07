@@ -192,10 +192,10 @@ const EstimatePreview = () => {
                   style={{ minHeight: "20cm" }}
                   className="card-body perview-pd"
                 >
-                  <div className="row mt-2">
+                  <div className="row mt-2 mb-2">
                     <div className="col-md-4 col-sm-4">
                       <h5 style={{ lineHeight: 1 }} className="mb-0">
-                        {loggedInUser.CompanyName}
+                      Earthco Landscape
                       </h5>
                       <h6 style={{ lineHeight: 1.1 }} className="mb-0">
                         1225 East Wakeham Avenue
@@ -204,14 +204,14 @@ const EstimatePreview = () => {
                       </h6>
                     </div>
                     <div className="col-md-4 col-sm-4 text-center">
-                      <h3>
+                      <h2 >
                         <strong>Proposal</strong>
-                      </h3>
+                      </h2>
                     </div>
-                    <div className="col-md-4 col-sm-4 text-center table-cell-align">
+                    <div className="col-md-4 col-sm-4 text-right table-cell-align">
                       <img
                         className="preview-Logo"
-                        style={{ width: "140px" }}
+                        style={{ width: "160px" }}
                         src={logo}
                         alt=""
                       />
@@ -221,11 +221,11 @@ const EstimatePreview = () => {
                   <div style={{ fontSize: 12, lineHeight: 1 }} className="row">
                     <div className="col-md-6 col-sm-6">
                       <h5 className="p-0  mb-0 ">
-                        <strong>Submitted to</strong>
+                        <strong>Submitted to:</strong>
                       </h5>
                       <h6 className="p-0 ">
-                        {previewData.EstimateData.ContactName},
-                        {previewData.EstimateData.ContactCompanyName}
+                        {previewData.EstimateData.ContactName}
+                        {previewData.EstimateData.ContactCompanyName ?", "+ previewData.EstimateData.ContactCompanyName : ""}
                         {/* <br />
                         {previewData.EstimateData.ContactAddress?.split(", ")
                           .slice(0, 2)
@@ -241,49 +241,38 @@ const EstimatePreview = () => {
                     </div>
 
                     <div className="col-md-2 col-sm-2"></div>
-                    <div className="col-md-4 col-sm-4">
-                      <table className="preview-table mt-2">
+                    <div className="col-md-4 col-sm-4 ps-5">
+                      <table className="preview-table mt-2 ms-5">
                         <thead>
                           <tr>
                             <th>
                               <h6 className="mb-0">
-                                <strong>Date</strong>
-                              </h6>
-                            </th>
-                            <th>
-                              <h6 className="text-right mb-0">
-                                {formatDate(
+                                <strong>Date:</strong> {formatDate(
                                   previewData.EstimateData.IssueDate,
                                   false
                                 )}
                               </h6>
                             </th>
+                           
                           </tr>
                         </thead>
                         <tbody>
                           <tr>
                             <td className="table-cell-align mb-0 me-2">
                               <h6 className="mb-0">
-                                <strong>Estimate #</strong>
+                                <strong>Estimate #:</strong> {previewData.EstimateData.EstimateNumber}
                               </h6>
                             </td>
 
-                            <td className="table-cell-align mb-0 text-right">
-                              <h6 className="mb-0">
-                                {previewData.EstimateData.EstimateNumber}
-                              </h6>
-                            </td>
+                            
                           </tr>
                           <tr>
                             <td className="table-cell-align me-2">
                               <h6 className="mb-0">
-                                <strong>Submitted by</strong>
+                                <strong>Submitted by: </strong>{staffName}
                               </h6>
                             </td>
 
-                            <td className="table-cell-align text-right">
-                              <h6 className="mb-0"> {staffName}</h6>
-                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -292,30 +281,28 @@ const EstimatePreview = () => {
 
                   <div className="row mt-2">
                     <div className="col-md-12 col-sm-12 text-center">
-                      <h3 style={{ fontSize: 14 }} className="mb-0">
+                      <h3 style={{ fontSize: 16 }} className="mb-0">
                         <strong>{name}</strong>
                       </h3>
                       <hr className="mt-0" />
                     </div>
                     <div className="col-md-12 col-sm-12">
                       <h4 style={{ fontSize: 14 }} className="mb-0">
-                        <strong>Description of work</strong>
+                        <strong>Description of work:</strong>
                       </h4>
                       <h6 style={{ fontSize: 12 }} className="mb-0">
                         {previewData.EstimateData.EstimateNotes}
                       </h6>
                     </div>
                   </div>
-                  <h5 style={{ fontSize: 14 }} className="mb-0 mt-3">
-                    <strong>Item(s)</strong>
-                  </h5>
+                
                   <table
                     id="empoloyees-tblwrapper"
-                    className="table item-preview-table mt-2"
+                    className="table item-preview-table mt-3"
                   >
                     <thead className="">
                       <tr className="preview-table-head preview-table-header">
-                        <th className="text-start">
+                        <th className="text-center">
                           <strong>QTY</strong>
                         </th>
                         <th>
@@ -334,7 +321,7 @@ const EstimatePreview = () => {
                         return (
                           <>
                             <tr className="preview-table-row" key={index}>
-                              <td className="text-end">{item.Qty}</td>
+                              <td className="text-center">{item.Qty}</td>
                               <td>{item.Description}</td>
                               {/* <td className="text-right">{item.Rate}</td> */}
                               <td className="text-right">

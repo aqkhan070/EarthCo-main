@@ -13,21 +13,21 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
       <View style={[s.containerFluid]}>
         <View style={[s.row]}>
           <View style={[s.colXL4]}>
-            <Text style={s.text}>EarthCo</Text>
+            <Text style={s.text}>Earthco Landscape</Text>
 
             <Text style={s.text}>1225 East Wakeham </Text>
 
             <Text style={s.text}>Santa Ana, Ca 92705</Text>
 
             <Text style={[s.text, { marginTop: "10px" }]}>
-              Submitted to
+              Submitted to:
             </Text>
             <Text style={[s.text]}>{CustomerName}</Text>
-            <Text style={[s.text]}> {SummaryReportData[0]?.Address}</Text>
+            {/* <Text style={[s.text]}> {SummaryReportData[0]?.Address}</Text> */}
           </View>
           <View style={[s.colXL5, s.textCenter, { marginTop: "20px" }]}>
                 <Text style={s.title}>Service Request Summary report</Text>
-                <Text style={s.heading}>Grandview Crest</Text>
+                {/* <Text style={s.heading}>Grandview Crest</Text> */}
               </View>
 
               <View style={[s.colXL3, { paddingLeft: "80px" }]}>
@@ -212,21 +212,21 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
           <View style={[s.containerFluid]}>
             <View style={[s.row]}>
               <View style={[s.colXL4]}>
-                <Text style={s.text}>EarthCo</Text>
+                <Text style={s.text}>Earthco Landscape</Text>
 
                 <Text style={s.text}>1225 East Wakeham </Text>
 
                 <Text style={s.text}>Santa Ana, Ca 92705</Text>
 
                 <Text style={[s.text, { marginTop: "10px" }]}>
-                  Submitted to
+                  Submitted to:
                 </Text>
                 <Text style={[s.text]}>{CustomerName}</Text>
-                <Text style={[s.text]}> {reportData[0]?.Address}</Text>
+                {/* <Text style={[s.text]}> {reportData[0]?.Address}</Text> */}
               </View>
               <View style={[s.colXL4, s.textCenter, { marginTop: "20px" }]}>
                 <Text style={s.title}>Proposal Summary Report</Text>
-                <Text style={s.heading}>Grandview Crest</Text>
+                {/* <Text style={s.heading}>Grandview Crest</Text> */}
               </View>
 
               <View style={[s.colXL4, { paddingLeft: "80px" }]}>
@@ -390,16 +390,16 @@ const GenralReportPdf = ({ SummaryReportData,reportData,  landscapeData, Custome
           <View style={[s.containerFluid]}>
             <View style={[s.row]}>
               <View style={[s.col4]}>
-                <Text style={s.text}>EarthCo</Text>
+                <Text style={s.text}>Earthco Landscape</Text>
 
                 <Text style={s.text}>1225 E Wakeham</Text>
 
                 <Text style={[s.text, { marginTop: "10px" }]}>
-                  Submitted to
+                  Submitted to:
                 </Text>
-                <Text style={s.text}> {landscapeData?.name}</Text>
-                <Text style={s.text}> {landscapeData?.Address}</Text>
-                <Text style={s.text}>Phone: {landscapeData?.Phone} </Text>
+                <Text style={s.text}> {CustomerName}</Text>
+                {/* <Text style={s.text}> {landscapeData?.Address}</Text> */}
+                {/* <Text style={s.text}>Phone: {landscapeData?.Phone} </Text> */}
               </View>
               <View style={[s.col4, s.textCenter, { marginTop: "20px" }]}>
                 <Text style={s.title}>LandScape Report</Text>

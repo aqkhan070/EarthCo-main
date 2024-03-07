@@ -64,6 +64,7 @@ const BillPdf = ({ data }) => {
             <View
               style={[
                 s.col1,
+                ,s.textCenter,
                 {
                   marginTop: " 10px",
                   backgroundColor: "#CCCCCC",
@@ -117,7 +118,7 @@ const BillPdf = ({ data }) => {
                 </View>
                 <View
                   style={[
-                    s.col1,
+                    s.col1,s.textCenter,
                     s.textEnd,
                     { borderBottom: "0.5px solid #CCCCCC" },
                   ]}

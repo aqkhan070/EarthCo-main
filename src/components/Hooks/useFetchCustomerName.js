@@ -23,7 +23,8 @@ const useFetchCustomerName = () => {
       setName(response.data);
       anonymFunction()
     } catch (error) {
-      console.error("API Call Error:", error);
+      console.error("Customer API Call Error:", error);
+      anonymFunction()
     }
   };
 
@@ -39,7 +40,7 @@ const useFetchCustomerName = () => {
       setSupplierName(response.data);
       console.log("Supplier name", response.data);
     } catch (error) {
-      console.error("API Call Error:", error);
+      console.error("Supplier API Call Error:", error);
     }
   };
 

@@ -585,7 +585,7 @@ const AddRisingCanes = () => {
                     id="inputState299"
                     size="small"
                     options={contactList}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) => option.FirstName + " " + option.LastName|| ""}
                     value={
                       contactList.find(
                         (contact) => contact.ContactId === formData.ContactId
@@ -621,7 +621,7 @@ const AddRisingCanes = () => {
                       staff.UserId === 3252 ||
                       staff.UserId ===6146
                   )}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                     value={
                       staffData.find(
                         (staff) => staff.UserId === formData.RegionalManagerId
@@ -637,7 +637,7 @@ const AddRisingCanes = () => {
                           <div className="row">
                             <div className="col-md-auto">
                               {" "}
-                              <h6 className="pb-0 mb-0"> {option.FirstName}</h6>
+                              <h6 className="pb-0 mb-0"> {option.FirstName} {option.LastName}</h6>
                             </div>
                             <div className="col-md-auto">
                               <small>

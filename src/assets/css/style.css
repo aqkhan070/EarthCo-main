@@ -35379,8 +35379,8 @@ input#checkAll.form-check-input:checked {
 }
 
 textarea.form-control {
-    min-height: auto;
-    height: auto !important;
+    min-height: 6em;
+    height: auto ;
 }
 
 .form-control[type="file"] {
@@ -45186,7 +45186,7 @@ table.dataTable thead .sorting_asc {
 
 .active-projects thead tr th {
     font-size: 13px;
-    padding: 0.625rem 1rem;
+    padding: 0.625rem 0.2rem;
     font-weight: 500;
     background-color: #F0F4F9;
     border: 0;
@@ -54212,6 +54212,11 @@ color : black;
         color: black !important; /* Preserve the text color on hover */
         background-color: transparent !important; /* Remove the background color on hover */
         border: 1px solid  black !important; /* Preserve the custom border color on hover */
+      }
+
+      .textarea-resizable {
+        resize: vertical; /* Allow only vertical resizing */
+        overflow-y: auto; /* Allow scrolling when content exceeds textarea height */
       }
       
 

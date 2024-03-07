@@ -22,6 +22,8 @@ import LoaderButton from "../Reusable/LoaderButton";
 import useFetchContactEmail from "../Hooks/useFetchContactEmail";
 import BackButton from "../Reusable/BackButton";
 import PrintButton from "../Reusable/PrintButton"
+import TextArea from "../Reusable/TextArea";
+
 const LandscapeForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -406,7 +408,7 @@ const LandscapeForm = () => {
                           id="inputState299"
                           size="small"
                           options={contactList}
-                          getOptionLabel={(option) => option.FirstName || ""}
+                          getOptionLabel={(option) => option.FirstName + " " + option.LastName || ""}
                           value={
                             contactList.find(
                               (contact) =>
@@ -444,7 +446,7 @@ const LandscapeForm = () => {
                             staff.UserId === 3252 ||
                             staff.UserId ===6146
                         )}
-                          getOptionLabel={(option) => option.FirstName || ""}
+                          getOptionLabel={(option) => option.FirstName+ " "+option.LastName|| ""}
                           value={
                             staffData.find(
                               (staff) => staff.UserId === formData.RequestBy
@@ -462,7 +464,7 @@ const LandscapeForm = () => {
                                     {" "}
                                     <h6 className="pb-0 mb-0">
                                       {" "}
-                                      {option.FirstName}
+                                      {option.FirstName} {option.LastName}
                                     </h6>
                                   </div>
                                   <div className="col-md-auto">
@@ -1036,7 +1038,7 @@ const LandscapeForm = () => {
                               <div className="basic-form">
                                 <form>
                                   <div className="mb-3">
-                                    <textarea
+                                    <TextArea
                                       className="form-txtarea form-control"
                                       name="Thismonthexpectedrotationschedule"
                                       onChange={handleInputChange}
@@ -1044,8 +1046,8 @@ const LandscapeForm = () => {
                                         formData.Thismonthexpectedrotationschedule
                                       }
                                       rows="2"
-                                      id="comment"
-                                    ></textarea>
+                                  
+                                    ></TextArea>
                                   </div>
                                 </form>
                               </div>
@@ -1082,14 +1084,14 @@ const LandscapeForm = () => {
                             <div className="col-md-7">
                               <div className="basic-form">
                                 <div className="mb-3">
-                                  <textarea
+                                  <TextArea
                                     className="form-txtarea form-control"
                                     rows="2"
                                     name="Notes"
                                     onChange={handleInputChange}
                                     value={formData.Notes}
-                                    id="comment"
-                                  ></textarea>
+                                 
+                                  ></TextArea>
                                 </div>
                               </div>
                             </div>

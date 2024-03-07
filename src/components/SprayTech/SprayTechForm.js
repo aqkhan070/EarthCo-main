@@ -1170,6 +1170,13 @@ const SprayTechForm = () => {
                                       setSelectedItem({});
                                     }
                                   }}
+                                  filterOptions={(options, { inputValue }) => {
+                                    return options.filter(
+                                      (option) =>
+                                        option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                        option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                    );
+                                  }}
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}

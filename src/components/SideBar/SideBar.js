@@ -137,13 +137,11 @@ const SideBar = () => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-           d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+            d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
             stroke="#888888"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-         
-         
         </svg>
       ),
     },
@@ -164,8 +162,7 @@ const SideBar = () => {
     //         strokeLinecap="round"
     //         strokeLinejoin="round"
     //       />
-         
-         
+
     //     </svg>
     //   ),
     // },
@@ -199,7 +196,7 @@ const SideBar = () => {
         </svg>
       ),
     },
-    
+
     {
       label: "Purchase Order",
       path: "/purchase-order",
@@ -298,7 +295,6 @@ const SideBar = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        
         </svg>
       ),
     },
@@ -348,8 +344,7 @@ const SideBar = () => {
     //         strokeLinecap="round"
     //         strokeLinejoin="round"
     //       />
-         
-         
+
     //     </svg>
     //   ),
     // },
@@ -363,28 +358,26 @@ const SideBar = () => {
         </span>
       ),
     },
-    // {
-    //   label: "Service Requests",
-    //   path: "/service-requests",
-    //   icon: (
-    //     <svg
-    //       width="22"
-    //       height="22"
-    //       viewBox="0 0 22 22"
-    //       fill="none"
-    //       xmlns="http://www.w3.org/2000/svg"
-    //     >
-    //       <path
-    //        d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
-    //         stroke="#888888"
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //       />
-         
-         
-    //     </svg>
-    //   ),
-    // },
+    {
+      label: "Service Requests",
+      path: "/service-requests",
+      icon: (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 22 22"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+            stroke="#888888"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
     {
       label: "Estimates",
       path: "/estimates",
@@ -415,7 +408,7 @@ const SideBar = () => {
         </svg>
       ),
     },
-   
+
     {
       label: "Items",
       path: "/items",
@@ -435,7 +428,6 @@ const SideBar = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        
         </svg>
       ),
     },
@@ -489,13 +481,11 @@ const SideBar = () => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-           d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+            d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
             stroke="#888888"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-         
-         
         </svg>
       ),
     },
@@ -516,8 +506,7 @@ const SideBar = () => {
     //         strokeLinecap="round"
     //         strokeLinejoin="round"
     //       />
-         
-         
+
     //     </svg>
     //   ),
     // },
@@ -761,89 +750,96 @@ const SideBar = () => {
               ? renderOptionsIrr
               : renderOptionsRM}
 
-            <li>
-              <a
-                href="/"
-                className="expand-bottom"
-                onClick={handleIrrLink}
-                ref={irrShowRef}
-              >
-                <div className="menu-icon">
-                  <svg
-                    width="22"
-                    height="22"
-                    viewBox="0 0 22 22"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
-                      stroke="#888888"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
-                      stroke="#888888"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M13.9014 4.21895L18.0869 8.40445"
-                      stroke="#888888"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <span className="nav-text navLabel">
-                  Irrigation
-                  <span className="material-symbols-sharp" id="irrbottomChev">
-                    expand_more
+            {loggedInUser.userRole == 6 ? (
+              <></>
+            ) : (
+              <li>
+                <a
+                  href="/"
+                  className="expand-bottom"
+                  onClick={handleIrrLink}
+                  ref={irrShowRef}
+                >
+                  <div className="menu-icon">
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 22 22"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10.5346 2.55658H7.1072C4.28845 2.55658 2.52112 4.55216 2.52112 7.37733V14.9985C2.52112 17.8237 4.2802 19.8192 7.1072 19.8192H15.1959C18.0238 19.8192 19.7829 17.8237 19.7829 14.9985V11.3062"
+                        stroke="#888888"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M8.09214 10.0108L14.9424 3.16057C15.7958 2.30807 17.1791 2.30807 18.0325 3.16057L19.1481 4.27615C20.0015 5.12957 20.0015 6.51374 19.1481 7.36624L12.2648 14.2495C11.8917 14.6226 11.3857 14.8325 10.8577 14.8325H7.42389L7.51006 11.3675C7.52289 10.8578 7.73097 10.372 8.09214 10.0108Z"
+                        stroke="#888888"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M13.9014 4.21895L18.0869 8.40445"
+                        stroke="#888888"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span className="nav-text navLabel">
+                    Irrigation
+                    <span className="material-symbols-sharp" id="irrbottomChev">
+                      expand_more
+                    </span>
                   </span>
-                </span>
-              </a>
-              {showIrrMenu && (
-                <ul className="subMenu">
-                  <>
-                    {irrMenu.map((link, index) => {
-                      let activeClass = "";
-                      if (subClass === index) {
-                        activeClass = "activeSub";
-                      } else {
-                        activeClass = "";
-                      }
-                      // const activeSub = (indx) => {
-                      //     if (indx === indx) {
-                      //         setSubClass('activeSub')
-                      //     }
-                      // }
-                      // const deactiveSub = () => {
-                      //     setSubClass('')
-                      // }
+                </a>
+                {showIrrMenu && (
+                  <ul className="subMenu">
+                    <>
+                      {irrMenu.map((link, index) => {
+                        let activeClass = "";
+                        if (subClass === index) {
+                          activeClass = "activeSub";
+                        } else {
+                          activeClass = "";
+                        }
+                        // const activeSub = (indx) => {
+                        //     if (indx === indx) {
+                        //         setSubClass('activeSub')
+                        //     }
+                        // }
+                        // const deactiveSub = () => {
+                        //     setSubClass('')
+                        // }
 
-                      return (
-                        <li key={index}>
-                          <NavLink
-                            to={link.path}
-                            style={{ display: "flex" }}
-                            onMouseEnter={() => setSubClass(index)}
-                            onMouseLeave={() => setSubClass(-1)}
-                          >
-                            <div className="blueBarBox">
-                              <span id="blueBar" className={activeClass}></span>
-                            </div>
-                            {link.label}
-                          </NavLink>
-                        </li>
-                      );
-                    })}
-                  </>
-                </ul>
-              )}
-            </li>
+                        return (
+                          <li key={index}>
+                            <NavLink
+                              to={link.path}
+                              style={{ display: "flex" }}
+                              onMouseEnter={() => setSubClass(index)}
+                              onMouseLeave={() => setSubClass(-1)}
+                            >
+                              <div className="blueBarBox">
+                                <span
+                                  id="blueBar"
+                                  className={activeClass}
+                                ></span>
+                              </div>
+                              {link.label}
+                            </NavLink>
+                          </li>
+                        );
+                      })}
+                    </>
+                  </ul>
+                )}
+              </li>
+            )}
             {loggedInUser.userRole == 5 || loggedInUser.userRole == 6 ? (
               <></>
             ) : (

@@ -15,7 +15,7 @@ const SRPdf = ({ data }) => {
           <View style={[s.containerFluid]}>
             <View style={[s.row]}>
               <View style={[s.col4]}>
-                <Text style={s.text}>EarthCo</Text>
+                <Text style={s.text}>Earthco Landscape</Text>
 
                 <Text style={s.text}>1225 East Wakeham Avenue</Text>
 
@@ -24,11 +24,19 @@ const SRPdf = ({ data }) => {
                 <Text style={s.text}>www.earthcompany.org</Text>
               </View>
               <View style={[s.col4, s.textCenter, { marginTop: "20px" }]}>
-                <Text style={s.title}>Service Request</Text>
+                
               </View>
 
-              <View style={[s.col4, s.textEnd]}>
-                <Image style={{ width: "100px", marginLeft : "80px"}} src={logo}></Image>
+           
+
+              <View style={[s.col4, s.textEnd, {marginTop : "10px"}]}>
+              <Image
+                style={{ width: "130px", marginLeft: "50px" }}
+                src={logo}
+              ></Image>
+              </View>  
+               <View style={[s.col12, s.textCenter]}>
+              <Text style={s.title}>Service Request</Text>
               </View>
               <View style={[s.col3, { marginTop: "10px" }]}>
                 <View
@@ -140,28 +148,6 @@ const SRPdf = ({ data }) => {
                   </Text>
                 </View>
 
-                <View
-                  style={[
-                    s.col4,
-
-                    {
-                      paddingLeft: " 10px",
-                      borderBottom: "0.5px solid #CCCCCC",
-                    },
-                  ]}
-                >
-                  <Text style={[s.tblText, { marginRight: "30px" }]}>
-                    Second Request:
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    s.col8,
-                    { paddingLeft: "10px",   borderBottom: "0.5px solid #CCCCCC", },
-                  ]}
-                >
-                  <Text style={s.tblText}>No</Text>
-                </View>
 
                 <View
                   style={[
@@ -174,7 +160,7 @@ const SRPdf = ({ data }) => {
                   ]}
                 >
                   <Text style={[s.tblText, { marginRight: "30px" }]}>
-                    Date Completed
+                    Date Completed:
                   </Text>
                 </View>
                 <View
@@ -232,7 +218,7 @@ const SRPdf = ({ data }) => {
                   ]}
                 >
                   <Text style={[s.tblText, { marginRight: "30px" }]}>
-                    Work Requested
+                    Work Requested:
                   </Text>
                 </View>
                 <View
@@ -255,7 +241,7 @@ const SRPdf = ({ data }) => {
                   ]}
                 >
                   <Text style={[s.tblText, { marginRight: "30px" }]}>
-                    Action Taken
+                    Action Taken:
                   </Text>
                 </View>
                 <View
@@ -268,12 +254,6 @@ const SRPdf = ({ data }) => {
                 </View>
               </View>
 
-              <View style={[s.col12, s.textCenter, { marginTop: "200px" }]}>
-                <Text style={s.small}>
-                  *Note Beginning October 1, Earthco will commence annual skip
-                  mowing of the grass due to the winter season
-                </Text>
-              </View>
             </View>
           </View>
         </Page>

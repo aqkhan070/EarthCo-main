@@ -38,6 +38,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 import InvoicePDF from "./InvoicePDF";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdfOutlined';
 import { pdf } from '@react-pdf/renderer';
+import TextArea from "../Reusable/TextArea";
 
 const AddInvioces = ({}) => {
   const token = Cookies.get("token");
@@ -527,13 +528,13 @@ const AddInvioces = ({}) => {
 
       console.log("Data submitted successfully:", response.data);
     } catch (error) {
-      setError(true);
-      setErrorMessage(error.message);
+    
+
       setDisableButton(false);
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText(error.response.data);
-      console.error("API Call Error:", error);
+      setSnackBarText( "Error Adding/Updating Invoice");
+      console.error("Invoice API Call Error:", error);
     }
 
     // Logging FormData contents (for debugging purposes)
@@ -801,6 +802,32 @@ const AddInvioces = ({}) => {
         tblInvoiceItems: updatedItems,
       }));
     }
+  };
+
+  const handleIsMisc = (i, event, add) => {
+    const updatedItems = formData.tblInvoiceItems.map((item, index) => {
+      if (index === i) {
+        // Check if the condition for isCost matches the `add` parameter
+        if (
+          (add === 0 && item.isCost === false) ||
+          (add === 1 && item.isCost === true)
+        ) {
+          // Copy the item and update IsApproved based on the checkbox's checked state
+          const updatedItem = {
+            ...item,
+            IsMisc: event.target.checked, // Use checked for boolean state
+          };
+          // Optionally update the Amount if needed
+          // updatedItem.Amount = updatedItem.Qty * updatedItem.Rate;
+          return updatedItem;
+        }
+      }
+      return item;
+    });
+    setFormData((prevData) => ({
+      ...prevData,
+      tblInvoiceItems: updatedItems,
+    }));
   };
 
   useEffect(() => {
@@ -1192,7 +1219,7 @@ const AddInvioces = ({}) => {
                           staff.UserId === 3252 ||
                           staff.UserId === 6146
                       )}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                       value={
                         staffData.find(
                           (staff) => staff.UserId === formData.AssignTo
@@ -1210,7 +1237,7 @@ const AddInvioces = ({}) => {
                                 {" "}
                                 <h6 className="pb-0 mb-0">
                                   {" "}
-                                  {option.FirstName}
+                                  {option.FirstName} {option.LastName}
                                 </h6>
                               </div>
                               <div className="col-md-auto">
@@ -1602,6 +1629,7 @@ const AddInvioces = ({}) => {
                         <th>Rate</th>
                         <th>Amount</th>
                         <th>Cost Price</th>
+                        <th>Is Misc</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -1664,6 +1692,15 @@ const AddInvioces = ({}) => {
                                   }
                                 />
                               </td>
+                              <td className="text-center">
+                                  <Checkbox
+                                    value={item.IsMisc}
+                                    checked={item.IsMisc}
+                                    onChange={(e) =>
+                                      handleIsMisc(index, e, 0)
+                                    }
+                                  />
+                                </td>
                               <td>
                                 <div className="badgeBox">
                                   <Button
@@ -1694,6 +1731,13 @@ const AddInvioces = ({}) => {
                                 } else {
                                   setSelectedItem({});
                                 }
+                              }}
+                              filterOptions={(options, { inputValue }) => {
+                                return options.filter(
+                                  (option) =>
+                                    option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                    option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                );
                               }}
                               renderInput={(params) => (
                                 <TextField
@@ -2070,14 +2114,13 @@ const AddInvioces = ({}) => {
                         <form>
                           <label className="form-label">Customer Message</label>
                           <div className="mb-3">
-                            <textarea
+                            <TextArea
                               placeholder=" Customer Message"
                               value={formData.CustomerMessage}
                               name="CustomerMessage"
                               onChange={handleChange}
-                              className=" form-control"
-                              rows="3"
-                            ></textarea>
+                             
+                            ></TextArea>
                           </div>
                         </form>
                       </div>
@@ -2538,7 +2581,7 @@ const AddInvioces = ({}) => {
                               
                                 SelectedCompany: loggedInUser.CompanyName,
                                 CustomerName: name,
-                                ApprovedItems: formData.tblInvoiceItems,
+                                ApprovedItems: formData.tblInvoiceItems.filter(item => !item.IsMisc),
                                 Amount: totalItemAmount,
                               }}
                             />

@@ -12,6 +12,8 @@ import LoaderButton from "../Reusable/LoaderButton";
 import TitleBar from "../TitleBar";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
+import TextArea from "../Reusable/TextArea";
+
 const AddPLPhotoOnly = () => {
   const icon = (
     <svg
@@ -296,14 +298,14 @@ const AddPLPhotoOnly = () => {
               <div className="col-md-3">
                 <label className="form-label">Notes (optional)</label>
                 <div className="mb-3">
-                  <textarea
+                  <TextArea
                     placeholder=" Notes"
                     value={formData.Notes}
                     name="Notes"
                     onChange={handleInputChange}
                     className=" form-control"
                     rows="3"
-                  ></textarea>
+                  ></TextArea>
                 </div>
               </div>
               <div className="col-md-4">

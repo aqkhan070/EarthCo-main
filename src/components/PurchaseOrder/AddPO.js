@@ -36,7 +36,8 @@ import HandleDelete from "../Reusable/HandleDelete";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import POPdf from "./POPdf";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdfOutlined';
-;
+import TextArea from "../Reusable/TextArea";
+
 export const AddPO = ({}) => {
   const token = Cookies.get("token");
   const headers = {
@@ -492,6 +493,7 @@ export const AddPO = ({}) => {
       EstimateNumber: estimateLinkData.EstimateNumber,
       CustomerName : estimateLinkData.CustomerName,
       RegionalManager : estimateLinkData.RegionalManagerId,
+      Requestedby : estimateLinkData.RequestedBy,
     }));
     console.log("item List is", itemsList);
   }, []);
@@ -1117,7 +1119,7 @@ export const AddPO = ({}) => {
                             staff.UserId === 3252 ||
                             staff.UserId ===6146
                         )}
-                          getOptionLabel={(option) => option.FirstName || ""}
+                          getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                           value={
                             staffData.find(
                               (staff) =>
@@ -1136,7 +1138,7 @@ export const AddPO = ({}) => {
                                     {" "}
                                     <h6 className="pb-0 mb-0">
                                       {" "}
-                                      {option.FirstName}
+                                      {option.FirstName} {option.LastName}
                                     </h6>
                                   </div>
                                   <div className="col-md-auto">
@@ -1199,7 +1201,7 @@ export const AddPO = ({}) => {
                           options={staffData.filter(
                             (staff) => staff.Role !== "Admin"
                           )}
-                          getOptionLabel={(option) => option.FirstName || ""}
+                          getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                           value={
                             staffData.find(
                               (staff) => staff.UserId === formData.Requestedby
@@ -1217,7 +1219,7 @@ export const AddPO = ({}) => {
                                     {" "}
                                     <h6 className="pb-0 mb-0">
                                       {" "}
-                                      {option.FirstName}
+                                      {option.FirstName} {option.LastName}
                                     </h6>
                                   </div>
                                   <div className="col-md-auto">
@@ -1540,6 +1542,13 @@ export const AddPO = ({}) => {
                                     setSelectedItem({});
                                   }
                                 }}
+                                filterOptions={(options, { inputValue }) => {
+                                  return options.filter(
+                                    (option) =>
+                                      option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                      option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                  );
+                                }}
                                 renderInput={(params) => (
                                   <TextField
                                     {...params}
@@ -1712,14 +1721,12 @@ export const AddPO = ({}) => {
                         <div className="basic-form">
                           <label className="form-label">Memo Internal</label>
                           <div className="mb-3">
-                            <textarea
-                              className=" form-control"
-                              rows="3"
-                              id="comment"
+                            <TextArea
+                            
                               value={formData.MemoInternal}
                               name="MemoInternal"
                               onChange={handleChange}
-                            ></textarea>
+                            ></TextArea>
                           </div>
                         </div>
                       </div>
@@ -1727,14 +1734,12 @@ export const AddPO = ({}) => {
                         <div className="basic-form">
                           <label className="form-label">Message</label>
                           <div className="mb-3">
-                            <textarea
-                              className=" form-control"
-                              rows="3"
-                              id="comment"
+                            <TextArea
+                             
                               name="Message"
                               value={formData.Message}
                               onChange={handleChange}
-                            ></textarea>
+                            ></TextArea>
                           </div>
                         </div>
                       </div>

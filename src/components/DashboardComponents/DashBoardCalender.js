@@ -4,7 +4,6 @@ import {
   useSupabaseClient,
   useSessionContext,
 } from "@supabase/auth-helpers-react";
-import { NavLink, useNavigate } from "react-router-dom";
 import { Add, Delete, Edit, Create } from "@mui/icons-material";
 import dayjs from "dayjs";
 import Badge from "@mui/material/Badge";
@@ -24,7 +23,7 @@ import DateEventList from "./DateEventList";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SyncIcon from "@mui/icons-material/Sync";
-import Tooltip from "@mui/material/Tooltip";
+
 import useSaveGoogleToken from "../Hooks/useSaveGoogleToken";
 import { DataContext } from "../../context/AppData";
 import CustomizedTooltips from "../Reusable/CustomizedTooltips";
@@ -392,8 +391,8 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
           TokenType: session.token_type,
           UserId: Number(loggedInUser.userId),
           UserEmail: session.user.email,
-        },
-        getDashboardData
+        }
+      
       );
       Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
       console.log("asdfg");

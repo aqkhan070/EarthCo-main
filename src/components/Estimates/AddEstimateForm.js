@@ -43,6 +43,9 @@ import useGetEstimate from "../Hooks/useGetEstimate";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import EstimatePdf from "./EstimatePdf";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdfOutlined";
+import { pdf } from '@react-pdf/renderer';
+import TextArea from "../Reusable/TextArea";
+
 const AddEstimateForm = () => {
   const token = Cookies.get("token");
   const headers = {
@@ -81,6 +84,7 @@ const AddEstimateForm = () => {
     sROBJ,
     setSROBJ,
     selectedPdf,
+    setselectedPdf,
   } = useContext(DataContext);
   const { syncQB } = useQuickBook();
   const { getEstimateStatus, estimateStatus } = useGetEstimate();
@@ -224,7 +228,7 @@ const AddEstimateForm = () => {
 
       // }))
 
-      setLoading(false);
+     
     } catch (error) {
       setLoading(false);
       console.error("API Call Error:", error);
@@ -249,6 +253,7 @@ const AddEstimateForm = () => {
         console.log("service locations fetch error", error);
       });
   };
+
 
   const fetctContacts = async (id) => {
     if (!id) {
@@ -357,6 +362,13 @@ const AddEstimateForm = () => {
       ...formData,
       CustomerName: name,
       RegionalManager: formData.RegionalManagerId,
+      RequestedBy : formData.RequestedBy,
+      BillId : null,
+      BillNumber : "",
+      PurchaseOrderId : null,
+      PurchaseOrderNumber : "",
+      InvoiceId : null,
+      InvoiceNumber : "",
     }));
   };
 
@@ -484,7 +496,7 @@ const AddEstimateForm = () => {
   useEffect(() => {
     fetchServiceLocations(formData.CustomerId);
     fetctContacts(formData.CustomerId);
-    fetchName(formData.CustomerId);
+    fetchName(formData.CustomerId , () => { setLoading(false);});
     console.log("selected customer name iss......", name);
     console.log("main payload isss", formData);
   }, [formData.CustomerId]);
@@ -1026,6 +1038,62 @@ const AddEstimateForm = () => {
     console.log("selected images arew", selectedImages);
   };
 
+  const handleMainButtonClick = async () => {
+    try { 
+    
+      const blob = await pdf(<EstimatePdf
+        data={{
+          ...formData,
+          RegionalManagerName: staffName,
+          SelectedCompany: loggedInUser.CompanyName,
+          CustomerName: name,
+          ApprovedItems: formData.tblEstimateItems.filter(
+            (item) => item.IsApproved === true
+          ),
+          Amount: formData.tblEstimateItems
+            .filter((item) => item.IsApproved === true)
+            .reduce(
+              (accumulator, item) =>
+                accumulator + item.Amount,
+              0
+            ),
+        }}
+      />).toBlob();
+  
+      // Create a File object from the blob
+      const pdfFile = new File([blob], "Estimate.pdf", {
+        type: "application/pdf",
+      });
+  
+      // Store the File object in state
+      setselectedPdf(pdfFile); // Now, pdfBlob is a File object with a name and type
+     
+      navigate(
+        `/send-mail?title=${"Estimate"}&mail=${customerMail}&customer=${name}&number=${
+          formData.EstimateNumber
+        }`
+      );
+  
+        console.log("pdfFile", pdfFile);
+        
+     
+    } catch (err) {
+      console.error("Error generating PDF", err);
+    }
+  };
+
+  const [textareaHeight, setTextareaHeight] = useState('3em'); // Initial height
+
+ 
+
+  const handleResize = (event) => {
+    const { target } = event;
+    target.style.height = 'auto'; // Reset height to auto to allow for resizing
+    target.style.height = `${target.scrollHeight}px`; // Set the height to fit the content
+    setTextareaHeight(`${target.scrollHeight}px`); // Update state with the new height
+  };
+
+
   return (
     <>
       <EventPopups
@@ -1181,7 +1249,7 @@ const AddEstimateForm = () => {
                           staff.UserId === 3252 ||
                           staff.UserId === 6146
                       )}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                       value={
                         staffData.find(
                           (staff) => staff.UserId === formData.RegionalManagerId
@@ -1206,7 +1274,7 @@ const AddEstimateForm = () => {
                                 {" "}
                                 <h6 className="pb-0 mb-0">
                                   {" "}
-                                  {option.FirstName}
+                                  {option.FirstName} {option.LastName}
                                 </h6>
                               </div>
                               <div className="col-md-auto">
@@ -1409,7 +1477,7 @@ const AddEstimateForm = () => {
                       options={staffData.filter(
                         (staff) => staff.Role !== "Admin"
                       )}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
                       value={
                         staffData.find(
                           (staff) => staff.UserId === formData.RequestedBy
@@ -1434,7 +1502,7 @@ const AddEstimateForm = () => {
                                 {" "}
                                 <h6 className="pb-0 mb-0">
                                   {" "}
-                                  {option.FirstName}
+                                  {option.FirstName}  {option.LastName}
                                 </h6>
                               </div>
                               <div className="col-md-auto">
@@ -1537,7 +1605,7 @@ const AddEstimateForm = () => {
                       multiple
                       size="small"
                       options={contactList}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) => option.FirstName + " " + option.LastName || ""}
                       onChange={handleContactChange}
                       value={contactList.filter((company) =>
                         selectedContacts.includes(company.ContactId)
@@ -1777,56 +1845,64 @@ const AddEstimateForm = () => {
                         )}
                         <tr>
                           <td>
-                            <>
-                              <Autocomplete
-                                id="search-items"
-                                options={searchResults}
-                                getOptionLabel={(item) => item.ItemName}
-                                value={selectedItem.ItemName} // This should be the selected item, not searchText
-                                onChange={(event, newValue) => {
-                                  if (newValue) {
-                                    handleItemClick(newValue);
-                                  } else {
-                                    setSelectedItem({});
-                                  }
-                                }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Search for items..."
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    onChange={handleItemChange}
-                                  />
-                                )}
-                                renderOption={(props, item) => (
-                                  <li
-                                    style={{
-                                      cursor: "pointer",
-                                      width: "30em",
-                                    }}
-                                    {...props}
-                                    // // onClick={() => handleItemClick(item)}
-                                  >
-                                    <div className="customer-dd-border">
-                                      <p>
-                                        <strong>{item.ItemName}</strong>{" "}
-                                      </p>
-                                      <p>{item.Type}</p>
-                                      <small>{item.SaleDescription}</small>
-                                    </div>
-                                  </li>
-                                )}
-                                onKeyPress={(e) => {
-                                  if (e.key === "Enter") {
-                                    // Handle item addition when Enter key is pressed
-                                    e.preventDefault(); // Prevent form submission
-                                    handleAddItem();
-                                  }
-                                }}
-                              />
-                            </>
+                          <>
+  <Autocomplete
+ 
+    options={searchResults}
+    getOptionLabel={(item) => item.ItemName}
+    value={selectedItem.ItemName} // This should be the selected item, not searchText
+    onChange={(event, newValue) => {
+      if (newValue) {
+        handleItemClick(newValue);
+      } else {
+        setSelectedItem({});
+      }
+    }}
+    filterOptions={(options, { inputValue }) => {
+      return options.filter(
+        (option) =>
+          option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
+          option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+      );
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Search for items..."
+        variant="outlined"
+        size="small"
+        fullWidth
+        onChange={handleItemChange}
+      />
+    )}
+    renderOption={(props, item) => (
+      <li
+        style={{
+          cursor: "pointer",
+          width: "30em",
+        }}
+        {...props}
+        // // onClick={() => handleItemClick(item)}
+      >
+        <div className="customer-dd-border">
+          <p>
+            <strong>{item.ItemName}</strong>{" "}
+          </p>
+          <p>{item.Type}</p>
+          <small>{item.SaleDescription}</small>
+        </div>
+      </li>
+    )}
+    onKeyPress={(e) => {
+      if (e.key === "Enter") {
+        // Handle item addition when Enter key is pressed
+        e.preventDefault(); // Prevent form submission
+        handleAddItem();
+      }
+    }}
+  />
+</>
+
                           </td>
                           <td>
                             <TextField
@@ -2151,14 +2227,13 @@ const AddEstimateForm = () => {
                           <form>
                             <label className="form-label">Estimate Notes</label>
                             <div className="mb-3">
-                              <textarea
+                              <TextArea
                                 placeholder="Estimate Notes"
                                 value={formData.EstimateNotes}
                                 name="EstimateNotes"
                                 onChange={handleInputChange}
-                                className=" form-control"
-                                rows="3"
-                              ></textarea>
+                                
+                              ></TextArea>
                             </div>
                           </form>
                         </div>
@@ -2171,14 +2246,14 @@ const AddEstimateForm = () => {
                               Service Location Notes
                             </label>
                             <div className="mb-3">
-                              <textarea
-                                placeholder="Service Location Notes"
-                                value={formData.ServiceLocationNotes}
-                                name="ServiceLocationNotes"
-                                onChange={handleInputChange}
-                                className=" form-control "
-                                rows="3"
-                              ></textarea>
+                            <TextArea
+      placeholder="Service Location Notes"
+      value={formData.ServiceLocationNotes}
+      name="ServiceLocationNotes"
+      onChange={handleInputChange}
+    
+     
+    ></TextArea>
                             </div>
                           </form>
                         </div>
@@ -2686,13 +2761,7 @@ const AddEstimateForm = () => {
 
                         <PrintButton
                           varient="mail"
-                          onClick={() => {
-                            navigate(
-                              `/send-mail?title=${"Estimate"}&mail=${customerMail}&customer=${name}&number=${
-                                formData.EstimateNumber
-                              }`
-                            );
-                          }}
+                          onClick={handleMainButtonClick}
                         ></PrintButton>
 
                         <PrintButton

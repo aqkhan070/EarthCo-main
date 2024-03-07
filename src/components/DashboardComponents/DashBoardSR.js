@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from "react";
-// import useFetchServiceRequests from "../Hooks/useFetchServiceRequests";
-import axios from "axios";
-import Cookies from "js-cookie";
+import React, {  useState } from "react";
+
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
-  TextField,
+
   TableRow,
-  TableSortLabel,
-  Button,
-  TablePagination,
-  TableContainer,
+
   Checkbox,
   FormControl,
   Select,
   MenuItem,
-  Paper,
+
 } from "@mui/material";
-import { Form } from "react-bootstrap";
-import formatDate from "../../custom/FormatDate";
+
 import TblDateFormat from "../../custom/TblDateFormat";
-import { NavLink, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import UpdateAllSR from "../Reusable/UpdateAllSR";
 import DeleteAllModal from "../Reusable/DeleteAllModal";
 const DashBoardSR = ({ dashBoardData, getDashboardData }) => {
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log(",,,,,,,,,,", dashBoardData);
-  });
+ 
 
   const [selectedServiceRequests, setSelectedServiceRequests] = useState([]);
   const [selectAll, setSelectAll] = useState(false);

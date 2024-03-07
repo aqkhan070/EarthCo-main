@@ -14,7 +14,7 @@ const InvoicePDF = ({ data }) => {
         <View style={[s.containerFluid]}>
           <View style={[s.row]}>
             <View style={[s.col4]}>
-              <Text style={s.text}>{data.SelectedCompany}</Text>
+              <Text style={s.text}>Earthco Landscape</Text>
 
               <Text style={s.text}>1225 E. Wakeham Avenue</Text>
 
@@ -27,10 +27,13 @@ const InvoicePDF = ({ data }) => {
             </View>
 
             <View style={[s.col4, s.textCenter]}>
-              <Image style={{ width: "100px", marginLeft : "80px" }} src={logo}></Image>
+            <Image
+                style={{ width: "130px", marginLeft: "40px" }}
+                src={logo}
+              ></Image>
             </View>
             <View style={[s.col8, { marginTop: "10px" }]}>
-              <Text style={s.heading}>Bill to</Text>
+              <Text style={s.heading}>Bill To:</Text>
               <Text style={s.text}>{data.CustomerName}</Text>
               <Text style={s.text}>
                 {data.CustomerAddress?.split(", ").slice(0, 2).join(", ")}
@@ -110,7 +113,7 @@ const InvoicePDF = ({ data }) => {
             <View
               style={[
                 s.col2,
-                s.textEnd,
+                s.textCenter,
                 { marginTop: " 10px", backgroundColor: "#CCCCCC" },
               ]}
             >
@@ -146,12 +149,12 @@ const InvoicePDF = ({ data }) => {
                 s.col2,
 
                 {
-                  paddingLeft: " 10px",
+                  
                   borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
             >
-              <Text style={s.tblText}></Text>
+              <Text style={s.tblText}>${formatAmount(data.Amount)}</Text>
             </View>
             <View
               style={[
@@ -182,7 +185,7 @@ const InvoicePDF = ({ data }) => {
                 s.col2,
 
                 {
-                  paddingLeft: " 10px",
+                  paddingLeft: " 15px",
                   borderBottom: "0.5px solid #CCCCCC",
                 },
               ]}
@@ -194,13 +197,11 @@ const InvoicePDF = ({ data }) => {
             </View>
 
             <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.textBold}>Description of work</Text>
+              <Text style={s.textBold}>Description of work:</Text>
               <Text style={s.text}>{data.CustomerMessage}</Text>
             </View>
 
-            <View style={[s.col12, { marginTop: "20px" }]}>
-              <Text style={s.textBold}>item(s)</Text>
-            </View>
+          
 
             <View
               style={[
@@ -212,7 +213,7 @@ const InvoicePDF = ({ data }) => {
                 },
               ]}
             >
-              <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>QTY</Text>
+              <Text style={[s.tblHeading,s.textCenter, { marginBottom: 4, marginTop: 4 }]}>QTY</Text>
             </View>
 
             <View
@@ -238,7 +239,7 @@ const InvoicePDF = ({ data }) => {
               <Text style={[s.tblHeading, { marginBottom: 4, marginTop: 4 }]}>AMOUNT</Text>
             </View>
 
-            {data.ApprovedItems.map((item, index) => (
+            {data.ApprovedItems.filter(item => !item.IsMisc).map((item, index) => (
               <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                 <View
                   style={[
@@ -250,7 +251,7 @@ const InvoicePDF = ({ data }) => {
                     },
                   ]}
                 >
-                  <Text style={s.tblText}>{item.Qty}</Text>
+                  <Text style={[s.tblText,s.textCenter]}>{item.Qty}</Text>
                 </View>
                 <View
                   style={[
@@ -273,12 +274,12 @@ const InvoicePDF = ({ data }) => {
                   <Text style={[s.tblText]}>${formatAmount(item.Amount)}</Text>
                 </View>
 
-                {index === 25 && (
+                {index === 27 && (
                   <View style={[s.col12, { height: "80em" }]}></View>
                 )}
               </View>
             ))}
-            <View
+            {/* <View
               style={[
                 s.col8,
                 { borderBottom: "3px solid #CCCCCC", marginTop: "30px" },
@@ -300,8 +301,13 @@ const InvoicePDF = ({ data }) => {
               ]}
             >
               <Text style={s.text}>${formatAmount(data.Amount)}</Text>
-            </View>
-
+            </View> */}
+ <View
+              style={[
+                s.col12,
+                { marginTop: "20px" },
+              ]}
+            ></View>
             <View
               style={[
                 s.col8,
@@ -314,7 +320,7 @@ const InvoicePDF = ({ data }) => {
                 { borderBottom: "3px solid #012A47", marginTop: "10px" },
               ]}
             >
-              <Text style={s.text}>Total USD:</Text>
+              <Text style={s.textBold}>Total Due:</Text>
             </View>
             <View
               style={[
@@ -323,10 +329,33 @@ const InvoicePDF = ({ data }) => {
                 { borderBottom: "3px solid #012A47", marginTop: "10px" },
               ]}
             >
-              <Text style={s.text}>${formatAmount(data.Amount)}</Text>
+              <Text style={s.textBold}>${formatAmount(data.Amount)}</Text>
+            </View>
+            <View
+              style={[
+                s.col8,
+                { borderBottom: "3px solid #fff", marginTop: "10px" },
+              ]}
+            ></View>
+            <View
+              style={[
+                s.col2,
+                { borderBottom: "3px solid #fff", marginTop: "10px" },
+              ]}
+            >
+             
+            </View>
+            <View
+              style={[
+                s.col2,
+                s.textEnd,
+                { borderBottom: "3px solid #fff", marginTop: "10px" },
+              ]}
+            >
+              <Text style={s.text}></Text>
             </View>
             <View style={[s.col12, s.textCenter, {marginTop : "20px"}]}>
-              <Text style={s.small}>
+              <Text style={{fontSize : "9px"}}>
                 For invoice questions please contact Yisel Ferreyra at
                 Yiself@earthcompany.org
               </Text>
