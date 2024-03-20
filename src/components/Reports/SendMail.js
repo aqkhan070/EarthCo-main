@@ -54,7 +54,7 @@ const SendMail = () => {
   const [snackBarText, setSnackBarText] = useState("");
 
   const handleEmailInputChange = (event) => {
-    setEmailInput(event.target.value);
+    setEmailInput((event.target.value).replace(" ", ""));
     setDisableButton(false);
   };
   const handleEditorChange = (value) => {
@@ -177,7 +177,7 @@ const SendMail = () => {
 
   useEffect(() => {
     if (mail) {
-      setEmails([...emails, mail]);
+      setEmails([...emails, mail.replace(" ", "")]);
     }
     if (!number) {
       setEditorContent(`Dear  ${

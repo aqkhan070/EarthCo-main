@@ -208,7 +208,8 @@ const PLPhotoOnlyPreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/punchList-photos-only`);
+                      // navigate(`/punchList-photos-only`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />

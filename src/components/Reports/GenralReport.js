@@ -192,7 +192,8 @@ const [SummaryReportData, setSummaryReportData] = useState([])
                     <button
                       className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                       onClick={() => {
-                        navigate(`/summary-report`);
+                        // navigate(`/summary-report`);
+                        window.history.back();
                       }}
                       style={{ padding: "5px 10px" }}
                     >

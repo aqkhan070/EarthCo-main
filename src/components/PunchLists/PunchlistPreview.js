@@ -168,7 +168,8 @@ const PunchlistPreview = () => {
                   <button
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                     onClick={() => {
-                      navigate(`/punchlist`);
+                      // navigate(`/punchlist`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />

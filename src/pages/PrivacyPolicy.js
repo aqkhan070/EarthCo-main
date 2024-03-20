@@ -68,17 +68,35 @@ const PrivacyPolicy = () => {
                         users of the Application and how we use, disclose, and
                         protect that information.
                       </li>
-                      <h5 className="mb-0">Information We Collect</h5>
-                      <div className="row">
-                        <div className="col-md-1 text-end">&#9679;</div>
-                        <div className="col-md-11">
-                          <strong>Personal Information:</strong> When you use
-                          the Application, we may collect certain personally
-                          identifiable information, such as names, email
-                          addresses, or other contact information voluntarily
-                          provided by users.
-                        </div>
-                      </div>
+                      <h5>Information We Collect</h5>
+<div className="row">
+  <div className="col-md-1 text-end">&#9679;</div>
+  <div className="col-md-11">
+    <strong>Personal Information:</strong> When you use the Application, we may collect personally identifiable information, such as names, email addresses, phone numbers (optional), and any other information you voluntarily provide.
+  </div>
+</div>
+<div className="row">
+  <div className="col-md-1 text-end">&#9679;</div>
+  <div className="col-md-11">
+    <strong>Usage Data: </strong> We collect information on how you access and use the Application ("Usage Data"). This Usage Data may include your device's Internet Protocol address (IP address), browser type, browser version, pages visited within the Application, time and date of your visit, duration of use, and other diagnostic data. We may also use cookies and similar tracking technologies to collect additional Usage Data.
+  </div>
+</div>
+
+<h5>Use of Information</h5>
+<div className="row">
+  <div className="col-md-1 text-end">&#9679;</div>
+  <div className="col-md-11">
+    We may use the collected information for various purposes, including:
+    <ul>
+      <li>Providing and maintaining the Application</li>
+      <li>Improving user experience and functionalities</li>
+      <li>Sending updates or notifications (with your consent)</li>
+      <li>Analyzing usage trends to improve the Application</li>
+      <li>Personalizing your experience within the Application (if applicable)</li>
+    </ul>
+    We may share some Usage Data with third-party service providers (names of providers, if possible) to help us operate the Application and analyze trends. These service providers are obligated to protect your information.
+  </div>
+</div>
                       <div className="row">
                         <div className="col-md-1 text-end">&#9679;</div>
                         <div className="col-md-11">
@@ -114,6 +132,13 @@ const PrivacyPolicy = () => {
                           absolute security of your data.
                         </div>
                       </div>
+                      <h5>Your Rights</h5>
+<div className="row">
+  <div className="col-md-1 text-end">&#9679;</div>
+  <div className="col-md-11">
+    You have the right to access, update, or delete your personal information collected through the Application. You can also opt out of certain data collection practices (explain how, if applicable).  Please contact us at [Contact Information] for any inquiries related to your information.
+  </div>
+</div>
 
                       <h5 className="mb-0">Disclosure of Information</h5>
                       <div className="row">

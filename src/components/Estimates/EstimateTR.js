@@ -69,7 +69,7 @@ const EstimateTR = ({
 }) => {
   // useEffect(() => {console.log("estimates inside table are", estimates)},[])
   const {} = useGetEstimate();
-  const { PunchListData, setPunchListData } = useContext(DataContext);
+  const { PunchListData, setPunchListData, setselectedPdf, } = useContext(DataContext);
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -112,6 +112,7 @@ const EstimateTR = ({
     // Initial fetch of estimates
     getFilteredEstimate();
     setPunchListData({});
+    setselectedPdf({})
   }, []);
 
   useEffect(() => {

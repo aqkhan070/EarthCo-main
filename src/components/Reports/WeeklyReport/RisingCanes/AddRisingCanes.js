@@ -442,7 +442,22 @@ const AddRisingCanes = () => {
                     id="staff-autocomplete"
                     size="small"
                     options={customerSearch}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) =>
+                      option.FirstName
+                        ? option.FirstName
+                        : option.DisplayName || ""
+                    }
+                    filterOptions={(options, { inputValue }) => {
+                      return options.filter(
+                        (option) =>
+                          option.FirstName?.toLowerCase().includes(
+                            inputValue?.toLowerCase()
+                          ) ||
+                          option.DisplayName?.toLowerCase().includes(
+                            inputValue?.toLowerCase()
+                          )
+                      );
+                    }}
                     value={name ? { FirstName: name } : null}
                     onChange={handleCustomerAutocompleteChange}
                     isOptionEqualToValue={(option, value) =>
@@ -450,10 +465,13 @@ const AddRisingCanes = () => {
                     }
                     renderOption={(props, option) => (
                       <li {...props}>
-                        <div className="customer-dd-border">
-                          <h6> {option.FirstName}</h6>
-                          <small># {option.UserId}</small>
-                        </div>
+                       <div className="customer-dd-border">
+                                  <h6>
+                                    
+                                  #{option.UserId} - {option.FirstName}
+                                  </h6>
+                                  <small> {option.DisplayName}</small>
+                                </div>
                       </li>
                     )}
                     renderInput={(params) => (

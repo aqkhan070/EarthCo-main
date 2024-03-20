@@ -14,7 +14,7 @@ const InvoicePDF = ({ data }) => {
         <View style={[s.containerFluid]}>
           <View style={[s.row]}>
             <View style={[s.col4]}>
-              <Text style={s.text}>Earthco Landscape</Text>
+              <Text style={s.text}>{data.SelectedCompany}</Text>
 
               <Text style={s.text}>1225 E. Wakeham Avenue</Text>
 
@@ -190,7 +190,7 @@ const InvoicePDF = ({ data }) => {
                 },
               ]}
             >
-              <Text style={s.text}>
+              <Text style={s.tblText}>
                 
                 {data.StatusId === 0 ? "Closed" : "Open"}
               </Text>

@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import $ from "jquery";
 import { StyleContext } from "../../context/StyleData";
 import { DataContext } from "../../context/AppData";
+import Cookies from "js-cookie";
 
 const SideBar = () => {
   const subShowRef = useRef(null);
@@ -300,7 +301,7 @@ const SideBar = () => {
     },
   ];
 
-  const sideBarDataRM = [
+  const [sideBarDataRM, setSideBarDataRM] = useState( [
     {
       label: "Dashboard",
       path: "/dashboard",
@@ -327,27 +328,37 @@ const SideBar = () => {
         </svg>
       ),
     },
-    // {
-    //   label: "SprayTech",
-    //   path: "/spray-tech",
-    //   icon: (
-    //     <svg
-    //       width="22"
-    //       height="22"
-    //       viewBox="0 0 22 22"
-    //       fill="none"
-    //       xmlns="http://www.w3.org/2000/svg"
-    //     >
-    //       <path
-    //         d="M4.4 7.7c2 .5 2.4 2.8 3.2 3.8 1 1.4 2 1.3 3.2 2.7 1.8 2.3 1.3 5.7 1.3 6.7M20 15h-1a4 4 0 0 0-4 4v1M8.6 4c0 .8.1 1.9 1.5 2.6 1.4.7 3 .3 3 2.3 0 .3 0 2 1.9 2 2 0 2-1.7 2-2 0-.6.5-.9 1.2-.9H20m1 4a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-    //         stroke="#888888"
-    //         strokeLinecap="round"
-    //         strokeLinejoin="round"
-    //       />
-
-    //     </svg>
-    //   ),
-    // },
+    
+    {
+      label: "Customers",
+      path: "/customers",
+      icon: (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 22 22"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M10.986 14.0673C7.4407 14.0673 4.41309 14.6034 4.41309 16.7501C4.41309 18.8969 7.4215 19.4521 10.986 19.4521C14.5313 19.4521 17.5581 18.9152 17.5581 16.7693C17.5581 14.6234 14.5505 14.0673 10.986 14.0673Z"
+            stroke="#888888"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M10.986 11.0054C13.3126 11.0054 15.1983 9.11881 15.1983 6.79223C15.1983 4.46564 13.3126 2.57993 10.986 2.57993C8.65944 2.57993 6.77285 4.46564 6.77285 6.79223C6.76499 9.11096 8.63849 10.9975 10.9563 11.0054H10.986Z"
+            stroke="#888888"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
 
     {
       label: "Map",
@@ -431,7 +442,9 @@ const SideBar = () => {
         </svg>
       ),
     },
-  ];
+  ])
+
+ 
   const sideBarDataIrr = [
     {
       label: "Dashboard",
@@ -557,7 +570,127 @@ const SideBar = () => {
   ];
 
   useEffect(() => {
+    if ( Cookies.get("CompanyId") == 1  ) {
+
+       setSideBarDataRM([
+        {
+          label: "Dashboard",
+          path: "/dashboard",
+          icon: (
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M2.5 7.49999L10 1.66666L17.5 7.49999V16.6667C17.5 17.1087 17.3244 17.5326 17.0118 17.8452C16.6993 18.1577 16.2754 18.3333 15.8333 18.3333H4.16667C3.72464 18.3333 3.30072 18.1577 2.98816 17.8452C2.67559 17.5326 2.5 17.1087 2.5 16.6667V7.49999Z"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7.5 18.3333V10H12.5V18.3333"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ),
+        },       
+       
+    
+        {
+          label: "Map",
+          path: "/map",
+          icon: (
+            <span className="material-symbols-outlined locationIcon">
+              location_on
+            </span>
+          ),
+        },
+        {
+          label: "Service Requests",
+          path: "/service-requests",
+          icon: (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 22 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ),
+        },
+        {
+          label: "Estimates",
+          path: "/estimates",
+          icon: (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 22 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M15.8381 12.7317C16.4566 12.7317 16.9757 13.2422 16.8811 13.853C16.3263 17.4463 13.2502 20.1143 9.54009 20.1143C5.43536 20.1143 2.10834 16.7873 2.10834 12.6835C2.10834 9.30245 4.67693 6.15297 7.56878 5.44087C8.19018 5.28745 8.82702 5.72455 8.82702 6.36429C8.82702 10.6987 8.97272 11.8199 9.79579 12.4297C10.6189 13.0396 11.5867 12.7317 15.8381 12.7317Z"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M19.8848 9.1223C19.934 6.33756 16.5134 1.84879 12.345 1.92599C12.0208 1.93178 11.7612 2.20195 11.7468 2.5252C11.6416 4.81493 11.7834 7.78204 11.8626 9.12713C11.8867 9.5459 12.2157 9.87493 12.6335 9.89906C14.0162 9.97818 17.0914 10.0862 19.3483 9.74467C19.6552 9.69835 19.88 9.43204 19.8848 9.1223Z"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ),
+        },
+    
+        {
+          label: "Items",
+          path: "/items",
+          icon: (
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 22 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M9.1 4H5c-.5 0-.9.4-.9.9V9c0 .5.4.9.9.9h4c.5 0 .9-.4.9-.9V5c0-.5-.4-.9-.9-.9Zm10 0H15c-.5 0-.9.4-.9.9V9c0 .5.4.9.9.9h4c.5 0 .9-.4.9-.9V5c0-.5-.4-.9-.9-.9Zm-10 10H5c-.5 0-.9.4-.9.9V19c0 .5.4.9.9.9h4c.5 0 .9-.4.9-.9v-4c0-.5-.4-.9-.9-.9Zm10 0H15c-.5 0-.9.4-.9.9V19c0 .5.4.9.9.9h4c.5 0 .9-.4.9-.9v-4c0-.5-.4-.9-.9-.9Z"
+                stroke="#888888"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          ),
+        },
+      ])
+    }
+   
+     
+      console.log("asdasdasodkasp",  Cookies.get("CompanyId"))
+   
     const handleClickOutside = (event) => {
+      
       if (subShowRef.current && !subShowRef.current.contains(event.target)) {
         setSubHov(false);
       }
@@ -582,6 +715,7 @@ const SideBar = () => {
     };
 
     document.body.addEventListener("click", handleSidebar);
+   
 
     return () => {
       document.body.removeEventListener("click", handleSidebar);

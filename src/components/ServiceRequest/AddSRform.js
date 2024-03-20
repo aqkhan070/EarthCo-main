@@ -106,7 +106,7 @@ const AddSRform = () => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
- 
+
   const [SRData, setSRData] = useState({
     ServiceRequestData: {
       ServiceRequestId: idParam,
@@ -257,7 +257,9 @@ const AddSRform = () => {
   useEffect(() => {
     fetchServiceLocations(SRData.ServiceRequestData.CustomerId);
     fetctContacts(SRData.ServiceRequestData.CustomerId);
-    fetchName(SRData.ServiceRequestData.CustomerId, () => {setLoading(false)});
+    fetchName(SRData.ServiceRequestData.CustomerId, () => {
+      setLoading(false);
+    });
 
     // SRData.ServiceRequestData.ContactId &&
     // SRData.ServiceRequestData.ServiceLocationId &&
@@ -536,7 +538,7 @@ const AddSRform = () => {
 
       // Set the tblSRItems state with the response.data.tblSRItems
       setTblSRItems(response.data.ItemData);
-    
+
       console.log("response.data.Data", response.data);
       setPrevFiles(response.data.FileData);
 
@@ -548,7 +550,6 @@ const AddSRform = () => {
   };
 
   useEffect(() => {
- 
     fetchSR();
     fetchCustomers();
     return () => {
@@ -627,7 +628,7 @@ const AddSRform = () => {
       Name: item.ItemName,
       Description: item.SaleDescription,
       Rate: item.SalePrice,
-      PurchasePrice : item.PurchasePrice,
+      PurchasePrice: item.PurchasePrice,
     });
     setTblSRItems([
       ...tblSRItems,
@@ -637,7 +638,7 @@ const AddSRform = () => {
         Name: item.ItemName,
         Description: item.SaleDescription,
         Rate: item.SalePrice,
-        PurchasePrice: item.PurchasePrice
+        PurchasePrice: item.PurchasePrice,
       },
     ]);
     setShowItem(false);
@@ -649,7 +650,7 @@ const AddSRform = () => {
       Qty: 1,
       Description: "",
       Rate: 0,
-      PurchasePrice : 0
+      PurchasePrice: 0,
     });
   };
 
@@ -847,17 +848,35 @@ const AddSRform = () => {
                             id="staff-autocomplete"
                             size="small"
                             options={customerSearch}
-                            getOptionLabel={(option) => option.FirstName || ""}
+                            getOptionLabel={(option) =>
+                              option.FirstName
+                                ? option.FirstName
+                                : option.DisplayName || ""
+                            }
                             value={name ? { FirstName: name } : null}
                             onChange={handleCustomerAutocompleteChange}
                             isOptionEqualToValue={(option, value) =>
                               option.UserId === value.CustomerId
                             }
+                            filterOptions={(options, { inputValue }) => {
+                              return options.filter(
+                                (option) =>
+                                  option.FirstName?.toLowerCase().includes(
+                                    inputValue?.toLowerCase()
+                                  ) ||
+                                  option.DisplayName?.toLowerCase().includes(
+                                    inputValue?.toLowerCase()
+                                  )
+                              );
+                            }}
                             renderOption={(props, option) => (
                               <li {...props}>
-                                <div className="customer-dd-border">
-                                  <h6> {option.FirstName}</h6>
-                                  <small># {option.UserId}</small>
+                               <div className="customer-dd-border">
+                                  <h6>
+                                    
+                                  #{option.UserId} - {option.FirstName}
+                                  </h6>
+                                  <small> {option.DisplayName}</small>
                                 </div>
                               </li>
                             )}
@@ -969,7 +988,9 @@ const AddSRform = () => {
                             multiple
                             size="small"
                             options={contactList}
-                            getOptionLabel={(option) => option.FirstName + " " + option.LastName || ""}
+                            getOptionLabel={(option) =>
+                              option.FirstName + " " + option.LastName || ""
+                            }
                             onChange={handleContactChange}
                             value={contactList.filter((company) =>
                               selectedContacts.includes(company.ContactId)
@@ -1044,7 +1065,9 @@ const AddSRform = () => {
                                 staff.UserId === 3252 ||
                                 staff.UserId === 6146
                             )}
-                            getOptionLabel={(option) => option.FirstName+ " "+option.LastName || ""}
+                            getOptionLabel={(option) =>
+                              option.FirstName + " " + option.LastName || ""
+                            }
                             value={
                               staffData.find(
                                 (staff) =>
@@ -1311,8 +1334,12 @@ const AddSRform = () => {
                                   filterOptions={(options, { inputValue }) => {
                                     return options.filter(
                                       (option) =>
-                                        option.ItemName?.toLowerCase().includes(inputValue.toLowerCase()) ||
-                                        option.SaleDescription?.toLowerCase().includes(inputValue.toLowerCase())
+                                        option.ItemName?.toLowerCase().includes(
+                                          inputValue.toLowerCase()
+                                        ) ||
+                                        option.SaleDescription?.toLowerCase().includes(
+                                          inputValue.toLowerCase()
+                                        )
                                     );
                                   }}
                                   renderInput={(params) => (
@@ -1460,15 +1487,11 @@ const AddSRform = () => {
                             </label>
                             <TextArea
                               name="WorkRequest"
-                            
-                             
                               value={
                                 SRData.ServiceRequestData.WorkRequest || ""
                               }
                               onChange={handleInputChange}
-                             
                               placeholder="Work Requested"
-                             
                             />
                           </div>
                           {SRData.ServiceRequestData.SRTypeId === 3 ? (
@@ -1483,12 +1506,10 @@ const AddSRform = () => {
                                 <TextArea
                                   name="ActionTaken"
                                   placeholder="Action Taken"
-                                 
                                   value={
                                     SRData.ServiceRequestData.ActionTaken || ""
                                   }
                                   onChange={handleInputChange}
-                                 
                                 />
                               </div>
                             </>
@@ -1771,16 +1792,22 @@ const AddSRform = () => {
                             )
                           }
                         </PDFDownloadLink>
-                        {loggedInUser.userRole == 1 ||loggedInUser.userRole == 4 ? <><button
-                          className="btn btn-dark me-2"
-                          style={{ marginRight: "1em" }}
-                          onClick={() => {
-                            handleMainButtonClick(false, true);
-                          }}
-                        >
-                          Copy to Estimate
-                        </button></>:<></>}
-                        
+                        {loggedInUser.userRole == 1 ||
+                        loggedInUser.userRole == 4 ? (
+                          <>
+                            <button
+                              className="btn btn-dark me-2"
+                              style={{ marginRight: "1em" }}
+                              onClick={() => {
+                                handleMainButtonClick(false, true);
+                              }}
+                            >
+                              Copy to Estimate
+                            </button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
                       </>
                     ) : (
                       <></>

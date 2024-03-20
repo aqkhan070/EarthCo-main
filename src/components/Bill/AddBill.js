@@ -57,7 +57,7 @@ const AddBill = ({}) => {
 
   const { syncQB } = useQuickBook();
   const { fetchCatagories, catagories } = useFetchCatagories();
-  const { fetchSupplierName, supplierName, setSupplierName } =
+  const { fetchSupplierName, supplierName, setSupplierName } =  
     useFetchCustomerName();
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
@@ -475,7 +475,7 @@ const AddBill = ({}) => {
     if (item) {
       setCatagoryList((prevItems) => [...prevItems, {
         AccountId: item.AccountId,
-        Name: item.Name,
+        Name: item.Code + " "+ item.Name,
         Description: "",
         Amount: 0,
       }]);
@@ -1088,10 +1088,19 @@ const AddBill = ({}) => {
                           <td className="itemName-width">
                             <Autocomplete
                               options={catagories}
-                              getOptionLabel={(item) => item.Name}
+                              getOptionLabel={(item) => {
+                                return item.Code ? `${item.Code} ${item.Name}` : item.Name;
+                            }}
                               value={selectedCatagory?.Name}
                               onChange={(event, newValue) => {
                                 handleCatagoryClick(newValue);
+                              }}
+                              filterOptions={(options, { inputValue }) => {
+                                return options.filter(
+                                  (option) =>
+                                    option.Name?.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                    option.Code?.toLowerCase().includes(inputValue.toLowerCase())
+                                );
                               }}
                               renderInput={(params) => (
                                 <TextField
@@ -1099,6 +1108,7 @@ const AddBill = ({}) => {
                                   label="Search for categories..."
                                   variant="outlined"
                                   size="small"
+                                  onChange={(e) => {fetchCatagories(e.target.value)}}
                                   fullWidth
                                 />
                               )}

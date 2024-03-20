@@ -107,7 +107,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         updatedEvent,
         {
           headers: {
-            Authorization: "Bearer " + loggedInUser.ProviderToken,
+            Authorization: "Bearer " + dashBoardData.ProviderToken,
           },
         }
       );
@@ -155,8 +155,12 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
     };
 
     const isStartDateInEvents = eventsList.some((event) => {
-      const eventStartDate = dayjs(event.start.dateTime).format("YYYY-MM-DD");
-      return day.format("YYYY-MM-DD") === eventStartDate;
+      if (event.start && event.start.dateTime) {
+        const eventStartDate = dayjs(event.start.dateTime).format("YYYY-MM-DD");
+        return day.format("YYYY-MM-DD") === eventStartDate;
+      } else {
+        return null; // or handle the case when start or dateTime is undefined
+      }
     });
 
     const handleClick = (event) => {
@@ -383,21 +387,37 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
       counter <= 1
     ) {
       setCounter(counter + 1);
-      sendToken(
-        {
-          AccessToken: session.access_token,
-          ProviderToken: session.provider_token,
-          RefreshToken: session.refresh_token,
-          TokenType: session.token_type,
-          UserId: Number(loggedInUser.userId),
-          UserEmail: session.user.email,
-        }
+      // sendToken(
+      //   {
+      //     AccessToken: session.access_token,
+      //     ProviderToken: session.provider_token,
+      //     RefreshToken: session.refresh_token,
+      //     TokenType: session.token_type,
+      //     UserId: Number(loggedInUser.userId),
+      //     UserEmail: session.user.email,
+      //   }
       
-      );
+      // );
       Cookies.set("ProviderToken", session.provider_token, { expires: 7 });
       console.log("asdfg");
     }
-  }, [session]);
+  }, [session]); 
+  const signOut = () => {
+    try {
+    
+      deleteToken(Number(loggedInUser.userId), getDashboardData);
+      Cookies.set("ProviderToken", "", { expires: 7 });
+      Cookies.set("UserEmailGoogle", "", { expires: 7 });
+      setLoggedInUser({
+        ...loggedInUser,
+        ProviderToken: null,
+        UserEmailGoogle: "",
+      });
+    } catch (error) {
+      console.error("Error signing out:", error);
+      // Handle the error or call an error handling function if needed
+    }
+  };
   const fetchGoogleEvents = async (click = false) => {
     try {
       // Calculate the start and end date for the time frame (current day to one month from now)
@@ -409,7 +429,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         "https://www.googleapis.com/calendar/v3/calendars/primary/events",
         {
           headers: {
-            Authorization: "Bearer " + loggedInUser.ProviderToken, // Use OAuth token
+            Authorization: "Bearer " + dashBoardData.ProviderToken, // Use OAuth token
           },
           params: {
             timeMin: currentDate.toISOString(),
@@ -425,17 +445,17 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         session.provider_token &&
         Object.keys(session).length !== 0
       ) {
-        sendToken(
-          {
-            AccessToken: session.access_token,
-            ProviderToken: session.provider_token,
-            RefreshToken: session.refresh_token,
-            TokenType: session.token_type,
-            UserId: Number(loggedInUser.userId),
-            UserEmail: session.user.email,
-          },
-          getDashboardData()
-        );
+        // sendToken(
+        //   {
+        //     AccessToken: session.access_token,
+        //     ProviderToken: session.provider_token,
+        //     RefreshToken: session.refresh_token,
+        //     TokenType: session.token_type,
+        //     UserId: Number(loggedInUser.userId),
+        //     UserEmail: session.user.email,
+        //   },
+        //   getDashboardData()
+        // );
         console.log("asdfg");
       }
     } catch (error) {
@@ -444,10 +464,15 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         setSnackBarColor("error");
         setSnackBarText("Error Fetching event");
       }
+      if (error.response.status == 401) {
+        // signOut()
+        
+      }
 
       console.error("Error fetching events: error.response.status", error);
     }
   };
+
 
   useEffect(() => {
     fetchHighlightedDays(initialValue);
@@ -532,24 +557,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
     }
   };
 
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      console.log("signed out");
-      // Call your success function here
-      deleteToken(Number(loggedInUser.userId), getDashboardData);
-      Cookies.set("ProviderToken", "", { expires: 7 });
-      Cookies.set("UserEmailGoogle", "", { expires: 7 });
-      setLoggedInUser({
-        ...loggedInUser,
-        ProviderToken: null,
-        UserEmailGoogle: "",
-      });
-    } catch (error) {
-      console.error("Error signing out:", error);
-      // Handle the error or call an error handling function if needed
-    }
-  };
+ 
 
   // Define your success function to be called when sign-out is successful
   const yourSuccessFunction = () => {
@@ -606,7 +614,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         event,
         {
           headers: {
-            Authorization: "Bearer " + loggedInUser.ProviderToken, // Access token for Google
+            Authorization: "Bearer " + dashBoardData.ProviderToken, // Access token for Google
           },
         }
       );
@@ -630,7 +638,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
         {
           headers: {
-            Authorization: "Bearer " + loggedInUser.ProviderToken,
+            Authorization: "Bearer " + dashBoardData.ProviderToken,
           },
         }
       );
@@ -655,6 +663,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         color={snackBarColor}
         text={snackBarText}
       />
+      
       <div className="card">
         <div className="calendertitleBar">
           <div className="row">
@@ -669,7 +678,7 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
                 </h5>
               </span>
             </div>
-            {loggedInUser.ProviderToken && (
+            {dashBoardData.ProviderToken && (
               <>
                 <CustomizedTooltips title="Refresh Calender" placement="top">
                   <div className="col-sm-2">
@@ -697,12 +706,12 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
         <div className="card-body schedules-cal p-2">
           <div style={{ width: "100%" }}>
             <div className="p-0 " style={{ color: "black" }}>
-              {loggedInUser.UserEmailGoogle &&
-              loggedInUser.UserEmailGoogle !== "null"
-                ? loggedInUser.UserEmailGoogle
+              {dashBoardData.UserEmail &&
+              dashBoardData.UserEmail !== "null"
+                ? dashBoardData .UserEmail
                 : ""}
             </div>
-            {loggedInUser.ProviderToken ? (
+            {dashBoardData.ProviderToken ? (
               <>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateCalendar
@@ -728,12 +737,22 @@ const DashBoardCalender = ({ dashBoardData, getDashboardData }) => {
               </>
             ) : (
               <>
-                <button
+                {/* <button
                   className="btn btn-sm btn-primary mb-2"
                   onClick={() => googleSignIn()}
                 >
                   Sign In With Google
-                </button>
+                </button> */}
+                <iframe
+                      src={`https://earthcoapi.yehtohoga.com/Home/ServerSideGoogleLogin?UserId=${loggedInUser.userId}`}
+                      scrolling="no"
+                      style={{
+                        height: "4em",
+                        width: "7em",
+                        overflowY: "hidden",
+                        marginTop: "-1.5%",
+                      }}
+                    ></iframe>
               </>
             )}
           </div>

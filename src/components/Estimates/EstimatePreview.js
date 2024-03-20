@@ -446,7 +446,8 @@ const EstimatePreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/estimates`);
+                      // navigate(`/estimates`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />
@@ -468,7 +469,7 @@ const EstimatePreview = () => {
                       data={{
                         ...previewData.EstimateData,
                         RegionalManagerName: staffName,
-                        SelectedCompany: loggedInUser.CompanyName,
+                        SelectedCompany: loggedInUser.CompanyId == 2 ? loggedInUser.CompanyName : "EarthCo Landscape",
                         CustomerName: name,
                         ApprovedItems: approvedItem.filter(
                           (item) => item.IsApproved === true

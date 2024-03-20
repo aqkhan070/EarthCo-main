@@ -24,7 +24,7 @@ const EstimatePdf = ({ data }) => {
           <View style={[s.containerFluid]}>
             <View style={[s.row]}>
               <View style={[s.col4]}>
-                <Text style={s.text}>Earthco Landscape</Text>
+                <Text style={s.text}>{data.SelectedCompany}</Text>
 
                 <Text style={s.text}>1225 East Wakeham Avenue</Text>
 

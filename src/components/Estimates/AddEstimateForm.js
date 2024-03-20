@@ -37,7 +37,6 @@ import useQuickBook from "../Hooks/useQuickBook";
 import BackButton from "../Reusable/BackButton";
 import FileUploadButton from "../Reusable/FileUploadButton";
 import formatAmount from "../../custom/FormatAmount";
-import ActivityLog from "../Reusable/ActivityLog";
 import PrintButton from "../Reusable/PrintButton";
 import useGetEstimate from "../Hooks/useGetEstimate";
 import { PDFDownloadLink } from "@react-pdf/renderer";
@@ -130,9 +129,11 @@ const AddEstimateForm = () => {
 
     fetchStaffList();
     fetctContacts(PunchListData.CustomerId);
-
-    setFiles([selectedPdf]);
-    console.log("PunchList Data link", selectedPdf);
+if (selectedPdf.name) {
+  
+  setFiles([selectedPdf]);
+  console.log("pdfff", selectedPdf);
+}
 
     // }
   }, [PunchListData]);
@@ -1130,7 +1131,22 @@ const AddEstimateForm = () => {
                       id="staff-autocomplete"
                       size="small"
                       options={customerSearch}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) =>
+                        option.FirstName
+                          ? option.FirstName
+                          : option.DisplayName || ""
+                      }
+                      filterOptions={(options, { inputValue }) => {
+                        return options.filter(
+                          (option) =>
+                            option.FirstName?.toLowerCase().includes(
+                              inputValue?.toLowerCase()
+                            ) ||
+                            option.DisplayName?.toLowerCase().includes(
+                              inputValue?.toLowerCase()
+                            )
+                        );
+                      }}
                       value={name ? { FirstName: name } : null}
                       onChange={(event, newValue) =>
                         handleAutocompleteChange(
@@ -1145,10 +1161,13 @@ const AddEstimateForm = () => {
                       }
                       renderOption={(props, option) => (
                         <li {...props}>
-                          <div className="customer-dd-border">
-                            <h6> {option.FirstName}</h6>
-                            <small># {option.UserId}</small>
-                          </div>
+                         <div className="customer-dd-border">
+                                  <h6>
+                                    
+                                  #{option.UserId} - {option.FirstName}
+                                  </h6>
+                                  <small> {option.DisplayName}</small>
+                                </div>
                         </li>
                       )}
                       renderInput={(params) => (
@@ -2634,7 +2653,7 @@ const AddEstimateForm = () => {
 
                       {Files.map((file, index) => (
                         <>
-                          {Object.keys(file).length !== 0 && (
+                       
                             <div
                               key={index}
                               className="col-md-2 col-md-2 mt-3 image-container"
@@ -2693,7 +2712,7 @@ const AddEstimateForm = () => {
                                 </span>
                               </span>
                             </div>
-                          )}
+                        
                         </>
                       ))}
                     </div>
@@ -2778,7 +2797,7 @@ const AddEstimateForm = () => {
                               data={{
                                 ...formData,
                                 RegionalManagerName: staffName,
-                                SelectedCompany: loggedInUser.CompanyName,
+                                SelectedCompany: loggedInUser.CompanyId == 2 ? loggedInUser.CompanyName : "EarthCo Landscape",
                                 CustomerName: name,
                                 ApprovedItems: formData.tblEstimateItems.filter(
                                   (item) => item.IsApproved === true

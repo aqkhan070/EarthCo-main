@@ -27,9 +27,6 @@ const SprayTechForm = ({
     }
   }, [sprayTechData]);
 
-  useEffect(() => {
-    console.log("sTechItems", sideData);
-  }, [sideData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

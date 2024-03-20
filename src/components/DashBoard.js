@@ -15,10 +15,15 @@ import DashBoardCalender from "./DashboardComponents/DashBoardCalender";
 import { createClient } from "@supabase/supabase-js";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 
 const DashBoard = () => {
-  const { dashBoardData, getDashboardData, loading } = useFetchDashBoardData();
+  const { dashBoardData, getDashboardData, loading, sendGoogleCode } = useFetchDashBoardData();
+  const navigate = useNavigate();
 
+
+  const queryParams = new URLSearchParams(window.location.search);
+  const code = queryParams.get("code");
   const supabase = createClient(
     "https://hmmnbwwzuluepmdzvfvb.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtbW5id3d6dWx1ZXBtZHp2ZnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDczMTU1OTAsImV4cCI6MjAyMjg5MTU5MH0.vvZ_vvKcSXe-oRJlEFBmqqsNXs0cHwLkBZ49T11h5y4"
@@ -30,6 +35,12 @@ const DashBoard = () => {
   useEffect(() => {
     if (dashBoardRefresh) {
       // window.location.reload();
+    }
+    if(code){
+      console.log("google code", code)
+      sendGoogleCode(code, () => {
+        navigate(`/dashboard`)
+      })
     }
     getDashboardData();
   }, []);

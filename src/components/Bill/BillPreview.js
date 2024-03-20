@@ -358,7 +358,8 @@ const BillPreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/bills`);
+                      // navigate(`/bills`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />

@@ -12,9 +12,11 @@ import {
   TablePagination,
   TextField,
   Button,
+  Checkbox ,
   FormControl,
   Select,
   MenuItem,
+  ListSubheader
 } from "@mui/material";
 import { Delete, Create, Visibility } from "@mui/icons-material";
 import Alert from "@mui/material/Alert";
@@ -53,10 +55,9 @@ const Invoices = () => {
   const [statusId, setStatusId] = useState(0);
   const [search, setSearch] = useState("");
   const [isAscending, setIsAscending] = useState(false);
+  const [isIssueDate, setIsIssueDate] = useState(false)
 
-  useEffect(() => {
-    fetchFilterInvoice();
-  }, []);
+  
 
   useEffect(() => {
     fetchFilterInvoice(
@@ -64,9 +65,10 @@ const Invoices = () => {
       tablePage + 1,
       rowsPerPage,
       statusId,
-      isAscending
+      isAscending,
+      isIssueDate
     );
-  }, [search, tablePage, rowsPerPage, statusId, isAscending]);
+  }, [search, tablePage, rowsPerPage, statusId, isAscending, isIssueDate]);
 
   const handleChangePage = (event, newPage) => {
     setTablePage(newPage);
@@ -103,13 +105,14 @@ const Invoices = () => {
                           labelId="customer-type-label"
                           variant="outlined"
                           value={isAscending}
-                          onChange={() => {
-                            setIsAscending(!isAscending);
-                          }}
+                         
                           size="small"
                         >
-                          <MenuItem value={true}>Ascending</MenuItem>
-                          <MenuItem value={false}>Descending</MenuItem>
+                          <MenuItem value={true} onClick={() => {setIsAscending(true)}}>Ascending</MenuItem>
+                          <MenuItem value={false} onClick={() => {setIsAscending(false)}}>Descending</MenuItem>
+                          <ListSubheader>Sort By</ListSubheader>
+                          <MenuItem onClick={() => {setIsIssueDate(true)}} ><><Checkbox checked={isIssueDate} />  Issue Date</> </MenuItem>
+                          <MenuItem onClick={() => {setIsIssueDate(false)}} > <><Checkbox checked={!isIssueDate}/> Created Date</></MenuItem>
                         </Select>
                       </FormControl>
                       <AddButton

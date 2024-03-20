@@ -168,7 +168,8 @@ const Audit = () => {
                     <button
                       className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                       onClick={() => {
-                        navigate(`/irrigation`);
+                        // navigate(`/irrigation`);
+                        window.history.back();
                       }}
                     >
                       <ArrowBackIcon sx={{ fontSize: 17 }} />

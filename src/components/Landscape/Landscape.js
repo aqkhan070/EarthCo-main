@@ -154,7 +154,8 @@ const Landscape = () => {
                   className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                   style={{ padding: "5px 10px" }}
                   onClick={() => {
-                    navigate(`/landscape`);
+                    // navigate(`/landscape`);
+                    window.history.back();
                   }}
                 >
                   <ArrowBackIcon sx={{ fontSize: 17 }} />

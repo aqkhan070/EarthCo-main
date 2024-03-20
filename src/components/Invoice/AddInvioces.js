@@ -352,19 +352,33 @@ const AddInvioces = ({}) => {
     handleChange(simulatedEvent);
   };
 
-  const handleTermsAutocompleteChange = (event, newValue) => {
-    // Construct an event-like object with the structure expected by handleInputChange
-    const simulatedEvent = {
-      target: {
-        name: "TermId",
-        value: newValue ? newValue.TermId : "",
-      },
-    };
+  const increaseDueDate = (Term, IssueDate) => {
+    const lastTwoDigits = parseInt(Term.substring(Term.length - 2));
 
-    // Assuming handleInputChange is defined somewhere within YourComponent
-    // Call handleInputChange with the simulated event
-    handleChange(simulatedEvent);
+    let dueDate = new Date(IssueDate); 
+    dueDate.setDate(dueDate.getDate() + lastTwoDigits); 
+    return dueDate.toISOString().slice(0, 10); 
+  }
+  const handleTermsAutocompleteChange = (event, newValue) => {
+    if (formData.IssueDate && newValue && newValue.Term.includes("Net")) {
+      const newDueDate = increaseDueDate(newValue.Term, formData.IssueDate);
+      console.log("trm", newDueDate);
+  
+      setFormData(prevFormData => ({
+        ...prevFormData,
+        DueDate: newDueDate,
+        TermId : newValue ? newValue.TermId : ""
+      }));
+    }else{
+      setFormData(prevFormData => ({
+        ...prevFormData,       
+        TermId : newValue ? newValue.TermId : ""
+      }));
+    }
+  
+  
   };
+  
   const handleTagAutocompleteChange = (event, newValues) => {
     const tagString = newValues.map((tag) => tag.Tag).join(", ");
 
@@ -518,9 +532,10 @@ const AddInvioces = ({}) => {
       setDisableButton(false);
       syncQB(response.data.SyncId);
 
+      navigate(`/invoices/add-invoices?id=${response.data.Id}`);
       setTimeout(() => {
-        navigate("/invoices");
-      }, 4000);
+        window.location.reload();
+      }, 3000);
 
       setEstimateLinkData({});
 
@@ -533,7 +548,7 @@ const AddInvioces = ({}) => {
       setDisableButton(false);
       setOpenSnackBar(true);
       setSnackBarColor("error");
-      setSnackBarText( "Error Adding/Updating Invoice");
+      setSnackBarText(error.response.data);
       console.error("Invoice API Call Error:", error);
     }
 
@@ -1160,7 +1175,22 @@ const AddInvioces = ({}) => {
                       id="staff-autocomplete"
                       size="small"
                       options={customerSearch}
-                      getOptionLabel={(option) => option.FirstName || ""}
+                      getOptionLabel={(option) =>
+                        option.FirstName
+                          ? option.FirstName
+                          : option.DisplayName || ""
+                      }
+                      filterOptions={(options, { inputValue }) => {
+                        return options.filter(
+                          (option) =>
+                            option.FirstName?.toLowerCase().includes(
+                              inputValue?.toLowerCase()
+                            ) ||
+                            option.DisplayName?.toLowerCase().includes(
+                              inputValue?.toLowerCase()
+                            )
+                        );
+                      }}
                       value={name ? { FirstName: name } : null}
                       onChange={handleCustomerAutocompleteChange}
                       isOptionEqualToValue={(option, value) =>
@@ -1169,9 +1199,12 @@ const AddInvioces = ({}) => {
                       renderOption={(props, option) => (
                         <li {...props}>
                           <div className="customer-dd-border">
-                            <h6> {option.FirstName}</h6>
-                            <small># {option.UserId}</small>
-                          </div>
+                                  <h6>
+                                    
+                                  #{option.UserId} - {option.FirstName}
+                                  </h6>
+                                  <small> {option.DisplayName}</small>
+                                </div>
                         </li>
                       )}
                       renderInput={(params) => (
@@ -2577,9 +2610,8 @@ const AddInvioces = ({}) => {
                           document={
                             <InvoicePDF
                               data={{
-                                ...formData,
-                              
-                                SelectedCompany: loggedInUser.CompanyName,
+                                ...formData,                              
+                                SelectedCompany: loggedInUser.CompanyId == 2 ? loggedInUser.CompanyName : "EarthCo Landscape",
                                 CustomerName: name,
                                 ApprovedItems: formData.tblInvoiceItems.filter(item => !item.IsMisc),
                                 Amount: totalItemAmount,

@@ -172,7 +172,8 @@ const ProposalSummary = ({setShowProposal}) => {
                    <button
                      className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                      onClick={() => {
-                       navigate(`/summary-report`);
+                      //  navigate(`/summary-report`);
+                      window.history.back();
                      }}
                    >
                      <ArrowBackIcon sx={{ fontSize: 17 }} />

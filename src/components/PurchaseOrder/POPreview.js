@@ -354,7 +354,8 @@ const POPreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/purchase-order`);
+                      // navigate(`/purchase-order`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />

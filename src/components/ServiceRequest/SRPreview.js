@@ -407,7 +407,8 @@ const SRPreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/service-requests`);
+                      // navigate(`/service-requests`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />

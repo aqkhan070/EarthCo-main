@@ -228,7 +228,8 @@ const HeaderExp = () => {
       userId: Cookies.get("userId"),
       CompanyName: Cookies.get("CompanyName"),
       CompanyId: Cookies.get("CompanyId"),
-      RefreshToken: Cookies.get("RefreshToken")=="null" ? null :Cookies.get("RefreshToken"),
+      RefreshToken: Cookies.get("RefreshToken")=="null" ? null :Cookies.get("RefreshToken") || null,
+      AccessToken: Cookies.get("AccessToken")=="null" ? null :Cookies.get("AccessToken") || null,
       ProviderToken : Cookies.get("ProviderToken")=="null" ? null :Cookies.get("ProviderToken") ,
       UserEmailGoogle : Cookies.get("UserEmailGoogle")
     });
@@ -321,6 +322,7 @@ const HeaderExp = () => {
                       scrolling="no"
                       style={{
                         height: "100%",
+                        width: "34%",
                         overflowY: "hidden",
                         marginTop: "-1.5%",
                       }}

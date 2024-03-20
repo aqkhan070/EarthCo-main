@@ -155,7 +155,8 @@ const IrrigationAuditPreview = () => {
                     <button
                       className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn mb-2 mt-3 "
                       onClick={() => {
-                        navigate(`/irrigation-audit`);
+                        // navigate(`/irrigation-audit`);
+                        window.history.back();
                       }}
                     >
                       <ArrowBackIcon sx={{ fontSize: 17 }} />

@@ -28,15 +28,11 @@ const PunchlistModal2 = ({
   const { customerSearch, fetchCustomers } = useCustomerSearch();
   const { name, setName, fetchName } = useFetchCustomerName();
 
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [selectedServiceRequest, setSelectedServiceRequest] = useState(null);
 
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [snackBarColor, setSnackBarColor] = useState("");
   const [snackBarText, setSnackBarText] = useState("");
 
-  const [customersList, setCustomersList] = useState([]);
-  const [showCustomersList, setShowCustomersList] = useState(true);
 
   const fetchPLData = async () => {
     try {
@@ -67,7 +63,7 @@ const PunchlistModal2 = ({
       },
     };
 
-    setSelectedCustomer(newValue); // Update selectedCustomer here
+
 
     // Assuming handleInputChange is defined somewhere within YourComponent
     // Call handleInputChange with the simulated event
@@ -233,7 +229,22 @@ const PunchlistModal2 = ({
                     size="small"
                     // value={selectedCustomer}
                     options={customerSearch}
-                    getOptionLabel={(option) => option.FirstName || ""}
+                    getOptionLabel={(option) =>
+                      option.FirstName
+                        ? option.FirstName
+                        : option.DisplayName || ""
+                    }
+                    filterOptions={(options, { inputValue }) => {
+                      return options.filter(
+                        (option) =>
+                          option.FirstName?.toLowerCase().includes(
+                            inputValue?.toLowerCase()
+                          ) ||
+                          option.DisplayName?.toLowerCase().includes(
+                            inputValue?.toLowerCase()
+                          )
+                      );
+                    }}
                     value={name ? { FirstName: name } : null}
                     onChange={handleCustomerAutocompleteChange}
                     isOptionEqualToValue={(option, value) =>
@@ -242,9 +253,12 @@ const PunchlistModal2 = ({
                     renderOption={(props, option) => (
                       <li {...props}>
                         <div className="customer-dd-border">
-                          <h6> {option.FirstName}</h6>
-                          <small># {option.UserId}</small>
-                        </div>
+                                  <h6>
+                                    
+                                  #{option.UserId} - {option.FirstName}
+                                  </h6>
+                                  <small> {option.DisplayName}</small>
+                                </div>
                       </li>
                     )}
                     renderInput={(params) => (
@@ -455,7 +469,7 @@ const PunchlistModal2 = ({
                     ContactId: null,
                     ContactCompany: null,
                   }));
-                  setSelectedCustomer("");
+                 
                   setselectedPL(0);
                   setName("");
 

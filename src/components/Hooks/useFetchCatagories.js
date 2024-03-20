@@ -6,7 +6,7 @@ const useFetchCatagories = () => {
     Authorization: `Bearer ${Cookies.get("token")}`,
   };
   const [catagories, setCatagories] = useState([])
-  const fetchCatagories = async (text = "a") => {
+  const fetchCatagories = async (text = "") => {
     try {
       const res = await axios.get(
         `https://earthcoapi.yehtohoga.com/api/Item/GetSearchAccountList?Search=${text}`,

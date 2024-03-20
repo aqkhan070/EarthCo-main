@@ -451,7 +451,8 @@ const InvoicePreview = () => {
                     className="btn btn-sm btn-outline-secondary custom-csv-link estm-action-btn"
                     style={{ padding: "5px 10px" }}
                     onClick={() => {
-                      navigate(`/invoices`);
+                      // navigate(`/invoices`);
+                      window.history.back();
                     }}
                   >
                     <ArrowBackIcon sx={{ fontSize: 17 }} />
@@ -474,7 +475,7 @@ const InvoicePreview = () => {
                       data={{
                         ...InvoicePreviewData.Data,
                         RegionalManagerName: "staffName",
-                        SelectedCompany: loggedInUser.CompanyName,
+                        SelectedCompany: loggedInUser.CompanyId == 2 ? loggedInUser.CompanyName : "EarthCo Landscape",
                         CustomerName: name,
                         ApprovedItems: InvoicePreviewData.ItemData.filter(item => !item.IsMisc),
                         Amount: totalAmount

@@ -57,7 +57,7 @@ const TermsandConditions = () => {
                                 <ArrowBackIcon />
                               </div>
                               <div className="col-md-11 col-sm-11">
-                                <h2>End User License Agreement</h2>
+                                <h3>End User License Agreement (EULA)</h3>
                               </div>
                             </div>
                           </div>
@@ -68,25 +68,24 @@ const TermsandConditions = () => {
                               APPLICATION
                             </h6>
                             <>
-                              This End User License Agreement ("Agreement") is a
-                              legal agreement between you (either an individual
-                              or an entity) and Earthco Landscape governing your
-                              use of Earthco Web Application ("Application"). By
-                              accessing or using this Application, you agree to
-                              be bound by the terms and conditions of this
-                              Agreement.
+                            This End User License Agreement ("Agreement") is a
+                          legal agreement between you (either an individual or
+                          an entity) and Earthco Landscape ("Earthco") governing
+                          your access to and use of the Earthco Web Application
+                          ("Application"). By accessing or using the
+                          Application, you acknowledge that you have read,
+                          understood, and agree to be bound by the terms and
+                          conditions of this Agreement.
                             </>
                             <div className="row mt-2">
-                              <div className="col-md-1 text-end">1.</div>
-                              <div className="col-md-11">
-                                {" "}
-                                <strong>License Grant: </strong>Earthco grants
-                                you a non-exclusive, non-transferable, limited
-                                license to use the Application solely for
-                                internal purposes in accordance with this
-                                Agreement.{" "}
-                              </div>
-                            </div>
+                          <div className="col-md-1 text-end">1.</div>
+                          <div className="col-md-11">
+                            <strong>License Grant:</strong> Earthco grants you a
+                            non-exclusive, non-transferable, limited license to
+                            use the Application solely for your internal
+                            purposes in accordance with this Agreement.
+                          </div>
+                        </div>
                             <div className="row">
                               <div className="col-md-1 text-end">2.</div>
                               <div className="col-md-11">
@@ -162,10 +161,15 @@ const TermsandConditions = () => {
                               <div className="col-md-1 text-end">7.</div>
                               <div className="col-md-11">
                                 {" "}
-                                <strong>Governing Law: </strong>This Agreement
-                                shall be governed by and construed in accordance
-                                with the laws of California, without regard to
-                                its conflict of law principles.
+                                <strong>Governing Law and Dispute Resolution:</strong>
+                            This Agreement shall be governed by and construed in
+                            accordance with the laws of the State of California,
+                            without regard to its conflict of law principles. You
+                            agree to submit to the exclusive jurisdiction of the
+                            courts located in [County], California, for the
+                            resolution of any and all disputes arising out of or
+                            relating to this Agreement or your use of the
+                            Application.
                               </div>
                             </div>
                           </div>

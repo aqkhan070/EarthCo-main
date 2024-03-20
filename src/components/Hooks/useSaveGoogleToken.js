@@ -21,6 +21,21 @@ const useSaveGoogleToken = () => {
       console.log("api call error", error);
     }
   };
+  const sendGoogeCode = async (endpoint) => {
+    console.log("payload to calender is ", endpoint);
+    try {
+      const res = await axios.post(
+        `https://earthcoapi.yehtohoga.com/api${endpoint}`,
+       
+        { headers }
+      );
+
+      console.log("google save code response is");
+    
+    } catch (error) {
+      console.log("google api call error", error);
+    }
+  };
   const deleteToken = async (id, getDashboardData) => {
     console.log("payload to calender is ", id);
     try {
@@ -35,7 +50,7 @@ const useSaveGoogleToken = () => {
       console.log("api call error", error);
     }
   };
-  return { sendToken, deleteToken };
+  return { sendToken,sendGoogeCode, deleteToken };
 };
 
 export default useSaveGoogleToken;
